@@ -20,7 +20,6 @@ EDEN's machines maintain cheerful gardens and immaculate neighborhoods above a s
 - [Structured campaign reference](level-design/campaign.json): the same twelve-level plan in JSON, including all 72 main-route areas.
 - [Art reference index](art-design/README.md): links to every individual enemy and weapon brief.
 - [Shared visual style guide](art-design/style-guide.md): consistent proportions, materials, silhouettes, reference-image workflow, and modeling guidance.
-- [Complete reference pack](dead-eden-art-reference-pack.zip): downloadable copy of the concept, art index, style guide, and asset briefs.
 - [Level-design reference pack](dead-eden-level-design-pack.zip): downloadable level briefs and campaign JSON, bundled with the concept and linked art references.
 
 ## Current scope
@@ -59,8 +58,7 @@ art-design/
   returned/      # 3 briefs
   mini-bosses/   # 4 briefs
   weapons/       # 5 briefs, each with 3 upgrades
-dead-eden-art-reference-pack.zip
 dead-eden-level-design-pack.zip
 ```
 
-The Markdown and campaign JSON files are the editable sources of truth. The ZIP files are snapshots and should be rebuilt when their contents change.
+The Markdown and campaign JSON files are the editable sources of truth. The level-design ZIP is a snapshot and should be rebuilt when its contents change.
