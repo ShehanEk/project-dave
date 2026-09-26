@@ -55,6 +55,10 @@ No flesh, autonomous satellite units, humanoid legs, or living eyes. The smiling
 
 Anatomical left and right refer to the subject's own sides, not the viewer's. Do not automatically mirror an asymmetrical design when generating the opposite view.
 
+## Single-weapon encounter constraint
+
+The hero carries only one weapon. This fight must support every weapon type that can legitimately reach this level. A clear pistol shot is only one case: provide safe close-range access for the shotgun or welder, workable arcs and fuse windows for the Seedlobber, and replenishable throwable props when the Graviton Tether can be carried. The boss cannot be grabbed. No required route assumes a separate tether, backup pistol, or two-weapon combo.
+
 ## Arena relationship and phase changes
 
 A broad garden plaza with low jump platforms and reinforced planters. Show the arena only on a separate context sheet; one planter-impact interaction is enough to explain the fight.

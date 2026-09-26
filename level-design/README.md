@@ -6,6 +6,8 @@ This remains a concept project. Layout specifics and duration targets are draft 
 
 ## Start here
 
+For system-design work, read the [AI entry guide](../AI_START_HERE.md) and the relevant files in the [detailed design pack](../design/README.md). The level briefs retain their area order; the new pack owns proposed movement, resources, checkpoints, artifacts, and encounter rules.
+
 1. Read the [shared design guide](design-guide.md) for campaign constraints and how to use the prompts.
 2. Give an AI model one entire level file. It contains the context needed to interpret that level independently.
 3. For environment images, start with **Prompt 1**. Use the approved keyframe as the reference for layout and modular asset studies.
@@ -34,7 +36,7 @@ This remains a concept project. Layout specifics and duration targets are draft 
 - Story entry, objective, and exit.
 - Architecture, palette, light, landmark, and foreground/playable/background separation.
 - Six ordered areas with placement, player actions, teaching purpose, and connections.
-- Enemy references, weapon availability, environmental changes, checkpoints, and optional exploration.
+- Enemy references, introduced weapon types, single-weapon constraints, environmental changes, checkpoints, and optional exploration.
 - Sound direction and a separate environment asset kit.
 - Four reusable prompts: keyframe, side-elevation layout, modular asset sheet, and AI design handoff.
 - Detailed boss arena and phase rules on levels 3, 6, 9, and 12.
@@ -42,9 +44,11 @@ This remains a concept project. Layout specifics and duration targets are draft 
 
 ## Established progression
 
+The core loop is explore → fight → collect treasure → overcome an obstacle → reach a checkpoint → upgrade. Gems are the primary treasure; artifacts are additional finds. Only one weapon is carried. Taking a new weapon leaves the previous one at that pickup location. Weapon lists show introduced types, not a carried inventory. See [Core gameplay rules](../core-gameplay.md).
+
 Weapons arrive in levels 1, 2, 4, 5, and 6. All ten ordinary robot and ten zombie types have appeared by level 9. Returned begin in level 10; ordinary Choir Units arrive in level 11. The First Patient stays a noncombat story character. Level 12 ends with the Unfinished Choir encounter and an interactive resolution with EDEN.
 
-The detailed briefs add proposed room layouts and encounter sequences, not new weapons or enemy classes. Exact physics, health values, damage, prices, difficulty tuning, and implementation details remain open.
+The detailed briefs add proposed room layouts and encounter sequences, not new weapons or enemy classes. The detailed design pack now proposes movement, health, resource, economy, and save defaults. Their values remain untested; exact geometry, damage, durability, and difficulty tuning still need refinement.
 
 ## Related references
 

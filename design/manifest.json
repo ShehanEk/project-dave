@@ -1,0 +1,605 @@
+{
+  "schema_version": 1,
+  "project": "DEAD EDEN",
+  "updated": "2026-09-26",
+  "purpose": "Concept document index for AI agents; not engine data or validated balance.",
+  "path_base": "repository root; dependency paths below are also repository-relative",
+  "entry": "AI_START_HERE.md",
+  "decision_register": "design/decisions.md",
+  "review_scenarios": "design/review-scenarios.md",
+  "status_definitions": {
+    "confirmed": "Explicit user choice",
+    "established": "Existing project baseline",
+    "proposed": "Working default, not final or playtested"
+  },
+  "confirmed_constraints": {
+    "implementation_requested": false,
+    "max_carried_weapons": 1,
+    "weapon_pickup_behavior": "Previous weapon is dropped at the new weapon pickup location",
+    "weapon_types": 5,
+    "upgrades_per_weapon": 3,
+    "levels": 12,
+    "mini_boss_levels": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "minimum_robot_varieties": 10,
+    "minimum_zombie_varieties": 10,
+    "primary_treasure": "gems",
+    "additional_treasure": [
+      "artifacts"
+    ],
+    "core_loop": [
+      "explore",
+      "fight",
+      "collect treasure",
+      "overcome an obstacle",
+      "reach a checkpoint",
+      "upgrade"
+    ]
+  },
+  "sections": [
+    {
+      "id": "01-core",
+      "title": "Core gameplay and player rules",
+      "index": "design/01-core/README.md",
+      "documents": [
+        "G01",
+        "G02",
+        "G03",
+        "G04"
+      ]
+    },
+    {
+      "id": "02-characters",
+      "title": "Hero and companion",
+      "index": "design/02-characters/README.md",
+      "documents": [
+        "H01",
+        "H02",
+        "H03"
+      ]
+    },
+    {
+      "id": "03-progression",
+      "title": "Health, ammunition, treasure, and upgrades",
+      "index": "design/03-progression/README.md",
+      "documents": [
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S05"
+      ]
+    },
+    {
+      "id": "04-world",
+      "title": "Enemy interactions and environmental objects",
+      "index": "design/04-world/README.md",
+      "documents": [
+        "W01",
+        "W02",
+        "W03",
+        "W04"
+      ]
+    },
+    {
+      "id": "05-presentation",
+      "title": "Story scenes, interface, and sound direction",
+      "index": "design/05-presentation/README.md",
+      "documents": [
+        "N01",
+        "N02",
+        "N03",
+        "N04"
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "id": "G01",
+      "path": "design/01-core/loop-and-design-pillars.md",
+      "title": "Core loop and design pillars",
+      "status": "proposed_details_with_confirmed_and_established_constraints",
+      "owns": "The player rhythm, intended experience, content boundaries, and pacing rules.",
+      "decision_refs": [
+        "C01",
+        "C02",
+        "C03",
+        "C04",
+        "C05",
+        "C06",
+        "P01"
+      ],
+      "dependencies": [
+        "core-gameplay.md",
+        "design/01-core/player-controls.md",
+        "design/03-progression/treasure-economy.md"
+      ]
+    },
+    {
+      "id": "G02",
+      "path": "design/01-core/player-controls.md",
+      "title": "Player movement, aiming, and action rules",
+      "status": "proposed_details_with_confirmed_and_established_constraints",
+      "owns": "Input actions, jump behavior, aiming, action priorities, and movement exclusions.",
+      "decision_refs": [
+        "C04",
+        "C05",
+        "P02"
+      ],
+      "dependencies": [
+        "design/01-core/weapon-swaps.md",
+        "design/01-core/camera-and-feedback.md",
+        "design/03-progression/health-and-checkpoints.md"
+      ]
+    },
+    {
+      "id": "G03",
+      "path": "design/01-core/weapon-swaps.md",
+      "title": "One carried weapon and world pickups",
+      "status": "proposed_details_with_confirmed_and_established_constraints",
+      "owns": "The precise ground-swap interaction, weapon state, boundaries, and save behavior.",
+      "decision_refs": [
+        "C04",
+        "C05",
+        "C06",
+        "P03",
+        "P08"
+      ],
+      "dependencies": [
+        "design/03-progression/ammunition-and-resupply.md",
+        "design/03-progression/upgrades-and-ownership.md",
+        "design/03-progression/health-and-checkpoints.md"
+      ]
+    },
+    {
+      "id": "G04",
+      "path": "design/01-core/camera-and-feedback.md",
+      "title": "Camera, readability, and moment-to-moment feedback",
+      "status": "proposed_details_with_confirmed_and_established_constraints",
+      "owns": "Gameplay camera behavior and the visual language for danger, surfaces, targets, and rewards.",
+      "decision_refs": [
+        "P02",
+        "P04",
+        "P16"
+      ],
+      "dependencies": [
+        "design/01-core/player-controls.md",
+        "design/05-presentation/interface-and-accessibility.md",
+        "design/05-presentation/audio-direction.md"
+      ]
+    },
+    {
+      "id": "H01",
+      "path": "design/02-characters/hero.md",
+      "title": "Hero — Rook Venn (working proposal)",
+      "status": "proposed_details_with_confirmed_and_established_constraints",
+      "owns": "Proposed protagonist identity, motivation, silhouette, personality, and modeling reference.",
+      "decision_refs": [
+        "C04",
+        "P05"
+      ],
+      "dependencies": [
+        "design/02-characters/companion.md",
+        "design/01-core/player-controls.md",
+        "art-design/style-guide.md"
+      ]
+    },
+    {
+      "id": "H02",
+      "path": "design/02-characters/companion.md",
+      "title": "Companion — PIP (working proposal)",
+      "status": "proposed_details_with_confirmed_and_established_constraints",
+      "owns": "The maintenance companion's identity, limited abilities, appearance, and authority reveal.",
+      "decision_refs": [
+        "C04",
+        "C05",
+        "E01",
+        "P06"
+      ],
+      "dependencies": [
+        "design/02-characters/hero.md",
+        "design/02-characters/relationship-and-banter.md",
+        "design/05-presentation/story-scenes.md"
+      ]
+    },
+    {
+      "id": "H03",
+      "path": "design/02-characters/relationship-and-banter.md",
+      "title": "Hero–companion relationship and dialogue behavior",
+      "status": "proposed_details_with_confirmed_and_established_constraints",
+      "owns": "Relationship arc, scene-level changes, and rules for useful banter without hint spam.",
+      "decision_refs": [
+        "E01",
+        "P05",
+        "P06",
+        "P14"
+      ],
+      "dependencies": [
+        "design/02-characters/hero.md",
+        "design/02-characters/companion.md",
+        "design/05-presentation/dialogue-and-writing.md",
+        "design/05-presentation/story-scenes.md"
+      ]
+    },
+    {
+      "id": "S01",
+      "path": "design/03-progression/health-and-checkpoints.md",
+      "title": "Health, failure, and checkpoint recovery",
+      "status": "proposed_details_with_confirmed_and_established_constraints",
+      "owns": "Defines damage, recovery, the exact retry boundary, and prevention of duplicated rewards.",
+      "decision_refs": [
+        "C04",
+        "C05",
+        "P07",
+        "P08"
+      ],
+      "dependencies": [
+        "design/03-progression/ammunition-and-resupply.md",
+        "design/03-progression/upgrades-and-ownership.md",
+        "design/01-core/weapon-swaps.md"
+      ]
+    },
+    {
+      "id": "S02",
+      "path": "design/03-progression/ammunition-and-resupply.md",
+      "title": "Weapon resources and ammunition",
+      "status": "proposed_details_with_confirmed_and_established_constraints",
+      "owns": "Gives every weapon a distinct resource rhythm and keeps required encounters possible with any carried weapon.",
+      "decision_refs": [
+        "C04",
+        "C05",
+        "C06",
+        "P09"
+      ],
+      "dependencies": [
+        "design/03-progression/upgrades-and-ownership.md",
+        "design/03-progression/health-and-checkpoints.md",
+        "design/04-world/encounter-and-boss-fairness.md",
+        "art-design/weapons/w02-boom-broom.md"
+      ]
+    },
+    {
+      "id": "S03",
+      "path": "design/03-progression/treasure-economy.md",
+      "title": "Gems, rewards, and upgrade economy",
+      "status": "proposed_details_with_confirmed_and_established_constraints",
+      "owns": "Defines treasure values, spending, a twelve-level budget, and safeguards against farming.",
+      "decision_refs": [
+        "C02",
+        "C03",
+        "P10"
+      ],
+      "dependencies": [
+        "design/03-progression/upgrades-and-ownership.md",
+        "design/03-progression/artifact-catalog.md",
+        "design/03-progression/health-and-checkpoints.md"
+      ]
+    },
+    {
+      "id": "S04",
+      "path": "design/03-progression/upgrades-and-ownership.md",
+      "title": "Upgrade stages and ownership",
+      "status": "proposed_details_with_confirmed_and_established_constraints",
+      "owns": "Keeps all fifteen established upgrades and proposes ownership across copies of a weapon type.",
+      "decision_refs": [
+        "C04",
+        "C05",
+        "C06",
+        "P08",
+        "P10"
+      ],
+      "dependencies": [
+        "design/03-progression/treasure-economy.md",
+        "design/03-progression/ammunition-and-resupply.md",
+        "design/01-core/weapon-swaps.md",
+        "art-design/README.md"
+      ]
+    },
+    {
+      "id": "S05",
+      "path": "design/03-progression/artifact-catalog.md",
+      "title": "Artifacts and discovery catalog",
+      "status": "proposed_details_with_confirmed_and_established_constraints",
+      "owns": "Proposes twelve optional lore artifacts, with appearance, placement intent, and narrative limits.",
+      "decision_refs": [
+        "C03",
+        "E01",
+        "P11"
+      ],
+      "dependencies": [
+        "design/03-progression/treasure-economy.md",
+        "design/03-progression/health-and-checkpoints.md",
+        "design/05-presentation/story-scenes.md",
+        "level-design/README.md"
+      ]
+    },
+    {
+      "id": "W01",
+      "path": "design/04-world/factions-and-friendly-fire.md",
+      "title": "Factions, targeting, and friendly fire",
+      "status": "proposed_details_with_confirmed_and_established_constraints",
+      "owns": "Defines hostility, protected characters, mechanical repair, and the physical limits of Returned conversion.",
+      "decision_refs": [
+        "E01",
+        "E02",
+        "P12"
+      ],
+      "dependencies": [
+        "design/04-world/status-and-enemy-states.md",
+        "design/04-world/objects-and-hazards.md",
+        "dead-eden-concept.md"
+      ]
+    },
+    {
+      "id": "W02",
+      "path": "design/04-world/status-and-enemy-states.md",
+      "title": "Enemy states, status effects, and capture rules",
+      "status": "proposed_details_with_confirmed_and_established_constraints",
+      "owns": "Standardizes warnings, armor, interruptibility, status limits, and tether target classes.",
+      "decision_refs": [
+        "C04",
+        "E02",
+        "P12",
+        "P13"
+      ],
+      "dependencies": [
+        "design/04-world/factions-and-friendly-fire.md",
+        "design/04-world/encounter-and-boss-fairness.md",
+        "design/03-progression/ammunition-and-resupply.md",
+        "art-design/README.md"
+      ]
+    },
+    {
+      "id": "W03",
+      "path": "design/04-world/objects-and-hazards.md",
+      "title": "Environmental objects and hazards",
+      "status": "proposed_details_with_confirmed_and_established_constraints",
+      "owns": "An object catalog describing appearance, allowed interactions, reset behavior, and route safeguards.",
+      "decision_refs": [
+        "C03",
+        "C04",
+        "C05",
+        "P13"
+      ],
+      "dependencies": [
+        "design/01-core/player-controls.md",
+        "design/01-core/weapon-swaps.md",
+        "design/03-progression/health-and-checkpoints.md",
+        "design/03-progression/ammunition-and-resupply.md"
+      ]
+    },
+    {
+      "id": "W04",
+      "path": "design/04-world/encounter-and-boss-fairness.md",
+      "title": "Encounter planning and boss fairness",
+      "status": "proposed_details_with_confirmed_and_established_constraints",
+      "owns": "Defines escalating encounter composition and checks every boss against the available single weapons.",
+      "decision_refs": [
+        "C04",
+        "C06",
+        "C07",
+        "E02",
+        "P13"
+      ],
+      "dependencies": [
+        "design/04-world/status-and-enemy-states.md",
+        "design/04-world/objects-and-hazards.md",
+        "design/03-progression/ammunition-and-resupply.md",
+        "level-design/design-guide.md"
+      ]
+    },
+    {
+      "id": "N01",
+      "path": "design/05-presentation/story-scenes.md",
+      "title": "Story scenes and campaign continuity",
+      "status": "proposed_details_with_confirmed_and_established_constraints",
+      "owns": "A twelve-level scene plan, with detailed opening, reveal, and ending treatments.",
+      "decision_refs": [
+        "E01",
+        "C07",
+        "P05",
+        "P06",
+        "P14"
+      ],
+      "dependencies": [
+        "design/05-presentation/dialogue-and-writing.md",
+        "design/02-characters/companion.md",
+        "design/03-progression/health-and-checkpoints.md",
+        "level-design/README.md"
+      ]
+    },
+    {
+      "id": "N02",
+      "path": "design/05-presentation/dialogue-and-writing.md",
+      "title": "Dialogue, voices, and writing direction",
+      "status": "proposed_details_with_confirmed_and_established_constraints",
+      "owns": "Defines character voices, sample lines, humor limits, and delivery rules.",
+      "decision_refs": [
+        "E01",
+        "P05",
+        "P06",
+        "P14"
+      ],
+      "dependencies": [
+        "design/05-presentation/story-scenes.md",
+        "design/02-characters/relationship-and-banter.md",
+        "design/05-presentation/audio-direction.md"
+      ]
+    },
+    {
+      "id": "N03",
+      "path": "design/05-presentation/interface-and-accessibility.md",
+      "title": "Interface and accessibility direction",
+      "status": "proposed_details_with_confirmed_and_established_constraints",
+      "owns": "Defines the one-weapon HUD, swap and upgrade screens, journal, and adjustable presentation.",
+      "decision_refs": [
+        "C03",
+        "C04",
+        "C05",
+        "P15"
+      ],
+      "dependencies": [
+        "design/01-core/weapon-swaps.md",
+        "design/01-core/camera-and-feedback.md",
+        "design/03-progression/health-and-checkpoints.md",
+        "design/03-progression/upgrades-and-ownership.md"
+      ]
+    },
+    {
+      "id": "N04",
+      "path": "design/05-presentation/audio-direction.md",
+      "title": "Sound and music direction",
+      "status": "proposed_details_with_confirmed_and_established_constraints",
+      "owns": "Defines act moods, weapon identities, attack cues, mix priorities, and an audio asset handoff.",
+      "decision_refs": [
+        "E01",
+        "P16"
+      ],
+      "dependencies": [
+        "design/05-presentation/dialogue-and-writing.md",
+        "design/05-presentation/interface-and-accessibility.md",
+        "design/04-world/status-and-enemy-states.md",
+        "level-design/README.md"
+      ]
+    }
+  ],
+  "task_routes": [
+    {
+      "task": "gameplay",
+      "document_ids": [
+        "G01",
+        "G02",
+        "G03",
+        "G04"
+      ],
+      "additional_references": []
+    },
+    {
+      "task": "hero_art",
+      "document_ids": [
+        "H01",
+        "H02",
+        "H03"
+      ],
+      "additional_references": [
+        "art-design/style-guide.md"
+      ]
+    },
+    {
+      "task": "checkpoint_rules",
+      "document_ids": [
+        "S01",
+        "G03",
+        "S02",
+        "S04"
+      ],
+      "additional_references": []
+    },
+    {
+      "task": "weapons",
+      "document_ids": [
+        "S02",
+        "S04",
+        "W02",
+        "W04"
+      ],
+      "additional_references": [
+        "art-design/weapons/"
+      ]
+    },
+    {
+      "task": "progression",
+      "document_ids": [
+        "S03",
+        "S04",
+        "S05",
+        "S01"
+      ],
+      "additional_references": []
+    },
+    {
+      "task": "enemy_interactions",
+      "document_ids": [
+        "W01",
+        "W02",
+        "W03",
+        "W04"
+      ],
+      "additional_references": [
+        "art-design/robots/",
+        "art-design/zombies/",
+        "art-design/returned/"
+      ]
+    },
+    {
+      "task": "level_refinement",
+      "document_ids": [
+        "G02",
+        "W04",
+        "S02",
+        "S03",
+        "S05"
+      ],
+      "additional_references": [
+        "level-design/design-guide.md",
+        "level-design/campaign.json"
+      ]
+    },
+    {
+      "task": "story",
+      "document_ids": [
+        "N01",
+        "N02",
+        "H03"
+      ],
+      "additional_references": [
+        "dead-eden-concept.md"
+      ]
+    },
+    {
+      "task": "interface",
+      "document_ids": [
+        "N03",
+        "G03",
+        "G04",
+        "S01",
+        "S04"
+      ],
+      "additional_references": []
+    },
+    {
+      "task": "audio",
+      "document_ids": [
+        "N04",
+        "N02"
+      ],
+      "additional_references": []
+    }
+  ],
+  "legacy_owners": [
+    {
+      "path": "dead-eden-concept.md",
+      "owns": "Broad lore and roster overview"
+    },
+    {
+      "path": "core-gameplay.md",
+      "owns": "Short confirmed gameplay summary and links to detailed proposals"
+    },
+    {
+      "path": "art-design/README.md",
+      "owns": "Index to visual geometry, named appearances, and individual art prompts"
+    },
+    {
+      "path": "level-design/README.md",
+      "owns": "Index to twelve levels and their six-area main routes"
+    },
+    {
+      "path": "level-design/campaign.json",
+      "owns": "Structured mirror of campaign; written owners control conflicting summaries"
+    }
+  ]
+}

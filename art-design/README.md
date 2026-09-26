@@ -1,5 +1,7 @@
 # DEAD EDEN — Art design reference pack
 
+For proposed hero and companion briefs, see [character design](../design/02-characters/README.md). For collectible object descriptions, see the [artifact catalog](../design/03-progression/artifact-catalog.md). Use the [AI entry guide](../AI_START_HERE.md) to connect these visuals to the gameplay rules.
+
 Thirty-two standalone asset briefs for image generation and later 3D modeling: ten robots, ten zombies, three Returned enemy types, four mini-bosses, and five weapons with all fifteen upgrades.
 
 The level-10 converted Patchbot is documented as a separate variant and prompt inside its base brief. The First Patient is currently a noncombat story character, and the hero and companion are not enemy or weapon assets; they are outside this pack.

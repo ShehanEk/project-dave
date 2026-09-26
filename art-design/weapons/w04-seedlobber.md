@@ -35,7 +35,7 @@ The hopper jiggles before launch, one pod drops into the cup, and a brief compre
 
 ## Openings and limitations
 
-Projectile arcs and delayed fuses demand careful positioning. A larger blast remains dangerous nearby; grabbing a pod with the tether does not reset its fuse.
+Projectile arcs and delayed fuses demand careful positioning. A larger blast remains dangerous nearby. This weapon does not assume access to a simultaneously carried tether.
 
 ## Parts to keep separate for modeling
 
@@ -60,6 +60,12 @@ Anatomical left and right refer to the subject's own sides, not the viewer's. Do
 Rear hand on the angled grip, support hand beneath the launch cup. The hopper remains above and forward of the hero's face in the holding study.
 
 A large rounded seed pod with three broad shell seams and a small glowing seam pulse for the fuse. Upgraded root and cluster contents appear in separate cutaway-style art studies of fictional pods, not practical explosive schematics.
+
+## Single-weapon gameplay rule
+
+This weapon occupies the hero's only weapon slot. Picking it up drops the previously carried weapon at this pickup location. Choosing another weapon leaves this one in the world; the hero does not retain it as a backup or a separate utility tool. Images of the hero must not show additional carried guns.
+
+Gems are the primary treasure, and artifacts are another treasure type. Spending gems at checkpoint facilities to upgrade the carried weapon is the working economy proposal. See [Core gameplay rules](../../core-gameplay.md) for confirmed decisions and unresolved persistence details.
 
 ## Three cumulative upgrades
 
@@ -118,7 +124,7 @@ Create a clean orthographic-style modeling turnaround of the attached approved S
 Use the approved neutral reference. Request one listed state per generation for the clearest modeling and animation reference; repeat for the other states. A support object or arena fragment may appear only where needed to explain contact or scale.
 
 ```text
-Using the attached approved Seedlobber reference, create one clear full-subject action study in strict gameplay side view, showing one state selected from this list: Base off; pod loading; launch; bounced pod reference; fuse warning; Deep Roots aftermath; cluster release; four cumulative appearance stages. If no state is specified, show the main attack anticipation; for a weapon show a simplified hand-contact study of its standard firing pose. Preserve anatomy, proportions, colors, attachments, and all part counts. Movement language: The hopper jiggles before launch, one pod drops into the cup, and a brief compressed puff sends it in an arc. The cup recoils a little and the next pod settles. No constant organic tentacle motion. Capability: Launches pods that bounce before a delayed explosion. Later upgrades add slowing roots, increased blast radius, and secondary explosive seeds. Nearby explosions can hurt the hero. Important limitation or opening: Projectile arcs and delayed fuses demand careful positioning. A larger blast remains dangerous nearby; grabbing a pod with the tether does not reset its fuse. Handling: Rear hand on the angled grip, support hand beneath the launch cup. The hopper remains above and forward of the hero's face in the holding study.  Keep effects small and separate enough that the body or weapon geometry is visible. Plain light-gray background; no cinematic framing, text, labels, motion blur, or new equipment. The pose must use the exact approved design.
+Using the attached approved Seedlobber reference, create one clear full-subject action study in strict gameplay side view, showing one state selected from this list: Base off; pod loading; launch; bounced pod reference; fuse warning; Deep Roots aftermath; cluster release; four cumulative appearance stages. If no state is specified, show the main attack anticipation; for a weapon show a simplified hand-contact study of its standard firing pose. Preserve anatomy, proportions, colors, attachments, and all part counts. Movement language: The hopper jiggles before launch, one pod drops into the cup, and a brief compressed puff sends it in an arc. The cup recoils a little and the next pod settles. No constant organic tentacle motion. Capability: Launches pods that bounce before a delayed explosion. Later upgrades add slowing roots, increased blast radius, and secondary explosive seeds. Nearby explosions can hurt the hero. Important limitation or opening: Projectile arcs and delayed fuses demand careful positioning. A larger blast remains dangerous nearby. This weapon does not assume access to a simultaneously carried tether. Handling: Rear hand on the angled grip, support hand beneath the launch cup. The hopper remains above and forward of the hero's face in the holding study.  Keep effects small and separate enough that the body or weapon geometry is visible. Plain light-gray background; no cinematic framing, text, labels, motion blur, or new equipment. The pose must use the exact approved design.
 ```
 ## Image prompts — upgrade stages
 

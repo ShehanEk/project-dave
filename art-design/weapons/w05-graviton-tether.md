@@ -35,6 +35,8 @@ The three fingers spread slightly when acquiring a target. The ring carriage sli
 
 ## Openings and limitations
 
+The tether is the sole carried weapon when equipped. Mandatory fights must supply reachable replenishable throwable props and valid damage lines. Medium-target capture can use an environmental stagger; it never assumes a carried shotgun. Anchor movement is unavailable while another weapon is carried.
+
 Capture takes time, and target size matters. It cannot create arbitrary grapple points or lift an entire mini-boss.
 
 ## Parts to keep separate for modeling
@@ -60,6 +62,12 @@ Anatomical left and right refer to the subject's own sides, not the viewer's. Do
 Rear hand on the grip and support hand on the upper handle. Leave enough separation for the hero's wrists while aiming the open ring forward.
 
 No conventional ammunition projectile. Use a thin violet connection with a bright ring around the held target; show the target separately. Impact Pulse is a brief expanding ground-level ring after collision.
+
+## Single-weapon gameplay rule
+
+This weapon occupies the hero's only weapon slot. Picking it up drops the previously carried weapon at this pickup location. Choosing another weapon leaves this one in the world; the hero does not retain it as a backup or a separate utility tool. Images of the hero must not show additional carried guns.
+
+Gems are the primary treasure, and artifacts are another treasure type. Spending gems at checkpoint facilities to upgrade the carried weapon is the working economy proposal. See [Core gameplay rules](../../core-gameplay.md) for confirmed decisions and unresolved persistence details.
 
 ## Three cumulative upgrades
 

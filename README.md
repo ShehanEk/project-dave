@@ -15,6 +15,10 @@ EDEN's machines maintain cheerful gardens and immaculate neighborhoods above a s
 
 ## Start here
 
+- [AI entry guide](AI_START_HERE.md): reading routes, rule ownership, handoff prompt, and consistency checks for AI agents.
+- [Detailed design pack](design/README.md): twenty focused documents organized into core rules, characters, progression, world interactions, and presentation.
+- [Decision register](design/decisions.md): confirmed user choices, established lore, and clearly labeled new proposals.
+- [Core gameplay rules](core-gameplay.md): the explore–fight–treasure loop, gems and artifacts, one carried weapon, ground swaps, and proposed checkpoint upgrades.
 - [Game concept and lore](dead-eden-concept.md): the setting, characters, factions, enemy roster, weapons, twelve levels, and four unique mini-bosses.
 - [Detailed level briefs](level-design/README.md): twelve standalone AI-ready descriptions covering routes, encounters, visuals, checkpoints, story beats, and environment prompts.
 - [Structured campaign reference](level-design/campaign.json): the same twelve-level plan in JSON, including all 72 main-route areas.
@@ -27,10 +31,15 @@ EDEN's machines maintain cheerful gardens and immaculate neighborhoods above a s
 | --- | --- |
 | Campaign | 12 levels |
 | Detailed level design | 12 standalone briefs with 72 ordered areas and reusable AI prompts |
+| Detailed game systems | 20 documents across five sections, plus indexes, manifest, and review scenarios |
+| Hero and companion | Proposed identities, appearance briefs, model studies, and relationship arc |
+| Artifact catalog | 12 proposed optional lore finds, one per level |
 | Mini-bosses | 4 unique encounters, at levels 3, 6, 9, and 12 |
 | Ordinary enemies | 10 robot varieties and 10 zombie varieties |
 | Later enemies | 3 Returned types, plus a converted Patchbot variant |
 | Weapons | 5 weapons, including the Boom Broom shotgun |
+| Carry limit | 1 weapon; a pickup leaves the previous weapon at that location |
+| Treasure | Gems as the primary collectible, plus artifacts |
 | Upgrades | 3 successive upgrades per weapon; 15 total |
 | Individual art briefs | 32, covering enemies, mini-bosses, and weapons |
 
@@ -43,7 +52,19 @@ Generate and approve a neutral design first. Use that approved image as a refere
 ## Files
 
 ```text
+AI_START_HERE.md
 dead-eden-concept.md
+core-gameplay.md
+design/
+  README.md
+  decisions.md
+  manifest.json
+  review-scenarios.md
+  01-core/          # Loop, controls, swaps, camera
+  02-characters/    # Hero, companion, relationship
+  03-progression/   # Health, ammo, gems, upgrades, artifacts
+  04-world/         # Factions, states, objects, encounters
+  05-presentation/  # Scenes, dialogue, interface, sound
 level-design/
   README.md
   design-guide.md
@@ -59,4 +80,4 @@ art-design/
   weapons/       # 5 briefs, each with 3 upgrades
 ```
 
-The Markdown and campaign JSON files are the editable sources of truth.
+The Markdown files own the written design. Campaign JSON and the design manifest provide structured summaries and navigation. New system numbers, names, and visual choices remain proposed and untested.

@@ -1,11 +1,11 @@
 {
-  "schema_version": 1,
+  "schema_version": 3,
   "project": "DEAD EDEN",
   "purpose": "Structured concept reference for AI use; not engine-ready level data.",
   "status": "Established campaign outline with proposed detailed layouts, durations, checkpoints, and encounter sequencing.",
   "units": {
     "art_reference_hero_height_m": 1.7,
-    "exact_physics": "undecided"
+    "exact_physics": "Proposed starting ranges in design/01-core/player-controls.md; untested, final calibration pending"
   },
   "global_constraints": {
     "level_count": 12,
@@ -27,8 +27,26 @@
       "shoot",
       "interact"
     ],
-    "tether_available_from_level": 6,
-    "implementation_requested": false
+    "implementation_requested": false,
+    "max_carried_weapons": 1,
+    "weapon_pickup_behavior": "Drop previous weapon at the new weapon pickup location",
+    "permanent_backup_pistol": false,
+    "checkpoint_weapon_armory": false,
+    "tether_first_pickup_level": 6,
+    "tether_requires_carried_slot": true,
+    "required_tether_traversal": false,
+    "core_loop": [
+      "explore",
+      "fight",
+      "collect treasure",
+      "overcome an obstacle",
+      "reach a checkpoint",
+      "upgrade"
+    ],
+    "primary_treasure": "gems",
+    "additional_treasure": [
+      "artifacts"
+    ]
   },
   "levels": [
     {
@@ -39,9 +57,6 @@
       "duration": "10–14 minutes",
       "difficulty": "Introductory",
       "newWeapon": "Scrapjack Pistol (available at entry)",
-      "available": [
-        "Scrapjack Pistol"
-      ],
       "roster": [
         "Resident",
         "Clipper"
@@ -67,7 +82,7 @@
           "id": "L01-A01",
           "name": "Perimeter gate",
           "space_and_placement": "A flat entrance apron leads to two low garden steps and a shallow catchable gap. Place an inert target on a fence beyond a clear firing lane; no enemy can reach the player here.",
-          "experience_and_lesson": "Let the player move, jump, and fire the pistol without danger. A visible salvage token above the steps teaches that exploration uses the same basic movement.",
+          "experience_and_lesson": "Let the player move, jump, and fire the pistol without danger. A visible gem above the steps teaches that exploration uses the same basic movement.",
           "completion_and_connection": "Cross the open gate to A02; no key or hidden input is required."
         },
         {
@@ -114,7 +129,7 @@
         "After the A05 companion event, before A06; retain the awakening and companion state on retry."
       ],
       "secrets": [
-        "A visible roof-alcove salvage cache above A03, reachable with ordinary jumps from an optional porch ladder route.",
+        "A visible roof-alcove gem cache above A03, reachable with ordinary jumps from an optional porch ladder route.",
         "A readable family portrait and untouched breakfast in a side room at A02; supplies the first quiet story detail without a quest requirement."
       ],
       "story": "The horror comes from the same meal being delivered to the same unresponsive resident, then from discovering that the advertised treasure has a personality. EDEN initially speaks with sincere hospitality.",
@@ -151,7 +166,28 @@
           "from": "L01-A05",
           "to": "L01-A06"
         }
-      ]
+      ],
+      "introduced_weapons": [
+        "Scrapjack Pistol"
+      ],
+      "max_carried_weapons": 1,
+      "required_tether_traversal": false,
+      "treasure": {
+        "primary": "gems",
+        "additional": [
+          "artifacts"
+        ],
+        "artifact_placement": "One optional artifact proposed in catalog; exact alcove remains unallocated",
+        "upgrade_currency_is_proposal": true
+      },
+      "combat_constraint": "Support the legitimately carried single weapon; no backup pistol or two-weapon combo. Supply replenishable throwable props for tether combat, close-range access, and viable pod-fuse openings.",
+      "system_rules_reference": "design/manifest.json",
+      "artifact_proposal": {
+        "confirmed": false,
+        "id": "A01",
+        "reference": "design/03-progression/artifact-catalog.md",
+        "mandatory_for_progress": false
+      }
     },
     {
       "n": 2,
@@ -161,10 +197,6 @@
       "duration": "12–16 minutes",
       "difficulty": "Easy",
       "newWeapon": "Boom Broom",
-      "available": [
-        "Scrapjack Pistol",
-        "Boom Broom"
-      ],
       "roster": [
         "Resident",
         "Clipper",
@@ -234,12 +266,12 @@
       "transform": "Hedge planters slide along visible tracks to convert a strolling maze into a quarantine funnel. The camera shows both endpoints before each first activation. A stable alternative floor prevents moving geometry from softlocking the hero.",
       "encounters": "Introduce Sprinter and Pollinator in isolation, then combine one of each near the end. Clippers and Residents may occupy optional side lanes, but do not exceed the readability of the main two-threat exercise.",
       "checkpoints": [
-        "At A01 after collecting and practicing with Boom Broom; the weapon persists.",
+        "At A01 after the Boom Broom trial; save the chosen carried weapon and the dropped weapon at the pickup spot.",
         "At the gazebo after A03.",
         "At the quiet service-gate approach after A05."
       ],
       "secrets": [
-        "A flowerbed side route reveals a small salvage cache behind a moving hedge; the entrance becomes obvious after seeing its movement.",
+        "A flowerbed side route reveals a small gem cache behind a moving hedge; the entrance becomes obvious after seeing its movement.",
         "A service plaque at the water tower shows that the garden layout was originally intended to calm anxious patients."
       ],
       "story": "EDEN calls enclosure a comfort measure. The companion recognizes that every apparently helpful sign leads toward the hospital.",
@@ -276,7 +308,29 @@
           "from": "L02-A05",
           "to": "L02-A06"
         }
-      ]
+      ],
+      "introduced_weapons": [
+        "Scrapjack Pistol",
+        "Boom Broom"
+      ],
+      "max_carried_weapons": 1,
+      "required_tether_traversal": false,
+      "treasure": {
+        "primary": "gems",
+        "additional": [
+          "artifacts"
+        ],
+        "artifact_placement": "One optional artifact proposed in catalog; exact alcove remains unallocated",
+        "upgrade_currency_is_proposal": true
+      },
+      "combat_constraint": "Support the legitimately carried single weapon; no backup pistol or two-weapon combo. Supply replenishable throwable props for tether combat, close-range access, and viable pod-fuse openings.",
+      "system_rules_reference": "design/manifest.json",
+      "artifact_proposal": {
+        "confirmed": false,
+        "id": "A02",
+        "reference": "design/03-progression/artifact-catalog.md",
+        "mandatory_for_progress": false
+      }
     },
     {
       "n": 3,
@@ -286,10 +340,6 @@
       "duration": "14–18 minutes including mini-boss",
       "difficulty": "Easy; first boss test",
       "newWeapon": null,
-      "available": [
-        "Scrapjack Pistol",
-        "Boom Broom"
-      ],
       "roster": [
         "Resident",
         "Clipper",
@@ -383,7 +433,7 @@
         ],
         "opening": "Rear motor after collision; either available weapon can deal damage from an unobstructed position.",
         "fairness": "Charge route and planter endpoint are visible before motion. Raised escape routes are reachable with the calibrated basic jump. Do not stack clippings with a charge.",
-        "reward": "Upgrade resources and access to the Rootworks lift; no sixth weapon or automatic unplanned upgrade.",
+        "reward": "Gems for upgrades and access to the Rootworks lift; no sixth weapon or automatic unplanned upgrade.",
         "reference": "../art-design/mini-bosses/b01-mr-mulch.md"
       },
       "proof": [
@@ -415,7 +465,29 @@
           "from": "L03-A05",
           "to": "L03-A06"
         }
-      ]
+      ],
+      "introduced_weapons": [
+        "Scrapjack Pistol",
+        "Boom Broom"
+      ],
+      "max_carried_weapons": 1,
+      "required_tether_traversal": false,
+      "treasure": {
+        "primary": "gems",
+        "additional": [
+          "artifacts"
+        ],
+        "artifact_placement": "One optional artifact proposed in catalog; exact alcove remains unallocated",
+        "upgrade_currency_is_proposal": true
+      },
+      "combat_constraint": "Support the legitimately carried single weapon; no backup pistol or two-weapon combo. Supply replenishable throwable props for tether combat, close-range access, and viable pod-fuse openings.",
+      "system_rules_reference": "design/manifest.json",
+      "artifact_proposal": {
+        "confirmed": false,
+        "id": "A03",
+        "reference": "design/03-progression/artifact-catalog.md",
+        "mandatory_for_progress": false
+      }
     },
     {
       "n": 4,
@@ -425,11 +497,6 @@
       "duration": "14–18 minutes",
       "difficulty": "Easy–moderate",
       "newWeapon": "Arc Welder",
-      "available": [
-        "Scrapjack Pistol",
-        "Boom Broom",
-        "Arc Welder"
-      ],
       "roster": [
         "Resident",
         "Clipper",
@@ -502,7 +569,7 @@
       "encounters": "Introduce each of the three new enemy roles separately. Later allow one heavy cargo threat plus one repair helper; ceiling ambushes occur after landing. Arc Welder is useful but never the only damage source.",
       "checkpoints": [
         "At A01 entry.",
-        "After A02, retaining the Arc Welder.",
+        "After A02, saving the chosen carried weapon and the swap location.",
         "In the server alcove after A04."
       ],
       "secrets": [
@@ -544,7 +611,30 @@
           "from": "L04-A05",
           "to": "L04-A06"
         }
-      ]
+      ],
+      "introduced_weapons": [
+        "Scrapjack Pistol",
+        "Boom Broom",
+        "Arc Welder"
+      ],
+      "max_carried_weapons": 1,
+      "required_tether_traversal": false,
+      "treasure": {
+        "primary": "gems",
+        "additional": [
+          "artifacts"
+        ],
+        "artifact_placement": "One optional artifact proposed in catalog; exact alcove remains unallocated",
+        "upgrade_currency_is_proposal": true
+      },
+      "combat_constraint": "Support the legitimately carried single weapon; no backup pistol or two-weapon combo. Supply replenishable throwable props for tether combat, close-range access, and viable pod-fuse openings.",
+      "system_rules_reference": "design/manifest.json",
+      "artifact_proposal": {
+        "confirmed": false,
+        "id": "A04",
+        "reference": "design/03-progression/artifact-catalog.md",
+        "mandatory_for_progress": false
+      }
     },
     {
       "n": 5,
@@ -554,12 +644,6 @@
       "duration": "15–19 minutes",
       "difficulty": "Moderate",
       "newWeapon": "Seedlobber",
-      "available": [
-        "Scrapjack Pistol",
-        "Boom Broom",
-        "Arc Welder",
-        "Seedlobber"
-      ],
       "roster": [
         "Resident",
         "Gardener",
@@ -589,7 +673,7 @@
           "name": "Supply depot",
           "space_and_placement": "The Seedlobber rests in a protected botanical depot before the first mutated worker. A low wall and inert target let the player test an arc from a safe distance.",
           "experience_and_lesson": "Demonstrate bounce, delay, and self-danger without a required self-damage event. Show the pod landing clearly rather than hiding it behind scenery.",
-          "completion_and_connection": "A short ramp enters A02; the weapon is retained on retry."
+          "completion_and_connection": "A short ramp enters A02; retry restores the single weapon saved after the pickup choice."
         },
         {
           "id": "L05-A02",
@@ -673,7 +757,31 @@
           "from": "L05-A05",
           "to": "L05-A06"
         }
-      ]
+      ],
+      "introduced_weapons": [
+        "Scrapjack Pistol",
+        "Boom Broom",
+        "Arc Welder",
+        "Seedlobber"
+      ],
+      "max_carried_weapons": 1,
+      "required_tether_traversal": false,
+      "treasure": {
+        "primary": "gems",
+        "additional": [
+          "artifacts"
+        ],
+        "artifact_placement": "One optional artifact proposed in catalog; exact alcove remains unallocated",
+        "upgrade_currency_is_proposal": true
+      },
+      "combat_constraint": "Support the legitimately carried single weapon; no backup pistol or two-weapon combo. Supply replenishable throwable props for tether combat, close-range access, and viable pod-fuse openings.",
+      "system_rules_reference": "design/manifest.json",
+      "artifact_proposal": {
+        "confirmed": false,
+        "id": "A05",
+        "reference": "design/03-progression/artifact-catalog.md",
+        "mandatory_for_progress": false
+      }
     },
     {
       "n": 6,
@@ -683,13 +791,6 @@
       "duration": "17–22 minutes including mini-boss",
       "difficulty": "Moderate",
       "newWeapon": "Graviton Tether",
-      "available": [
-        "Scrapjack Pistol",
-        "Boom Broom",
-        "Arc Welder",
-        "Seedlobber",
-        "Graviton Tether"
-      ],
       "roster": [
         "Resident",
         "Gardener",
@@ -745,7 +846,7 @@
           "id": "L06-A05",
           "name": "Pump refuge",
           "space_and_placement": "A sheltered maintenance station gives a full view of the three-platform arena and its permanent side ledges. A small rooted floor panel demonstrates a visible pulse before it moves.",
-          "experience_and_lesson": "Preview floor movement and save before the fight. All five weapons are now available, but upgrades are optional.",
+          "experience_and_lesson": "Preview floor movement and save before the fight. All five weapon types have now been introduced, but the hero still carries only the chosen weapon. Upgrades are optional.",
           "completion_and_connection": "Enter A06 when ready."
         },
         {
@@ -759,12 +860,12 @@
       "transform": "Root pressure raises and lowers selected floor sections. First demonstrate this away from combat. The boss's second phase lowers only one central platform at a time, with advance root tension and a visible destination.",
       "encounters": "Graftback and Puffer are taught separately; no demand to fight a tank while learning an explosion timer. The boss arena contains no extra enemies. The tether is an option for mobility, never a method to grab Rootjaw.",
       "checkpoints": [
-        "After the A02 tether lesson; retain the tool.",
+        "After the A02 tether trial; save the single weapon chosen before leaving.",
         "After A03, before the valve walk.",
         "At A05 immediately before Old Rootjaw."
       ],
       "secrets": [
-        "A marked optional anchor loop near A02 leads to salvage; required pulls remain within base tether reach.",
+        "A marked optional anchor loop near A02 leads to gems; optional pulls fit base tether reach, and the main route remains open without the tether.",
         "A dry pump-inspection alcove contains a worker photograph that matches the apron fragment still worn by Rootjaw."
       ],
       "story": "Old Rootjaw is a former person, not a haunted machine. The pump continues its care function despite being crushed. The companion recognizes the worker from an old roster.",
@@ -782,11 +883,11 @@
         ],
         "opening": "Pale chest growth when Rootjaw lifts himself after a slam. At least one stable ledge has a direct firing line for the pistol.",
         "fairness": "No simultaneous loss of all central platforms, no unavoidable volley while airborne, and no dependence on tether upgrades. Restore arena geometry on retry.",
-        "reward": "Upgrade resources, released pump pressure, and the hospital supply lift.",
+        "reward": "Gems for upgrades, released pump pressure, and the hospital supply lift.",
         "reference": "../art-design/mini-bosses/b02-old-rootjaw.md"
       },
       "proof": [
-        "All five weapons are obtained by the end of this level.",
+        "All five weapon types have been introduced by the end of this level; only one is carried.",
         "Tether practice is safe and precedes the fight.",
         "A base-jump escape route survives every boss platform state.",
         "The pump never becomes a robot zombie."
@@ -814,7 +915,32 @@
           "from": "L06-A05",
           "to": "L06-A06"
         }
-      ]
+      ],
+      "introduced_weapons": [
+        "Scrapjack Pistol",
+        "Boom Broom",
+        "Arc Welder",
+        "Seedlobber",
+        "Graviton Tether"
+      ],
+      "max_carried_weapons": 1,
+      "required_tether_traversal": false,
+      "treasure": {
+        "primary": "gems",
+        "additional": [
+          "artifacts"
+        ],
+        "artifact_placement": "One optional artifact proposed in catalog; exact alcove remains unallocated",
+        "upgrade_currency_is_proposal": true
+      },
+      "combat_constraint": "Support the legitimately carried single weapon; no backup pistol or two-weapon combo. Supply replenishable throwable props for tether combat, close-range access, and viable pod-fuse openings.",
+      "system_rules_reference": "design/manifest.json",
+      "artifact_proposal": {
+        "confirmed": false,
+        "id": "A06",
+        "reference": "design/03-progression/artifact-catalog.md",
+        "mandatory_for_progress": false
+      }
     },
     {
       "n": 7,
@@ -824,13 +950,6 @@
       "duration": "15–20 minutes",
       "difficulty": "Moderate",
       "newWeapon": null,
-      "available": [
-        "Scrapjack Pistol",
-        "Boom Broom",
-        "Arc Welder",
-        "Seedlobber",
-        "Graviton Tether"
-      ],
       "roster": [
         "Resident",
         "Sprinter",
@@ -859,8 +978,8 @@
         {
           "id": "L07-A01",
           "name": "Intake lobby",
-          "space_and_placement": "A safe lobby provides supplies and a view of protected patients through glass. A slow empty bed crosses a short gap beside a fixed return walkway.",
-          "experience_and_lesson": "Introduce moving beds before enemy pressure. No new weapon is given; the player chooses among the five already acquired.",
+          "space_and_placement": "A safe lobby provides resources for the carried weapon and a view of protected patients through glass. A slow empty bed crosses a short gap beside a fixed return walkway.",
+          "experience_and_lesson": "Introduce moving beds before enemy pressure. No new weapon is given; the player uses whichever single weapon they brought.",
           "completion_and_connection": "Follow the archive sign into A02."
         },
         {
@@ -945,7 +1064,32 @@
           "from": "L07-A05",
           "to": "L07-A06"
         }
-      ]
+      ],
+      "introduced_weapons": [
+        "Scrapjack Pistol",
+        "Boom Broom",
+        "Arc Welder",
+        "Seedlobber",
+        "Graviton Tether"
+      ],
+      "max_carried_weapons": 1,
+      "required_tether_traversal": false,
+      "treasure": {
+        "primary": "gems",
+        "additional": [
+          "artifacts"
+        ],
+        "artifact_placement": "One optional artifact proposed in catalog; exact alcove remains unallocated",
+        "upgrade_currency_is_proposal": true
+      },
+      "combat_constraint": "Support the legitimately carried single weapon; no backup pistol or two-weapon combo. Supply replenishable throwable props for tether combat, close-range access, and viable pod-fuse openings.",
+      "system_rules_reference": "design/manifest.json",
+      "artifact_proposal": {
+        "confirmed": false,
+        "id": "A07",
+        "reference": "design/03-progression/artifact-catalog.md",
+        "mandatory_for_progress": false
+      }
     },
     {
       "n": 8,
@@ -955,13 +1099,6 @@
       "duration": "16–21 minutes",
       "difficulty": "Moderate, with quiet intervals",
       "newWeapon": null,
-      "available": [
-        "Scrapjack Pistol",
-        "Boom Broom",
-        "Arc Welder",
-        "Seedlobber",
-        "Graviton Tether"
-      ],
       "roster": [
         "Resident",
         "Clinger",
@@ -982,7 +1119,7 @@
       "palette": "Pearl bark #D9D6C4, sage foliage #8CB095, soft amber memory light #E7C386, dusty violet shadow #837BA5, deep teal depth #365F68. Light pulses slowly rather than flashing.",
       "landmark": "A split-trunk memory tree holds a single large amber archive sphere above a quiet bench; the main route circles upward around it.",
       "foreground": "Sparse leaves and glass capsule edges near the border; no dense hanging canopy across the playable branch tops.",
-      "playplane": "Thick branch platforms with clear top edges, maintenance brackets, fixed archive balconies, and marked optional tether anchors. Mandatory routes use ordinary jumps or base tether range.",
+      "playplane": "Thick branch platforms with clear top edges, maintenance brackets, fixed archive balconies, and marked optional tether anchors. Mandatory routes use ordinary jumps; marked tether anchors offer optional shortcuts when the tether is carried.",
       "background": "Layered memory trees, large suspended storage modules, faded abstract family silhouettes inside distant capsules, and the hospital's glass roof.",
       "route": "A01 Quiet bench → A02 Branch archive → A03 Alarm grove → A04 Memory clearing → A05 Upper canopy → A06 Transfer records.",
       "zones": [
@@ -1037,7 +1174,7 @@
         "After A05 before the record booth; activated route consoles remain acknowledged on retry."
       ],
       "secrets": [
-        "A keepsake collection on an optional low-risk branch loop, rewarding attention with lore and salvage.",
+        "A keepsake collection on an optional low-risk branch loop, rewarding attention with lore and gems.",
         "A small dormant memory capsule near the central tree shows an ordinary family meal; it is an emotional detail rather than a mandatory puzzle clue."
       ],
       "story": "This is the first strong evidence that identity can survive in fragments. The hero's view of zombies changes from obstacle to failed patient, while the transfer plan foreshadows EDEN's next mistake.",
@@ -1075,7 +1212,32 @@
           "from": "L08-A05",
           "to": "L08-A06"
         }
-      ]
+      ],
+      "introduced_weapons": [
+        "Scrapjack Pistol",
+        "Boom Broom",
+        "Arc Welder",
+        "Seedlobber",
+        "Graviton Tether"
+      ],
+      "max_carried_weapons": 1,
+      "required_tether_traversal": false,
+      "treasure": {
+        "primary": "gems",
+        "additional": [
+          "artifacts"
+        ],
+        "artifact_placement": "One optional artifact proposed in catalog; exact alcove remains unallocated",
+        "upgrade_currency_is_proposal": true
+      },
+      "combat_constraint": "Support the legitimately carried single weapon; no backup pistol or two-weapon combo. Supply replenishable throwable props for tether combat, close-range access, and viable pod-fuse openings.",
+      "system_rules_reference": "design/manifest.json",
+      "artifact_proposal": {
+        "confirmed": false,
+        "id": "A08",
+        "reference": "design/03-progression/artifact-catalog.md",
+        "mandatory_for_progress": false
+      }
     },
     {
       "n": 9,
@@ -1085,13 +1247,6 @@
       "duration": "18–23 minutes including mini-boss",
       "difficulty": "Moderate–hard",
       "newWeapon": null,
-      "available": [
-        "Scrapjack Pistol",
-        "Boom Broom",
-        "Arc Welder",
-        "Seedlobber",
-        "Graviton Tether"
-      ],
       "roster": [
         "Nurse Needles",
         "Orderly",
@@ -1166,7 +1321,7 @@
         "At A05 immediately before Matron Mercy."
       ],
       "secrets": [
-        "An optional staff balcony contains salvage and a discharge procedure that requires patient consent, exposing the gulf between policy and EDEN's current behavior.",
+        "An optional staff balcony contains gems and a discharge procedure that requires patient consent, exposing the gulf between policy and EDEN's current behavior.",
         "A maintenance crawlway entered through an ordinary side door bypasses one optional combat bay and rejoins before A04; no crawling ability is required."
       ],
       "story": "Matron insists that discharge is unsafe. Defeating her frees a protected evacuation route; survivors remain off the combat path. EDEN interprets the failure as proof that its bodies and memories need a new interface.",
@@ -1182,9 +1337,9 @@
           "Phase 1: separate laser, syringe, and repair cycles. One station opens during repair; interrupt it to expose the controller.",
           "Phase 2: one bounded support robot remains active during a main attack. Retain clear timings and cap restoration so missing a cycle never erases all progress."
         ],
-        "opening": "Controller behind the open chest door after repair interruption. All five weapons offer options; the pistol can complete the encounter.",
+        "opening": "Controller behind the open chest door after repair interruption. Each legitimately carried weapon needs a viable opening. Short-range guns have safe approach ledges; the Seedlobber has usable fuse windows; tether users have replenishable throwable props.",
         "fairness": "Laser sweep lane and syringe target marks precede damage. Platform motion cannot remove all safe positions. Helpers are limited and their spawning location is visible.",
-        "reward": "Upgrade resources, released discharge route for survivors, and access to level 10. The story consequence is EDEN authorizing neural upgrades.",
+        "reward": "Gems for upgrades, released discharge route for survivors, and access to level 10. The story consequence is EDEN authorizing neural upgrades.",
         "reference": "../art-design/mini-bosses/b03-matron-mercy.md"
       },
       "proof": [
@@ -1216,7 +1371,32 @@
           "from": "L09-A05",
           "to": "L09-A06"
         }
-      ]
+      ],
+      "introduced_weapons": [
+        "Scrapjack Pistol",
+        "Boom Broom",
+        "Arc Welder",
+        "Seedlobber",
+        "Graviton Tether"
+      ],
+      "max_carried_weapons": 1,
+      "required_tether_traversal": false,
+      "treasure": {
+        "primary": "gems",
+        "additional": [
+          "artifacts"
+        ],
+        "artifact_placement": "One optional artifact proposed in catalog; exact alcove remains unallocated",
+        "upgrade_currency_is_proposal": true
+      },
+      "combat_constraint": "Support the legitimately carried single weapon; no backup pistol or two-weapon combo. Supply replenishable throwable props for tether combat, close-range access, and viable pod-fuse openings.",
+      "system_rules_reference": "design/manifest.json",
+      "artifact_proposal": {
+        "confirmed": false,
+        "id": "A09",
+        "reference": "design/03-progression/artifact-catalog.md",
+        "mandatory_for_progress": false
+      }
     },
     {
       "n": 10,
@@ -1226,13 +1406,6 @@
       "duration": "17–22 minutes",
       "difficulty": "Hard",
       "newWeapon": null,
-      "available": [
-        "Scrapjack Pistol",
-        "Boom Broom",
-        "Arc Welder",
-        "Seedlobber",
-        "Graviton Tether"
-      ],
       "roster": [
         "Patchbot",
         "Loadbearer",
@@ -1310,7 +1483,7 @@
         "Before A05 at the fixed inspection walkway; viewing the graft reveal remains recorded."
       ],
       "secrets": [
-        "An optional quality-control shelf contains salvage and an interface rejected for incompatibility, reinforcing why ordinary robots remain immune.",
+        "An optional quality-control shelf contains gems and an interface rejected for incompatibility, reinforcing why ordinary robots remain immune.",
         "A glass archive recess shows EDEN labeling any vocal response as recovered identity; this is evidence, not an additional puzzle requirement."
       ],
       "story": "EDEN calls the neural upgrade a rescue. The hero watches the difference between a machine functioning and a person returning, setting up the final ethical conflict.",
@@ -1348,7 +1521,32 @@
           "from": "L10-A05",
           "to": "L10-A06"
         }
-      ]
+      ],
+      "introduced_weapons": [
+        "Scrapjack Pistol",
+        "Boom Broom",
+        "Arc Welder",
+        "Seedlobber",
+        "Graviton Tether"
+      ],
+      "max_carried_weapons": 1,
+      "required_tether_traversal": false,
+      "treasure": {
+        "primary": "gems",
+        "additional": [
+          "artifacts"
+        ],
+        "artifact_placement": "One optional artifact proposed in catalog; exact alcove remains unallocated",
+        "upgrade_currency_is_proposal": true
+      },
+      "combat_constraint": "Support the legitimately carried single weapon; no backup pistol or two-weapon combo. Supply replenishable throwable props for tether combat, close-range access, and viable pod-fuse openings.",
+      "system_rules_reference": "design/manifest.json",
+      "artifact_proposal": {
+        "confirmed": false,
+        "id": "A10",
+        "reference": "design/03-progression/artifact-catalog.md",
+        "mandatory_for_progress": false
+      }
     },
     {
       "n": 11,
@@ -1358,13 +1556,6 @@
       "duration": "18–24 minutes",
       "difficulty": "Hard, with a deliberate quiet central reveal",
       "newWeapon": null,
-      "available": [
-        "Scrapjack Pistol",
-        "Boom Broom",
-        "Arc Welder",
-        "Seedlobber",
-        "Graviton Tether"
-      ],
       "roster": [
         "Choir Unit",
         "Mourning Nurse",
@@ -1441,7 +1632,7 @@
       ],
       "secrets": [
         "A bedside archive nook contains a mundane personal keepsake and a restrained record of the patient's long care history; identity details remain a later writing decision.",
-        "An optional maintenance shelf on the return shortcut contains salvage for a final upgrade opportunity."
+        "An optional maintenance shelf on the return shortcut contains gems for a final upgrade opportunity."
       ],
       "story": "The companion's core is valuable because it carries authority, not just energy. Restoring independent life support makes the eventual confrontation responsible, but does not solve EDEN's beliefs or cure failed patients.",
       "audio": "Slow mechanical breathing, sparse old relay clicks, short competing Choir phrases, and almost no music during the cradle reveal. Support stabilization changes an irregular relay rhythm into a steady one.",
@@ -1478,7 +1669,32 @@
           "from": "L11-A05",
           "to": "L11-A06"
         }
-      ]
+      ],
+      "introduced_weapons": [
+        "Scrapjack Pistol",
+        "Boom Broom",
+        "Arc Welder",
+        "Seedlobber",
+        "Graviton Tether"
+      ],
+      "max_carried_weapons": 1,
+      "required_tether_traversal": false,
+      "treasure": {
+        "primary": "gems",
+        "additional": [
+          "artifacts"
+        ],
+        "artifact_placement": "One optional artifact proposed in catalog; exact alcove remains unallocated",
+        "upgrade_currency_is_proposal": true
+      },
+      "combat_constraint": "Support the legitimately carried single weapon; no backup pistol or two-weapon combo. Supply replenishable throwable props for tether combat, close-range access, and viable pod-fuse openings.",
+      "system_rules_reference": "design/manifest.json",
+      "artifact_proposal": {
+        "confirmed": false,
+        "id": "A11",
+        "reference": "design/03-progression/artifact-catalog.md",
+        "mandatory_for_progress": false
+      }
     },
     {
       "n": 12,
@@ -1488,13 +1704,6 @@
       "duration": "22–28 minutes including mini-boss and resolution",
       "difficulty": "Hardest campaign test",
       "newWeapon": null,
-      "available": [
-        "Scrapjack Pistol",
-        "Boom Broom",
-        "Arc Welder",
-        "Seedlobber",
-        "Graviton Tether"
-      ],
       "roster": [
         "Care Marshal",
         "Nurse Needles",
@@ -1520,7 +1729,7 @@
           "id": "L12-A01",
           "name": "Stable entry",
           "space_and_placement": "A safe platform shows the independent-support indicator still active. A final route diagram points to the core interface.",
-          "experience_and_lesson": "Confirm the level-11 consequence and allow a calm start. No equipment is taken away for drama.",
+          "experience_and_lesson": "Confirm the level-11 consequence and allow a calm start. The checkpoint preserves the single carried weapon; no additional weapon is granted.",
           "completion_and_connection": "Use the fixed stairs into A02."
         },
         {
@@ -1541,7 +1750,7 @@
           "id": "L12-A04",
           "name": "Final maintenance refuge",
           "space_and_placement": "Place supplies, the last upgrade station opportunity, and a clear overlook of the arena. A stable platform leads to the trigger.",
-          "experience_and_lesson": "Save immediately before the boss. Do not lock victory behind optional purchases or a single weapon loadout.",
+          "experience_and_lesson": "Save immediately before the boss. Do not lock victory behind optional purchases or one required weapon type; the hero carries only one weapon.",
           "completion_and_connection": "Step into A05 when ready."
         },
         {
@@ -1568,7 +1777,7 @@
         "After A05 victory, before the interactive resolution; retries here must not repeat the fight."
       ],
       "secrets": [
-        "A visible optional platform loop near A02 contains final salvage; it rejoins before the gallery and uses only base traversal.",
+        "A visible optional platform loop near A02 contains final gems; it rejoins before the gallery and uses only base traversal.",
         "A quiet alcove at A04 contains the companion's old service emblem, reinforcing its origin without adding a new revelation required to understand the ending."
       ],
       "story": "The final victory is not destroying EDEN. The hero proves that care must preserve a person and their agency, uses the companion's authority to halt harmful procedures, and protects the people still dependent on the system.",
@@ -1619,7 +1828,49 @@
           "from": "L12-A05",
           "to": "L12-A06"
         }
-      ]
+      ],
+      "introduced_weapons": [
+        "Scrapjack Pistol",
+        "Boom Broom",
+        "Arc Welder",
+        "Seedlobber",
+        "Graviton Tether"
+      ],
+      "max_carried_weapons": 1,
+      "required_tether_traversal": false,
+      "treasure": {
+        "primary": "gems",
+        "additional": [
+          "artifacts"
+        ],
+        "artifact_placement": "One optional artifact proposed in catalog; exact alcove remains unallocated",
+        "upgrade_currency_is_proposal": true
+      },
+      "combat_constraint": "Support the legitimately carried single weapon; no backup pistol or two-weapon combo. Supply replenishable throwable props for tether combat, close-range access, and viable pod-fuse openings.",
+      "system_rules_reference": "design/manifest.json",
+      "artifact_proposal": {
+        "confirmed": false,
+        "id": "A12",
+        "reference": "design/03-progression/artifact-catalog.md",
+        "mandatory_for_progress": false
+      }
     }
-  ]
+  ],
+  "economy_proposal": {
+    "confirmed": false,
+    "upgrade_currency": "gems",
+    "upgrade_target": "carried weapon",
+    "artifact_uses": "Optional journal-only discoveries; no sale, stat effects, or ending gate",
+    "prices": "Proposed incremental costs 40/90/160 gems; owned by design/03-progression/treasure-economy.md"
+  },
+  "checkpoint_proposal": {
+    "confirmed": false,
+    "weapon_restore": "Restore complete committed snapshot: held weapon, world pickups, resources, wallet, earned stages, artifacts, encounters, and story state",
+    "abandoned_weapon_recovery": false,
+    "upgrade_persistence": "Purchased stages recorded by weapon type; physical copies apply earned fittings on pickup without generating ammunition",
+    "cross_level_drop_persistence": "Weapons left behind do not transfer; no chapter-replay warehouse in current proposal",
+    "resource_reset_values": "Recovery stations service held weapon; story saves preserve current values; see design/03-progression/health-and-checkpoints.md and ammunition-and-resupply.md"
+  },
+  "design_entry": "AI_START_HERE.md",
+  "design_manifest": "design/manifest.json"
 }

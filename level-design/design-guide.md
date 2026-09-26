@@ -6,11 +6,13 @@ These twelve briefs expand the existing campaign for use by an AI design assista
 
 Read the [main concept](../dead-eden-concept.md) and [visual guide](../art-design/style-guide.md) for the broader project. Each level file repeats the minimum context so it can be shared independently.
 
+The [AI entry guide](../AI_START_HERE.md) identifies each system's owner. Read [controls](../design/01-core/player-controls.md), [weapon resources](../design/03-progression/ammunition-and-resupply.md), and [boss fairness](../design/04-world/encounter-and-boss-fairness.md) when refining geometry or encounters. Their detailed numbers are proposed, not tested.
+
 ## Fixed campaign structure
 
 - Twelve levels, organized into four groups of three.
 - Unique mini-bosses at 3 (Mr. Mulch), 6 (Old Rootjaw), 9 (Matron Mercy), and 12 (The Unfinished Choir).
-- Five weapons, each with three successive upgrades. Pickups occur at 1 (Scrapjack), 2 (Boom Broom), 4 (Arc Welder), 5 (Seedlobber), and 6 (Graviton Tether).
+- Five weapon types, each with three successive upgrades, but only one weapon carried at a time. Taking a new weapon drops the previous weapon at that pickup location. Pickups occur at 1 (Scrapjack), 2 (Boom Broom), 4 (Arc Welder), 5 (Seedlobber), and 6 (Graviton Tether).
 - Ten ordinary robot and ten zombie types introduced by level 9.
 - Returned first appear in level 10 through installed neural interfaces and physical tissue transfer. Choir Unit appears in level 11 and is distinct from the final mini-boss.
 - The First Patient is a living victim, not a compulsory enemy. Peaceful Rememberers are never required kills.
@@ -28,11 +30,19 @@ Foreground decoration stays at the edges or becomes unobtrusive near action. Sid
 
 ## Movement assumptions and sizing
 
-The baseline is move/run, jump, aim, shoot, and interact. The Graviton Tether adds marked-anchor pulls and object capture from level 6. The project has not approved double jumping, dashing, wall running, swimming, arbitrary climbing, or grappling to any surface. Layouts cannot depend on them.
+The baseline is move/run, jump, aim, shoot, and interact. The Graviton Tether is introduced in level 6 and enables marked-anchor pulls and object capture only while it occupies the single weapon slot. The project has not approved double jumping, dashing, wall running, swimming, arbitrary climbing, or grappling to any surface. Layouts cannot depend on them.
 
-A temporary human height H = 1.70 m is an art scale reference only. Exact speeds, jump arcs, air control, collision dimensions, and distances are undecided. Use relative concepts such as broad landing, short gap, high refuge, and visible throw range in the briefs. A later blockout must calibrate actual measurements before calling a route playable.
+A temporary human height H = 1.70 m is an art scale reference only. The controls document supplies untested starting ranges for speed, jump height, grace, and buffering. Exact collision dimensions and route distances remain uncalibrated. Use relative concepts such as broad landing, short gap, high refuge, and visible throw range in the briefs. A later blockout must calibrate actual measurements before calling a route playable.
 
-Required anchors fit base tether reach. Long Reach opens optional shortcuts; Heavy Lifter does not let the player capture heavy enemies or bosses. Required paths remain accessible without buying optional upgrades.
+Main routes have ordinary movement or interactable alternatives to tether use. Anchors provide optional approaches only while the tether is carried. Long Reach can extend optional shortcuts; Heavy Lifter cannot capture heavy enemies or bosses. No required path assumes a gun plus a separate tether.
+
+## Single-weapon encounter requirements
+
+Read [Core gameplay rules](../core-gameplay.md) before expanding a level. Weapon lists mean types encountered by that point, not instant-access inventory. Pickups are ground swaps, and an optional safe trial precedes a one-way exit. Checkpoints do not offer stored weapons.
+
+Every mandatory encounter must work with the weapon legitimately carried into it. Provide accessible close-range positions for the Boom Broom and Arc Welder, usable pod arcs and exposure windows for Seedlobber, and reachable replenishable throwable objects for Graviton Tether. Heavy enemies and bosses cannot be captured. A pistol sightline alone is insufficient evidence that a fight supports the full roster.
+
+Do not require two-weapon combinations, a hidden backup pistol, an always-equipped tether, a distant abandoned gun, or optional upgrades. Replenishment and checkpoint mechanics are still proposals, but a zero-resource state must have a recoverable solution rather than a softlock.
 
 ## Encounter teaching and escalation
 
@@ -44,15 +54,15 @@ Mini-boss difficulty grows through different skills: charge recognition, changin
 
 ## Checkpoints and resource assumptions
 
-Checkpoint behavior in this pack is a proposed player-friendly baseline. Retries preserve earned weapons, completed story interactions, and completed multi-step support objectives. Local enemies and mechanisms return to a predictable state. Essential fighting resources are restored and the Scrapjack remains a fallback. Avoid duplicate reward farming during reset.
+Checkpoint behavior is a working proposal owned by [health and checkpoints](../design/03-progression/health-and-checkpoints.md). Commit the held weapon, world pickups, resources, wallet, upgrades, artifacts, encounters, and story objectives together. A retry restores that complete snapshot; it does not recover an abandoned arsenal. Recovery stations service the held weapon, while story-only saves preserve current resources. Transient mechanisms restart safely. There is no checkpoint armory.
 
-Place a checkpoint directly before every mini-boss, and another after the last boss so failure or interruption during resolution does not repeat the fight. Early movement lessons have catch floors or ledges. Exact damage, life count, failure penalties, ammunition quantities, prices, and save implementation remain undecided.
+Place a maintenance checkpoint directly before every mini-boss and after each victory, before a one-way exit; the final post-boss save prevents the resolution from repeating the fight. Early movement lessons have catch floors or ledges. Proposed health, failure, ammunition, and price defaults now live in the progression section; they still require validation. Save implementation is not part of this concept project.
 
-Do not remove equipment or force one optional purchase for a dramatic beat. Do not add a strict patient-death countdown in level 11. Orderly's first capture needs a readable escape opportunity; its exact input and timing remain a later combat-design decision.
+Do not remove equipment or force one optional purchase for a dramatic beat. Do not add a strict patient-death countdown in level 11. Orderly's first capture needs a readable escape opportunity; see the proposed escape rule in [enemy states](../design/04-world/status-and-enemy-states.md).
 
 ## Secrets, treasure, and story
 
-Optional exploration gives salvage, upgrade resources, and personal environmental stories. Signal something interesting from the main route and reconnect optional paths cleanly. Critical information and required items belong on the authored route. No mandatory arbitrary wall shot, hidden collectible quota, or future-weapon backtracking is assumed.
+The confirmed loop is explore, fight, collect treasure, overcome an obstacle, reach a checkpoint, and upgrade. Gems are the primary treasure; artifacts are an additional type. [Treasure economy](../design/03-progression/treasure-economy.md) proposes gem budgets and upgrade costs; the [artifact catalog](../design/03-progression/artifact-catalog.md) proposes one optional journal-only find per level. Exact alcoves still need allocation in these layouts. Signal interesting detours and reconnect them cleanly. Critical evidence and required items belong on the main route; no hidden collectible quota or future-weapon backtracking is assumed.
 
 Quiet spaces are part of pacing: the companion discovery, peaceful Rememberer, transfer records, First Patient reveal, and final EDEN interface must be understandable without simultaneous combat. Environmental storytelling can be visual rather than a wall of text.
 
@@ -86,8 +96,8 @@ No engine, code architecture, polygon target, shader implementation, texture res
 
 - There are exactly twelve levels and four scheduled mini-bosses.
 - Each area has a clear entry, intended action, safe response, and exit.
-- Tools and enemies appear in the established order.
-- Required routes work with base capabilities and leave visible recoveries.
+- Weapon types and enemies appear in the established order; no more than one weapon is carried.
+- Required routes work without assuming the tether is carried, and encounters support the actual single weapon with visible recoveries.
 - Friendly or peaceful patients are not accidental mandatory targets.
 - Returned obey the interface-and-tissue infection rule.
 - Every boss opening is usable without a specific optional upgrade.

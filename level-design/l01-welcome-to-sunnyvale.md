@@ -1,5 +1,7 @@
 # Level 1 — Welcome to Sunnyvale
 
+System details are proposed in the [design pack](../design/README.md): movement, checkpoint rollback, weapon resources, gem budgets, artifacts, and single-weapon boss requirements. Use the [AI entry guide](../AI_START_HERE.md) to find the owner before refining this level. Exact supply and artifact placements still need local allocation.
+
 **ID:** L01
 
 **Campaign group:** Sunnyvale's perfect lie
@@ -12,6 +14,8 @@ DEAD EDEN is an original colorful 2.5D platformer shooter. A scavenger and a mai
 
 A perfect artificial suburb slowly reveals that its inhabitants have died and its cheerful maintenance routines cannot tell the difference.
 
+Confirmed gameplay: explore, fight, collect treasure, overcome an obstacle, reach a checkpoint, and upgrade. Gems are the primary treasure; artifacts are another treasure type. Only one weapon is carried, and taking a new weapon drops the previous one at that pickup location.
+
 ## Level contract
 
 | Field | Design |
@@ -20,7 +24,7 @@ A perfect artificial suburb slowly reveals that its inhabitants have died and it
 | Intended difficulty | Introductory |
 | First successful exploration target | 10–14 minutes; excludes repeated failures and exhaustive secret hunting |
 | New weapon | Scrapjack Pistol (available at entry) |
-| Available weapons by level end | Scrapjack Pistol |
+| Weapon types introduced by level end | Scrapjack Pistol |
 | New enemy types | Resident, Clipper |
 | Mini-boss | None |
 
@@ -62,7 +66,7 @@ The route lists ordered areas, not exact world coordinates. Each area may span m
 
 **Space and placement:** A flat entrance apron leads to two low garden steps and a shallow catchable gap. Place an inert target on a fence beyond a clear firing lane; no enemy can reach the player here.
 
-**Player experience and lesson:** Let the player move, jump, and fire the pistol without danger. A visible salvage token above the steps teaches that exploration uses the same basic movement.
+**Player experience and lesson:** Let the player move, jump, and fire the pistol without danger. A visible gem above the steps teaches that exploration uses the same basic movement.
 
 **Completion and connection:** Cross the open gate to A02; no key or hidden input is required.
 
@@ -119,11 +123,11 @@ Start with individual enemies, then combine one charger and a small number of sh
 - [Resident](../art-design/zombies/z01-resident.md) — first introduction in this level.
 - [Clipper](../art-design/robots/r01-clipper.md) — first introduction in this level.
 
-## Weapons and progression
+## Single carried weapon and progression
 
 - [Scrapjack Pistol](../art-design/weapons/w01-scrapjack-pistol.md)
 
-All listed weapons are available only after their defined pickup. Before the level's combat tests, retain previously acquired equipment. Every weapon has exactly three cumulative upgrades, but this brief does not assume optional purchases. Mandatory combat remains possible with base equipment and the pistol fallback. Required anchors, where present, fit base Graviton Tether reach; Long Reach can support optional shortcuts. Treasure supplies upgrade resources, not an additional unplanned weapon.
+The list above records weapon types introduced by this point, not a carried inventory. The hero carries exactly one weapon. Choosing a new pickup drops the previous weapon at that same spot; a safe trial lets the player swap back before leaving. There is no backup pistol, inventory cycling, or checkpoint armory. The Graviton Tether occupies this same slot. Main routes remain usable without it, and mandatory encounters support the legitimately carried weapon, with replenishable throwable props for tether combat, close approach positions for short-range guns, and usable fuse windows for the Seedlobber. Optional upgrades are not required. See [Core gameplay rules](../core-gameplay.md) for the confirmed decisions and separately labeled economy and persistence proposals.
 
 ## Checkpoints, failure, and recovery
 
@@ -131,11 +135,13 @@ All listed weapons are available only after their defined pickup. Before the lev
 - After A04, before entering the depot.
 - After the A05 companion event, before A06; retain the awakening and companion state on retry.
 
-A retry returns the player to the last listed safe checkpoint with essential fighting resources restored. Acquired weapons and completed story interactions stay recorded. Local enemies, hazards, and moving geometry reset to an understandable state; do not duplicate salvage rewards on repeated retries. Minor missed-jump practice sections use catch ledges where specified. Exact health, damage, lives, and penalty values remain undecided.
+Working checkpoint proposal: retry restores the single carried weapon and world pickup state saved at the checkpoint, with useful resources for that weapon and completed story objectives preserved. It does not recover a gun abandoned elsewhere or grant a second gun. Local enemies, hazards, and moving geometry reset coherently; swapped weapons and collected treasure must not duplicate. Practice sections retain the described catch ledges. Exact health, ammunition, death penalties, and dropped-weapon persistence across level changes remain undecided.
 
 ## Optional exploration and rewards
 
-- A visible roof-alcove salvage cache above A03, reachable with ordinary jumps from an optional porch ladder route.
+Gems are the primary reward in this level. Existing generic caches now contain gems. Artifacts are additional discoveries; deciding which story props become collectible artifacts, how rare they are, and what they unlock remains open. Ordinary scenery and critical story evidence do not automatically become optional artifacts. Spending gems at checkpoint upgrade facilities is the working economy proposal.
+
+- A visible roof-alcove gem cache above A03, reachable with ordinary jumps from an optional porch ladder route.
 - A readable family portrait and untouched breakfast in a side room at A02; supplies the first quiet story detail without a quest requirement.
 
 Optional paths rejoin the main route without requiring a new movement ability or a future weapon. Mark a cache or intriguing shape from the main path before asking the player to explore; do not hide required progression behind an arbitrary wall shot.
@@ -156,7 +162,7 @@ Build references for the largest architectural forms first, then moving parts an
 
 Do not show Returned, overt medical laboratories before the depot reveal, advanced weapons, a boss, gore, or a destroyed post-apocalyptic town. No mandatory double jump, dash, wall run, swimming, or climbing mechanic is introduced.
 
-Preserve the established number of levels, enemies, weapons, and upgrades. Any new enemy, boss, movement ability, inventory system, or ending would be a proposed change, not an automatic addition. Do not treat decorative background elements as reachable platforms. Use placeholders if an approved character reference is unavailable rather than redesigning the character inside environment art.
+Preserve the established number of levels, enemies, weapons, and upgrades. Show only one weapon carried by the hero; do not place spare guns on their belt or back. Any new enemy, boss, movement ability, inventory system, or ending would be a proposed change, not an automatic addition. Do not treat decorative background elements as reachable platforms. Use placeholders if an approved character reference is unavailable rather than redesigning the character inside environment art.
 
 ## Prompt 1 — environment keyframe
 
@@ -211,7 +217,7 @@ Show complete individual objects with clear gaps between them, consistent scale,
 Paste this block together with this entire level brief. The file is standalone; attach the linked asset briefs when asking for detailed enemy or weapon visuals.
 
 ```text
-Act as a game concept designer working on DEAD EDEN. Use the complete attached level 1 brief as the current design specification. The project is in idea development, not implementation: do not write engine code or choose a technology stack.
+Act as a game concept designer working on DEAD EDEN. Use the complete attached level 1 brief as the current design specification. The project is in idea development, not implementation: do not write engine code or choose a technology stack. Enforce one carried weapon and ground swaps; gems are the primary treasure and artifacts are additional finds. Do not add a backup pistol or require a weapon the player left behind.
 Explain this level as a player journey in the exact six-area order given. For every area describe the visible space, what the player does, the enemy or hazard warning, the intended skill lesson, a valid recovery option, and how progress to the next area is recognized. Separate established campaign constraints from any new suggestions. Then produce an environment asset checklist, a short cinematic-free story beat list, and a consistency review against the weapons, enemy introduction order, checkpoint rules, and absence of a mini-boss in this brief.
 Do not silently add weapons, bosses, traversal skills, unearned upgrades, infection mechanisms, new endings, or off-plane combat. Do not convert the First Patient or peaceful Rememberers into compulsory enemies. Where physics values, numerical balance, or implementation details are absent, mark them as undecided instead of inventing final values. Preserve the written route if generated art suggests contradictory geometry.
 ```

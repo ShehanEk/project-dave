@@ -1,5 +1,7 @@
 # DEAD EDEN — Shared visual and modeling guide
 
+Use the [AI entry guide](../AI_START_HERE.md) and [detailed design pack](../design/README.md) for proposed player, progression, and presentation rules. This guide and individual asset briefs own visual construction; a cinematic pose does not add a gameplay ability. Hero/companion names and appearances remain proposals.
+
 ## Intended look
 
 Original, colorful, stylized 3D assets for a side-view 2.5D platformer shooter. Shapes should feel tactile and expressive: broad curves, chunky equipment, generous bevels, large facial features, and selective wear. The world began as a friendly future-care environment and has become unsettling through misuse and neglect.
@@ -73,6 +75,8 @@ Ordinary robots remain mechanical. The resurrection treatment affects living tis
 The Rememberer may be peaceful. The First Patient is not an enemy in the current campaign. Do not visually recast either as an obligatory combat target without a story decision.
 
 ## Upgrade conventions
+
+The hero carries one weapon. New pickups leave the previous weapon at the pickup location; there is no backup pistol, separate always-carried tether, or gun collection on the hero model. Neutral weapon sheets can show the full roster as separate assets, but a hero pose shows only the chosen weapon. Gems are the primary treasure; artifacts are additional discoveries. See [Core gameplay rules](../core-gameplay.md).
 
 Each weapon has exactly three successive upgrades. Stage 0 is the base; stage 1 adds the first attachment; stage 2 keeps the first and adds the second; stage 3 keeps both and adds the third. Capability upgrades and appearance changes are paired inside each weapon brief.
 

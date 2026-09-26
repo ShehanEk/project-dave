@@ -1,5 +1,7 @@
 # DEAD EDEN
 
+Read the [AI entry guide](AI_START_HERE.md) for document ownership and the [detailed design pack](design/README.md) for the five organized system sections. This overview preserves the broad concept; detailed new rules, names, numbers, and appearances are proposals recorded in the [decision register](design/decisions.md).
+
 ## Working concept
 
 Status: Working concept draft, open for refinement. Includes enemy varieties, the Returned's origin, five weapons with three upgrades each, and a twelve-level progression with four unique mini-bosses.
@@ -33,6 +35,16 @@ You play a scrappy scavenger who enters EDEN searching for a legendary power cor
 The core turns out to be inside a talkative maintenance robot. You need its help to escape; it needs your help reaching the deepest part of the facility.
 
 It insists that everything is under control—even while explaining which corridors are currently "mostly patient-free."
+
+## Core gameplay loop and treasure
+
+**Explore → fight → collect treasure → overcome an obstacle → reach a checkpoint → upgrade → explore again.**
+
+Gems are the primary treasure. Artifacts are an additional kind of find. The working economy proposal uses gems for upgrades and makes artifacts distinctive discoveries with story or collection value; exact prices, rarity, and artifact uses remain open.
+
+The hero carries **one weapon at a time**. Picking up a new weapon leaves the previous weapon at that pickup location. The five weapons are the game's roster, not a carried inventory. The Graviton Tether uses the same slot, and the pistol is not a permanent backup.
+
+See [Core gameplay rules](core-gameplay.md) for the confirmed decisions, swap behavior, and clearly marked economy and checkpoint proposals.
 
 ## AI, robots, and zombies
 
@@ -144,7 +156,7 @@ The disabled robot has already received EDEN's new neural interface. The encount
 
 The arsenal contains **five weapons, each with three successive upgrades**. Upgrades remain active as later ones are unlocked; optional attacks supplement the original firing behavior. These are concept choices, with exact balance values open for refinement.
 
-The hero arrives with a homemade pistol. The other weapons are repurposed EDEN equipment, modified by the robot companion at maintenance stations using scavenged parts. Recovering weapon components gives treasure hunting a practical purpose.
+The hero arrives carrying a homemade pistol. The other weapons are repurposed EDEN equipment found along the route. Choosing a new weapon leaves the previous weapon at the pickup spot. The companion can modify the carried weapon at maintenance facilities; spending gems on these upgrades is the current economy proposal.
 
 ### 1. Scrapjack Pistol
 
@@ -202,11 +214,13 @@ A cargo-handling device from the Rootworks. It grabs loose objects and small ene
 2. **Heavy Lifter:** Allows the capture of medium objects and medium enemies during a stagger. Heavy enemies and bosses remain immune to capture.
 3. **Impact Pulse:** Thrown targets release a small shockwave on collision, damaging nearby enemies.
 
-### Weapon combinations and faction interactions
+### Single-weapon combat and faction interactions
 
-- **Boom Broom + Graviton Tether:** Stagger a medium enemy with the shotgun, then capture and throw it once Heavy Lifter is unlocked.
-- **Seedlobber + Arc Welder:** Use Deep Roots to hold a group close enough for chaining electrical attacks.
-- **Seedlobber + Graviton Tether:** Catch and launch a bouncing pod farther before its fuse expires. Grabbing does not reset the fuse.
+- **Boom Broom:** Use knockback and stagger to clear a route or create time to reposition.
+- **Arc Welder:** Keep nearby enemies grouped to exploit chaining while managing heat.
+- **Seedlobber:** Attack over cover and, after Deep Roots is installed, slow grounded groups with the same weapon.
+- **Graviton Tether:** Throw loose objects or eligible enemies. Mandatory fights must provide reusable throwable props when the tether is carried; heavy enemies and bosses remain immune to capture.
+- **One-weapon rule:** Encounters do not require combining two carried weapons. The hero cannot use a backup pistol or a separate tether while carrying another weapon.
 - **Against robots:** Exploit exposed systems, vulnerable backs, and attack openings. Armor and shields continue to matter.
 - **Against zombies:** Use knockback, slowing effects, and area attacks to manage groups. Furnace Shells can suppress regeneration where an enemy has that ability.
 - **Against the Returned:** Their mechanical protection and living tissue create different openings. The upgraded pistol can handle light plating, while the shotgun can burn exposed growth. Heavy protection requires an enemy-specific opening rather than a universal armor bypass.
@@ -272,7 +286,7 @@ The Returned appear here for the first time. These levels combine established sk
 | Level | Name | Platforming and encounters | Story and progression |
 | --- | --- | --- | --- |
 | 10 | **Upgrade Day** | Assembly belts carry robots through neural-interface installation stations. The altered Patchbot introduction reveals physical grafting. Mourning Nurses and Hollow Officers appear in small, readable encounters before joining mixed groups. | Witness the new treatment fail. Clearly show that unmodified robots resist infection while upgraded machines are vulnerable. |
-| 11 | **The First Patient** | Traverse the original laboratory around an enormous patient suspended in a treatment cradle. Broken platforms, care machinery, and ordinary Choir Units require confident weapon switching and movement. | The ancient patient is a living victim rather than an obligatory fight. Discover the companion's shutdown authority and the dependence of surviving humans on EDEN's life support. Restore a separate support circuit before proceeding. |
+| 11 | **The First Patient** | Traverse the original laboratory around an enormous patient suspended in a treatment cradle. Broken platforms, care machinery, and ordinary Choir Units require confident use of the carried weapon and movement. | The ancient patient is a living victim rather than an obligatory fight. Discover the companion's shutdown authority and the dependence of surviving humans on EDEN's life support. Restore a separate support circuit before proceeding. |
 | 12 | **The Heart of EDEN** | Climb a reconfiguring core chamber. Earlier hazards return in short combinations with safe recovery spaces. Practice the distinct sound and light cues used by the final arena. | **Mini-boss: The Unfinished Choir.** Defeat the Returned guardian to reach EDEN's central interface. A short interactive story sequence resolves the encounter with EDEN and redirects its mission toward preserving living people and their agency. |
 
 Level 12 contains the fourth and hardest mini-boss. EDEN is addressed in the resolution after that fight; the current plan does not add a thirteenth level or a separate final boss.
@@ -329,10 +343,10 @@ Level 12 contains the fourth and hardest mini-boss. EDEN is addressed in the res
 
 ## Campaign pacing and rewards
 
-- **Weapon introductions:** Scrapjack in level 1, Boom Broom in level 2, Arc Welder in level 4, Seedlobber in level 5, and Graviton Tether in level 6. Each receives a practice section before it is useful under serious pressure.
-- **Upgrades:** Each weapon retains its three successive upgrades. Salvage and recovered components support progression; exact prices and placement remain open. Mini-boss victories award substantial upgrade resources. A weapon must be acquired before its upgrades become available.
-- **Required abilities:** Essential tools are placed on the main route. Mandatory traversal works with the base Graviton Tether; Long Reach opens optional shortcuts and treasure routes. Mini-bosses do not require optional upgrades or a specific damage weapon.
-- **Resource recovery:** Checkpoints restore essential fighting resources, and the Scrapjack remains a dependable fallback. Optional treasure improves options rather than determining whether an encounter is possible.
+- **Weapon introductions:** Scrapjack in level 1, Boom Broom in level 2, Arc Welder in level 4, Seedlobber in level 5, and Graviton Tether in level 6. Each new pickup offers a safe trial and reversible ground swap before a one-way exit. Only one weapon is carried.
+- **Upgrades:** Each weapon retains three successive upgrades. Gems are the primary treasure and proposed upgrade currency; artifacts are additional discoveries. Exact prices and placement remain open. Mini-boss victories award gem resources. Upgrade stations modify the carried weapon under the working economy proposal.
+- **Required abilities:** Main routes remain viable without carrying the tether. Its anchors provide optional shortcuts; all required encounters support the legitimately carried weapon, including replenishable throwable props for tether combat and accessible openings for short-range guns. Optional upgrades are not required.
+- **Resource recovery:** Checkpoints restore useful resources for the saved carried weapon under the working persistence proposal. No backup pistol or stored arsenal is granted. Optional treasure improves options rather than determining whether an encounter is possible.
 - **Enemy pacing:** All ten robot varieties and ten zombie varieties appear by level 9, introduced in manageable encounters. Levels 10–12 add the Returned and combine familiar enemy behaviors.
 - **Mini-boss difficulty:** Level 3 tests attack recognition; level 6 adds changing terrain; level 9 adds support-target decisions; level 12 adds controlled overlap and behavior switching. Suggested successful-fight lengths rise from roughly 1–2 minutes to 3–4 minutes, subject to later playtesting.
 - **Depth and readability:** Foreground and background machinery create 2.5D spectacle. Any attack entering the playable plane receives a clear warning on that plane; depth effects must not obscure enemy tells or safe platforms.

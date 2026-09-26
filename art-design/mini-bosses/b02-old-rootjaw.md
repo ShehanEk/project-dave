@@ -55,6 +55,10 @@ Two main arms, four anchor roots, three seed vents. No metal skeleton, robot fac
 
 Anatomical left and right refer to the subject's own sides, not the viewer's. Do not automatically mirror an asymmetrical design when generating the opposite view.
 
+## Single-weapon encounter constraint
+
+The hero carries only one weapon. This fight must support every weapon type that can legitimately reach this level. A clear pistol shot is only one case: provide safe close-range access for the shotgun or welder, workable arcs and fuse windows for the Seedlobber, and replenishable throwable props when the Graviton Tether can be carried. The boss cannot be grabbed. No required route assumes a separate tether, backup pistol, or two-weapon combo.
+
 ## Arena relationship and phase changes
 
 Three raised platforms over a root-filled reservoir, permanent side ledges, and tether anchors. Diagrams should show the body, root paths, and pump as distinct objects.

@@ -61,6 +61,12 @@ Rear hand on the main grip and support hand on the underside forward handle. Top
 
 A narrow jagged cyan arc with a white center and sparse sparks. Chaining branches should remain separate readable lines. The capacitor discharge is a short local ring, shown separately from the clean model.
 
+## Single-weapon gameplay rule
+
+This weapon occupies the hero's only weapon slot. Picking it up drops the previously carried weapon at this pickup location. Choosing another weapon leaves this one in the world; the hero does not retain it as a backup or a separate utility tool. Images of the hero must not show additional carried guns.
+
+Gems are the primary treasure, and artifacts are another treasure type. Spending gems at checkpoint facilities to upgrade the carried weapon is the working economy proposal. See [Core gameplay rules](../../core-gameplay.md) for confirmed decisions and unresolved persistence details.
+
 ## Three cumulative upgrades
 
 Base is stage 0. Stage 1 adds upgrade 1; stage 2 retains upgrade 1 and adds upgrade 2; stage 3 retains both and adds upgrade 3. These are the same weapon and three upgrades, not four different weapons.
