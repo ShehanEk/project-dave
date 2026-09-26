@@ -1,5 +1,7 @@
 # DEAD EDEN — Factions, targeting, and friendly fire
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../../concept-art/README.md).
+
 **Document ID:** W01  
 **Status:** Working design proposal. Confirmed decisions and established lore remain constraints; new details and numbers are untested proposals.  
 **Purpose:** Defines hostility, protected characters, mechanical repair, and the physical limits of Returned conversion.

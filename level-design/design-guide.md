@@ -1,8 +1,10 @@
 # DEAD EDEN — Shared level design guide
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../concept-art/README.md).
+
 ## Purpose and status
 
-These twelve briefs expand the existing campaign for use by an AI design assistant, environment artist, image generator, or 3D modeler. They are concept documents, not engine instructions. Their room layouts, encounter quantities, checkpoint locations, duration ranges, and new scenic details are proposed elaborations. Established lore, enemy identities, weapon order, and mini-boss placement are preserved.
+These twelve briefs expand the existing campaign for use by an AI design assistant, environment artist, image generator, or 2D environment artist. They are concept documents, not engine instructions. Their room layouts, encounter quantities, checkpoint locations, duration ranges, and new scenic details are proposed elaborations. Established lore, enemy identities, weapon order, and mini-boss placement are preserved.
 
 Read the [main concept](../dead-eden-concept.md) and [visual guide](../art-design/style-guide.md) for the broader project. Each level file repeats the minimum context so it can be shared independently.
 
@@ -20,7 +22,7 @@ The [AI entry guide](../AI_START_HERE.md) identifies each system's owner. Read [
 
 ## Side-view space and camera
 
-Use a readable side-view action plane with foreground and background depth. No level silently changes to free 3D movement. Author vertical climbs as linked side-view spaces with visible landings. Background roads, windows, robots, and platforms are scenery unless a specific accessible connection is described.
+Use a readable 2D side-view action plane with separately illustrated foreground and background layers; optional parallax suggests depth. No level silently changes to free 3D movement. Author vertical climbs as linked side-view spaces with visible landings. Background roads, windows, robots, and platforms are scenery unless a specific accessible connection is described.
 
 One area is a sequence unit, not necessarily one screen. Six area IDs per level give a stable order that an AI can reference without inventing chapters. Within-area rooms, refuges, and optional loops may span several views. The JSON lists the main area chain only; it is not a complete collision graph.
 
@@ -78,19 +80,19 @@ Never seal an occupied refuge without warning. Reset transformations coherently 
 
 **Prompt 2: side-elevation study.** Interpret the six-area route using clean masses and readable surfaces. If six panels are too crowded, generate each separately with the same visual reference. The output is a conceptual map, not proof of valid collision or jumps.
 
-**Prompt 3: modular asset sheet.** Attach the approved keyframe and request the environment kit in subsets. Keep fixed architecture, moving platforms, interactables, enemies, and effects separate. Use consistent proportions and neutral light for modeling references.
+**Prompt 3: modular asset sheet.** Attach the approved keyframe and request the environment kit in subsets. Keep fixed architecture, moving platforms, interactables, enemies, and effects separate. Use consistent proportions and consistent linework and flat shading for sprite references.
 
 **Prompt 4: AI design handoff.** Supply the whole level file and request player-journey analysis, asset lists, story beats, and consistency review. The AI must mark new suggestions and unknowns rather than silently inventing final mechanics.
 
-An image model cannot reliably honor exact counts, line up multiple orthographic views, or prove spatial connections. Compare every output with the written route and character references before modeling. Do not let generated art silently change the level's gameplay.
+An image model cannot reliably honor exact counts, maintain identical proportions and pivots across multiple sprite poses, or prove spatial connections. Compare every output with the written route and character references before sprite production. Do not let generated art silently change the level's gameplay.
 
-## File and modeling organization
+## File and layer organization
 
 Each level lists a unique environment kit. Reuse shared corridor, platform, pipe, rail, and service-machine families across levels where appropriate, changing color or wear within the shared visual language. Keep signature landmarks separate from generic modular pieces.
 
 Preserve individual components for hinges, lifts, rails, roots, boss gates, and warning effects. Boss bodies and their arenas are distinct asset sets. The First Patient's body is a protected background story asset rather than an enemy collision object.
 
-No engine, code architecture, polygon target, shader implementation, texture resolution, or file format is chosen here. Those are later production decisions.
+No engine, code architecture, sprite resolution, atlas layout, animation method, shader implementation or layered source format is chosen here. Those are later production decisions.
 
 ## Design review checklist
 

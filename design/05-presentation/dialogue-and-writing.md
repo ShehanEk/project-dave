@@ -1,5 +1,7 @@
 # DEAD EDEN — Dialogue, voices, and writing direction
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../../concept-art/README.md).
+
 **Document ID:** N02  
 **Status:** Working design proposal. Confirmed decisions and established lore remain constraints; new details and numbers are untested proposals.  
 **Purpose:** Defines character voices, sample lines, humor limits, and delivery rules.

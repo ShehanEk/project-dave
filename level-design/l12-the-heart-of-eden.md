@@ -1,5 +1,7 @@
 # Level 12 — The Heart of EDEN
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../concept-art/README.md).
+
 System details are proposed in the [design pack](../design/README.md): movement, checkpoint rollback, weapon resources, gem budgets, artifacts, and single-weapon boss requirements. Use the [AI entry guide](../AI_START_HERE.md) to find the owner before refining this level. Exact supply and artifact placements still need local allocation.
 
 **ID:** L12
@@ -10,7 +12,7 @@ System details are proposed in the [design pack](../design/README.md): movement,
 
 ## Standalone context
 
-DEAD EDEN is an original colorful 2.5D platformer shooter. A scavenger and a maintenance-robot companion explore a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
+DEAD EDEN is an original colorful 2D platformer shooter. A scavenger and a maintenance-robot companion explore a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
 
 A transforming central chamber tests the hero's learned skills before a failed multi-mind prototype guards the final conversation with EDEN.
 
@@ -174,15 +176,15 @@ A restrained core hum with three highly distinct voice motifs. Warden is measure
 
 **Victory consequence:** Access to EDEN's interface and the campaign resolution; no new weapon arrives after the campaign is over.
 
-[Full boss appearance, abilities, and modeling reference](../art-design/mini-bosses/b04-unfinished-choir.md).
+[Full boss appearance, abilities, and sprite reference](../art-design/mini-bosses/b04-unfinished-choir.md).
 
-## Environment asset kit and modeling separation
+## Environment asset kit and layer separation
 
 **Required kit:** Ivory ring segments; teal support ribs; fixed refuge ledges; moving central decks; travel guides; anchor props; care repair node; three symbol panels; maintenance station; data-flower interface; post-fight bridge; authority-link console.
 
 **Separate objects:** Boss frame, masks, arms, tissue, shell panels, and rear port follow the approved boss brief. Arena decks, repair node, warning effects, and interface are separate. The core interface has no enemy collision or health target.
 
-Build references for the largest architectural forms first, then moving parts and props. Record pivot intent for rotating, sliding, lifting, and opening elements. Use modular repeatable pieces where the design calls for repeated corridors, floors, or rails; keep unique landmarks separate. Final mesh budgets, texture sizes, file formats, collision setup, and rig implementation remain outside this concept brief.
+Draw the largest architectural silhouettes first, then separate moving parts and props. Record pivot intent for rotating, sliding, lifting and opening elements. Plan repeatable illustrated tiles or modules for floors, rails and corridors; keep unique landmarks separate. Keep foreground, playable, background and effects on distinct drawing layers. Final sprite resolution, atlas layout, animation method, file format and collision setup remain undecided.
 
 ## Constraints for another AI model
 
@@ -195,7 +197,7 @@ Preserve the established number of levels, enemies, weapons, and upgrades. Show 
 Copy this block directly into an image generator. It requests one representative environment view, not the entire level compressed into a single picture. Use existing approved character references if detailed characters are needed; otherwise keep them as small scale silhouettes.
 
 ```text
-Original stylized 3D game environment concept art for DEAD EDEN. Chunky rounded architecture, strong side-view readability, broad bevels, painterly material variation, warm enamel and ceramic, readable dark joints, and selective wear. Cheerful care infrastructure with eerie consequences, not photorealistic horror. Use original designs rather than another game's characters or scenery. Keep playable surfaces and attack lanes visually clear.
+Original hand-drawn 2D environment concept art for DEAD EDEN. Match the selected Sunnyvale scenes' clean dark outlines, rounded architectural shapes, flat painted color masses, crisp cel shadows and sparse graphic highlights. Use separate illustrated foreground, playable and background layers with decreasing background contrast; depth comes from overlap and optional parallax. Represent ceramic, enamel, plants and machinery with simple graphic marks, not realistic material shading. Preserve the level-specific palette and mood. Keep playable surfaces, enemies, attack lanes and landings clear. No photorealism, volumetric lighting or franchise assets.
 
 Create one wide 16:9 environment keyframe for level 12, "The Heart of EDEN".
 Narrative purpose: A transforming central chamber tests the hero's learned skills before a failed multi-mind prototype guards the final conversation with EDEN.
@@ -208,7 +210,7 @@ Playable plane: A sequence of short fixed ledges and announced reconfiguring dec
 Background: Deep concentric rings, light-carrying conduits, slow data panels, and the core interface. Background motion slows during complex attack tells.
 Show only this level's appropriate era and threats: Care Marshal, Nurse Needles, Hollow Officer, Mourning Nurse, Choir Unit; mini-boss The Unfinished Choir only if this is its arena scene. Keep the number of characters low and their poses subordinate to environment readability. The scene illustrates a designed playable space, with clear landing edges and room for movement. Do not imply unlisted abilities.
 Exclusions: No new weapon, fourth identity, ordinary Choir reskin as the boss, unlimited overlapping attacks, total platform removal, extra final boss, thirteenth level, or magically cured population.
-Use a fixed side-oriented gameplay camera with slight depth visible in architecture, clear separation of foreground and background, controlled soft lighting, no UI, no watermark, no textual labels, no forced cinematic angle, and no effects obscuring the route.
+Use a fixed side-oriented gameplay camera with depth suggested by overlapping illustrated layers, clear separation of foreground and background, controlled drawn lighting and crisp cel shadows, no UI, no watermark, no textual labels, no forced cinematic angle, and no effects obscuring the route.
 ```
 
 ## Prompt 2 — side-elevation layout study
@@ -216,7 +218,7 @@ Use a fixed side-oriented gameplay camera with slight depth visible in architect
 This is a conceptual spatial study. Generated art cannot verify jump distances or collision; reconcile it with the written route and a later movement blockout.
 
 ```text
-Design a clean side-elevation level-layout study for DEAD EDEN level 12, "The Heart of EDEN". Keep a single 2D gameplay plane inside layered stylized 3D architecture. Main route: A01 Stable entry → A02 Core ascent → A03 Control-pattern gallery → A04 Final maintenance refuge → A05 Unfinished Choir arena → A06 EDEN interface.
+Design a clean side-elevation level-layout study for DEAD EDEN level 12, "The Heart of EDEN". Keep a single 2D gameplay plane inside layered hand-drawn 2D scenery. Main route: A01 Stable entry → A02 Core ascent → A03 Control-pattern gallery → A04 Final maintenance refuge → A05 Unfinished Choir arena → A06 EDEN interface.
 Use six adjacent panels, one for each area, or generate them individually if the full sheet loses clarity. Each panel must preserve its entry and exit direction; explicit local vertical movement may be shown. Space descriptions:
 L12-A01: Stable entry. A safe platform shows the independent-support indicator still active. A final route diagram points to the core interface. Connection: Use the fixed stairs into A02.
 L12-A02: Core ascent. Three short rooms remix familiar situations: a Care Marshal protects one Nurse; a Hollow Officer holds a broad floor; a Choir Unit guards a later fixed landing. Connection: The final ledge opens into A03.
@@ -235,7 +237,7 @@ After approving an environment keyframe, attach it to preserve the visual langua
 Using the attached approved environment keyframe, create a clean modular environment asset reference sheet for DEAD EDEN level 12, "The Heart of EDEN". Match these materials and colors: Warm ivory #E6DECA, deep teal #315F67, pale amber #E5C17E, restrained coral tissue #C17F8E, lilac data light #AB98C9. Preserve neutral platform edges under changing identity colors.
 Required asset family: Ivory ring segments; teal support ribs; fixed refuge ledges; moving central decks; travel guides; anchor props; care repair node; three symbol panels; maintenance station; data-flower interface; post-fight bridge; authority-link console.
 Separation rules: Boss frame, masks, arms, tissue, shell panels, and rear port follow the approved boss brief. Arena decks, repair node, warning effects, and interface are separate. The core interface has no enemy collision or health target.
-Show complete individual objects with clear gaps between them, consistent scale, broad readable bevels, simple neutral studio lighting, and a warm light-gray background. Include a few orthographic-style front/side/top studies where moving mechanisms need explanation. Show fixed and moving components separately without inventing internal engineering. No character redesigns, combined scene collage, text labels, UI, watermark, heavy weathering, or tiny decorative noise. Keep all playable contact surfaces clean and identifiable. This is art reference for later modeling, not a technical fabrication drawing.
+Draw complete individual 2D objects with clear gaps, consistent canvas scale, clean outlines, flat colors and crisp cel shadows on warm off-white. Prioritize gameplay side views; include a separate moving-part drawing only where a mechanism needs explanation. Show fixed and moving components separately without inventing internal engineering. No character redesigns, combined scene collage, text labels, UI, watermark, heavy weathering, or tiny decorative noise. Keep all playable contact surfaces clean and identifiable. This is art reference for later 2D asset production, not a technical fabrication drawing.
 ```
 
 ## Prompt 4 — AI design handoff

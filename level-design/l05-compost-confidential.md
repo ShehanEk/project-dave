@@ -1,5 +1,7 @@
 # Level 5 — Compost Confidential
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../concept-art/README.md).
+
 System details are proposed in the [design pack](../design/README.md): movement, checkpoint rollback, weapon resources, gem budgets, artifacts, and single-weapon boss requirements. Use the [AI entry guide](../AI_START_HERE.md) to find the owner before refining this level. Exact supply and artifact placements still need local allocation.
 
 **ID:** L05
@@ -10,7 +12,7 @@ System details are proposed in the [design pack](../design/README.md): movement,
 
 ## Standalone context
 
-DEAD EDEN is an original colorful 2.5D platformer shooter. A scavenger and a maintenance-robot companion explore a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
+DEAD EDEN is an original colorful 2D platformer shooter. A scavenger and a maintenance-robot companion explore a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
 
 A botanical recycling plant has become a luminous underground garden where treatment runoff makes the plants and former workers grow in the wrong ways.
 
@@ -155,13 +157,13 @@ Optional paths rejoin the main route without requiring a new movement ability or
 
 Wet soil shifts, hollow drum creaks, soft plant rustle, and distinct Burrower scraping. Keep explosive-pod fuse cues audible against the environment.
 
-## Environment asset kit and modeling separation
+## Environment asset kit and layer separation
 
 **Required kit:** Compost drums; trough walls; firm metal plates; soft-soil patches; lift buckets; root bridges and joints; broad leaf canopy; closed runoff pipes; sluice wheel and door; fungi clusters.
 
 **Separate objects:** Diggable soil warning surfaces and thorn segments are independent from the base floor. Moving lifts, grown bridge, and vat scenery use separate assemblies. Do not bake hazard clouds into diffuse textures.
 
-Build references for the largest architectural forms first, then moving parts and props. Record pivot intent for rotating, sliding, lifting, and opening elements. Use modular repeatable pieces where the design calls for repeated corridors, floors, or rails; keep unique landmarks separate. Final mesh budgets, texture sizes, file formats, collision setup, and rig implementation remain outside this concept brief.
+Draw the largest architectural silhouettes first, then separate moving parts and props. Record pivot intent for rotating, sliding, lifting and opening elements. Plan repeatable illustrated tiles or modules for floors, rails and corridors; keep unique landmarks separate. Keep foreground, playable, background and effects on distinct drawing layers. Final sprite resolution, atlas layout, animation method, file format and collision setup remain undecided.
 
 ## Constraints for another AI model
 
@@ -174,7 +176,7 @@ Preserve the established number of levels, enemies, weapons, and upgrades. Show 
 Copy this block directly into an image generator. It requests one representative environment view, not the entire level compressed into a single picture. Use existing approved character references if detailed characters are needed; otherwise keep them as small scale silhouettes.
 
 ```text
-Original stylized 3D game environment concept art for DEAD EDEN. Chunky rounded architecture, strong side-view readability, broad bevels, painterly material variation, warm enamel and ceramic, readable dark joints, and selective wear. Cheerful care infrastructure with eerie consequences, not photorealistic horror. Use original designs rather than another game's characters or scenery. Keep playable surfaces and attack lanes visually clear.
+Original hand-drawn 2D environment concept art for DEAD EDEN. Match the selected Sunnyvale scenes' clean dark outlines, rounded architectural shapes, flat painted color masses, crisp cel shadows and sparse graphic highlights. Use separate illustrated foreground, playable and background layers with decreasing background contrast; depth comes from overlap and optional parallax. Represent ceramic, enamel, plants and machinery with simple graphic marks, not realistic material shading. Preserve the level-specific palette and mood. Keep playable surfaces, enemies, attack lanes and landings clear. No photorealism, volumetric lighting or franchise assets.
 
 Create one wide 16:9 environment keyframe for level 5, "Compost Confidential".
 Narrative purpose: A botanical recycling plant has become a luminous underground garden where treatment runoff makes the plants and former workers grow in the wrong ways.
@@ -187,7 +189,7 @@ Playable plane: Metal inspection ledges, broad moving compost lifts, visible roo
 Background: Layered vats, distant slow-turning drums, huge leaf shapes, drainage pipes, and shallow light shafts from the garden above.
 Show only this level's appropriate era and threats: Resident, Gardener, Spitter, Burrower; no boss. Keep the number of characters low and their poses subordinate to environment readability. The scene illustrates a designed playable space, with clear landing edges and room for movement. Do not imply unlisted abilities.
 Exclusions: No robot-zombie hybrids, autonomous infected machinery, compulsory swimming, tether puzzles, or boss. Seedlobber roots are botanical effects rather than a route for robot infection.
-Use a fixed side-oriented gameplay camera with slight depth visible in architecture, clear separation of foreground and background, controlled soft lighting, no UI, no watermark, no textual labels, no forced cinematic angle, and no effects obscuring the route.
+Use a fixed side-oriented gameplay camera with depth suggested by overlapping illustrated layers, clear separation of foreground and background, controlled drawn lighting and crisp cel shadows, no UI, no watermark, no textual labels, no forced cinematic angle, and no effects obscuring the route.
 ```
 
 ## Prompt 2 — side-elevation layout study
@@ -195,7 +197,7 @@ Use a fixed side-oriented gameplay camera with slight depth visible in architect
 This is a conceptual spatial study. Generated art cannot verify jump distances or collision; reconcile it with the written route and a later movement blockout.
 
 ```text
-Design a clean side-elevation level-layout study for DEAD EDEN level 5, "Compost Confidential". Keep a single 2D gameplay plane inside layered stylized 3D architecture. Main route: A01 Supply depot → A02 Root nursery → A03 Spitter troughs → A04 Soft-soil crossing → A05 Rising compost lifts → A06 Sluice controls.
+Design a clean side-elevation level-layout study for DEAD EDEN level 5, "Compost Confidential". Keep a single 2D gameplay plane inside layered hand-drawn 2D scenery. Main route: A01 Supply depot → A02 Root nursery → A03 Spitter troughs → A04 Soft-soil crossing → A05 Rising compost lifts → A06 Sluice controls.
 Use six adjacent panels, one for each area, or generate them individually if the full sheet loses clarity. Each panel must preserve its entry and exit direction; explicit local vertical movement may be shown. Space descriptions:
 L05-A01: Supply depot. The Seedlobber rests in a protected botanical depot before the first mutated worker. A low wall and inert target let the player test an arc from a safe distance. Connection: A short ramp enters A02; retry restores the single weapon saved after the pickup choice.
 L05-A02: Root nursery. One Gardener occupies a flat soil bed separated from the hero by a low root. Fixed metal side ledges remain safe from ground growth. Connection: The clear far ledge leads to A03.
@@ -214,7 +216,7 @@ After approving an environment keyframe, attach it to preserve the visual langua
 Using the attached approved environment keyframe, create a clean modular environment asset reference sheet for DEAD EDEN level 5, "Compost Confidential". Match these materials and colors: Terracotta #B97850, moss green #769950, pale cream #E3D5B9, muted violet fungi #A291BF, honey bioluminescence #D9C16D. Keep the playable floor brighter than vat interiors.
 Required asset family: Compost drums; trough walls; firm metal plates; soft-soil patches; lift buckets; root bridges and joints; broad leaf canopy; closed runoff pipes; sluice wheel and door; fungi clusters.
 Separation rules: Diggable soil warning surfaces and thorn segments are independent from the base floor. Moving lifts, grown bridge, and vat scenery use separate assemblies. Do not bake hazard clouds into diffuse textures.
-Show complete individual objects with clear gaps between them, consistent scale, broad readable bevels, simple neutral studio lighting, and a warm light-gray background. Include a few orthographic-style front/side/top studies where moving mechanisms need explanation. Show fixed and moving components separately without inventing internal engineering. No character redesigns, combined scene collage, text labels, UI, watermark, heavy weathering, or tiny decorative noise. Keep all playable contact surfaces clean and identifiable. This is art reference for later modeling, not a technical fabrication drawing.
+Draw complete individual 2D objects with clear gaps, consistent canvas scale, clean outlines, flat colors and crisp cel shadows on warm off-white. Prioritize gameplay side views; include a separate moving-part drawing only where a mechanism needs explanation. Show fixed and moving components separately without inventing internal engineering. No character redesigns, combined scene collage, text labels, UI, watermark, heavy weathering, or tiny decorative noise. Keep all playable contact surfaces clean and identifiable. This is art reference for later 2D asset production, not a technical fabrication drawing.
 ```
 
 ## Prompt 4 — AI design handoff

@@ -1,5 +1,7 @@
 # Level 8 — The Memory Orchard
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../concept-art/README.md).
+
 System details are proposed in the [design pack](../design/README.md): movement, checkpoint rollback, weapon resources, gem budgets, artifacts, and single-weapon boss requirements. Use the [AI entry guide](../AI_START_HERE.md) to find the owner before refining this level. Exact supply and artifact placements still need local allocation.
 
 **ID:** L08
@@ -10,7 +12,7 @@ System details are proposed in the [design pack](../design/README.md): movement,
 
 ## Standalone context
 
-DEAD EDEN is an original colorful 2.5D platformer shooter. A scavenger and a maintenance-robot companion explore a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
+DEAD EDEN is an original colorful 2D platformer shooter. A scavenger and a maintenance-robot companion explore a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
 
 A luminous orchard stores human memories inside trees, and fragments of ordinary lives briefly quiet the failed patients beneath them.
 
@@ -157,13 +159,13 @@ Optional paths rejoin the main route without requiring a new movement ability or
 
 Leaves brushing glass, soft chimes from capsules, short indistinct remembered voices, and Howler inhalation clear above the ambience. Personal memory audio remains sparse.
 
-## Environment asset kit and modeling separation
+## Environment asset kit and layer separation
 
 **Required kit:** Thick branch junctions; pale trunk shells; separate memory-cylinder stacks; capsule and mount variations; fixed archive balconies; bench; keepsake props; console; glass canopy ribs; projected-memory effect planes.
 
 **Separate objects:** Living trunks, storage units, and projected memories are distinct components. Use noninteractive projections without collision. Keep peaceful and hostile Rememberers on the same approved character design.
 
-Build references for the largest architectural forms first, then moving parts and props. Record pivot intent for rotating, sliding, lifting, and opening elements. Use modular repeatable pieces where the design calls for repeated corridors, floors, or rails; keep unique landmarks separate. Final mesh budgets, texture sizes, file formats, collision setup, and rig implementation remain outside this concept brief.
+Draw the largest architectural silhouettes first, then separate moving parts and props. Record pivot intent for rotating, sliding, lifting and opening elements. Plan repeatable illustrated tiles or modules for floors, rails and corridors; keep unique landmarks separate. Keep foreground, playable, background and effects on distinct drawing layers. Final sprite resolution, atlas layout, animation method, file format and collision setup remain undecided.
 
 ## Constraints for another AI model
 
@@ -176,7 +178,7 @@ Preserve the established number of levels, enemies, weapons, and upgrades. Show 
 Copy this block directly into an image generator. It requests one representative environment view, not the entire level compressed into a single picture. Use existing approved character references if detailed characters are needed; otherwise keep them as small scale silhouettes.
 
 ```text
-Original stylized 3D game environment concept art for DEAD EDEN. Chunky rounded architecture, strong side-view readability, broad bevels, painterly material variation, warm enamel and ceramic, readable dark joints, and selective wear. Cheerful care infrastructure with eerie consequences, not photorealistic horror. Use original designs rather than another game's characters or scenery. Keep playable surfaces and attack lanes visually clear.
+Original hand-drawn 2D environment concept art for DEAD EDEN. Match the selected Sunnyvale scenes' clean dark outlines, rounded architectural shapes, flat painted color masses, crisp cel shadows and sparse graphic highlights. Use separate illustrated foreground, playable and background layers with decreasing background contrast; depth comes from overlap and optional parallax. Represent ceramic, enamel, plants and machinery with simple graphic marks, not realistic material shading. Preserve the level-specific palette and mood. Keep playable surfaces, enemies, attack lanes and landings clear. No photorealism, volumetric lighting or franchise assets.
 
 Create one wide 16:9 environment keyframe for level 8, "The Memory Orchard".
 Narrative purpose: A luminous orchard stores human memories inside trees, and fragments of ordinary lives briefly quiet the failed patients beneath them.
@@ -189,7 +191,7 @@ Playable plane: Thick branch platforms with clear top edges, maintenance bracket
 Background: Layered memory trees, large suspended storage modules, faded abstract family silhouettes inside distant capsules, and the hospital's glass roof.
 Show only this level's appropriate era and threats: Resident, Clinger, Howler, Rememberer, Bloom Sentry; no boss. Keep the number of characters low and their poses subordinate to environment readability. The scene illustrates a designed playable space, with clear landing edges and room for movement. Do not imply unlisted abilities.
 Exclusions: No actual Returned encounter, global zombie mind control, forced harm to peaceful patients, collectible-gated plot, or boss. Do not make memories appear as clear new real-world character portraits that redefine unapproved backstories.
-Use a fixed side-oriented gameplay camera with slight depth visible in architecture, clear separation of foreground and background, controlled soft lighting, no UI, no watermark, no textual labels, no forced cinematic angle, and no effects obscuring the route.
+Use a fixed side-oriented gameplay camera with depth suggested by overlapping illustrated layers, clear separation of foreground and background, controlled drawn lighting and crisp cel shadows, no UI, no watermark, no textual labels, no forced cinematic angle, and no effects obscuring the route.
 ```
 
 ## Prompt 2 — side-elevation layout study
@@ -197,7 +199,7 @@ Use a fixed side-oriented gameplay camera with slight depth visible in architect
 This is a conceptual spatial study. Generated art cannot verify jump distances or collision; reconcile it with the written route and a later movement blockout.
 
 ```text
-Design a clean side-elevation level-layout study for DEAD EDEN level 8, "The Memory Orchard". Keep a single 2D gameplay plane inside layered stylized 3D architecture. Main route: A01 Quiet bench → A02 Branch archive → A03 Alarm grove → A04 Memory clearing → A05 Upper canopy → A06 Transfer records.
+Design a clean side-elevation level-layout study for DEAD EDEN level 8, "The Memory Orchard". Keep a single 2D gameplay plane inside layered hand-drawn 2D scenery. Main route: A01 Quiet bench → A02 Branch archive → A03 Alarm grove → A04 Memory clearing → A05 Upper canopy → A06 Transfer records.
 Use six adjacent panels, one for each area, or generate them individually if the full sheet loses clarity. Each panel must preserve its entry and exit direction; explicit local vertical movement may be shown. Space descriptions:
 L08-A01: Quiet bench. A peaceful Rememberer repeats the act of straightening a small keepsake on a bench. The path passes safely behind a low rail, and no hostile enemy interrupts this first observation. Connection: A short branch stair leads to A02.
 L08-A02: Branch archive. Wide branches form a gentle ascent. One familiar Clinger hangs in a clearly lit recess. A hostile Rememberer on a later balcony takes cover and throws a loose object. Connection: Reach a stable reading platform before A03.
@@ -216,7 +218,7 @@ After approving an environment keyframe, attach it to preserve the visual langua
 Using the attached approved environment keyframe, create a clean modular environment asset reference sheet for DEAD EDEN level 8, "The Memory Orchard". Match these materials and colors: Pearl bark #D9D6C4, sage foliage #8CB095, soft amber memory light #E7C386, dusty violet shadow #837BA5, deep teal depth #365F68. Light pulses slowly rather than flashing.
 Required asset family: Thick branch junctions; pale trunk shells; separate memory-cylinder stacks; capsule and mount variations; fixed archive balconies; bench; keepsake props; console; glass canopy ribs; projected-memory effect planes.
 Separation rules: Living trunks, storage units, and projected memories are distinct components. Use noninteractive projections without collision. Keep peaceful and hostile Rememberers on the same approved character design.
-Show complete individual objects with clear gaps between them, consistent scale, broad readable bevels, simple neutral studio lighting, and a warm light-gray background. Include a few orthographic-style front/side/top studies where moving mechanisms need explanation. Show fixed and moving components separately without inventing internal engineering. No character redesigns, combined scene collage, text labels, UI, watermark, heavy weathering, or tiny decorative noise. Keep all playable contact surfaces clean and identifiable. This is art reference for later modeling, not a technical fabrication drawing.
+Draw complete individual 2D objects with clear gaps, consistent canvas scale, clean outlines, flat colors and crisp cel shadows on warm off-white. Prioritize gameplay side views; include a separate moving-part drawing only where a mechanism needs explanation. Show fixed and moving components separately without inventing internal engineering. No character redesigns, combined scene collage, text labels, UI, watermark, heavy weathering, or tiny decorative noise. Keep all playable contact surfaces clean and identifiable. This is art reference for later 2D asset production, not a technical fabrication drawing.
 ```
 
 ## Prompt 4 — AI design handoff

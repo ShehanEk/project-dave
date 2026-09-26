@@ -1,5 +1,7 @@
 # DEAD EDEN — Core gameplay rules
 
+**Approved visual direction (C11):** [Hand-drawn 2D](art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](concept-art/README.md).
+
 For the complete organized specification, start with the [AI entry guide](AI_START_HERE.md), [twenty detailed design documents](design/README.md), and [decision register](design/decisions.md). This file is the short overview; detailed system files own the proposed rules.
 
 ## Confirmed decisions

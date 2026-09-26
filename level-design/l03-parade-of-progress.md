@@ -1,5 +1,7 @@
 # Level 3 — Parade of Progress
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../concept-art/README.md).
+
 System details are proposed in the [design pack](../design/README.md): movement, checkpoint rollback, weapon resources, gem budgets, artifacts, and single-weapon boss requirements. Use the [AI entry guide](../AI_START_HERE.md) to find the owner before refining this level. Exact supply and artifact placements still need local allocation.
 
 **ID:** L03
@@ -10,7 +12,7 @@ System details are proposed in the [design pack](../design/README.md): movement,
 
 ## Standalone context
 
-DEAD EDEN is an original colorful 2.5D platformer shooter. A scavenger and a maintenance-robot companion explore a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
+DEAD EDEN is an original colorful 2D platformer shooter. A scavenger and a maintenance-robot companion explore a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
 
 A relentlessly cheerful civic parade becomes a moving obstacle course and ends with its enormous robotic groundskeeper trying to prune the hero.
 
@@ -169,15 +171,15 @@ Bright brass-like synthetic parade music, float motor rumble, and an unmistakabl
 
 **Victory consequence:** Gems for upgrades and access to the Rootworks lift; no sixth weapon or automatic unplanned upgrade.
 
-[Full boss appearance, abilities, and modeling reference](../art-design/mini-bosses/b01-mr-mulch.md).
+[Full boss appearance, abilities, and sprite reference](../art-design/mini-bosses/b01-mr-mulch.md).
 
-## Environment asset kit and modeling separation
+## Environment asset kit and layer separation
 
 **Required kit:** Float deck and wheel chassis; canopy supports; giant molded flowers; viewing steps; fence modules; reinforced planters; service refuge platforms; sun arch; folding arch panels; floor lift hatch.
 
 **Separate objects:** Floats, wheels, rideable decks, and track motion remain distinct. Mr. Mulch is a separate boss asset; planter walls have clear collision faces and readable impact states.
 
-Build references for the largest architectural forms first, then moving parts and props. Record pivot intent for rotating, sliding, lifting, and opening elements. Use modular repeatable pieces where the design calls for repeated corridors, floors, or rails; keep unique landmarks separate. Final mesh budgets, texture sizes, file formats, collision setup, and rig implementation remain outside this concept brief.
+Draw the largest architectural silhouettes first, then separate moving parts and props. Record pivot intent for rotating, sliding, lifting and opening elements. Plan repeatable illustrated tiles or modules for floors, rails and corridors; keep unique landmarks separate. Keep foreground, playable, background and effects on distinct drawing layers. Final sprite resolution, atlas layout, animation method, file format and collision setup remain undecided.
 
 ## Constraints for another AI model
 
@@ -190,7 +192,7 @@ Preserve the established number of levels, enemies, weapons, and upgrades. Show 
 Copy this block directly into an image generator. It requests one representative environment view, not the entire level compressed into a single picture. Use existing approved character references if detailed characters are needed; otherwise keep them as small scale silhouettes.
 
 ```text
-Original stylized 3D game environment concept art for DEAD EDEN. Chunky rounded architecture, strong side-view readability, broad bevels, painterly material variation, warm enamel and ceramic, readable dark joints, and selective wear. Cheerful care infrastructure with eerie consequences, not photorealistic horror. Use original designs rather than another game's characters or scenery. Keep playable surfaces and attack lanes visually clear.
+Original hand-drawn 2D environment concept art for DEAD EDEN. Match the selected Sunnyvale scenes' clean dark outlines, rounded architectural shapes, flat painted color masses, crisp cel shadows and sparse graphic highlights. Use separate illustrated foreground, playable and background layers with decreasing background contrast; depth comes from overlap and optional parallax. Represent ceramic, enamel, plants and machinery with simple graphic marks, not realistic material shading. Preserve the level-specific palette and mood. Keep playable surfaces, enemies, attack lanes and landings clear. No photorealism, volumetric lighting or franchise assets.
 
 Create one wide 16:9 environment keyframe for level 3, "Parade of Progress".
 Narrative purpose: A relentlessly cheerful civic parade becomes a moving obstacle course and ends with its enormous robotic groundskeeper trying to prune the hero.
@@ -203,7 +205,7 @@ Playable plane: Stationary viewing steps, slow float decks, connecting service p
 Background: Additional parade lanes, looping cheering hologram silhouettes, ornamental town facades, and the habitat ceiling. Background floats cannot be entered or mistaken for active platforms.
 Show only this level's appropriate era and threats: Resident, Clipper, Pollinator, Bloom Sentry, Courtesy Officer; mini-boss Mr. Mulch only if this is its arena scene. Keep the number of characters low and their poses subordinate to environment readability. The scene illustrates a designed playable space, with clear landing edges and room for movement. Do not imply unlisted abilities.
 Exclusions: No floor collapse, summon phase, new weapon, Returned, or mandatory tether. Do not make the player jump over the full boss height from flat ground without a designed raised escape route.
-Use a fixed side-oriented gameplay camera with slight depth visible in architecture, clear separation of foreground and background, controlled soft lighting, no UI, no watermark, no textual labels, no forced cinematic angle, and no effects obscuring the route.
+Use a fixed side-oriented gameplay camera with depth suggested by overlapping illustrated layers, clear separation of foreground and background, controlled drawn lighting and crisp cel shadows, no UI, no watermark, no textual labels, no forced cinematic angle, and no effects obscuring the route.
 ```
 
 ## Prompt 2 — side-elevation layout study
@@ -211,7 +213,7 @@ Use a fixed side-oriented gameplay camera with slight depth visible in architect
 This is a conceptual spatial study. Generated art cannot verify jump distances or collision; reconcile it with the written route and a later movement blockout.
 
 ```text
-Design a clean side-elevation level-layout study for DEAD EDEN level 3, "Parade of Progress". Keep a single 2D gameplay plane inside layered stylized 3D architecture. Main route: A01 Staging yard → A02 Turret float → A03 Security checkpoint → A04 Parade crossing → A05 Terminus refuge → A06 Mr. Mulch arena.
+Design a clean side-elevation level-layout study for DEAD EDEN level 3, "Parade of Progress". Keep a single 2D gameplay plane inside layered hand-drawn 2D scenery. Main route: A01 Staging yard → A02 Turret float → A03 Security checkpoint → A04 Parade crossing → A05 Terminus refuge → A06 Mr. Mulch arena.
 Use six adjacent panels, one for each area, or generate them individually if the full sheet loses clarity. Each panel must preserve its entry and exit direction; explicit local vertical movement may be shown. Space descriptions:
 L03-A01: Staging yard. Board a low stationary float, then cross to a second float moving slowly along a short visible track. A fixed service ledge runs below the practice jump. Connection: Step onto a stationary viewing platform at A02.
 L03-A02: Turret float. One Bloom Sentry stands on a slowly moving float beside broad stationary cover. Its petals open in full view before its first burst. Connection: A stationary ramp leads into A03.
@@ -230,7 +232,7 @@ After approving an environment keyframe, attach it to preserve the visual langua
 Using the attached approved environment keyframe, create a clean modular environment asset reference sheet for DEAD EDEN level 3, "Parade of Progress". Match these materials and colors: Warm cream #EFDFB8, coral #E88F78, garden green #81A956, butter yellow #E4BF55, teal shadows #497A7B. Lighting remains cheerful; danger comes from machinery, not darkness.
 Required asset family: Float deck and wheel chassis; canopy supports; giant molded flowers; viewing steps; fence modules; reinforced planters; service refuge platforms; sun arch; folding arch panels; floor lift hatch.
 Separation rules: Floats, wheels, rideable decks, and track motion remain distinct. Mr. Mulch is a separate boss asset; planter walls have clear collision faces and readable impact states.
-Show complete individual objects with clear gaps between them, consistent scale, broad readable bevels, simple neutral studio lighting, and a warm light-gray background. Include a few orthographic-style front/side/top studies where moving mechanisms need explanation. Show fixed and moving components separately without inventing internal engineering. No character redesigns, combined scene collage, text labels, UI, watermark, heavy weathering, or tiny decorative noise. Keep all playable contact surfaces clean and identifiable. This is art reference for later modeling, not a technical fabrication drawing.
+Draw complete individual 2D objects with clear gaps, consistent canvas scale, clean outlines, flat colors and crisp cel shadows on warm off-white. Prioritize gameplay side views; include a separate moving-part drawing only where a mechanism needs explanation. Show fixed and moving components separately without inventing internal engineering. No character redesigns, combined scene collage, text labels, UI, watermark, heavy weathering, or tiny decorative noise. Keep all playable contact surfaces clean and identifiable. This is art reference for later 2D asset production, not a technical fabrication drawing.
 ```
 
 ## Prompt 4 — AI design handoff

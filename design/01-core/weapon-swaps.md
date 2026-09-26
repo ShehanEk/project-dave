@@ -1,5 +1,7 @@
 # DEAD EDEN — One carried weapon and world pickups
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../../concept-art/README.md).
+
 **Document ID:** G03  
 **Status:** Working design proposal. Confirmed decisions and established lore remain constraints; new details and numbers are untested proposals.  
 **Purpose:** The precise ground-swap interaction, weapon state, boundaries, and save behavior.

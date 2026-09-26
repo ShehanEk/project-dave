@@ -1,5 +1,7 @@
 # Core gameplay and player rules
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../../concept-art/README.md).
+
 Define the experience, movement, weapon choice, and camera before designing encounters.
 
 This is section 01 of the concept design pack. Read the [decision register](../decisions.md) before treating a proposal as fixed.

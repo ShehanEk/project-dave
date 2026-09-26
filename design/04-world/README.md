@@ -1,5 +1,7 @@
 # Enemy interactions and environmental objects
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../../concept-art/README.md).
+
 Combine the existing roster and levels using predictable interactions and fair single-weapon encounters.
 
 This is section 04 of the concept design pack. Read the [decision register](../decisions.md) before treating a proposal as fixed.

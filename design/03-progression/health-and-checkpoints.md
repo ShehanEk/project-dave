@@ -1,5 +1,7 @@
 # DEAD EDEN — Health, failure, and checkpoint recovery
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../../concept-art/README.md).
+
 **Document ID:** S01  
 **Status:** Working design proposal. Confirmed decisions and established lore remain constraints; new details and numbers are untested proposals.  
 **Purpose:** Defines damage, recovery, the exact retry boundary, and prevention of duplicated rewards.

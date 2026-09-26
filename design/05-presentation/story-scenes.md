@@ -1,5 +1,7 @@
 # DEAD EDEN — Story scenes and campaign continuity
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../../concept-art/README.md).
+
 **Document ID:** N01  
 **Status:** Working design proposal. Confirmed decisions and established lore remain constraints; new details and numbers are untested proposals.  
 **Purpose:** A twelve-level scene plan, with detailed opening, reveal, and ending treatments.

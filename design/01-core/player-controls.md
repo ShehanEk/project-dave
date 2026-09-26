@@ -1,5 +1,7 @@
 # DEAD EDEN — Player movement, aiming, and action rules
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../../concept-art/README.md).
+
 **Document ID:** G02  
 **Status:** Working design proposal. Confirmed decisions and established lore remain constraints; new details and numbers are untested proposals.  
 **Purpose:** Input actions, jump behavior, aiming, action priorities, and movement exclusions.

@@ -1,9 +1,11 @@
 # Project Dave — DEAD EDEN
 
-A game concept for a colorful **2.5D platformer shooter** about a scavenger, an overprotective AI, robots, and failed resurrection patients.
+**Approved visual direction (C11):** [Hand-drawn 2D](art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](concept-art/README.md).
+
+A game concept for a colorful **hand-drawn 2D platformer shooter** about a scavenger, an overprotective AI, robots, and failed resurrection patients.
 
 **Working title:** DEAD EDEN\
-**Stage:** Concept development and visual design. No game implementation or finished 3D assets yet.
+**Stage:** Concept development and visual design. No game implementation or finished sprites or animations yet.
 
 The project takes inspiration from the treasure-hunting adventure of *Dangerous Dave* and the expressive environments and transformations of *Super Mario Bros. Wonder*, while developing its own world, characters, and visual identity.
 
@@ -23,9 +25,9 @@ EDEN's machines maintain cheerful gardens and immaculate neighborhoods above a s
 - [Detailed level briefs](level-design/README.md): twelve standalone AI-ready descriptions covering routes, encounters, visuals, checkpoints, story beats, and environment prompts.
 - [Structured campaign reference](level-design/campaign.json): the same twelve-level plan in JSON, including all 72 main-route areas.
 - [Art reference index](art-design/README.md): links to every individual enemy and weapon brief.
-- [Selected Clipper design](concept-art/r01-clipper/SELECTED.md): B — Sturdy retro machine, with its approved reference and matching written brief.
-- [Concept art gallery](concept-art/README.md): selected images, source prompts, and modeling handoff notes.
-- [Shared visual style guide](art-design/style-guide.md): consistent proportions, materials, silhouettes, reference-image workflow, and modeling guidance.
+- [Selected Clipper design](concept-art/r01-clipper/SELECTED.md): B — Sturdy retro machine in the selected 2D style, with its matching written brief.
+- [Selected 2D concept-art gallery](concept-art/README.md): both Level 1 enemies, three Sunnyvale scenes, continuation prompts and sprite handoff notes.
+- [Shared visual style guide](art-design/style-guide.md): consistent proportions, materials, silhouettes, reference-image workflow, and 2D production guidance.
 
 ## Current scope
 
@@ -34,7 +36,7 @@ EDEN's machines maintain cheerful gardens and immaculate neighborhoods above a s
 | Campaign | 12 levels |
 | Detailed level design | 12 standalone briefs with 72 ordered areas and reusable AI prompts |
 | Detailed game systems | 20 documents across five sections, plus indexes, manifest, and review scenarios |
-| Hero and companion | Proposed identities, appearance briefs, model studies, and relationship arc |
+| Hero and companion | Proposed identities, appearance briefs, sprite and pose studies, and relationship arc |
 | Artifact catalog | 12 proposed optional lore finds, one per level |
 | Mini-bosses | 4 unique encounters, at levels 3, 6, 9, and 12 |
 | Ordinary enemies | 10 robot varieties and 10 zombie varieties |
@@ -44,13 +46,13 @@ EDEN's machines maintain cheerful gardens and immaculate neighborhoods above a s
 | Treasure | Gems as the primary collectible, plus artifacts |
 | Upgrades | 3 successive upgrades per weapon; 15 total |
 | Individual art briefs | 32, covering enemies, mini-bosses, and weapons |
-| Selected visual reference | R01 Clipper — B, Sturdy retro machine |
+| Selected visual references | 2D Clipper, Resident and three Sunnyvale scenes (5 images) |
 
 ## Using the art briefs
 
-Each brief describes appearance, palette, proportions, abilities, movement, model parts, and consistency rules. It includes copy-ready prompts for a neutral design, modeling turnaround, and action studies. Weapon briefs also describe all three cumulative upgrade appearances and provide corresponding prompts.
+Each brief describes appearance, palette, proportions, abilities, movement, animation layers, and consistency rules. It includes copy-ready prompts for a neutral design, directional sprite study, and action studies. Weapon briefs also describe all three cumulative upgrade appearances and provide corresponding prompts.
 
-Clipper B is the selected visual reference; use it and its updated brief for matching views and poses. Other assets still need a chosen neutral design. Reconcile views and mechanical clearances before modeling. Dimensions remain provisional.
+The selected 2D Clipper and Resident establish the mechanical and biological character treatment; three Sunnyvale keyframes establish the environment treatment. Use the same outlines, flat colors and cel shading across remaining assets while preserving each brief's palette. Other assets still need individual visual selections. Final sprites, animation sheets and separated scenery layers remain future work.
 
 ## Files
 
@@ -84,9 +86,19 @@ art-design/
 concept-art/
   README.md
   r01-clipper/
-    SELECTED.md  # B is the confirmed reference
-    r01-clipper-b-retro-v1.png  # Selected source image
-    generation-prompt.md      # Original prompt for B
+    SELECTED.md
+    r01-clipper-2d-v1.png
+    generation-prompt.md
+  z01-resident/
+    SELECTED.md
+    z01-resident-2d-v1.png
+    generation-prompt.md
+  l01-sunnyvale/
+    README.md
+    generation-prompts.md
+    l01-a02-front-gardens-2d-v1.png
+    l01-a04-neighborhood-square-2d-v1.png
+    l01-a06-quarantine-exit-2d-v1.png
 ```
 
 The Markdown files own the written design. Campaign JSON and the design manifest provide structured summaries and navigation. Explicit visual selections are recorded separately; other new system numbers, names, and unapproved visual choices remain proposed and untested.

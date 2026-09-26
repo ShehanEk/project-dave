@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "project": "DEAD EDEN",
   "updated": "2026-09-26",
   "purpose": "Concept document index for AI agents; not engine data or validated balance.",
@@ -38,19 +38,65 @@
       "overcome an obstacle",
       "reach a checkpoint",
       "upgrade"
-    ]
+    ],
+    "visual_style": "Hand-drawn 2D; clean outlines, flat painted colors, crisp cel shadows, layered backgrounds",
+    "gameplay_plane": "2D side-scrolling"
   },
   "selected_visual_references": [
     {
       "asset_id": "R01",
       "name": "Clipper",
-      "selected_direction": "B — Sturdy retro machine",
-      "status": "user_confirmed_visual_direction",
-      "decision_ref": "C10",
+      "selected_direction": "B — Sturdy retro machine, hand-drawn 2D",
       "selection_record": "concept-art/r01-clipper/SELECTED.md",
-      "image": "concept-art/r01-clipper/r01-clipper-b-retro-v1.png",
+      "image": "concept-art/r01-clipper/r01-clipper-2d-v1.png",
       "canonical_brief": "art-design/robots/r01-clipper.md",
-      "modeling_geometry_validated": false
+      "status": "user_confirmed_visual_reference",
+      "decision_ref": "C11",
+      "production_assets_ready": false
+    },
+    {
+      "asset_id": "Z01",
+      "name": "Resident",
+      "selected_direction": "Hand-drawn 2D Resident",
+      "selection_record": "concept-art/z01-resident/SELECTED.md",
+      "image": "concept-art/z01-resident/z01-resident-2d-v1.png",
+      "canonical_brief": "art-design/zombies/z01-resident.md",
+      "status": "user_confirmed_visual_reference",
+      "decision_ref": "C11",
+      "production_assets_ready": false
+    },
+    {
+      "asset_id": "L01-A02",
+      "name": "Front gardens",
+      "selected_direction": "Hand-drawn 2D Sunnyvale",
+      "selection_record": "concept-art/l01-sunnyvale/README.md",
+      "image": "concept-art/l01-sunnyvale/l01-a02-front-gardens-2d-v1.png",
+      "canonical_brief": "level-design/l01-welcome-to-sunnyvale.md",
+      "status": "user_confirmed_visual_reference",
+      "decision_ref": "C11",
+      "production_assets_ready": false
+    },
+    {
+      "asset_id": "L01-A04",
+      "name": "Neighborhood square",
+      "selected_direction": "Hand-drawn 2D Sunnyvale",
+      "selection_record": "concept-art/l01-sunnyvale/README.md",
+      "image": "concept-art/l01-sunnyvale/l01-a04-neighborhood-square-2d-v1.png",
+      "canonical_brief": "level-design/l01-welcome-to-sunnyvale.md",
+      "status": "user_confirmed_visual_reference",
+      "decision_ref": "C11",
+      "production_assets_ready": false
+    },
+    {
+      "asset_id": "L01-A06",
+      "name": "Quarantine exit",
+      "selected_direction": "Hand-drawn 2D Sunnyvale",
+      "selection_record": "concept-art/l01-sunnyvale/README.md",
+      "image": "concept-art/l01-sunnyvale/l01-a06-quarantine-exit-2d-v1.png",
+      "canonical_brief": "level-design/l01-welcome-to-sunnyvale.md",
+      "status": "user_confirmed_visual_reference",
+      "decision_ref": "C11",
+      "production_assets_ready": false
     }
   ],
   "sections": [
@@ -190,7 +236,7 @@
       "path": "design/02-characters/hero.md",
       "title": "Hero — Rook Venn (working proposal)",
       "status": "proposed_details_with_confirmed_and_established_constraints",
-      "owns": "Proposed protagonist identity, motivation, silhouette, personality, and modeling reference.",
+      "owns": "Proposed protagonist identity, motivation, silhouette, personality, and sprite reference.",
       "decision_refs": [
         "C04",
         "P05"
@@ -614,5 +660,13 @@
       "path": "level-design/campaign.json",
       "owns": "Structured mirror of campaign; written owners control conflicting summaries"
     }
-  ]
+  ],
+  "visual_direction": {
+    "decision_ref": "C11",
+    "status": "confirmed",
+    "guide": "art-design/style-guide.md",
+    "gallery": "concept-art/README.md",
+    "unpictured_asset_appearances": "proposed until individually selected",
+    "sprite_animation_pipeline": "undecided"
+  }
 }

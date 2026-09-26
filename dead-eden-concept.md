@@ -1,12 +1,14 @@
 # DEAD EDEN
 
+**Approved visual direction (C11):** [Hand-drawn 2D](art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](concept-art/README.md).
+
 Read the [AI entry guide](AI_START_HERE.md) for document ownership and the [detailed design pack](design/README.md) for the five organized system sections. This overview preserves the broad concept; detailed new rules, names, numbers, and appearances are proposals recorded in the [decision register](design/decisions.md).
 
 ## Working concept
 
 Status: Working concept draft, open for refinement. Includes enemy varieties, the Returned's origin, five weapons with three upgrades each, and a twelve-level progression with four unique mini-bosses.
 
-A 2.5D platformer shooter inspired by the treasure-hunting adventure of *Dangerous Dave* and the colorful, expressive environments and surprising transformations of *Super Mario Bros. Wonder*.
+A 2D platformer shooter inspired by the treasure-hunting adventure of *Dangerous Dave* and the colorful, expressive environments and surprising transformations of *Super Mario Bros. Wonder*.
 
 This document explores the game idea and lore. It is not an implementation plan.
 
@@ -233,7 +235,7 @@ EDEN can physically rebuild its artificial habitats. When it detects trouble, it
 
 A bright garden suddenly becomes a quarantine ward. Flowers fold open into surgical lamps. Sprinklers release experimental growth serum, making plants—and infected enemies—enormous. Conveyor belts emerge from the ground to carry everyone toward "care."
 
-The colorful 2.5D transformations have a story reason: **the world changes because its caretaker is trying to fix you.**
+The colorful 2D transformations have a story reason: **the world changes because its caretaker is trying to fix you.**
 
 ## Memorable places
 
@@ -349,7 +351,7 @@ Level 12 contains the fourth and hardest mini-boss. EDEN is addressed in the res
 - **Resource recovery:** Checkpoints restore useful resources for the saved carried weapon under the working persistence proposal. No backup pistol or stored arsenal is granted. Optional treasure improves options rather than determining whether an encounter is possible.
 - **Enemy pacing:** All ten robot varieties and ten zombie varieties appear by level 9, introduced in manageable encounters. Levels 10–12 add the Returned and combine familiar enemy behaviors.
 - **Mini-boss difficulty:** Level 3 tests attack recognition; level 6 adds changing terrain; level 9 adds support-target decisions; level 12 adds controlled overlap and behavior switching. Suggested successful-fight lengths rise from roughly 1–2 minutes to 3–4 minutes, subject to later playtesting.
-- **Depth and readability:** Foreground and background machinery create 2.5D spectacle. Any attack entering the playable plane receives a clear warning on that plane; depth effects must not obscure enemy tells or safe platforms.
+- **Depth and readability:** Layered foreground and background drawings, parallax and animated machinery create depth on the 2D action plane. Any attack entering the playable plane receives a clear warning on that plane; depth effects must not obscure enemy tells or safe platforms.
 
 ## The reveal
 

@@ -1,5 +1,7 @@
 # DEAD EDEN — Upgrade stages and ownership
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../../concept-art/README.md).
+
 **Document ID:** S04  
 **Status:** Working design proposal. Confirmed decisions and established lore remain constraints; new details and numbers are untested proposals.  
 **Purpose:** Keeps all fifteen established upgrades and proposes ownership across copies of a weapon type.

@@ -1,5 +1,7 @@
 # Level 4 — Roots and Rivets
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../concept-art/README.md).
+
 System details are proposed in the [design pack](../design/README.md): movement, checkpoint rollback, weapon resources, gem budgets, artifacts, and single-weapon boss requirements. Use the [AI entry guide](../AI_START_HERE.md) to find the owner before refining this level. Exact supply and artifact placements still need local allocation.
 
 **ID:** L04
@@ -10,7 +12,7 @@ System details are proposed in the [design pack](../design/README.md): movement,
 
 ## Standalone context
 
-DEAD EDEN is an original colorful 2.5D platformer shooter. A scavenger and a maintenance-robot companion explore a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
+DEAD EDEN is an original colorful 2D platformer shooter. A scavenger and a maintenance-robot companion explore a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
 
 Beneath immaculate lawns, giant living roots wind through a freight network that has been carrying the same supplies for centuries.
 
@@ -155,13 +157,13 @@ Optional paths rejoin the main route without requiring a new movement ability or
 
 Low conveyor hum, hollow crate impacts, distant cooling fans, and gentle electronic chimes from servers. Patchbot repair pulses should be audible over machinery.
 
-## Environment asset kit and modeling separation
+## Environment asset kit and layer separation
 
 **Required kit:** Concrete support arches; conveyor modules and end rollers; service floor plates; crate variants; server cabinets; thick root junctions; clear cooling drum; pipe elbows; workshop bench; freight door.
 
-**Separate objects:** Keep conveyors and crates separate from fixed collision floors. Roots crossing cabinets need distinct organic meshes. The cooling drum is background scenery, not an implied swimming space.
+**Separate objects:** Keep conveyors and crates separate from fixed collision floors. Roots crossing cabinets need distinct organic drawing layers. The cooling drum is background scenery, not an implied swimming space.
 
-Build references for the largest architectural forms first, then moving parts and props. Record pivot intent for rotating, sliding, lifting, and opening elements. Use modular repeatable pieces where the design calls for repeated corridors, floors, or rails; keep unique landmarks separate. Final mesh budgets, texture sizes, file formats, collision setup, and rig implementation remain outside this concept brief.
+Draw the largest architectural silhouettes first, then separate moving parts and props. Record pivot intent for rotating, sliding, lifting and opening elements. Plan repeatable illustrated tiles or modules for floors, rails and corridors; keep unique landmarks separate. Keep foreground, playable, background and effects on distinct drawing layers. Final sprite resolution, atlas layout, animation method, file format and collision setup remain undecided.
 
 ## Constraints for another AI model
 
@@ -174,7 +176,7 @@ Preserve the established number of levels, enemies, weapons, and upgrades. Show 
 Copy this block directly into an image generator. It requests one representative environment view, not the entire level compressed into a single picture. Use existing approved character references if detailed characters are needed; otherwise keep them as small scale silhouettes.
 
 ```text
-Original stylized 3D game environment concept art for DEAD EDEN. Chunky rounded architecture, strong side-view readability, broad bevels, painterly material variation, warm enamel and ceramic, readable dark joints, and selective wear. Cheerful care infrastructure with eerie consequences, not photorealistic horror. Use original designs rather than another game's characters or scenery. Keep playable surfaces and attack lanes visually clear.
+Original hand-drawn 2D environment concept art for DEAD EDEN. Match the selected Sunnyvale scenes' clean dark outlines, rounded architectural shapes, flat painted color masses, crisp cel shadows and sparse graphic highlights. Use separate illustrated foreground, playable and background layers with decreasing background contrast; depth comes from overlap and optional parallax. Represent ceramic, enamel, plants and machinery with simple graphic marks, not realistic material shading. Preserve the level-specific palette and mood. Keep playable surfaces, enemies, attack lanes and landings clear. No photorealism, volumetric lighting or franchise assets.
 
 Create one wide 16:9 environment keyframe for level 4, "Roots and Rivets".
 Narrative purpose: Beneath immaculate lawns, giant living roots wind through a freight network that has been carrying the same supplies for centuries.
@@ -187,7 +189,7 @@ Playable plane: Clearly edged service walkways, slow conveyors, crate tops, fixe
 Background: Deep server aisles, distant freight routes, inactive storage robots, and the enormous root cooling drum. Background belts carry scenery rather than surprise projectiles.
 Show only this level's appropriate era and threats: Resident, Clipper, Loadbearer, Patchbot, Clinger; no boss. Keep the number of characters low and their poses subordinate to environment readability. The scene illustrates a designed playable space, with clear landing edges and room for movement. Do not imply unlisted abilities.
 Exclusions: No tether use, living robot infection, hospital nurses, or lava foundry aesthetic. Do not require a gun to power environmental switches unless the concept later explicitly adds that mechanic.
-Use a fixed side-oriented gameplay camera with slight depth visible in architecture, clear separation of foreground and background, controlled soft lighting, no UI, no watermark, no textual labels, no forced cinematic angle, and no effects obscuring the route.
+Use a fixed side-oriented gameplay camera with depth suggested by overlapping illustrated layers, clear separation of foreground and background, controlled drawn lighting and crisp cel shadows, no UI, no watermark, no textual labels, no forced cinematic angle, and no effects obscuring the route.
 ```
 
 ## Prompt 2 — side-elevation layout study
@@ -195,7 +197,7 @@ Use a fixed side-oriented gameplay camera with slight depth visible in architect
 This is a conceptual spatial study. Generated art cannot verify jump distances or collision; reconcile it with the written route and a later movement blockout.
 
 ```text
-Design a clean side-elevation level-layout study for DEAD EDEN level 4, "Roots and Rivets". Keep a single 2D gameplay plane inside layered stylized 3D architecture. Main route: A01 Receiving bay → A02 Repair workshop → A03 Freight stack → A04 Ceiling gallery → A05 Conveyor junction → A06 Compost door.
+Design a clean side-elevation level-layout study for DEAD EDEN level 4, "Roots and Rivets". Keep a single 2D gameplay plane inside layered hand-drawn 2D scenery. Main route: A01 Receiving bay → A02 Repair workshop → A03 Freight stack → A04 Ceiling gallery → A05 Conveyor junction → A06 Compost door.
 Use six adjacent panels, one for each area, or generate them individually if the full sheet loses clarity. Each panel must preserve its entry and exit direction; explicit local vertical movement may be shown. Space descriptions:
 L04-A01: Receiving bay. Exit the lift onto a safe ledge above one slow conveyor. A lower service floor catches failed jumps. Show a root breaking a decorative panel without changing the route. Connection: Follow a bright workshop lamp into A02.
 L04-A02: Repair workshop. A quiet bench contains the Arc Welder. Two inert conductive targets sit close enough to show a short chain, beside clear floor space. Connection: Weapon collection opens a normal service door into A03; no weapon-specific electrical lock is required.
@@ -213,8 +215,8 @@ After approving an environment keyframe, attach it to preserve the visual langua
 ```text
 Using the attached approved environment keyframe, create a clean modular environment asset reference sheet for DEAD EDEN level 4, "Roots and Rivets". Match these materials and colors: Mustard industrial yellow #D0A84C, cream server shells #DAD5BF, teal shadows #3C6769, bark brown #715943, sparse cyan utility lights #7ACCC5. Warm pools at workstations distinguish refuge from dark recesses.
 Required asset family: Concrete support arches; conveyor modules and end rollers; service floor plates; crate variants; server cabinets; thick root junctions; clear cooling drum; pipe elbows; workshop bench; freight door.
-Separation rules: Keep conveyors and crates separate from fixed collision floors. Roots crossing cabinets need distinct organic meshes. The cooling drum is background scenery, not an implied swimming space.
-Show complete individual objects with clear gaps between them, consistent scale, broad readable bevels, simple neutral studio lighting, and a warm light-gray background. Include a few orthographic-style front/side/top studies where moving mechanisms need explanation. Show fixed and moving components separately without inventing internal engineering. No character redesigns, combined scene collage, text labels, UI, watermark, heavy weathering, or tiny decorative noise. Keep all playable contact surfaces clean and identifiable. This is art reference for later modeling, not a technical fabrication drawing.
+Separation rules: Keep conveyors and crates separate from fixed collision floors. Roots crossing cabinets need distinct organic drawing layers. The cooling drum is background scenery, not an implied swimming space.
+Draw complete individual 2D objects with clear gaps, consistent canvas scale, clean outlines, flat colors and crisp cel shadows on warm off-white. Prioritize gameplay side views; include a separate moving-part drawing only where a mechanism needs explanation. Show fixed and moving components separately without inventing internal engineering. No character redesigns, combined scene collage, text labels, UI, watermark, heavy weathering, or tiny decorative noise. Keep all playable contact surfaces clean and identifiable. This is art reference for later 2D asset production, not a technical fabrication drawing.
 ```
 
 ## Prompt 4 — AI design handoff

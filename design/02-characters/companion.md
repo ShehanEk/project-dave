@@ -1,5 +1,7 @@
 # DEAD EDEN — Companion — PIP (working proposal)
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../../concept-art/README.md).
+
 **Document ID:** H02  
 **Status:** Working design proposal. Confirmed decisions and established lore remain constraints; new details and numbers are untested proposals.  
 **Purpose:** The maintenance companion's identity, limited abilities, appearance, and authority reveal.
@@ -52,14 +54,14 @@ The authority credentials are old, sealed, and only recognized by the original c
 
 PIP's core stays installed during the ending. It connects through a service interface; the game does not require killing the companion to save everyone else.
 
-## Model and reference requirements
+## Sprite and reference requirements
 
 Separate shell, face panel, one eye display, core window, two arms, lift grille, handle, and landing feet. Reference states: neutral hover, cautious look, proud explanation, nervous correction, console connection, upgrade fitting, landing, and final relieved silence.
 
 ## Copy-ready neutral prompt
 
 ```text
-Original stylized 3D maintenance companion PIP for DEAD EDEN. Small 0.65 m pear-shaped cream ceramic robot, one large expressive cyan eye in an oval charcoal face panel, small speaker slit, protected amber core window low on chest, one mint service stripe, exactly two short folding utility arms with three padded digits each, compact visible lift grille, rear carry handle, two small folded landing feet. Friendly but slightly anxious personality. Chunky broad forms, soft enamel highlights, light practical wear. Visually distinct from a toolbox repair robot. Full subject hovering just above a plain warm light-gray floor, neutral soft studio lighting, no weapon, no extra eyes, no hidden gun rack, no text, no organic infection.
+Original hand-drawn 2D maintenance companion PIP for DEAD EDEN. Small 0.65 m pear-shaped cream ceramic robot, one large expressive cyan eye in an oval charcoal face panel, small speaker slit, protected amber core window low on chest, one mint service stripe, exactly two short folding utility arms with three padded digits each, compact visible lift grille, rear carry handle, two small folded landing feet. Friendly but slightly anxious personality. Chunky broad forms, clean dark outlines, flat local colors, crisp cel shadows, simple drawn enamel highlight shapes and sparse drawn wear. Visually distinct from a toolbox repair robot. Full subject hovering just above a flat warm off-white background, flat colors and crisp cel shadows, no weapon, no extra eyes, no hidden gun rack, no text, no organic infection.
 ```
 
 The working name and appearance remain proposals for review.

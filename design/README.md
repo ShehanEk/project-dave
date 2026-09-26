@@ -1,5 +1,7 @@
 # DEAD EDEN — Detailed game design
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../concept-art/README.md).
+
 Twenty focused design documents in the requested five-part order. This pack connects the existing lore, art briefs, and twelve-level campaign with player and system rules. It is a concept specification, not game code or a claim of tested balance.
 
 **Start with [AI_START_HERE](../AI_START_HERE.md)** and the [decision register](decisions.md). The user-confirmed one-weapon ground swap and gem-led loop remain fixed. Hero names, health, resource counts, costs, artifacts, and presentation details are proposed defaults.
@@ -22,7 +24,7 @@ Twenty focused design documents in the requested five-part order. This pack conn
 | G02 | [Player movement, aiming, and action rules](01-core/player-controls.md) | Input actions, jump behavior, aiming, action priorities, and movement exclusions. |
 | G03 | [One carried weapon and world pickups](01-core/weapon-swaps.md) | The precise ground-swap interaction, weapon state, boundaries, and save behavior. |
 | G04 | [Camera, readability, and moment-to-moment feedback](01-core/camera-and-feedback.md) | Gameplay camera behavior and the visual language for danger, surfaces, targets, and rewards. |
-| H01 | [Hero — Rook Venn (working proposal)](02-characters/hero.md) | Proposed protagonist identity, motivation, silhouette, personality, and modeling reference. |
+| H01 | [Hero — Rook Venn (working proposal)](02-characters/hero.md) | Proposed protagonist identity, motivation, silhouette, personality, and sprite reference. |
 | H02 | [Companion — PIP (working proposal)](02-characters/companion.md) | The maintenance companion's identity, limited abilities, appearance, and authority reveal. |
 | H03 | [Hero–companion relationship and dialogue behavior](02-characters/relationship-and-banter.md) | Relationship arc, scene-level changes, and rules for useful banter without hint spam. |
 | S01 | [Health, failure, and checkpoint recovery](03-progression/health-and-checkpoints.md) | Defines damage, recovery, the exact retry boundary, and prevention of duplicated rewards. |
@@ -47,4 +49,4 @@ Twenty focused design documents in the requested five-part order. This pack conn
 - [Core gameplay summary](../core-gameplay.md): short overview for people reading the concept first.
 - [Existing level pack](../level-design/README.md) and [art pack](../art-design/README.md): authoritative detailed layouts and visual briefs within their stated proposal status.
 
-The current pack adds written hero/companion art direction and artifact descriptions. Generated images are stored in the [concept-art gallery](../concept-art/README.md), where [Clipper B](../concept-art/r01-clipper/SELECTED.md) is the confirmed visual reference. Finished models, UI screens, audio, and a playable build remain future work. Keep the individual editable sources; do not bundle duplicate ZIPs.
+The current pack adds written hero/companion art direction and artifact descriptions. Generated images are stored in the [concept-art gallery](../concept-art/README.md), where the 2D Clipper, Resident and three Sunnyvale scenes are selected visual references under C11. Finished sprite sheets, UI screens, audio, and a playable build remain future work. Keep the individual editable sources; do not bundle duplicate ZIPs.

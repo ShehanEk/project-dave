@@ -1,5 +1,7 @@
 # Decision register
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../concept-art/README.md).
+
 **Status date:** 2026-09-26. This register separates what the user selected from established project material and the detailed proposals added in this design pass.
 
 - **Confirmed:** an explicit user decision. Preserve it unless the user changes it.
@@ -21,14 +23,15 @@ A proposal may be used consistently for further concept work without another app
 | C07 | Twelve levels; a unique mini-boss every three levels, increasing in difficulty. |
 | C08 | Use separate organized editable files; remove duplicate ZIP archives and do not recreate them. |
 | C09 | At least ten robot and ten zombie varieties, with robot-zombie hybrids introduced later through a coherent lore explanation. |
-| C10 | R01 Clipper uses [B — Sturdy retro machine](../concept-art/r01-clipper/SELECTED.md) as its selected visual reference. Preserve its wheeled body, separate short eye stalks, two-blade shears and retro mechanical construction. Only the selected concept art and its supporting notes and prompt are kept in the current repository. |
+| C10 | R01 Clipper uses [B — Sturdy retro machine](../concept-art/r01-clipper/SELECTED.md) as its selected visual reference. Preserve its wheeled body, separate short eye stalks, two-blade shears and retro mechanical construction. C11 updates this identity to its selected 2D depiction. Keep only selected concept images and their supporting notes and prompts in the current repository. |
+| C11 | Adopt the generated **hand-drawn 2D style** for the whole game: clean outlines, flat painted colors, crisp cel shadows and layered backgrounds. Use the selected [Clipper and Resident images and three Sunnyvale scenes](../concept-art/README.md). This replaces the earlier rendered art direction; remaining assets must follow this style. |
 
 ## Established baseline
 
 | ID | Baseline |
 | --- | --- |
 | E01 | Existing DEAD EDEN setting and story: careless care, scavenger/maintenance companion, physical neural interfaces, L11 authority/life support, L12 policy resolution. |
-| E02 | Existing named roster, five weapon identities and upgrade names, twelve named levels, introductions, and four boss identities. Unapproved visual details and room layouts remain proposals; see C10 for the confirmed Clipper reference. |
+| E02 | Existing named roster, five weapon identities and upgrade names, twelve named levels, introductions, and four boss identities. Unapproved visual details and room layouts remain proposals; see C10-C11 for the selected Clipper identity, 2D rendering style and five image references. |
 
 ## Proposed detailed defaults
 
@@ -38,7 +41,7 @@ A proposal may be used consistently for further concept work without another app
 | P02 | Movement/action model, free aiming on the side plane, grace/buffer ranges, and cancellation rules. | [G02](01-core/player-controls.md), [G04](01-core/camera-and-feedback.md) |
 | P03 | Deliberate pickup comparison, stable swap anchors, reversible trials, no campaign chapter replay yet. | [G03](01-core/weapon-swaps.md) |
 | P04 | Side camera behavior, look-ahead, visual hierarchy, and reduced-effects feedback. | [G04](01-core/camera-and-feedback.md) |
-| P05 | Hero name Rook Venn, background details, personality, appearance, and model studies. | [H01](02-characters/hero.md), [H03](02-characters/relationship-and-banter.md), [N01](05-presentation/story-scenes.md), [N02](05-presentation/dialogue-and-writing.md) |
+| P05 | Hero name Rook Venn, background details, personality, appearance, and sprite and pose studies. | [H01](02-characters/hero.md), [H03](02-characters/relationship-and-banter.md), [N01](05-presentation/story-scenes.md), [N02](05-presentation/dialogue-and-writing.md) |
 | P06 | Companion name PIP, appearance, information/support limits, following behavior, and fitting presentation. | [H02](02-characters/companion.md), [H03](02-characters/relationship-and-banter.md), [N01](05-presentation/story-scenes.md), [N02](05-presentation/dialogue-and-writing.md) |
 | P07 | Six health units, damage/recovery targets, whole-state checkpoint rollback, no lives, and save boundaries. | [S01](03-progression/health-and-checkpoints.md) |
 | P08 | Type-wide paid upgrade record; physical weapon resources; three sequential tiers with campaign gates. | [G03](01-core/weapon-swaps.md), [S01](03-progression/health-and-checkpoints.md), [S04](03-progression/upgrades-and-ownership.md) |

@@ -1,22 +1,13 @@
-# R01 Clipper — Selected image generation prompt
+# Clipper — Current 2D continuation prompt
 
-**Design:** B — Sturdy retro machine.  
-**Generated:** 2026-09-26 with the built-in image-generation tool, as a new image with no input reference.  
-**Output:** [Selected Clipper B](r01-clipper-b-retro-v1.png).
+**Approved visual direction (C11):** [Hand-drawn 2D](../../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../README.md).
 
-This records the exact prompt that produced the selected image. For new views or poses, attach that image and use the updated [canonical Clipper brief](../../art-design/robots/r01-clipper.md). The approved design has two separate short eye stalks; the original shared-neck wording below is provenance, not the current design rule.
+Attach [selected Clipper](r01-clipper-2d-v1.png). This prompt is updated for continued work after selection; it is not the earlier style-transfer log. For state-specific behavior, use the [canonical brief](../../art-design/robots/r01-clipper.md).
 
 ```text
-Use case: stylized-concept.
-Asset type: neutral concept-art master candidate for later 3D modeling, DEAD EDEN colorful original 2.5D platformer shooter.
-Primary request: generate ONE complete Clipper gardening robot, not a sheet or collage.
-Subject: a low pear-shaped green watering-can-like motor housing with integrated rear carry handle; approximately 0.85 m tall and 1.05 m long with shears closed, half human height. Exactly TWO broad rubber main wheels on a single axle, ONE small rear balance roller, exactly TWO small circular mechanical eye lenses on a short flexible neck above the shears. Exactly TWO thick hedge-shear blades projecting from the front, arranged as a nearly closed shallow horizontal V, with metallic inner bevels. Two short mechanical linkage rods join the front shared hinge assembly to the motor housing. Clear pivot joints; blunt broad exterior blade silhouette, inner cutting bevel. A rear service hatch surrounds a ribbed motor with a broken circular guard. Important: this is a compact rolling gardening machine, NOT a humanoid.
-Palette: leaf-green enamel #6EAD48, warm ivory #EFE5CF, graphite rubber #303B39, small amber warning lens #FFB547; the two eyes are simple readable circular lenses, not a screen face. Neutral materials, restrained small grass scuffs near lower body, clean functional joints.
-Composition: a single complete asset isolated on a plain warm light-gray studio ground. Landscape 4:3 composition. Neutral relaxed three-quarter view facing toward the left of the picture, slightly above axle level, weak perspective, full shears/body/wheels entirely in frame with generous margin, readable gaps between rods, wheels and blades. Similar scale to a clean catalog prop view. Show the far wheel and small rear roller as far as this perspective naturally permits; do not add wheels to achieve visibility.
-Lighting: soft neutral studio illumination and minimal grounded shadow, all relevant shapes readable, no cinematic depth of field.
-Constraints: original design identity, colorful tactile stylized 3D game art with broad bevels, strong silhouette at small side-view game size. Exactly two blades, two main wheels, one rear roller and two eyes. No humans, humanoid arms or legs, teeth, spikes, flesh, infection, wings, extra tools, flowers growing out of body, weapons beyond the shears, scenery, action effects, UI, labels, letters, numbers, watermark, logos, exploded views, turnarounds, collages, toy packaging or franchise characters. This is a visual candidate, not a new game mechanic.
-
-Direction B — Sturdy retro machine. Interpret the same pear-shaped watering-can shell as a mid-century industrial garden appliance: slightly broader low base, rounded stamped-metal enamel panels, one broad ivory service band, smaller practical circular eye lenses, thicker rubber tires with simple wide grooves, visibly substantial shear pivot brackets. Friendly civic-maintenance styling with purposeful manufacturing, rounded edges throughout. Polished stylized game-ready 3D concept rendering, a few large readable fasteners and clear replaceable panels, light practical scuffs. Mechanically convincing but never photorealistic, busy, militarized, box-shaped or humanoid. This is the most functional and robust direction.
+Use the attached selected image as the identity reference for DEAD EDEN. Draw finished hand-drawn 2D game concept art with clean dark olive or warm charcoal outlines, broad flat local colors, one or two crisp cel-shadow shapes and sparse graphic highlights. Preserve the reference's proportions, palette, anatomy, asymmetric details and equipment. No realistic surface shading, studio gradients, volumetric light, extra parts, text, labels, UI or watermark. One complete subject on flat warm off-white with a simple flat contact shadow. Keep the requested pose readable in a side-scrolling game.
+Preserve Clipper B's low green pear-shaped housing, ivory service band, integrated rear handle, two rubber main wheels and one rear roller, two amber eyes on separate short ribbed stalks, two steel shears opening horizontally at a vertical pivot, paired drive rods and rear ribbed motor with ivory guard.
+Draw one neutral left-facing gameplay pose with shears nearly closed. Paired far parts may overlap but must not be deleted or duplicated. Keep the substantial mechanical construction readable through simple lines and color shapes. No humanoid limbs, hooked blades, biological tissue or new equipment.
 ```
 
-[Selection record](SELECTED.md) · [Concept art index](../README.md)
+[Selection record](SELECTED.md) · [Shared 2D guide](../../art-design/style-guide.md)

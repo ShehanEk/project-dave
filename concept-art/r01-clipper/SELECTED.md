@@ -1,38 +1,30 @@
-# R01 Clipper — Selected design
+# R01 Clipper — Selected 2D design
 
-**Decision:** C10 — the user selected **B — Sturdy retro machine**.  
-**Status:** Confirmed visual direction and primary reference image.  
+**Approved visual direction (C11):** [Hand-drawn 2D](../../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../README.md).
+
+**Decisions:** C10 retains B — Sturdy retro machine; C11 selects its generated hand-drawn 2D depiction.  
+**Status:** Approved identity and current primary visual reference.  
 **Selected on:** 2026-09-26.  
-**Source image:** [B — Sturdy retro machine](r01-clipper-b-retro-v1.png).  
-**Canonical written brief:** [R01 Clipper](../../art-design/robots/r01-clipper.md).
+**Source image:** [Clipper 2D](r01-clipper-2d-v1.png).  
+**Canonical brief:** [R01 Clipper](../../art-design/robots/r01-clipper.md).
 
-![Selected Clipper B — Sturdy retro machine](r01-clipper-b-retro-v1.png)
+![Selected Clipper in 2D](r01-clipper-2d-v1.png)
 
-## Features to preserve
+## Preserve
 
-- A low, sturdy wheeled gardening machine with a rounded pear-shaped green motor housing.
-- Two broad rubber main wheels and one small rear balance roller.
-- An integrated rear carry handle and rounded industrial service panels.
-- Exactly two circular amber eye lenses, each on its own short flexible ribbed stalk, seated on a shared ivory upper mounting panel.
-- A broad ivory service band, a few large readable fasteners, simple tire grooves, and restrained working wear.
-- Exactly two broad hedge-shear blades opening horizontally around a visible vertical pivot, supported by two drive rods and a substantial hinge bracket.
-- A recessed ribbed rear motor and its circular service guard.
-- Green enamel, warm ivory, graphite rubber and worn steel, with a small amber warning lamp.
+- Low pear-shaped green gardening-machine body, broad ivory service band and integrated rear arch handle.
+- Two main rubber wheels on one axle and one small rear support roller.
+- Two amber eye lenses on two independent short ribbed stalks. Far parts can overlap in a side view.
+- Exactly two steel shear blades, nearly closed in this reference, with a horizontal opening plane, front pivot bracket and paired drive rods.
+- Rear ribbed motor and circular ivory service guard; visible seams and a few readable fasteners.
+- Clean dark outlines, flat local colors, crisp cel shadows and restrained drawn wear.
 
-The two separate eye stalks are now intentional. They replace the earlier shared-neck description so future prompts reproduce the selected image.
+## Gameplay and sprite handoff
 
-## Scope of the selection
+Clipper remains the Level 1 ground charger. Its failed charge exposes the rear motor. The selected rendering adds no new attacks or anatomy.
 
-B — Sturdy retro machine is the sole Clipper concept image kept in the current repository. Its source prompt and this selection record are retained alongside the image. Keep future art and models consistent with the features listed above.
+Use this exact 2D image for further artwork. Establish consistent left/right gameplay poses, foot baseline, wheel and blade pivots, and anticipation/recovery states. The reference retains slight drawn perspective; resolve overlapping parts deliberately. The 0.85 m height and 1.05 m closed length remain provisional relative-scale guidance.
 
-Clipper remains the existing Level 1 ground charger. Its failed-charge rear-motor opening and two-blade wheeled anatomy remain in the design. No new enemy class or change to the twelve-level campaign is introduced.
+This supersedes the previous rendered image as the repository reference. It is a flattened concept PNG, not a finished sprite sheet or rig.
 
-## Handoff for future art and modeling
-
-Use this exact image as the primary visual reference in every Clipper edit, turnaround and pose request, together with the updated written brief. The original source prompt records how B was produced; use the updated brief's prompts for future work, preserving the selected two separate eye stalks.
-
-The selected image is a single three-quarter reference, not a verified multi-view model. The 0.85 m height and 1.05 m closed length remain provisional. Next produce matching front, rear, left/right, and top views; check blade pivot and rod clearance, eye-stalk travel, wheel spacing, rear roller support, and weak-point exposure. Establish a closed-shear neutral pose without redesigning B.
-
-Keep this source image as the single visual master. Its pixels are unchanged from the selected B image.
-
-[Concept art index](../README.md) · [Original source prompt](generation-prompt.md) · [Decision register](../../design/decisions.md)
+[2D continuation prompt](generation-prompt.md) · [Concept-art gallery](../README.md) · [Decision register](../../design/decisions.md)

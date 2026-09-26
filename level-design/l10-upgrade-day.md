@@ -1,5 +1,7 @@
 # Level 10 — Upgrade Day
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../concept-art/README.md).
+
 System details are proposed in the [design pack](../design/README.md): movement, checkpoint rollback, weapon resources, gem budgets, artifacts, and single-weapon boss requirements. Use the [AI entry guide](../AI_START_HERE.md) to find the owner before refining this level. Exact supply and artifact placements still need local allocation.
 
 **ID:** L10
@@ -10,7 +12,7 @@ System details are proposed in the [design pack](../design/README.md): movement,
 
 ## Standalone context
 
-DEAD EDEN is an original colorful 2.5D platformer shooter. A scavenger and a maintenance-robot companion explore a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
+DEAD EDEN is an original colorful 2D platformer shooter. A scavenger and a maintenance-robot companion explore a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
 
 The promised cure is being installed on an assembly line, and the hero sees exactly how a machine becomes vulnerable to living infection.
 
@@ -161,13 +163,13 @@ Optional paths rejoin the main route without requiring a new movement ability or
 
 Cheerful installation announcements, pneumatic booth doors, clean machinery rhythms interrupted by uneven organic contractions, and distorted familiar officer phrases.
 
-## Environment asset kit and modeling separation
+## Environment asset kit and layer separation
 
 **Required kit:** Installation gantry; open and closed booth; neural cassette; inspection window; belt modules; fixed service islands; protective rail; containment door; quality-control shelves; lift vestibule.
 
 **Separate objects:** Interface cassettes and tissue inserts are modular additions to robots. Gantries, belts, and doors are separate environment mechanisms. Physical graft strands are visible effects with clear contact endpoints.
 
-Build references for the largest architectural forms first, then moving parts and props. Record pivot intent for rotating, sliding, lifting, and opening elements. Use modular repeatable pieces where the design calls for repeated corridors, floors, or rails; keep unique landmarks separate. Final mesh budgets, texture sizes, file formats, collision setup, and rig implementation remain outside this concept brief.
+Draw the largest architectural silhouettes first, then separate moving parts and props. Record pivot intent for rotating, sliding, lifting and opening elements. Plan repeatable illustrated tiles or modules for floors, rails and corridors; keep unique landmarks separate. Keep foreground, playable, background and effects on distinct drawing layers. Final sprite resolution, atlas layout, animation method, file format and collision setup remain undecided.
 
 ## Constraints for another AI model
 
@@ -180,7 +182,7 @@ Preserve the established number of levels, enemies, weapons, and upgrades. Show 
 Copy this block directly into an image generator. It requests one representative environment view, not the entire level compressed into a single picture. Use existing approved character references if detailed characters are needed; otherwise keep them as small scale silhouettes.
 
 ```text
-Original stylized 3D game environment concept art for DEAD EDEN. Chunky rounded architecture, strong side-view readability, broad bevels, painterly material variation, warm enamel and ceramic, readable dark joints, and selective wear. Cheerful care infrastructure with eerie consequences, not photorealistic horror. Use original designs rather than another game's characters or scenery. Keep playable surfaces and attack lanes visually clear.
+Original hand-drawn 2D environment concept art for DEAD EDEN. Match the selected Sunnyvale scenes' clean dark outlines, rounded architectural shapes, flat painted color masses, crisp cel shadows and sparse graphic highlights. Use separate illustrated foreground, playable and background layers with decreasing background contrast; depth comes from overlap and optional parallax. Represent ceramic, enamel, plants and machinery with simple graphic marks, not realistic material shading. Preserve the level-specific palette and mood. Keep playable surfaces, enemies, attack lanes and landings clear. No photorealism, volumetric lighting or franchise assets.
 
 Create one wide 16:9 environment keyframe for level 10, "Upgrade Day".
 Narrative purpose: The promised cure is being installed on an assembly line, and the hero sees exactly how a machine becomes vulnerable to living infection.
@@ -193,7 +195,7 @@ Playable plane: Inspection walkways, short visible belt sections, fixed service 
 Background: Robots queued in distant bays, simple diagram displays showing memory and tissue transfer, and large cargo lift structures. Background procedures are noncombat demonstrations.
 Show only this level's appropriate era and threats: Patchbot, Loadbearer, Courtesy Officer, Nurse Needles, Resident, Mourning Nurse, Hollow Officer; no boss. Keep the number of characters low and their poses subordinate to environment readability. The scene illustrates a designed playable space, with clear landing edges and room for movement. Do not imply unlisted abilities.
 Exclusions: No wireless zombie virus, infection of unmodified robots, ordinary Choir Unit before level 11, extra mini-boss, or mass of untelegraphed transformations around the hero.
-Use a fixed side-oriented gameplay camera with slight depth visible in architecture, clear separation of foreground and background, controlled soft lighting, no UI, no watermark, no textual labels, no forced cinematic angle, and no effects obscuring the route.
+Use a fixed side-oriented gameplay camera with depth suggested by overlapping illustrated layers, clear separation of foreground and background, controlled drawn lighting and crisp cel shadows, no UI, no watermark, no textual labels, no forced cinematic angle, and no effects obscuring the route.
 ```
 
 ## Prompt 2 — side-elevation layout study
@@ -201,7 +203,7 @@ Use a fixed side-oriented gameplay camera with slight depth visible in architect
 This is a conceptual spatial study. Generated art cannot verify jump distances or collision; reconcile it with the written route and a later movement blockout.
 
 ```text
-Design a clean side-elevation level-layout study for DEAD EDEN level 10, "Upgrade Day". Keep a single 2D gameplay plane inside layered stylized 3D architecture. Main route: A01 Upgrade foyer → A02 Graft demonstration → A03 First Returned bay → A04 Officer test lane → A05 Failed assembly junction → A06 Containment lift.
+Design a clean side-elevation level-layout study for DEAD EDEN level 10, "Upgrade Day". Keep a single 2D gameplay plane inside layered hand-drawn 2D scenery. Main route: A01 Upgrade foyer → A02 Graft demonstration → A03 First Returned bay → A04 Officer test lane → A05 Failed assembly junction → A06 Containment lift.
 Use six adjacent panels, one for each area, or generate them individually if the full sheet loses clarity. Each panel must preserve its entry and exit direction; explicit local vertical movement may be shown. Space descriptions:
 L10-A01: Upgrade foyer. A quiet corridor offers a view of ordinary robots entering booths and receiving clearly visible interface cassettes. A familiar Loadbearer handles cargo in a separate later lane. Connection: Enter a safe observation balcony at A02.
 L10-A02: Graft demonstration. Behind a protective window, the converted Patchbot opens its lid and extends tissue into a disabled robot's matching neural port. An adjacent unmodified robot rejects or cannot receive the physical connection. Connection: A shutter opens the route to A03 after the short demonstration; skipping its playback must still preserve the visible result.
@@ -220,7 +222,7 @@ After approving an environment keyframe, attach it to preserve the visual langua
 Using the attached approved environment keyframe, create a clean modular environment asset reference sheet for DEAD EDEN level 10, "Upgrade Day". Match these materials and colors: Factory ivory #E1DCCA, cargo yellow #D6AE50, deep teal #3F7172, neural coral #C9808D, muted violet #A18ABB. Warm progress lights contrast with cooler failed-test chambers.
 Required asset family: Installation gantry; open and closed booth; neural cassette; inspection window; belt modules; fixed service islands; protective rail; containment door; quality-control shelves; lift vestibule.
 Separation rules: Interface cassettes and tissue inserts are modular additions to robots. Gantries, belts, and doors are separate environment mechanisms. Physical graft strands are visible effects with clear contact endpoints.
-Show complete individual objects with clear gaps between them, consistent scale, broad readable bevels, simple neutral studio lighting, and a warm light-gray background. Include a few orthographic-style front/side/top studies where moving mechanisms need explanation. Show fixed and moving components separately without inventing internal engineering. No character redesigns, combined scene collage, text labels, UI, watermark, heavy weathering, or tiny decorative noise. Keep all playable contact surfaces clean and identifiable. This is art reference for later modeling, not a technical fabrication drawing.
+Draw complete individual 2D objects with clear gaps, consistent canvas scale, clean outlines, flat colors and crisp cel shadows on warm off-white. Prioritize gameplay side views; include a separate moving-part drawing only where a mechanism needs explanation. Show fixed and moving components separately without inventing internal engineering. No character redesigns, combined scene collage, text labels, UI, watermark, heavy weathering, or tiny decorative noise. Keep all playable contact surfaces clean and identifiable. This is art reference for later 2D asset production, not a technical fabrication drawing.
 ```
 
 ## Prompt 4 — AI design handoff

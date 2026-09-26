@@ -1,5 +1,7 @@
 # Health, ammunition, treasure, and upgrades
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../../concept-art/README.md).
+
 Make recovery, resource ownership, rewards, and investment behave consistently across the campaign.
 
 This is section 03 of the concept design pack. Read the [decision register](../decisions.md) before treating a proposal as fixed.

@@ -1,5 +1,7 @@
 # DEAD EDEN — Weapon resources and ammunition
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../../concept-art/README.md).
+
 **Document ID:** S02  
 **Status:** Working design proposal. Confirmed decisions and established lore remain constraints; new details and numbers are untested proposals.  
 **Purpose:** Gives every weapon a distinct resource rhythm and keeps required encounters possible with any carried weapon.

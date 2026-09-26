@@ -1,10 +1,12 @@
 # DEAD EDEN — Art design reference pack
 
-**Selected Clipper design: [B — Sturdy retro machine](../concept-art/r01-clipper/SELECTED.md).** Its canonical brief and prompts now follow that reference. The [concept-art index](../concept-art/README.md) contains the selected image, its source prompt, and modeling handoff notes.
+**Approved visual direction (C11):** [Hand-drawn 2D](style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../concept-art/README.md).
+
+Use the [selected Clipper, Resident and Sunnyvale scenes](../concept-art/README.md) with the [shared sprite and layer guide](style-guide.md). B's mechanical identity remains the Clipper foundation (C10).
 
 For proposed hero and companion briefs, see [character design](../design/02-characters/README.md). For collectible object descriptions, see the [artifact catalog](../design/03-progression/artifact-catalog.md). Use the [AI entry guide](../AI_START_HERE.md) to connect these visuals to the gameplay rules.
 
-Thirty-two standalone asset briefs for image generation and later 3D modeling: ten robots, ten zombies, three Returned enemy types, four mini-bosses, and five weapons with all fifteen upgrades.
+Thirty-two standalone asset briefs for image generation and later sprite and animation production: ten robots, ten zombies, three Returned enemy types, four mini-bosses, and five weapons with all fifteen upgrades.
 
 The level-10 converted Patchbot is documented as a separate variant and prompt inside its base brief. The First Patient is currently a noncombat story character, and the hero and companion are not enemy or weapon assets; they are outside this pack.
 
@@ -12,12 +14,12 @@ The level-10 converted Patchbot is documented as a separate variant and prompt i
 
 1. Read the [shared style guide](style-guide.md).
 2. Open one asset brief and copy its **neutral design** prompt into your preferred image generator.
-3. Approve one result, then attach it when generating the turnaround and action studies. Weapon upgrade prompts preserve earlier attachments.
-4. Correct inconsistent generated views, then use the approved references to block out and model the asset.
+3. Use an already selected image, or approve one result for an unpictured asset, then attach it for directional sprites and animation poses. Weapon upgrade prompts preserve earlier attachments.
+4. Correct inconsistent generated views, then plan the asset's drawing layers, pivots and animation poses.
 
-These files contain art direction and prompts, with generated references linked from concept-art. No finished 3D meshes are included. Existing gameplay abilities follow the [working game concept](../dead-eden-concept.md). Clipper B is a confirmed visual selection; other unapproved appearances, scales, and attachment designs remain proposals.
+These files contain art direction and prompts, with generated references linked from concept-art. No finished sprite sheets or animations are included. Existing gameplay abilities follow the [working game concept](../dead-eden-concept.md). The 2D Clipper, Resident and three Sunnyvale scenes are selected references. Other assets' appearances and unvalidated scales or attachments remain proposals within the confirmed 2D style.
 
-Each brief includes identity, dimensions, silhouette, appearance, palette, behavior, limitations, modeling parts, pose references, consistency rules, and complete image prompts. Mini-bosses also include arena relationships and phases. Weapon briefs include handling and three cumulative upgrade designs and prompts.
+Each brief includes identity, dimensions, silhouette, appearance, palette, behavior, limitations, animation parts, pose references, consistency rules, and complete image prompts. Mini-bosses also include arena relationships and phases. Weapon briefs include handling and three cumulative upgrade designs and prompts.
 
 ## Coverage
 
@@ -79,4 +81,4 @@ Each brief includes identity, dimensions, silhouette, appearance, palette, behav
 
 ## Suggested review order
 
-Review Clipper, Resident, and Scrapjack first to establish the mechanical, biological, and scavenger material families. Then review the Boom Broom silhouette and handling before weapon upgrades. Approve ordinary enemies before their Returned relatives. Save the six-arm mini-boss turnarounds for last, when the design language is stable.
+Use selected Clipper and Resident as the mechanical and biological style anchors; develop Scrapjack next for the scavenger equipment family. Then review the Boom Broom silhouette and handling before weapon upgrades. Approve ordinary enemies before their Returned relatives. Save the six-arm mini-boss directional and animation studies for last, when the design language is stable.

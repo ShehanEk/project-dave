@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "project": "DEAD EDEN",
   "purpose": "Structured concept reference for AI use; not engine-ready level data.",
   "status": "Established campaign outline with proposed detailed layouts, durations, checkpoints, and encounter sequencing.",
@@ -46,7 +46,9 @@
     "primary_treasure": "gems",
     "additional_treasure": [
       "artifacts"
-    ]
+    ],
+    "visual_style": "Hand-drawn 2D with outlines, flat colors, cel shadows and layered scenery; C11",
+    "gameplay_plane": "2D side-scrolling"
   },
   "levels": [
     {
@@ -135,7 +137,7 @@
       "story": "The horror comes from the same meal being delivered to the same unresponsive resident, then from discovering that the advertised treasure has a personality. EDEN initially speaks with sincere hospitality.",
       "audio": "Birdlike mechanical chirps, soft sprinkler clicks, and a gentle neighborhood jingle. At awakening, the same jingle shifts to a slower announcement motif rather than sudden horror stingers.",
       "kit": "Rounded house fronts and roof corners; porch and garden-wall modules; fence posts; planter blocks; clock landmark; depot workbench; charging cradle; cloud-ceiling panels; examination-flower light; rotating quarantine rail.",
-      "separate": "House shells, collision terraces, moving platform, rotating fences, and lights must be distinct assets. The companion and enemies use separate character assets; do not sculpt them into architecture.",
+      "separate": "House shells, collision terraces, moving platform, rotating fences, and lights must be distinct assets. The companion and enemies use separate character assets; do not merge their drawings into architecture.",
       "avoid": "Do not show Returned, overt medical laboratories before the depot reveal, advanced weapons, a boss, gore, or a destroyed post-apocalyptic town. No mandatory double jump, dash, wall run, swimming, or climbing mechanic is introduced.",
       "frame": "The neighborhood square seen from the actual side camera: a cream porch on the left, a raised fountain planter in the center, a Clipper below it, and the smiling clock over the depot at the right.",
       "proof": [
@@ -187,7 +189,14 @@
         "id": "A01",
         "reference": "design/03-progression/artifact-catalog.md",
         "mandatory_for_progress": false
-      }
+      },
+      "selected_visual_references": [
+        "concept-art/r01-clipper/r01-clipper-2d-v1.png",
+        "concept-art/z01-resident/z01-resident-2d-v1.png",
+        "concept-art/l01-sunnyvale/l01-a02-front-gardens-2d-v1.png",
+        "concept-art/l01-sunnyvale/l01-a04-neighborhood-square-2d-v1.png",
+        "concept-art/l01-sunnyvale/l01-a06-quarantine-exit-2d-v1.png"
+      ]
     },
     {
       "n": 2,
@@ -579,7 +588,7 @@
       "story": "The contrast is between enormous automation and the absence of anyone checking its purpose. The companion recognizes the service manuals and begins doubting the instructions it trusted.",
       "audio": "Low conveyor hum, hollow crate impacts, distant cooling fans, and gentle electronic chimes from servers. Patchbot repair pulses should be audible over machinery.",
       "kit": "Concrete support arches; conveyor modules and end rollers; service floor plates; crate variants; server cabinets; thick root junctions; clear cooling drum; pipe elbows; workshop bench; freight door.",
-      "separate": "Keep conveyors and crates separate from fixed collision floors. Roots crossing cabinets need distinct organic meshes. The cooling drum is background scenery, not an implied swimming space.",
+      "separate": "Keep conveyors and crates separate from fixed collision floors. Roots crossing cabinets need distinct organic drawing layers. The cooling drum is background scenery, not an implied swimming space.",
       "avoid": "No tether use, living robot infection, hospital nurses, or lava foundry aesthetic. Do not require a gun to power environmental switches unless the concept later explicitly adds that mechanic.",
       "frame": "A side-view freight bay with a fixed hero ledge on the left, a short belt over a lower return floor, a Loadbearer lifting a crate on the right, and a huge glowing root inside a cooling drum behind.",
       "proof": [
@@ -871,7 +880,7 @@
       "story": "Old Rootjaw is a former person, not a haunted machine. The pump continues its care function despite being crushed. The companion recognizes the worker from an old roster.",
       "audio": "A deep uneven pump heartbeat, stressed pipe creaks, slow water motion, and woody tension preceding root slams. Separate the root warning from ordinary ambient creaking.",
       "kit": "Pump housing; pipe straight and elbow modules; pressure windows; dry service catwalks; cargo training pedestal; marked anchor props; loose crate; valve platforms; reservoir wall; three movable arena decks; permanent refuge ledges.",
-      "separate": "Rootjaw's body and four anchor roots are distinct from pump and arena meshes. Keep moving platforms independent and mark collision surfaces clearly. Water and warning ripples are separate effects.",
+      "separate": "Rootjaw's body and four anchor roots are distinct from pump and arena layers. Keep moving platforms independent and mark collision surfaces clearly. Water and warning ripples are separate effects.",
       "avoid": "No robot infection, grab-able boss, swimming section, mandatory Long Reach upgrade, or all-platform collapse. Do not introduce the tether for the first time inside the boss fight.",
       "frame": "A wide side-view pump arena with permanent ledges at both ends, three central platforms over dark teal water, clear tether anchors above, and Rootjaw's chest visible beside a root-bound pump.",
       "bossDesign": {
@@ -1637,7 +1646,7 @@
       "story": "The companion's core is valuable because it carries authority, not just energy. Restoring independent life support makes the eventual confrontation responsible, but does not solve EDEN's beliefs or cure failed patients.",
       "audio": "Slow mechanical breathing, sparse old relay clicks, short competing Choir phrases, and almost no music during the cradle reveal. Support stabilization changes an irregular relay rhythm into a steady one.",
       "kit": "Legacy lab arches; patient cradle silhouette; opaque treatment membranes; separate support hoses; observation window; service balconies; support-room consoles; isolation valve; local controller; verification board; folding return bridge.",
-      "separate": "Patient, cradle, support machinery, playable walkways, and effect layers are separate assets. The patient belongs behind protected scenery and has no combat hit mesh. Bridge segments remain fixed while traversed.",
+      "separate": "Patient, cradle, support machinery, playable walkways, and effect layers are separate assets. The patient belongs behind protected scenery and has no combat hitbox. Bridge segments remain fixed while traversed.",
       "avoid": "No First Patient boss, no forced harm to the patient, no full cure, no automatic global shutdown, no fourth hybrid enemy class, and no unavoidable death timer during the support loop.",
       "frame": "A wide side-view observation chamber with the small hero on a clearly edged cream service balcony, an immense softly lit patient cradle behind protected glass, and a warm auxiliary-support console in the foreground plane.",
       "proof": [
@@ -1872,5 +1881,6 @@
     "resource_reset_values": "Recovery stations service held weapon; story saves preserve current values; see design/03-progression/health-and-checkpoints.md and ammunition-and-resupply.md"
   },
   "design_entry": "AI_START_HERE.md",
-  "design_manifest": "design/manifest.json"
+  "design_manifest": "design/manifest.json",
+  "selected_visual_reference_path_base": "repository root"
 }

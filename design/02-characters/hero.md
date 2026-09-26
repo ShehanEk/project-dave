@@ -1,8 +1,10 @@
 # DEAD EDEN — Hero — Rook Venn (working proposal)
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../../concept-art/README.md).
+
 **Document ID:** H01  
 **Status:** Working design proposal. Confirmed decisions and established lore remain constraints; new details and numbers are untested proposals.  
-**Purpose:** Proposed protagonist identity, motivation, silhouette, personality, and modeling reference.
+**Purpose:** Proposed protagonist identity, motivation, silhouette, personality, and sprite reference.
 
 **Decision references:** C04, P05 — see the [decision register](../decisions.md).  
 **Read with:** [companion](companion.md) · [player controls](../01-core/player-controls.md) · [style guide](../../art-design/style-guide.md)
@@ -35,13 +37,13 @@ A rust-orange short work jacket sits over a dark teal shirt. Cream reinforced tr
 
 A small belt pouch holds gems and personal finds. It is not a visible gun holster or hidden arsenal. The hero shows only the held weapon; no spare gun appears on the back or hip. Use one modest folded maintenance tool as a noncombat prop only if needed in a repair scene.
 
-## Model and pose requirements
+## Sprite and pose requirements
 
-Separate body, jacket, trousers, boots, neck cloth, pouch, hair mass, and held weapon. The default neutral model has empty hands because weapons are separate assets, not because the gameplay adds an unarmed fighting system.
+Separate body, jacket, trousers, boots, neck cloth, pouch, hair mass, and held weapon. The default neutral sprite has empty hands because weapons are separate assets, not because the gameplay adds an unarmed fighting system.
 
-Required studies: neutral front/back/sides; running; low and high jump; landing; one-handed pistol hold; two-handed shotgun, welder, and Seedlobber holds; tether brace; reload; hit recovery; weapon swap; examining an artifact; talking to the companion.
+Required studies: neutral left- and right-facing sprites, optional front/back construction drawings; running; low and high jump; landing; one-handed pistol hold; two-handed shotgun, welder, and Seedlobber holds; tether brace; reload; hit recovery; weapon swap; examining an artifact; talking to the companion.
 
-Give grips and shoulders sufficient space for the existing weapon models. Clothing should deform cleanly without hiding hand contact or foot placement.
+Give grips and shoulders sufficient space for the existing weapon drawings. Clothing should deform cleanly without hiding hand contact or foot placement.
 
 ## Narrative boundaries
 
@@ -50,9 +52,9 @@ Rook is not immune to resurrection treatment through a secret bloodline. No spec
 ## Copy-ready neutral character prompt
 
 ```text
-Original stylized 3D protagonist concept for DEAD EDEN, a colorful side-view platformer shooter. Working character Rook Venn: an adult practical scavenger, compact build, about 1.70 m, roughly five-and-a-half heads tall, warm brown skin, cropped dark hair with one uneven forelock, expressive brows, small healed eyebrow mark. Rust-orange short work jacket, dark teal shirt, cream reinforced trousers, charcoal knee patches, broad worn brown boots, short cream neck cloth, small belt pouch. Chunky rounded shapes, readable side silhouette, broad material areas, restrained wear, quietly resourceful expression. Empty relaxed hands for a neutral modeling reference; weapons are separate assets. No spare guns, gun holsters, armor suit, heroic cape, or recognizable franchise costume. Full body, plain warm light-gray background, neutral soft light, modest perspective, no text or action effects.
+Original hand-drawn 2D protagonist concept for DEAD EDEN, a colorful side-view platformer shooter. Working character Rook Venn: an adult practical scavenger, compact build, about 1.70 m, roughly five-and-a-half heads tall, warm brown skin, cropped dark hair with one uneven forelock, expressive brows, small healed eyebrow mark. Rust-orange short work jacket, dark teal shirt, cream reinforced trousers, charcoal knee patches, broad worn brown boots, short cream neck cloth, small belt pouch. Chunky rounded shapes, readable side silhouette, confident dark outlines, broad flat color areas, crisp cel shadows, restrained drawn wear, quietly resourceful expression. Empty relaxed hands for a neutral sprite reference; weapons are separate assets. No spare guns, gun holsters, armor suit, heroic cape, or recognizable franchise costume. Full body, flat warm off-white background, consistent linework and cel shadows, readable gameplay side pose, no realistic surface shading, text or action effects.
 ```
 
-Approve one image before requesting matching front, back, and side views. Do not treat this proposed look as an already approved reference.
+Approve one 2D identity reference before requesting matching left/right sprites and animation poses. Do not treat this proposed look as an already approved reference.
 
 [Section index](README.md) · [Design index](../README.md) · [AI entry guide](../../AI_START_HERE.md)

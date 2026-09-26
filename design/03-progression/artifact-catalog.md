@@ -1,5 +1,7 @@
 # DEAD EDEN — Artifacts and discovery catalog
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../../concept-art/README.md).
+
 **Document ID:** S05  
 **Status:** Working design proposal. Confirmed decisions and established lore remain constraints; new details and numbers are untested proposals.  
 **Purpose:** Proposes twelve optional lore artifacts, with appearance, placement intent, and narrative limits.
@@ -33,7 +35,7 @@ The locations below are placement proposals within the existing level themes; th
 | A12 / 12 | **Original Mission Leaf:** small etched copper plaque shaped like a broad leaf | Accessible observation pocket before the final guardian gate | Its early mission wording supports an optional reflection. PIP already carries the unique authority; this plaque is not another shutdown key. |
 
 ## Image and model handoff
-For each artifact, create one neutral isolated object, a strict side silhouette, and a simple three-quarter pickup presentation. Keep lettering out of the generated mesh; small inscriptions can be represented by abstract grooves until readable text is designed separately.
+For each artifact, create one neutral isolated object, a strict side silhouette, and a readable 2D pickup pose. Keep lettering out of the generated drawing; small inscriptions can be represented by abstract grooves until readable text is designed separately.
 
 Use the existing world materials: rounded ceramic housings, enamel, brass, padded polymer, restrained wear. Keep most items around palm to forearm size. Distinguish silhouette first; avoid twelve glowing cubes with different colors. Artifact halos are effects, not permanent geometry.
 

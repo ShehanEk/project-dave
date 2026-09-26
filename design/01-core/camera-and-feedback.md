@@ -1,5 +1,7 @@
 # DEAD EDEN — Camera, readability, and moment-to-moment feedback
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../../concept-art/README.md).
+
 **Document ID:** G04  
 **Status:** Working design proposal. Confirmed decisions and established lore remain constraints; new details and numbers are untested proposals.  
 **Purpose:** Gameplay camera behavior and the visual language for danger, surfaces, targets, and rewards.
@@ -9,7 +11,7 @@
 
 ## Proposed camera behavior
 
-Use a side-oriented camera with depth visible in the architecture. It follows the hero smoothly without changing the gameplay plane. Lead slightly toward movement or deliberate aim, but clamp that lead so reversing aim does not make the view jerk.
+Use a fixed side-oriented 2D camera; overlapping painted scenery and optional parallax suggest depth. Character sprites and collisions stay on the action plane. It follows the hero smoothly without changing the gameplay plane. Lead slightly toward movement or deliberate aim, but clamp that lead so reversing aim does not make the view jerk.
 
 The ordinary view should show the next landing, nearby attack sources, and a useful retreat space. As a starting composition target, keep the hero around one-eighth of the visible screen height in traversal; tune per scene. Boss framing may widen, but not until the hero and weak points become unreadable.
 

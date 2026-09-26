@@ -1,6 +1,8 @@
 # Project Dave / DEAD EDEN — Start here, AI agent
 
-This repository develops an original colorful 2.5D platformer shooter concept. **The current task is idea development, not implementation.** Use the separate documents below to refine one area without inventing incompatible mechanics elsewhere.
+**Approved visual direction (C11):** [Hand-drawn 2D](art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](concept-art/README.md).
+
+This repository develops an original colorful 2D platformer shooter concept. **The current task is idea development, not implementation.** Use the separate documents below to refine one area without inventing incompatible mechanics elsewhere.
 
 ## Minimum reading
 
@@ -61,6 +63,6 @@ Keep new balancing figures labeled untested. Keep proposed names/visuals editabl
 
 ## Existing packs
 
-For Clipper art, use [B — Sturdy retro machine](concept-art/r01-clipper/SELECTED.md), confirmed in C10, and the updated [R01 brief](art-design/robots/r01-clipper.md). The concept-art folder contains only the selected image and its supporting notes and source prompt. Use the updated brief for future generation; the original source prompt does not override the selected two-stalk wheeled design.
+Visual direction is confirmed in **C11**: use [hand-drawn 2D art](art-design/style-guide.md) with clean outlines, flat colors, crisp cel shadows and layered scenery. The [selected gallery](concept-art/README.md) contains the 2D Clipper, Resident and three Sunnyvale scenes. Clipper retains B's mechanical identity (C10). Start from these selected PNGs for matching sprites and scene continuations; other assets must follow the same rendering style without copying Sunnyvale's palette into every region. These references are concept art, not production sprites or separated layers.
 
 [Main concept](dead-eden-concept.md) · [Twenty system documents](design/README.md) · [Twelve levels](level-design/README.md) · [Thirty-two enemy/weapon art briefs](art-design/README.md)

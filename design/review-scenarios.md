@@ -1,5 +1,7 @@
 # Design consistency review scenarios
 
+**Approved visual direction (C11):** [Hand-drawn 2D](../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../concept-art/README.md).
+
 Use these cases after changing related documents. They are **written acceptance scenarios**, not automated tests, prototype results, or proof of balanced gameplay. Review the proposed baseline as a whole; when deliberately changing a proposal, update its expected outcomes here.
 
 | Case | Situation | Expected outcome | Owners |
@@ -30,6 +32,10 @@ Use these cases after changing related documents. They are **written acceptance 
 | RV24 | A dangerous scene is viewed without audio or in grayscale | Posture, shapes and geometry still communicate threat; essential story has text | G04, N03, N04 |
 | RV25 | Collect every proposed gem and compare all upgrade costs | Available 1,340; full five-type upgrade cost 1,450; no mandatory upgrade or grind gate | S03, S04 |
 | RV26 | Player skips every optional artifact | All critical evidence and normal ending still accessible | S05, N01 |
+
+## Visual direction review
+
+When generating any asset or scene, use C11's selected 2D references and the shared guide. Verify linework, flat color masses, cel shadows, stable part counts and readable side poses. Review asymmetric details separately for each facing direction. A scene's drawn depth must not add an off-plane gameplay route. The concept-art folder contains five selected PNGs; unpictured assets remain proposals.
 
 ## Repository checks
 

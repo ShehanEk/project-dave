@@ -1,8 +1,10 @@
 # DEAD EDEN — Detailed level design pack
 
-Twelve standalone level briefs for AI-assisted concept development, environment image generation, and later 3D environment modeling. Each expands the established campaign into six ordered areas with visual direction, encounters, transformations, checkpoints, secrets, story, environment assets, and reusable prompts.
+**Approved visual direction (C11):** [Hand-drawn 2D](../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../concept-art/README.md).
 
-This remains a concept project. Layout specifics and duration targets are draft proposals; no engine implementation, generated images, or playtested geometry is claimed.
+Twelve standalone level briefs for AI-assisted concept development, environment image generation, and later layered 2D environment production. Each expands the established campaign into six ordered areas with visual direction, encounters, transformations, checkpoints, secrets, story, environment assets, and reusable prompts.
+
+This remains a concept project. Layout specifics and duration targets are draft proposals; three selected [Sunnyvale keyframes](../concept-art/l01-sunnyvale/README.md) now exist; engine implementation and playtested geometry remain future work.
 
 ## Start here
 
