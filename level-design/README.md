@@ -52,4 +52,4 @@ The detailed briefs add proposed room layouts and encounter sequences, not new w
 - [Art design index](../art-design/README.md)
 - [Shared visual style](../art-design/style-guide.md)
 
-The ZIP includes this folder, the main concept, and the art-design references used by these levels. The editable Markdown and JSON files are the sources of truth; rebuild the ZIP after revisions.
+The editable Markdown and JSON files are the sources of truth. Use the links above to access the main concept and the art-design references used by these levels.
