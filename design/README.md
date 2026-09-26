@@ -47,4 +47,4 @@ Twenty focused design documents in the requested five-part order. This pack conn
 - [Core gameplay summary](../core-gameplay.md): short overview for people reading the concept first.
 - [Existing level pack](../level-design/README.md) and [art pack](../art-design/README.md): authoritative detailed layouts and visual briefs within their stated proposal status.
 
-The current pack adds written hero/companion art direction and artifact descriptions. It does not contain generated reference images, finished models, UI screens, audio, or a playable build. Keep the individual editable sources; do not bundle duplicate ZIPs.
+The current pack adds written hero/companion art direction and artifact descriptions. Generated images are stored in the [concept-art gallery](../concept-art/README.md), where [Clipper B](../concept-art/r01-clipper/SELECTED.md) is the confirmed visual reference. Finished models, UI screens, audio, and a playable build remain future work. Keep the individual editable sources; do not bundle duplicate ZIPs.

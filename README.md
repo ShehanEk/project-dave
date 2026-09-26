@@ -23,6 +23,8 @@ EDEN's machines maintain cheerful gardens and immaculate neighborhoods above a s
 - [Detailed level briefs](level-design/README.md): twelve standalone AI-ready descriptions covering routes, encounters, visuals, checkpoints, story beats, and environment prompts.
 - [Structured campaign reference](level-design/campaign.json): the same twelve-level plan in JSON, including all 72 main-route areas.
 - [Art reference index](art-design/README.md): links to every individual enemy and weapon brief.
+- [Selected Clipper design](concept-art/r01-clipper/SELECTED.md): B — Sturdy retro machine, with its approved reference and matching written brief.
+- [Concept art gallery](concept-art/README.md): generated images, selection status, and preserved exploration history.
 - [Shared visual style guide](art-design/style-guide.md): consistent proportions, materials, silhouettes, reference-image workflow, and modeling guidance.
 
 ## Current scope
@@ -42,12 +44,13 @@ EDEN's machines maintain cheerful gardens and immaculate neighborhoods above a s
 | Treasure | Gems as the primary collectible, plus artifacts |
 | Upgrades | 3 successive upgrades per weapon; 15 total |
 | Individual art briefs | 32, covering enemies, mini-bosses, and weapons |
+| Selected visual reference | R01 Clipper — B, Sturdy retro machine |
 
 ## Using the art briefs
 
 Each brief describes appearance, palette, proportions, abilities, movement, model parts, and consistency rules. It includes copy-ready prompts for a neutral design, modeling turnaround, and action studies. Weapon briefs also describe all three cumulative upgrade appearances and provide corresponding prompts.
 
-Generate and approve a neutral design first. Use that approved image as a reference for the other views and poses, then reconcile any differences before modeling. Dimensions and visual details are working proposals that can be refined as the project develops.
+Clipper B is the selected visual reference; use it and its updated brief for matching views and poses. Other assets still need a chosen neutral design. Reconcile views and mechanical clearances before modeling. Dimensions remain provisional.
 
 ## Files
 
@@ -78,6 +81,13 @@ art-design/
   returned/      # 3 briefs
   mini-bosses/   # 4 briefs
   weapons/       # 5 briefs, each with 3 upgrades
+concept-art/
+  README.md
+  r01-clipper/
+    SELECTED.md  # B is the confirmed reference
+    round-01/    # Selected B alongside unselected A and C
+    round-02/    # Unselected scary wheeled variant
+    round-03/    # Unselected humanoid variant and transparent derivative
 ```
 
-The Markdown files own the written design. Campaign JSON and the design manifest provide structured summaries and navigation. New system numbers, names, and visual choices remain proposed and untested.
+The Markdown files own the written design. Campaign JSON and the design manifest provide structured summaries and navigation. Explicit visual selections are recorded separately; other new system numbers, names, and unapproved visual choices remain proposed and untested.

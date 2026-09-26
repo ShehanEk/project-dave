@@ -1,5 +1,7 @@
 # DEAD EDEN — Art design reference pack
 
+**Selected Clipper design: [B — Sturdy retro machine](../concept-art/r01-clipper/SELECTED.md).** Its canonical brief and prompts now follow that reference. The [concept-art index](../concept-art/README.md) preserves the other designs as unselected exploration history.
+
 For proposed hero and companion briefs, see [character design](../design/02-characters/README.md). For collectible object descriptions, see the [artifact catalog](../design/03-progression/artifact-catalog.md). Use the [AI entry guide](../AI_START_HERE.md) to connect these visuals to the gameplay rules.
 
 Thirty-two standalone asset briefs for image generation and later 3D modeling: ten robots, ten zombies, three Returned enemy types, four mini-bosses, and five weapons with all fifteen upgrades.
@@ -13,7 +15,7 @@ The level-10 converted Patchbot is documented as a separate variant and prompt i
 3. Approve one result, then attach it when generating the turnaround and action studies. Weapon upgrade prompts preserve earlier attachments.
 4. Correct inconsistent generated views, then use the approved references to block out and model the asset.
 
-These files contain art direction and prompts. They do not contain generated images or 3D meshes. Existing gameplay abilities follow the [working game concept](../dead-eden-concept.md); appearance, scale, and attachment designs are proposed visual choices for refinement.
+These files contain art direction and prompts, with generated references linked from concept-art. No finished 3D meshes are included. Existing gameplay abilities follow the [working game concept](../dead-eden-concept.md). Clipper B is a confirmed visual selection; other unapproved appearances, scales, and attachment designs remain proposals.
 
 Each brief includes identity, dimensions, silhouette, appearance, palette, behavior, limitations, modeling parts, pose references, consistency rules, and complete image prompts. Mini-bosses also include arena relationships and phases. Weapon briefs include handling and three cumulative upgrade designs and prompts.
 
@@ -30,7 +32,7 @@ Each brief includes identity, dimensions, silhouette, appearance, palette, behav
 
 ## Robots
 
-- [R01 — Clipper](robots/r01-clipper.md) — Ground charger; a gardening machine still trying to prune everything in its route.
+- [R01 — Clipper](robots/r01-clipper.md) — Ground charger; B — Sturdy retro machine is the selected visual reference.
 - [R02 — Courtesy Officer](robots/r02-courtesy-officer.md) — Shield defender; a neighborhood security machine issuing aggressively polite warnings.
 - [R03 — Bloom Sentry](robots/r03-bloom-sentry.md) — Stationary burst turret disguised as a decorative mechanical flower.
 - [R04 — Pollinator](robots/r04-pollinator.md) — Flying bee drone that marks a target before committing to a dive.

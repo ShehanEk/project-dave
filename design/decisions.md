@@ -21,13 +21,14 @@ A proposal may be used consistently for further concept work without another app
 | C07 | Twelve levels; a unique mini-boss every three levels, increasing in difficulty. |
 | C08 | Use separate organized editable files; remove duplicate ZIP archives and do not recreate them. |
 | C09 | At least ten robot and ten zombie varieties, with robot-zombie hybrids introduced later through a coherent lore explanation. |
+| C10 | R01 Clipper uses [B — Sturdy retro machine](../concept-art/r01-clipper/SELECTED.md) as its selected visual reference. Preserve its wheeled body, separate short eye stalks, two-blade shears and retro mechanical construction. Other Clipper candidates are unselected. |
 
 ## Established baseline
 
 | ID | Baseline |
 | --- | --- |
 | E01 | Existing DEAD EDEN setting and story: careless care, scavenger/maintenance companion, physical neural interfaces, L11 authority/life support, L12 policy resolution. |
-| E02 | Existing named roster, five weapon identities and upgrade names, twelve named levels, introductions, and four boss identities. Visual details and room layouts remain proposals. |
+| E02 | Existing named roster, five weapon identities and upgrade names, twelve named levels, introductions, and four boss identities. Unapproved visual details and room layouts remain proposals; see C10 for the confirmed Clipper reference. |
 
 ## Proposed detailed defaults
 

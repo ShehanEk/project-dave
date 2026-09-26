@@ -61,4 +61,6 @@ Keep new balancing figures labeled untested. Keep proposed names/visuals editabl
 
 ## Existing packs
 
+For Clipper art, use [B — Sturdy retro machine](concept-art/r01-clipper/SELECTED.md), confirmed in C10, and the updated [R01 brief](art-design/robots/r01-clipper.md). The other Clipper images are unselected exploration history, including the humanoid candidate. Do not use historical generation prompts to override the selected two-stalk wheeled design.
+
 [Main concept](dead-eden-concept.md) · [Twenty system documents](design/README.md) · [Twelve levels](level-design/README.md) · [Thirty-two enemy/weapon art briefs](art-design/README.md)
