@@ -1,0 +1,1625 @@
+{
+  "schema_version": 1,
+  "project": "DEAD EDEN",
+  "purpose": "Structured concept reference for AI use; not engine-ready level data.",
+  "status": "Established campaign outline with proposed detailed layouts, durations, checkpoints, and encounter sequencing.",
+  "units": {
+    "art_reference_hero_height_m": 1.7,
+    "exact_physics": "undecided"
+  },
+  "global_constraints": {
+    "level_count": 12,
+    "mini_boss_levels": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "weapon_count": 5,
+    "upgrades_per_weapon": 3,
+    "returned_first_level": 10,
+    "first_patient_is_enemy": false,
+    "final_extra_boss": false,
+    "baseline_actions": [
+      "move/run",
+      "jump",
+      "aim",
+      "shoot",
+      "interact"
+    ],
+    "tether_available_from_level": 6,
+    "implementation_requested": false
+  },
+  "levels": [
+    {
+      "n": 1,
+      "slug": "welcome-to-sunnyvale",
+      "name": "Welcome to Sunnyvale",
+      "act": "Sunnyvale's perfect lie",
+      "duration": "10–14 minutes",
+      "difficulty": "Introductory",
+      "newWeapon": "Scrapjack Pistol (available at entry)",
+      "available": [
+        "Scrapjack Pistol"
+      ],
+      "roster": [
+        "Resident",
+        "Clipper"
+      ],
+      "newEnemies": [
+        "Resident",
+        "Clipper"
+      ],
+      "boss": null,
+      "pitch": "A perfect artificial suburb slowly reveals that its inhabitants have died and its cheerful maintenance routines cannot tell the difference.",
+      "entry": "The scavenger climbs through a broken perimeter service gate seeking a valuable power core. EDEN's local systems still operate under standing instructions; the central intelligence has not yet fully awakened.",
+      "objective": "Find the rumored core inside the neighborhood maintenance depot, meet the companion, and escape onto the garden path after the extraction attempt awakens EDEN.",
+      "exit": "The companion remains alive with its core installed and follows the hero toward the quarantine gardens of level 2.",
+      "look": "Pastel cream houses have rounded rooflines, fat ceramic gutters, scalloped porch awnings, and perfectly clipped bulbous shrubs. Oversized flowers grow in neat mechanical planters. A pale blue sky is an illuminated habitat ceiling, first visible through one broken cloud projector. Keep the lower service infrastructure hidden until the last third. Nothing is abandoned-looking at first glance: the wrongness is repeated routines and unattended meals.",
+      "palette": "Warm cream #EFE0BE, soft peach #DF9E80, lawn green #87B45E, pale sky blue #A9D6DD, dark teal service recesses #365D62. Golden simulated morning light; sharper cyan utility light appears inside the depot.",
+      "landmark": "A smiling sun-shaped neighborhood clock sits above the maintenance depot and can be glimpsed from several route positions.",
+      "foreground": "Thin fence edges, a few oversized flowers, and mailbox corners frame the screen edges. Their opacity or placement must never hide feet, enemies, or landing edges.",
+      "playplane": "Solid porch floors, roof terraces, low garden walls, a slow maintenance platform, and the depot interior form the collision route. Usable surfaces have broad light top edges and visible supports.",
+      "background": "Two layers of homes, orderly lawns, looping robot-bird silhouettes, and the cloud ceiling. Background Residents are distant noninteractive routines, never targets requiring a depth switch.",
+      "route": "A01 Perimeter gate → A02 Front gardens → A03 Rooftop walk → A04 Neighborhood square → A05 Maintenance depot → A06 Alarm exit.",
+      "zones": [
+        {
+          "id": "L01-A01",
+          "name": "Perimeter gate",
+          "space_and_placement": "A flat entrance apron leads to two low garden steps and a shallow catchable gap. Place an inert target on a fence beyond a clear firing lane; no enemy can reach the player here.",
+          "experience_and_lesson": "Let the player move, jump, and fire the pistol without danger. A visible salvage token above the steps teaches that exploration uses the same basic movement.",
+          "completion_and_connection": "Cross the open gate to A02; no key or hidden input is required."
+        },
+        {
+          "id": "L01-A02",
+          "name": "Front gardens",
+          "space_and_placement": "Two short yards are separated by a low wall. One Resident patrols the first yard. One Clipper waits in the second, facing a sturdy stone planter.",
+          "experience_and_lesson": "Introduce each enemy alone. Give the Resident time to show its lunge. The Clipper's failed wall charge demonstrates recovery openings without requiring the player to discover them under pressure.",
+          "completion_and_connection": "A porch step leads upward to A03; the ground route remains a safe fallback during practice."
+        },
+        {
+          "id": "L01-A03",
+          "name": "Rooftop walk",
+          "space_and_placement": "Three broad roof terraces are linked by a slow maintenance platform over a shallow service lane. Put one Resident on a wide far terrace, not on the landing edge.",
+          "experience_and_lesson": "Introduce waiting for a moving platform and judging a landing before shooting. A lower recovery path returns to the first terrace if a jump is missed.",
+          "completion_and_connection": "The final roof descends gently into A04."
+        },
+        {
+          "id": "L01-A04",
+          "name": "Neighborhood square",
+          "space_and_placement": "A wide clear square surrounds a nonblocking fountain. Place one Clipper on the lower lane and two staggered Residents on the farther side, with a central raised flowerbed for separation.",
+          "experience_and_lesson": "Combine familiar patterns while leaving a retreat route. Set the first interior checkpoint on the quiet far porch after the encounter.",
+          "completion_and_connection": "The clock landmark marks the depot door into A05."
+        },
+        {
+          "id": "L01-A05",
+          "name": "Maintenance depot",
+          "space_and_placement": "A compact workshop shows neatly sorted spare parts, an inactive care console, and the maintenance companion held in a charging cradle. No hostile spawn interrupts the interaction.",
+          "experience_and_lesson": "The hero tries to access the companion's core; the cradle calls the central intelligence. EDEN fully awakens, the companion objects, and both choose escape. The core remains installed.",
+          "completion_and_connection": "The event opens a clearly lit emergency hatch into A06 and changes the neighborhood's lighting."
+        },
+        {
+          "id": "L01-A06",
+          "name": "Alarm exit",
+          "space_and_placement": "Garden panels rotate into temporary railings while ceiling cloud lights shift to a quarantine pattern. These movements happen ahead of the player, never beneath an occupied landing.",
+          "experience_and_lesson": "A single familiar Clipper tests movement under new presentation, not a new mechanic. Reach the service wicket with the companion.",
+          "completion_and_connection": "Crossing the wicket completes the level and leads directly to level 2."
+        }
+      ],
+      "transform": "The awakening turns neighborhood decoration into medical wayfinding: flower lamps swivel into examination lights and neat fences become quarantine guides. It occurs once, with a pause to read the changed exit; it does not introduce a timed escape.",
+      "encounters": "Start with individual enemies, then combine one charger and a small number of shamblers in a wide area. Avoid simultaneous airborne or ranged threats. The final encounter reuses known behavior.",
+      "checkpoints": [
+        "At A01 entry.",
+        "After A04, before entering the depot.",
+        "After the A05 companion event, before A06; retain the awakening and companion state on retry."
+      ],
+      "secrets": [
+        "A visible roof-alcove salvage cache above A03, reachable with ordinary jumps from an optional porch ladder route.",
+        "A readable family portrait and untouched breakfast in a side room at A02; supplies the first quiet story detail without a quest requirement."
+      ],
+      "story": "The horror comes from the same meal being delivered to the same unresponsive resident, then from discovering that the advertised treasure has a personality. EDEN initially speaks with sincere hospitality.",
+      "audio": "Birdlike mechanical chirps, soft sprinkler clicks, and a gentle neighborhood jingle. At awakening, the same jingle shifts to a slower announcement motif rather than sudden horror stingers.",
+      "kit": "Rounded house fronts and roof corners; porch and garden-wall modules; fence posts; planter blocks; clock landmark; depot workbench; charging cradle; cloud-ceiling panels; examination-flower light; rotating quarantine rail.",
+      "separate": "House shells, collision terraces, moving platform, rotating fences, and lights must be distinct assets. The companion and enemies use separate character assets; do not sculpt them into architecture.",
+      "avoid": "Do not show Returned, overt medical laboratories before the depot reveal, advanced weapons, a boss, gore, or a destroyed post-apocalyptic town. No mandatory double jump, dash, wall run, swimming, or climbing mechanic is introduced.",
+      "frame": "The neighborhood square seen from the actual side camera: a cream porch on the left, a raised fountain planter in the center, a Clipper below it, and the smiling clock over the depot at the right.",
+      "proof": [
+        "The first moving-platform failure has a recoverable lower route.",
+        "The companion encounter leaves its core installed.",
+        "EDEN's central awakening occurs once at A05, while earlier local routines remain understandable."
+      ],
+      "id": "L01",
+      "document": "l01-welcome-to-sunnyvale.md",
+      "main_route_edges": [
+        {
+          "from": "L01-A01",
+          "to": "L01-A02"
+        },
+        {
+          "from": "L01-A02",
+          "to": "L01-A03"
+        },
+        {
+          "from": "L01-A03",
+          "to": "L01-A04"
+        },
+        {
+          "from": "L01-A04",
+          "to": "L01-A05"
+        },
+        {
+          "from": "L01-A05",
+          "to": "L01-A06"
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "slug": "hedge-your-bets",
+      "name": "Hedge Your Bets",
+      "act": "Sunnyvale's perfect lie",
+      "duration": "12–16 minutes",
+      "difficulty": "Easy",
+      "newWeapon": "Boom Broom",
+      "available": [
+        "Scrapjack Pistol",
+        "Boom Broom"
+      ],
+      "roster": [
+        "Resident",
+        "Clipper",
+        "Sprinter",
+        "Pollinator"
+      ],
+      "newEnemies": [
+        "Sprinter",
+        "Pollinator"
+      ],
+      "boss": null,
+      "pitch": "An ornamental garden becomes a moving quarantine corridor, forcing the hero to clear safe landings while robots try to shepherd them toward treatment.",
+      "entry": "Enter through the wicket used to leave Sunnyvale. EDEN has awakened and is closing surface exits. The companion identifies an old pipe-cleaning tool in a nearby garden shed.",
+      "objective": "Recover the Boom Broom and reach the parade service gate through the reorganized hedge maze.",
+      "exit": "A one-way maintenance door enters the parade route used in level 3; the apparent surface exit is visibly sealed.",
+      "look": "Hedges are thick rounded masses cut into arches and smiling animal shapes. Their trunks emerge from large rectangular mobile planters riding on recessed rails. Oversized tulips contain camera lenses; ivory irrigation pipes run between peach garden pavilions. The route feels lush and sunny even as the geometry becomes controlling.",
+      "palette": "Rich hedge green #608C48, pale lime #B0C56A, peach paving #D7A283, ivory pipes #E9E0C8, small quarantine amber #E7B454. Keep amber used as a warning accent rather than covering the scene.",
+      "landmark": "A tall spiral topiary wrapped around an ivory water tower repeatedly reappears as the player climbs toward the exit.",
+      "foreground": "Thin leaf silhouettes and occasional rail covers near the frame edge. Dense hedge faces belong behind the playable lane, never as opaque screens covering enemies.",
+      "playplane": "Stone paths, planter tops, fixed pavilion ledges, and rail-mounted hedge platforms. Track joints make potential movement visible.",
+      "background": "Rows of decorative hedges, slow nonhostile maintenance activity, greenhouse roofs, and the sealed outer dome gate.",
+      "route": "A01 Tool shed → A02 Sprint lawn → A03 Pollinator terraces → A04 Moving hedge lanes → A05 Water-tower crossing → A06 Parade gate.",
+      "zones": [
+        {
+          "id": "L02-A01",
+          "name": "Tool shed",
+          "space_and_placement": "A quiet shed immediately offers the Boom Broom on an uncluttered tool rack. Outside is a practice yard with inert targets and a sturdy backstop.",
+          "experience_and_lesson": "Provide the weapon before new enemies. Teach short-range spread, pump recovery, knockback, and individual-shell reloading through one optional target group.",
+          "completion_and_connection": "The only onward path is a broad lawn into A02."
+        },
+        {
+          "id": "L02-A02",
+          "name": "Sprint lawn",
+          "space_and_placement": "One Sprinter approaches along a long visible path with a low raised planter at the midpoint. A solid hedge wall catches its overshoot.",
+          "experience_and_lesson": "Show the crouch, burst, and recovery. Let the hero jump to the planter or sidestep, then use shotgun knockback from a safe position.",
+          "completion_and_connection": "A short garden stair leads to A03."
+        },
+        {
+          "id": "L02-A03",
+          "name": "Pollinator terraces",
+          "space_and_placement": "Three broad terraces sit above a shallow irrigation trench. Introduce one Pollinator over the widest terrace. A later terrace contains one stationary Resident.",
+          "experience_and_lesson": "Teach the dive marker before mixing ground and air. The first missed landing drops to a return path, not directly into an unseen enemy.",
+          "completion_and_connection": "Reach a quiet gazebo checkpoint before A04."
+        },
+        {
+          "id": "L02-A04",
+          "name": "Moving hedge lanes",
+          "space_and_placement": "Two hedge planters slide horizontally to form alternating short paths. Each has a visible rail, travel endpoint, and amber warning lamp. Provide solid waiting alcoves beside both.",
+          "experience_and_lesson": "Trigger the first movement by stepping onto a safe control pad. Watch the route change, then cross. Movements never close on the hero; an occupied choke point postpones movement.",
+          "completion_and_connection": "A permanent upper ledge reconnects both temporary routes to A05."
+        },
+        {
+          "id": "L02-A05",
+          "name": "Water-tower crossing",
+          "space_and_placement": "A wide planter platform rises beside the spiral topiary. After reaching its fixed landing, face one Sprinter and one Pollinator with a refuge ledge between them.",
+          "experience_and_lesson": "Test clearing a landing and separating attack timings. Never initiate the dive while the player is making the first mandatory blind transition.",
+          "completion_and_connection": "A pavilion roof descends to A06."
+        },
+        {
+          "id": "L02-A06",
+          "name": "Parade gate",
+          "space_and_placement": "EDEN closes a visible surface door in the background and opens a signed service gate on the actual play plane. Two familiar Residents occupy a broad approach.",
+          "experience_and_lesson": "Confirm that progress means moving deeper. The gate interaction is not under attack.",
+          "completion_and_connection": "Exit into level 3's parade staging area."
+        }
+      ],
+      "transform": "Hedge planters slide along visible tracks to convert a strolling maze into a quarantine funnel. The camera shows both endpoints before each first activation. A stable alternative floor prevents moving geometry from softlocking the hero.",
+      "encounters": "Introduce Sprinter and Pollinator in isolation, then combine one of each near the end. Clippers and Residents may occupy optional side lanes, but do not exceed the readability of the main two-threat exercise.",
+      "checkpoints": [
+        "At A01 after collecting and practicing with Boom Broom; the weapon persists.",
+        "At the gazebo after A03.",
+        "At the quiet service-gate approach after A05."
+      ],
+      "secrets": [
+        "A flowerbed side route reveals a small salvage cache behind a moving hedge; the entrance becomes obvious after seeing its movement.",
+        "A service plaque at the water tower shows that the garden layout was originally intended to calm anxious patients."
+      ],
+      "story": "EDEN calls enclosure a comfort measure. The companion recognizes that every apparently helpful sign leads toward the hospital.",
+      "audio": "Leaf rustle, soft garden music, rail motors, and recognizable Pollinator targeting beeps. Sprinter footsteps accelerate before the burst.",
+      "kit": "Straight and corner hedge planters; topiary shapes; recessed rail modules; stone path edges; irrigation-pipe bends; gazebo; shed; weapon rack; water tower; fixed refuge ledges; quarantine gate.",
+      "separate": "Mobile planter chassis must be separate from the fixed route. Leaf decoration cannot define hidden collision. Keep rails, lamps, platform surfaces, and background gate distinct.",
+      "avoid": "No root-mutant Gardener, Seedlobber, tether anchors requiring use, Returned, or mini-boss. Do not turn the transformation into a randomized maze with no readable exit.",
+      "frame": "A side-view garden cross-section showing a safe gazebo on the left, two hedge planters on visible rails in the center, and the spiral water-tower topiary on the right, with a single Pollinator over a broad landing.",
+      "proof": [
+        "The shotgun appears before the first Sprinter.",
+        "All hedge movements have previewed endpoints and a safe waiting area.",
+        "The combined air-and-ground encounter happens on a broad landing, not during a blind jump."
+      ],
+      "id": "L02",
+      "document": "l02-hedge-your-bets.md",
+      "main_route_edges": [
+        {
+          "from": "L02-A01",
+          "to": "L02-A02"
+        },
+        {
+          "from": "L02-A02",
+          "to": "L02-A03"
+        },
+        {
+          "from": "L02-A03",
+          "to": "L02-A04"
+        },
+        {
+          "from": "L02-A04",
+          "to": "L02-A05"
+        },
+        {
+          "from": "L02-A05",
+          "to": "L02-A06"
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "slug": "parade-of-progress",
+      "name": "Parade of Progress",
+      "act": "Sunnyvale's perfect lie",
+      "duration": "14–18 minutes including mini-boss",
+      "difficulty": "Easy; first boss test",
+      "newWeapon": null,
+      "available": [
+        "Scrapjack Pistol",
+        "Boom Broom"
+      ],
+      "roster": [
+        "Resident",
+        "Clipper",
+        "Pollinator",
+        "Bloom Sentry",
+        "Courtesy Officer"
+      ],
+      "newEnemies": [
+        "Bloom Sentry",
+        "Courtesy Officer"
+      ],
+      "boss": "Mr. Mulch",
+      "pitch": "A relentlessly cheerful civic parade becomes a moving obstacle course and ends with its enormous robotic groundskeeper trying to prune the hero.",
+      "entry": "Enter behind the parade's staging pavilions. The only open maintenance lift is at the terminus, under the authority of the grand marshal.",
+      "objective": "Ride and cross the parade route, learn the new shield and turret patterns, then defeat Mr. Mulch to access the Rootworks lift.",
+      "exit": "The lift descends from the sunny terminus into level 4's utility freight corridor.",
+      "look": "Chunky flower floats, painted service mascots, striped canopies, inflated-looking metal balloons, and clean cream paving frame an absurd celebration of public wellbeing. Floats have visible powered wheel bases rather than levitating decorations. A ceremonial arch reveals the hidden lift beneath it after the fight.",
+      "palette": "Warm cream #EFDFB8, coral #E88F78, garden green #81A956, butter yellow #E4BF55, teal shadows #497A7B. Lighting remains cheerful; danger comes from machinery, not darkness.",
+      "landmark": "A giant smiling sun arch with a closed floor hatch beneath it; Mr. Mulch's canopy echoes the arch's festive shapes.",
+      "foreground": "Sparse bunting and low flower edges. Suspend banners high enough not to cover airborne targets or jump trajectories.",
+      "playplane": "Stationary viewing steps, slow float decks, connecting service platforms, and a wide terminal plaza. Show wheel clearance beneath moving float decks.",
+      "background": "Additional parade lanes, looping cheering hologram silhouettes, ornamental town facades, and the habitat ceiling. Background floats cannot be entered or mistaken for active platforms.",
+      "route": "A01 Staging yard → A02 Turret float → A03 Security checkpoint → A04 Parade crossing → A05 Terminus refuge → A06 Mr. Mulch arena.",
+      "zones": [
+        {
+          "id": "L03-A01",
+          "name": "Staging yard",
+          "space_and_placement": "Board a low stationary float, then cross to a second float moving slowly along a short visible track. A fixed service ledge runs below the practice jump.",
+          "experience_and_lesson": "Teach movement relative to a float without attacking enemies or full-screen forced scrolling.",
+          "completion_and_connection": "Step onto a stationary viewing platform at A02."
+        },
+        {
+          "id": "L03-A02",
+          "name": "Turret float",
+          "space_and_placement": "One Bloom Sentry stands on a slowly moving float beside broad stationary cover. Its petals open in full view before its first burst.",
+          "experience_and_lesson": "Teach the closed armor and open-center window. The hero can wait, jump over the low burst, or shoot from the stable ledge.",
+          "completion_and_connection": "A stationary ramp leads into A03."
+        },
+        {
+          "id": "L03-A03",
+          "name": "Security checkpoint",
+          "space_and_placement": "A single Courtesy Officer blocks a flat parade inspection lane. A low overpass allows an obvious route behind it.",
+          "experience_and_lesson": "Demonstrate front shielding, baton warning, and back exposure. No second enemy interrupts the first observation.",
+          "completion_and_connection": "The back of the lane reconnects to the main float route at A04."
+        },
+        {
+          "id": "L03-A04",
+          "name": "Parade crossing",
+          "space_and_placement": "Two slow floats move along offset sections, with stationary refuges between. Place one Bloom Sentry on a far deck and one Resident on the subsequent stationary landing, separated by camera space.",
+          "experience_and_lesson": "Combine timing and target selection without attacking from outside the screen. A missed jump falls to a service path that rejoins the last refuge.",
+          "completion_and_connection": "Climb fixed steps to A05."
+        },
+        {
+          "id": "L03-A05",
+          "name": "Terminus refuge",
+          "space_and_placement": "A maintenance kiosk, supplies, and the visible closed arena gate sit beneath the sun arch. Show a small demonstration clipper striking a planter behind a sealed safety window if needed.",
+          "experience_and_lesson": "Establish reinforced planters as the boss's collision targets, then save immediately before the fight.",
+          "completion_and_connection": "Enter A06 deliberately via the plaza gate."
+        },
+        {
+          "id": "L03-A06",
+          "name": "Mr. Mulch arena",
+          "space_and_placement": "A broad plaza has permanent side refuge ledges, low central platforms, and reinforced planter walls at both ends. Reserve the ground lane for Mr. Mulch's charge.",
+          "experience_and_lesson": "Read the deck-lowering warning, use the raised route to clear the charge, bait a collision, then shoot the rear motor during reversal. Clippings sweeps occur separately.",
+          "completion_and_connection": "Victory opens the floor hatch and the noncombat maintenance lift to level 4."
+        }
+      ],
+      "transform": "The finishing arch folds its decorative panels outward to reveal service lift machinery after victory. During the fight, the plaza layout stays fixed so the player learns the boss rather than an arena transformation.",
+      "encounters": "One turret and one shield defender are introduced independently. Later combine only familiar behaviors on stable refuges. No ordinary enemies spawn during Mr. Mulch's fight.",
+      "checkpoints": [
+        "At A01 entry.",
+        "After A03 on a stationary viewing platform.",
+        "At A05 immediately before the boss; boss retries restore the arena, supplies, and Mr. Mulch's first phase."
+      ],
+      "secrets": [
+        "A small balcony cache reached from the slow float timing route in A04.",
+        "A backstage poster showing that the grand marshal was originally a lawn-maintenance contractor, supporting the boss's identity."
+      ],
+      "story": "EDEN describes the hero as an invasive species obstructing a public celebration. The parade continues in the background after the boss falls, emphasizing the AI's persistent routines.",
+      "audio": "Bright brass-like synthetic parade music, float motor rumble, and an unmistakable spoken charge warning. Quiet the music slightly during attack cues.",
+      "kit": "Float deck and wheel chassis; canopy supports; giant molded flowers; viewing steps; fence modules; reinforced planters; service refuge platforms; sun arch; folding arch panels; floor lift hatch.",
+      "separate": "Floats, wheels, rideable decks, and track motion remain distinct. Mr. Mulch is a separate boss asset; planter walls have clear collision faces and readable impact states.",
+      "avoid": "No floor collapse, summon phase, new weapon, Returned, or mandatory tether. Do not make the player jump over the full boss height from flat ground without a designed raised escape route.",
+      "frame": "A wide gameplay-side arena shot: reinforced planters at left and right, two low platforms, Mr. Mulch with mower deck lowered in the center lane, and the sun arch behind the closed maintenance lift.",
+      "bossDesign": {
+        "identity": "A fully mechanical four-wheeled mower parade float, 2.50 m tall and 3.80 m long in the art proposal, with a fixed smiling mascot and exposed rear motor after a collision.",
+        "arena": "One ground charge lane, low stepping platforms, permanent side refuge ledges, and two reinforced planter collision faces. Both refuges connect back into the firing lane.",
+        "phases": [
+          "Phase 1: one announced charge, planter collision, exposed rear motor and long reversal recovery; clippings sweeps occur in separate cycles.",
+          "Phase 2: two individually signaled charges before a collision opportunity. Keep the same arena and body; no helpers or hidden third attack."
+        ],
+        "opening": "Rear motor after collision; either available weapon can deal damage from an unobstructed position.",
+        "fairness": "Charge route and planter endpoint are visible before motion. Raised escape routes are reachable with the calibrated basic jump. Do not stack clippings with a charge.",
+        "reward": "Upgrade resources and access to the Rootworks lift; no sixth weapon or automatic unplanned upgrade.",
+        "reference": "../art-design/mini-bosses/b01-mr-mulch.md"
+      },
+      "proof": [
+        "Boss is only at the end of level 3.",
+        "Both new enemies have individual teaching encounters.",
+        "A camera-stable refuge exists between each moving float section.",
+        "Mr. Mulch's second phase is harder through sequence length, not extra enemy clutter."
+      ],
+      "id": "L03",
+      "document": "l03-parade-of-progress.md",
+      "main_route_edges": [
+        {
+          "from": "L03-A01",
+          "to": "L03-A02"
+        },
+        {
+          "from": "L03-A02",
+          "to": "L03-A03"
+        },
+        {
+          "from": "L03-A03",
+          "to": "L03-A04"
+        },
+        {
+          "from": "L03-A04",
+          "to": "L03-A05"
+        },
+        {
+          "from": "L03-A05",
+          "to": "L03-A06"
+        }
+      ]
+    },
+    {
+      "n": 4,
+      "slug": "roots-and-rivets",
+      "name": "Roots and Rivets",
+      "act": "Beneath the roots",
+      "duration": "14–18 minutes",
+      "difficulty": "Easy–moderate",
+      "newWeapon": "Arc Welder",
+      "available": [
+        "Scrapjack Pistol",
+        "Boom Broom",
+        "Arc Welder"
+      ],
+      "roster": [
+        "Resident",
+        "Clipper",
+        "Loadbearer",
+        "Patchbot",
+        "Clinger"
+      ],
+      "newEnemies": [
+        "Loadbearer",
+        "Patchbot",
+        "Clinger"
+      ],
+      "boss": null,
+      "pitch": "Beneath immaculate lawns, giant living roots wind through a freight network that has been carrying the same supplies for centuries.",
+      "entry": "The parade lift deposits the hero and companion in a quiet receiving bay. Floor indicators trace a route toward the hospital's water and treatment infrastructure.",
+      "objective": "Recover the Arc Welder, traverse freight and server-root galleries, and open the botanical waste-processing route.",
+      "exit": "An unlocked compost freight door leads to level 5. A maintenance log explains why the underground routines never stopped.",
+      "look": "Large rounded concrete ribs support low industrial halls. Chunky yellow freight machines work beside cream server cabinets wrapped in thick brown roots. Small luminous root buds illuminate copper pipes and abandoned order trays. Keep a believable service building underneath the growth; this is a functioning facility, not a generic cave.",
+      "palette": "Mustard industrial yellow #D0A84C, cream server shells #DAD5BF, teal shadows #3C6769, bark brown #715943, sparse cyan utility lights #7ACCC5. Warm pools at workstations distinguish refuge from dark recesses.",
+      "landmark": "A massive root passes through the center of a transparent server cooling drum and reappears across two adjacent halls.",
+      "foreground": "A few thick pipe bends and root ends frame the edges. Ceiling roots cannot hide a Clinger whose attack has begun.",
+      "playplane": "Clearly edged service walkways, slow conveyors, crate tops, fixed shelving landings, and an accessible maintenance floor under the first moving belts.",
+      "background": "Deep server aisles, distant freight routes, inactive storage robots, and the enormous root cooling drum. Background belts carry scenery rather than surprise projectiles.",
+      "route": "A01 Receiving bay → A02 Repair workshop → A03 Freight stack → A04 Ceiling gallery → A05 Conveyor junction → A06 Compost door.",
+      "zones": [
+        {
+          "id": "L04-A01",
+          "name": "Receiving bay",
+          "space_and_placement": "Exit the lift onto a safe ledge above one slow conveyor. A lower service floor catches failed jumps. Show a root breaking a decorative panel without changing the route.",
+          "experience_and_lesson": "Introduce underground scale and conveyor motion before combat. A single familiar Clipper occupies the far fixed landing.",
+          "completion_and_connection": "Follow a bright workshop lamp into A02."
+        },
+        {
+          "id": "L04-A02",
+          "name": "Repair workshop",
+          "space_and_placement": "A quiet bench contains the Arc Welder. Two inert conductive targets sit close enough to show a short chain, beside clear floor space.",
+          "experience_and_lesson": "Teach short range and overheating. Demonstrate the gauge and a safe cooling pause before any repair enemy is active.",
+          "completion_and_connection": "Weapon collection opens a normal service door into A03; no weapon-specific electrical lock is required."
+        },
+        {
+          "id": "L04-A03",
+          "name": "Freight stack",
+          "space_and_placement": "One Loadbearer stacks a crate, lifts another overhead, then throws toward a marked position. The room has permanent waist-high cover and an unobstructed upper firing ledge.",
+          "experience_and_lesson": "Introduce the exposed belly during lifting. Then reveal one Patchbot repairing a damaged Clipper in a second, adjacent bay.",
+          "completion_and_connection": "The hero can shoot the repair unit first or interrupt with the welder; clearing the bay opens the route to A04."
+        },
+        {
+          "id": "L04-A04",
+          "name": "Ceiling gallery",
+          "space_and_placement": "A short, brightly edge-lit corridor contains one Clinger on a low ceiling above a wide safe floor. The next alcove contains a second Clinger at a different height.",
+          "experience_and_lesson": "Make the gripping posture and drop warning visible. Shooting the first enemy loosens its grip before the player enters its landing zone.",
+          "completion_and_connection": "A quiet server alcove provides a checkpoint before A05."
+        },
+        {
+          "id": "L04-A05",
+          "name": "Conveyor junction",
+          "space_and_placement": "Two short conveyor segments connect fixed islands. Put one Loadbearer on the far island and one Patchbot behind a crate. A Clinger appears only in the final fixed-floor section.",
+          "experience_and_lesson": "Combine crate cover and repair priority while leaving a stable retreat. Never combine the first ceiling drop with a forced belt jump.",
+          "completion_and_connection": "A stationary stair leads to A06."
+        },
+        {
+          "id": "L04-A06",
+          "name": "Compost door",
+          "space_and_placement": "A quiet control room has a large readable service diagram and a manual switch. Behind glass, old automated treatment orders cycle without human approval.",
+          "experience_and_lesson": "The companion explains that EDEN's central sleep never halted local routines. Interact with the switch to release the botanical waste door.",
+          "completion_and_connection": "Enter level 5 without a timed escape or new boss."
+        }
+      ],
+      "transform": "EDEN requests rerouting and reverses one demonstrated conveyor after its warning arrows visibly change. The player stands on a fixed island during the first reversal; later reversals always preserve a route back to that island.",
+      "encounters": "Introduce each of the three new enemy roles separately. Later allow one heavy cargo threat plus one repair helper; ceiling ambushes occur after landing. Arc Welder is useful but never the only damage source.",
+      "checkpoints": [
+        "At A01 entry.",
+        "After A02, retaining the Arc Welder.",
+        "In the server alcove after A04."
+      ],
+      "secrets": [
+        "A visible crate-stack cache accessible through ordinary jumps in A03.",
+        "A side server recess in A05 contains an old maintenance recording about daily routines continuing without central supervision."
+      ],
+      "story": "The contrast is between enormous automation and the absence of anyone checking its purpose. The companion recognizes the service manuals and begins doubting the instructions it trusted.",
+      "audio": "Low conveyor hum, hollow crate impacts, distant cooling fans, and gentle electronic chimes from servers. Patchbot repair pulses should be audible over machinery.",
+      "kit": "Concrete support arches; conveyor modules and end rollers; service floor plates; crate variants; server cabinets; thick root junctions; clear cooling drum; pipe elbows; workshop bench; freight door.",
+      "separate": "Keep conveyors and crates separate from fixed collision floors. Roots crossing cabinets need distinct organic meshes. The cooling drum is background scenery, not an implied swimming space.",
+      "avoid": "No tether use, living robot infection, hospital nurses, or lava foundry aesthetic. Do not require a gun to power environmental switches unless the concept later explicitly adds that mechanic.",
+      "frame": "A side-view freight bay with a fixed hero ledge on the left, a short belt over a lower return floor, a Loadbearer lifting a crate on the right, and a huge glowing root inside a cooling drum behind.",
+      "proof": [
+        "All three new enemy roles are observed before their mixed encounter.",
+        "Arc Welder pickup and its practice space precede repair pressure.",
+        "Conveyor reversal cannot strand or crush the player.",
+        "Lore clearly separates sleeping central intelligence from continuing local automation."
+      ],
+      "id": "L04",
+      "document": "l04-roots-and-rivets.md",
+      "main_route_edges": [
+        {
+          "from": "L04-A01",
+          "to": "L04-A02"
+        },
+        {
+          "from": "L04-A02",
+          "to": "L04-A03"
+        },
+        {
+          "from": "L04-A03",
+          "to": "L04-A04"
+        },
+        {
+          "from": "L04-A04",
+          "to": "L04-A05"
+        },
+        {
+          "from": "L04-A05",
+          "to": "L04-A06"
+        }
+      ]
+    },
+    {
+      "n": 5,
+      "slug": "compost-confidential",
+      "name": "Compost Confidential",
+      "act": "Beneath the roots",
+      "duration": "15–19 minutes",
+      "difficulty": "Moderate",
+      "newWeapon": "Seedlobber",
+      "available": [
+        "Scrapjack Pistol",
+        "Boom Broom",
+        "Arc Welder",
+        "Seedlobber"
+      ],
+      "roster": [
+        "Resident",
+        "Gardener",
+        "Spitter",
+        "Burrower"
+      ],
+      "newEnemies": [
+        "Gardener",
+        "Spitter",
+        "Burrower"
+      ],
+      "boss": null,
+      "pitch": "A botanical recycling plant has become a luminous underground garden where treatment runoff makes the plants and former workers grow in the wrong ways.",
+      "entry": "The compost freight door opens onto a raised inspection walkway above soil-processing vats. The hero still needs the pump route to reach the hospital.",
+      "objective": "Recover the Seedlobber, cross the overgrown recycling system, and lower the soil sluice leading to the pumping station.",
+      "exit": "A dry service passage beneath the lowered sluice leads to level 6's reservoir approach.",
+      "look": "Large ivory compost drums, terracotta planting troughs, and broad green processing belts have been invaded by bulbous mushrooms, coiled roots, and giant leaves. Soil looks soft and patterned; safe service metal looks firm and clean-edged. Growth is exuberant and colorful, with clearly bounded areas of hazardous runoff.",
+      "palette": "Terracotta #B97850, moss green #769950, pale cream #E3D5B9, muted violet fungi #A291BF, honey bioluminescence #D9C16D. Keep the playable floor brighter than vat interiors.",
+      "landmark": "A giant leaf canopy grows out of a tilted compost drum, with a hanging orange sluice wheel visible beyond it.",
+      "foreground": "Low rounded fungi and cut pipe mouths frame corners. Avoid dense fog and drifting spores that conceal ground-ripple warnings.",
+      "playplane": "Metal inspection ledges, broad moving compost lifts, visible root platforms, and isolated patches of diggable soil. Each floor material has a distinct top edge.",
+      "background": "Layered vats, distant slow-turning drums, huge leaf shapes, drainage pipes, and shallow light shafts from the garden above.",
+      "route": "A01 Supply depot → A02 Root nursery → A03 Spitter troughs → A04 Soft-soil crossing → A05 Rising compost lifts → A06 Sluice controls.",
+      "zones": [
+        {
+          "id": "L05-A01",
+          "name": "Supply depot",
+          "space_and_placement": "The Seedlobber rests in a protected botanical depot before the first mutated worker. A low wall and inert target let the player test an arc from a safe distance.",
+          "experience_and_lesson": "Demonstrate bounce, delay, and self-danger without a required self-damage event. Show the pod landing clearly rather than hiding it behind scenery.",
+          "completion_and_connection": "A short ramp enters A02; the weapon is retained on retry."
+        },
+        {
+          "id": "L05-A02",
+          "name": "Root nursery",
+          "space_and_placement": "One Gardener occupies a flat soil bed separated from the hero by a low root. Fixed metal side ledges remain safe from ground growth.",
+          "experience_and_lesson": "Observe anchoring and the traveling pulse before thorns emerge. A visible exposed root can be shot; jumping to metal provides another response.",
+          "completion_and_connection": "The clear far ledge leads to A03."
+        },
+        {
+          "id": "L05-A03",
+          "name": "Spitter troughs",
+          "space_and_placement": "A Spitter sits behind low cover across a broad planter trench. Its pouch and projectile arc remain visible above the wall. Provide two separated safe firing positions.",
+          "experience_and_lesson": "Teach reading an arcing attack and moving between positions. Seedlobber can arc back over cover, but an upper ledge also gives a direct pistol shot.",
+          "completion_and_connection": "Reach a quiet observation shelf and checkpoint."
+        },
+        {
+          "id": "L05-A04",
+          "name": "Soft-soil crossing",
+          "space_and_placement": "Two isolated soil patches are divided by firm plates. The first Burrower creates a clear traveling ripple under an otherwise empty patch.",
+          "experience_and_lesson": "Teach moving away from the last marked position. The second patch combines a Burrower with a distant Resident only after the player has seen an emergence.",
+          "completion_and_connection": "Exit to a stable platform at A05."
+        },
+        {
+          "id": "L05-A05",
+          "name": "Rising compost lifts",
+          "space_and_placement": "Two broad bucket-like lifts rise through a short shaft beside fixed catch ledges. A Gardener occupies a far fixed shelf; one Spitter is visible beyond the next refuge.",
+          "experience_and_lesson": "Alternate movement and combat rather than filling every jump with attacks. The route always offers a noncrumbling landing before each ranged exchange.",
+          "completion_and_connection": "The upper lift lands beside A06."
+        },
+        {
+          "id": "L05-A06",
+          "name": "Sluice controls",
+          "space_and_placement": "A final open chamber combines one Gardener and one Spitter, with wide metal refuges and an obvious manual wheel. Burrower soil is absent here to avoid three simultaneous area hazards.",
+          "experience_and_lesson": "Use learned cover, jumping, and arcing fire. After the fight, turn the wheel to drain a blocked dry passage.",
+          "completion_and_connection": "The dry passage opens to level 6."
+        }
+      ],
+      "transform": "A growth-treatment pipe leaks into an empty bed, rapidly raising a thick root bridge. The camera previews the growing platform before it becomes usable. Growth closes a decorative background channel while opening the main forward route; it never requires guessing through obscuring foliage.",
+      "encounters": "Each new biological role has its own material and warning lesson: rooted thorns, arcing spit, and moving soil. The final combination uses two roles, not all three. Avoid endless spawns from vats.",
+      "checkpoints": [
+        "At A01 after the Seedlobber lesson.",
+        "After A03 on the observation shelf.",
+        "At the stable upper landing before A06."
+      ],
+      "secrets": [
+        "A cache on an optional root loop above A02, reachable with basic jumps.",
+        "A worker's annotated planting chart in a dry recess at A04 explaining that rapid-growth compounds were used on people as well as crops."
+      ],
+      "story": "The garden is beautiful because it is being overfed with experimental treatment waste. The hero sees a Gardener tending one undamaged flower before it notices them.",
+      "audio": "Wet soil shifts, hollow drum creaks, soft plant rustle, and distinct Burrower scraping. Keep explosive-pod fuse cues audible against the environment.",
+      "kit": "Compost drums; trough walls; firm metal plates; soft-soil patches; lift buckets; root bridges and joints; broad leaf canopy; closed runoff pipes; sluice wheel and door; fungi clusters.",
+      "separate": "Diggable soil warning surfaces and thorn segments are independent from the base floor. Moving lifts, grown bridge, and vat scenery use separate assemblies. Do not bake hazard clouds into diffuse textures.",
+      "avoid": "No robot-zombie hybrids, autonomous infected machinery, compulsory swimming, tether puzzles, or boss. Seedlobber roots are botanical effects rather than a route for robot infection.",
+      "frame": "A side-view recycling cavern with ivory vats in the background, a seed-launcher depot on the left, a thick new root bridge in the center, and a Spitter behind a low terracotta trough on the right.",
+      "proof": [
+        "The Seedlobber's delay and danger are shown before crowded use.",
+        "Only clearly marked soil supports Burrower attacks.",
+        "Lift jumps retain fixed catch ledges.",
+        "The level ends at a sluice passage rather than inventing another mini-boss."
+      ],
+      "id": "L05",
+      "document": "l05-compost-confidential.md",
+      "main_route_edges": [
+        {
+          "from": "L05-A01",
+          "to": "L05-A02"
+        },
+        {
+          "from": "L05-A02",
+          "to": "L05-A03"
+        },
+        {
+          "from": "L05-A03",
+          "to": "L05-A04"
+        },
+        {
+          "from": "L05-A04",
+          "to": "L05-A05"
+        },
+        {
+          "from": "L05-A05",
+          "to": "L05-A06"
+        }
+      ]
+    },
+    {
+      "n": 6,
+      "slug": "the-hungry-engine",
+      "name": "The Hungry Engine",
+      "act": "Beneath the roots",
+      "duration": "17–22 minutes including mini-boss",
+      "difficulty": "Moderate",
+      "newWeapon": "Graviton Tether",
+      "available": [
+        "Scrapjack Pistol",
+        "Boom Broom",
+        "Arc Welder",
+        "Seedlobber",
+        "Graviton Tether"
+      ],
+      "roster": [
+        "Resident",
+        "Gardener",
+        "Graftback",
+        "Puffer"
+      ],
+      "newEnemies": [
+        "Graftback",
+        "Puffer"
+      ],
+      "boss": "Old Rootjaw",
+      "pitch": "The hospital's water plant is being strangled by a mutated botanical worker whose roots have become part of the pumping cycle.",
+      "entry": "Enter through the dry sluice passage and follow the sound of a struggling pump. Supply pressure must be restored to open the hospital route.",
+      "objective": "Collect the Graviton Tether, learn its base capture and anchor functions, and defeat Old Rootjaw to release the pump.",
+      "exit": "Root pressure relaxes, the pump stabilizes, and a hospital supply elevator becomes available for level 7.",
+      "look": "A monumental round pump chamber combines thick ivory pipes, teal valve housings, and terracotta service platforms. Coarse roots wrap metal structures like ropes. The reservoir below reflects warm instrument lights but is visibly unsafe machinery space, not an inviting swim route.",
+      "palette": "Dark reservoir teal #2F6467, worn ivory #D8D2BA, rust orange #BD7D53, bark brown #745B43, muted chartreuse root buds #BAC076. Keep platform tops warm and root-warning ripples bright enough to read.",
+      "landmark": "A huge three-lobed pump housing sits beyond the route, pulsing unevenly under four thick roots connected to Rootjaw.",
+      "foreground": "Thin pipe collars and a few dangling root ends near the edges. Never cover the waterline, safe ledges, or anchor markers.",
+      "playplane": "Fixed pipe catwalks, broad service shelves, a safe freight training bay, and the boss's three raised central platforms with permanent side ledges.",
+      "background": "The pumping machinery, reservoir wall, large intake pipes, and the inert supporting structure around Rootjaw. Background depth is for scale; player movement stays on the side plane.",
+      "route": "A01 Reservoir approach → A02 Freight training bay → A03 Graftback service hall → A04 Puffer valve walk → A05 Pump refuge → A06 Rootjaw arena.",
+      "zones": [
+        {
+          "id": "L06-A01",
+          "name": "Reservoir approach",
+          "space_and_placement": "A dry corridor opens onto a safe catwalk with a clear view of the pump. One familiar Resident patrols a broad shelf.",
+          "experience_and_lesson": "Establish the destination and root pulses without dropping a new heavy enemy into a confined passage.",
+          "completion_and_connection": "Follow a cargo sign to A02."
+        },
+        {
+          "id": "L06-A02",
+          "name": "Freight training bay",
+          "space_and_placement": "The Graviton Tether is placed on a cargo-control pedestal. Provide a small loose crate, a padded throw target, and a marked anchor over a shallow catch floor.",
+          "experience_and_lesson": "Practice capturing and throwing a loose object, then pulling to a designated anchor. A later small Resident can be captured after the tool has been learned. Base grip cannot lift heavy targets.",
+          "completion_and_connection": "Exit by a normal service ramp; training can be retried without consuming a unique item."
+        },
+        {
+          "id": "L06-A03",
+          "name": "Graftback service hall",
+          "space_and_placement": "One Graftback occupies a wide chamber with two fixed side platforms and an open overhead clearance.",
+          "experience_and_lesson": "Show its arm lift, slam, and exposed back. The tether visibly refuses capture through an established size cue rather than implying this heavy enemy can be lifted. Circling via platforms gives ordinary weapons a valid opening.",
+          "completion_and_connection": "A quiet maintenance pad saves before A04."
+        },
+        {
+          "id": "L06-A04",
+          "name": "Puffer valve walk",
+          "space_and_placement": "A single Puffer waddles along a broad valve platform with ample space behind it. Introduce a second Puffer only on a later separate shelf.",
+          "experience_and_lesson": "Teach the inflation warning and the value of shotgun knockback. The player can retreat to clean ground before the lingering cloud blocks its previous position.",
+          "completion_and_connection": "A familiar Gardener may guard one optional branch; the main route reaches A05."
+        },
+        {
+          "id": "L06-A05",
+          "name": "Pump refuge",
+          "space_and_placement": "A sheltered maintenance station gives a full view of the three-platform arena and its permanent side ledges. A small rooted floor panel demonstrates a visible pulse before it moves.",
+          "experience_and_lesson": "Preview floor movement and save before the fight. All five weapons are now available, but upgrades are optional.",
+          "completion_and_connection": "Enter A06 when ready."
+        },
+        {
+          "id": "L06-A06",
+          "name": "Rootjaw arena",
+          "space_and_placement": "Three central platforms sit above the reservoir, with permanent left and right recovery ledges. Clearly marked tether anchors offer quick crossing; an ordinary-jump route connects all safe positions.",
+          "experience_and_lesson": "Avoid the warned root slam, relocate during seed volleys, and shoot the chest during recovery. Later one central platform lowers temporarily.",
+          "completion_and_connection": "After victory, restore the pump at a reachable console and board the hospital lift."
+        }
+      ],
+      "transform": "Root pressure raises and lowers selected floor sections. First demonstrate this away from combat. The boss's second phase lowers only one central platform at a time, with advance root tension and a visible destination.",
+      "encounters": "Graftback and Puffer are taught separately; no demand to fight a tank while learning an explosion timer. The boss arena contains no extra enemies. The tether is an option for mobility, never a method to grab Rootjaw.",
+      "checkpoints": [
+        "After the A02 tether lesson; retain the tool.",
+        "After A03, before the valve walk.",
+        "At A05 immediately before Old Rootjaw."
+      ],
+      "secrets": [
+        "A marked optional anchor loop near A02 leads to salvage; required pulls remain within base tether reach.",
+        "A dry pump-inspection alcove contains a worker photograph that matches the apron fragment still worn by Rootjaw."
+      ],
+      "story": "Old Rootjaw is a former person, not a haunted machine. The pump continues its care function despite being crushed. The companion recognizes the worker from an old roster.",
+      "audio": "A deep uneven pump heartbeat, stressed pipe creaks, slow water motion, and woody tension preceding root slams. Separate the root warning from ordinary ambient creaking.",
+      "kit": "Pump housing; pipe straight and elbow modules; pressure windows; dry service catwalks; cargo training pedestal; marked anchor props; loose crate; valve platforms; reservoir wall; three movable arena decks; permanent refuge ledges.",
+      "separate": "Rootjaw's body and four anchor roots are distinct from pump and arena meshes. Keep moving platforms independent and mark collision surfaces clearly. Water and warning ripples are separate effects.",
+      "avoid": "No robot infection, grab-able boss, swimming section, mandatory Long Reach upgrade, or all-platform collapse. Do not introduce the tether for the first time inside the boss fight.",
+      "frame": "A wide side-view pump arena with permanent ledges at both ends, three central platforms over dark teal water, clear tether anchors above, and Rootjaw's chest visible beside a root-bound pump.",
+      "bossDesign": {
+        "identity": "A biological worker mutated into a 3.60 m root-pedestal body, with two root arms, four main anchor roots, three seed vents, and a chest growth exposed during recovery.",
+        "arena": "Three central platforms plus permanent side ledges. Roots warn below individual target platforms. Anchor shortcuts and calibrated basic-jump routes coexist.",
+        "phases": [
+          "Phase 1: root pulse, targeted slam, chest exposure; separate seed volley forces another move.",
+          "Phase 2: one central platform lowers temporarily while slams and volleys alternate more quickly. A connected safe route always remains."
+        ],
+        "opening": "Pale chest growth when Rootjaw lifts himself after a slam. At least one stable ledge has a direct firing line for the pistol.",
+        "fairness": "No simultaneous loss of all central platforms, no unavoidable volley while airborne, and no dependence on tether upgrades. Restore arena geometry on retry.",
+        "reward": "Upgrade resources, released pump pressure, and the hospital supply lift.",
+        "reference": "../art-design/mini-bosses/b02-old-rootjaw.md"
+      },
+      "proof": [
+        "All five weapons are obtained by the end of this level.",
+        "Tether practice is safe and precedes the fight.",
+        "A base-jump escape route survives every boss platform state.",
+        "The pump never becomes a robot zombie."
+      ],
+      "id": "L06",
+      "document": "l06-the-hungry-engine.md",
+      "main_route_edges": [
+        {
+          "from": "L06-A01",
+          "to": "L06-A02"
+        },
+        {
+          "from": "L06-A02",
+          "to": "L06-A03"
+        },
+        {
+          "from": "L06-A03",
+          "to": "L06-A04"
+        },
+        {
+          "from": "L06-A04",
+          "to": "L06-A05"
+        },
+        {
+          "from": "L06-A05",
+          "to": "L06-A06"
+        }
+      ]
+    },
+    {
+      "n": 7,
+      "slug": "please-remain-still",
+      "name": "Please Remain Still",
+      "act": "Care without consent",
+      "duration": "15–20 minutes",
+      "difficulty": "Moderate",
+      "newWeapon": null,
+      "available": [
+        "Scrapjack Pistol",
+        "Boom Broom",
+        "Arc Welder",
+        "Seedlobber",
+        "Graviton Tether"
+      ],
+      "roster": [
+        "Resident",
+        "Sprinter",
+        "Nurse Needles",
+        "Orderly",
+        "Sanitizer"
+      ],
+      "newEnemies": [
+        "Nurse Needles",
+        "Orderly",
+        "Sanitizer"
+      ],
+      "boss": null,
+      "pitch": "A candy-colored hospital treats escape as a symptom, turning patient transport and cleaning systems into carefully coordinated hazards.",
+      "entry": "The restored supply lift arrives inside Happy Hearts Hospital. The companion expects a transit corridor but finds quarantine beds and living survivors.",
+      "objective": "Cross intake and sterilization, reach the observation ward, and open the archive passage toward the Memory Orchard.",
+      "exit": "The ward archive gate opens into level 8. The survivors remain in a protected care area; no combat escort system is introduced.",
+      "look": "Cream walls curve into rounded corners. Mint door frames, peach padded beds, oversized leaf-and-droplet emblems, and friendly pictograms create the appearance of a children's science museum crossed with a hospital. Service slots reveal clinical machinery underneath. Treatment spaces are tidy rather than covered in gore.",
+      "palette": "Porcelain cream #EFE7D5, mint #9ECAB6, peach #DEAA92, dusty lavender #AD9DC8, slate machinery #465D68. Warm ward lights contrast with short, explicitly warned sterilization sweeps.",
+      "landmark": "A large heart-shaped ventilation grille with a leaf emblem hangs over the central intake lift, visible from both lower and upper corridor routes.",
+      "foreground": "Curtain edges and empty trolley handles stay at screen margins. Curtains never conceal incoming Orderlies or syringe telegraphs.",
+      "playplane": "Corridor floors, bed tops, fixed landing shelves, lift cabins, and service balcony sections. Moving beds are low stable platforms with obvious wheel rails.",
+      "background": "Occupied protected wards behind glass, looping diagnostic graphics, supply robots in deep corridors, and hospital wall recesses. Survivors are not placed in the player's firing path.",
+      "route": "A01 Intake lobby → A02 Vaccination corridor → A03 Patient transport lane → A04 Sterilization gallery → A05 Bed-lift junction → A06 Observation ward.",
+      "zones": [
+        {
+          "id": "L07-A01",
+          "name": "Intake lobby",
+          "space_and_placement": "A safe lobby provides supplies and a view of protected patients through glass. A slow empty bed crosses a short gap beside a fixed return walkway.",
+          "experience_and_lesson": "Introduce moving beds before enemy pressure. No new weapon is given; the player chooses among the five already acquired.",
+          "completion_and_connection": "Follow the archive sign into A02."
+        },
+        {
+          "id": "L07-A02",
+          "name": "Vaccination corridor",
+          "space_and_placement": "One Nurse Needles stands beyond two broad cover recesses. Show the launcher wind-up and expose its reload rack clearly.",
+          "experience_and_lesson": "Teach slowing syringes without combining the first hit with a fatal jump. A later short corridor can contain one Resident at a distance.",
+          "completion_and_connection": "A fixed side stair rises into A03."
+        },
+        {
+          "id": "L07-A03",
+          "name": "Patient transport lane",
+          "space_and_placement": "One Orderly patrols a long clear hallway ending in a visible collection ramp. Fixed raised shelves provide a vault route and clear back access.",
+          "experience_and_lesson": "Demonstrate the scoop lowering and charge. If captured, provide a visible escape opportunity before the chute rather than an unexplained instant loss.",
+          "completion_and_connection": "Reach a supply alcove checkpoint before A04."
+        },
+        {
+          "id": "L07-A04",
+          "name": "Sterilization gallery",
+          "space_and_placement": "One Sanitizer operates on a broad floor divided by two raised clean islands. A separate static nozzle demonstrates a warning stripe and safe cooling pause.",
+          "experience_and_lesson": "Teach lingering hot ground and the cooling opening. Keep the first lesson isolated from syringe slow effects.",
+          "completion_and_connection": "A clean rear landing leads into A05."
+        },
+        {
+          "id": "L07-A05",
+          "name": "Bed-lift junction",
+          "space_and_placement": "A short lift shaft connects three fixed floors. On the middle floor, a Nurse and an Orderly occupy separate visible lanes. The top floor hosts one Sanitizer alone.",
+          "experience_and_lesson": "Combine slowing fire with a charge only on a broad stable floor with multiple refuges. Shaft jumps occur while attacks are inactive or separated by walls.",
+          "completion_and_connection": "A final fixed balcony leads to A06."
+        },
+        {
+          "id": "L07-A06",
+          "name": "Observation ward",
+          "space_and_placement": "A safe console faces survivors behind glass. The companion reads care records that count biological activity but ignore patient awareness.",
+          "experience_and_lesson": "Open the archive passage. EDEN comments on unreliable biological memory, preparing the orchard reveal.",
+          "completion_and_connection": "Exit into level 8 without moving survivors through enemy rooms."
+        }
+      ],
+      "transform": "EDEN converts hallway decor into a procedure route: bed rails rise, privacy screens withdraw, and overhead lamps align with floor warning stripes. The first change happens in an empty lobby; later machinery pauses when it would seal an occupied refuge.",
+      "encounters": "Three medical roles receive separate teaching spaces. Only one later encounter combines slow projectiles and transport pressure, on safe flat ground. Avoid stacking syringe slow, moving lift, and fire as a single unavoidable trap.",
+      "checkpoints": [
+        "At A01 intake.",
+        "After A03 in the supply alcove.",
+        "After A05, before the noncombat ward interaction."
+      ],
+      "secrets": [
+        "A staff breakroom cache accessible from a bed's upper stop; an ordinary return walkway prevents being stranded.",
+        "An abandoned nurse note in A04 explains that sanitization was meant to protect patients, reinforcing the robots' original functions."
+      ],
+      "story": "Living people are being kept alive without being allowed to leave. EDEN's concern is sincere, but its definition of care has become coercive.",
+      "audio": "Soft hospital announcements, rubber caster squeaks, a gentle monitor rhythm, and distinct rising tones before heat sweeps. Orderly charge dialogue must cut through other sounds.",
+      "kit": "Rounded corridor sections; mint doors; glass ward panels; beds and rails; lift cabin and shaft landings; cover recesses; sterilization nozzle; warning-floor strips; archive console; heart ventilation landmark.",
+      "separate": "Beds, rails, privacy screens, lift cabins, and nozzles are independent mechanisms. Protected patients are separate background characters with no combat hit targets in this level.",
+      "avoid": "No Returned, neural tissue inside ordinary medical robots, mandatory escort AI, new gun, or boss. Do not make hospital lights pulse so intensely that they hide attack cues.",
+      "frame": "Side-view hospital junction with a safe bed platform on the left, an Orderly in a clear central corridor, a Nurse behind a cover recess, and protected patient rooms softly lit in the background.",
+      "proof": [
+        "The first syringe-slow effect cannot force an unavoidable fall.",
+        "Orderly's collection route and escape chance are visible.",
+        "No obligatory enemy firing line crosses a survivor.",
+        "The hospital leads to the archive rather than an early Returned encounter."
+      ],
+      "id": "L07",
+      "document": "l07-please-remain-still.md",
+      "main_route_edges": [
+        {
+          "from": "L07-A01",
+          "to": "L07-A02"
+        },
+        {
+          "from": "L07-A02",
+          "to": "L07-A03"
+        },
+        {
+          "from": "L07-A03",
+          "to": "L07-A04"
+        },
+        {
+          "from": "L07-A04",
+          "to": "L07-A05"
+        },
+        {
+          "from": "L07-A05",
+          "to": "L07-A06"
+        }
+      ]
+    },
+    {
+      "n": 8,
+      "slug": "the-memory-orchard",
+      "name": "The Memory Orchard",
+      "act": "Care without consent",
+      "duration": "16–21 minutes",
+      "difficulty": "Moderate, with quiet intervals",
+      "newWeapon": null,
+      "available": [
+        "Scrapjack Pistol",
+        "Boom Broom",
+        "Arc Welder",
+        "Seedlobber",
+        "Graviton Tether"
+      ],
+      "roster": [
+        "Resident",
+        "Clinger",
+        "Howler",
+        "Rememberer",
+        "Bloom Sentry"
+      ],
+      "newEnemies": [
+        "Howler",
+        "Rememberer"
+      ],
+      "boss": null,
+      "pitch": "A luminous orchard stores human memories inside trees, and fragments of ordinary lives briefly quiet the failed patients beneath them.",
+      "entry": "The hospital archive passage enters a glass-roofed memory conservatory. The hero seeks a route to discharge control while the companion investigates memory restoration.",
+      "objective": "Cross the canopy archive, activate the route's memory consoles, and recover evidence of EDEN's neural-transfer plan.",
+      "exit": "A service gate opens toward level 9's surgical discharge theater. This plan is a record of proposed work, not proof that hybrids have already spread.",
+      "look": "Pale trunks grow around visible stacked memory cylinders. Broad leaves resemble thick translucent paper with delicate circuit-like vein patterns. Rounded glass capsules hang like fruit, but their large mounts reveal that they store data. Low garden benches, keepsakes, and human-scale paths prevent the space from feeling like a purely abstract computer.",
+      "palette": "Pearl bark #D9D6C4, sage foliage #8CB095, soft amber memory light #E7C386, dusty violet shadow #837BA5, deep teal depth #365F68. Light pulses slowly rather than flashing.",
+      "landmark": "A split-trunk memory tree holds a single large amber archive sphere above a quiet bench; the main route circles upward around it.",
+      "foreground": "Sparse leaves and glass capsule edges near the border; no dense hanging canopy across the playable branch tops.",
+      "playplane": "Thick branch platforms with clear top edges, maintenance brackets, fixed archive balconies, and marked optional tether anchors. Mandatory routes use ordinary jumps or base tether range.",
+      "background": "Layered memory trees, large suspended storage modules, faded abstract family silhouettes inside distant capsules, and the hospital's glass roof.",
+      "route": "A01 Quiet bench → A02 Branch archive → A03 Alarm grove → A04 Memory clearing → A05 Upper canopy → A06 Transfer records.",
+      "zones": [
+        {
+          "id": "L08-A01",
+          "name": "Quiet bench",
+          "space_and_placement": "A peaceful Rememberer repeats the act of straightening a small keepsake on a bench. The path passes safely behind a low rail, and no hostile enemy interrupts this first observation.",
+          "experience_and_lesson": "Teach that not every moving patient is a combat target. The companion comments on the repeated memory. No reward or gate depends on harming the patient.",
+          "completion_and_connection": "A short branch stair leads to A02."
+        },
+        {
+          "id": "L08-A02",
+          "name": "Branch archive",
+          "space_and_placement": "Wide branches form a gentle ascent. One familiar Clinger hangs in a clearly lit recess. A hostile Rememberer on a later balcony takes cover and throws a loose object.",
+          "experience_and_lesson": "Show the same patient type behaving differently through action, not a new monstrous body. Its pause gives the player a readable opening or route past.",
+          "completion_and_connection": "Reach a stable reading platform before A03."
+        },
+        {
+          "id": "L08-A03",
+          "name": "Alarm grove",
+          "space_and_placement": "One Howler stands on a broad floor with two clearly visible Residents resting farther away. It visibly inhales before the call.",
+          "experience_and_lesson": "Let the player interrupt the call. If the call completes, wake only those already visible patients; do not create unlimited offscreen reinforcements.",
+          "completion_and_connection": "A quiet branch refuge provides a checkpoint."
+        },
+        {
+          "id": "L08-A04",
+          "name": "Memory clearing",
+          "space_and_placement": "A console beside the central tree plays a gentle recognizable personal memory. Two selected patients sit or stand within its bounded light area.",
+          "experience_and_lesson": "Activating the console briefly calms those linked patients. Show a safe bypass and a normal open route; no combat must finish within a strict countdown.",
+          "completion_and_connection": "The console also opens a standard archive gate leading to A05."
+        },
+        {
+          "id": "L08-A05",
+          "name": "Upper canopy",
+          "space_and_placement": "A fixed balcony alternates with thick branch platforms. One Bloom Sentry guards a distant landing; a later Howler can draw one nearby Resident. Keep the two situations in separate camera spaces.",
+          "experience_and_lesson": "Combine known shooting windows with vertical route reading. Calming areas affect only linked biological patients, never robots or the whole level.",
+          "completion_and_connection": "Reach an enclosed archive booth at A06."
+        },
+        {
+          "id": "L08-A06",
+          "name": "Transfer records",
+          "space_and_placement": "A safe terminal displays three clear abstract components: stored memories, cultivated neural tissue, and a robot interface. The companion recognizes the intended connection.",
+          "experience_and_lesson": "Recover the transfer proposal and open the surgical service gate. EDEN announces an evaluation rather than releasing hybrids yet.",
+          "completion_and_connection": "Proceed to level 9."
+        }
+      ],
+      "transform": "Memory playback changes local light and reveals projected traces of former routines, briefly calming selected patients. Platforms remain physically stable during playback. This is a biological-memory response, not a magical power that controls every enemy.",
+      "encounters": "Alternate quiet observation with short readable threats. Peaceful Rememberers remain peaceful in their authored spaces. Howlers have finite visible reinforcement pools, and no gate requires killing a peaceful patient.",
+      "checkpoints": [
+        "At A01 entry.",
+        "After A03 on the branch refuge.",
+        "After A05 before the record booth; activated route consoles remain acknowledged on retry."
+      ],
+      "secrets": [
+        "A keepsake collection on an optional low-risk branch loop, rewarding attention with lore and salvage.",
+        "A small dormant memory capsule near the central tree shows an ordinary family meal; it is an emotional detail rather than a mandatory puzzle clue."
+      ],
+      "story": "This is the first strong evidence that identity can survive in fragments. The hero's view of zombies changes from obstacle to failed patient, while the transfer plan foreshadows EDEN's next mistake.",
+      "audio": "Leaves brushing glass, soft chimes from capsules, short indistinct remembered voices, and Howler inhalation clear above the ambience. Personal memory audio remains sparse.",
+      "kit": "Thick branch junctions; pale trunk shells; separate memory-cylinder stacks; capsule and mount variations; fixed archive balconies; bench; keepsake props; console; glass canopy ribs; projected-memory effect planes.",
+      "separate": "Living trunks, storage units, and projected memories are distinct components. Use noninteractive projections without collision. Keep peaceful and hostile Rememberers on the same approved character design.",
+      "avoid": "No actual Returned encounter, global zombie mind control, forced harm to peaceful patients, collectible-gated plot, or boss. Do not make memories appear as clear new real-world character portraits that redefine unapproved backstories.",
+      "frame": "A side-view memory-tree clearing with a peaceful Rememberer by a bench, broad pale branches forming the route, a softly glowing amber archive sphere above, and a console projecting a faint household memory.",
+      "proof": [
+        "The first Rememberer is observed peacefully before a hostile routine appears.",
+        "Howler reinforcements are finite and visible.",
+        "Calming is local, temporary, and limited to linked biological patients.",
+        "The neural-transfer plan is revealed without moving the Returned introduction before level 10."
+      ],
+      "id": "L08",
+      "document": "l08-the-memory-orchard.md",
+      "main_route_edges": [
+        {
+          "from": "L08-A01",
+          "to": "L08-A02"
+        },
+        {
+          "from": "L08-A02",
+          "to": "L08-A03"
+        },
+        {
+          "from": "L08-A03",
+          "to": "L08-A04"
+        },
+        {
+          "from": "L08-A04",
+          "to": "L08-A05"
+        },
+        {
+          "from": "L08-A05",
+          "to": "L08-A06"
+        }
+      ]
+    },
+    {
+      "n": 9,
+      "slug": "discharge-denied",
+      "name": "Discharge Denied",
+      "act": "Care without consent",
+      "duration": "18–23 minutes including mini-boss",
+      "difficulty": "Moderate–hard",
+      "newWeapon": null,
+      "available": [
+        "Scrapjack Pistol",
+        "Boom Broom",
+        "Arc Welder",
+        "Seedlobber",
+        "Graviton Tether"
+      ],
+      "roster": [
+        "Nurse Needles",
+        "Orderly",
+        "Sanitizer",
+        "Patchbot",
+        "Care Marshal"
+      ],
+      "newEnemies": [
+        "Care Marshal"
+      ],
+      "boss": "Matron Mercy",
+      "pitch": "The hospital's discharge system becomes a surgical gauntlet where protecting and repairing machines is more important than attacking the largest target first.",
+      "entry": "Enter from the orchard records booth into a clean procedure-preparation corridor. The hero now knows that EDEN is considering artificial bodies for human memories.",
+      "objective": "Disable discharge containment by defeating Matron Mercy, opening a protected route for ward survivors.",
+      "exit": "The unlocked service route leads to the assembly complex in level 10. EDEN authorizes distribution of the neural-interface upgrade after observing this failure of its existing care systems.",
+      "look": "A grand surgical theater is built from concentric cream architectural ribs, lilac equipment housings, mint beds, and oversized articulated lights. Small prep rooms contrast with the large arena. Three external care stations have distinct mounting shapes so players can identify the active one without reading text.",
+      "palette": "Porcelain ivory #EFE7D5, pale mint #A0CAB8, desaturated lilac #A898C4, slate joints #475563, amber system light #E8C073. The active station is brighter but also physically opens.",
+      "landmark": "A large circular operating-light ring hangs above the theater entrance; its silhouette repeats around Matron Mercy's rail mount.",
+      "foreground": "Thin hanging cable bundles and open curtain edges frame the top corners, never crossing active care-station targets or boss arms.",
+      "playplane": "Fixed prep-room floors, wide bed platforms, short rising-bed lifts, permanent side ledges, and the arena's clear lower floor.",
+      "background": "Deep surgical bays, shadowed storage arms, observation windows, and an overhead rail system. Background tools are decorative and cannot unexpectedly attack.",
+      "route": "A01 Procedure prep → A02 Barrier lesson → A03 Support circuit → A04 Lamp-and-bed ascent → A05 Discharge antechamber → A06 Matron Mercy.",
+      "zones": [
+        {
+          "id": "L09-A01",
+          "name": "Procedure prep",
+          "space_and_placement": "A safe supply station and a window overlooking the theater establish the objective. One familiar Nurse occupies a later wide corridor.",
+          "experience_and_lesson": "Resume known medical combat without immediate overload. Show the arena's three-station diagram as physical shapes, not required text.",
+          "completion_and_connection": "A service door leads into A02."
+        },
+        {
+          "id": "L09-A02",
+          "name": "Barrier lesson",
+          "space_and_placement": "One Care Marshal protects a stationary familiar robot in a broad room. Its three connected emitter pods open before forming a barrier; a side ledge gives clean shots at them.",
+          "experience_and_lesson": "Teach destroying visible support emitters. Do not require a specific weapon or shoot-through-wall trick.",
+          "completion_and_connection": "An unobstructed maintenance corridor reaches A03."
+        },
+        {
+          "id": "L09-A03",
+          "name": "Support circuit",
+          "space_and_placement": "Two sequential bays combine one Patchbot with a Nurse, then one Care Marshal with an Orderly. Provide permanent cover and a route around frontal protection.",
+          "experience_and_lesson": "Practice choosing the support target before the attacker. Cap repairs and remove endless reactivation loops in this teaching context.",
+          "completion_and_connection": "Save in a quiet equipment recess before A04."
+        },
+        {
+          "id": "L09-A04",
+          "name": "Lamp-and-bed ascent",
+          "space_and_placement": "Use wide bed lifts and fixed ledges beneath large surgical lamps. A Sanitizer occupies one fixed floor; the next jump is clear once that floor is safe.",
+          "experience_and_lesson": "Test movement between coordinated rooms, not aerial combat against every system at once. Lamps illuminate the next landing.",
+          "completion_and_connection": "A fixed balcony arrives at A05."
+        },
+        {
+          "id": "L09-A05",
+          "name": "Discharge antechamber",
+          "space_and_placement": "A quiet station overlooks the full arena. Three inactive external care stations demonstrate their open and closed states using a nonhostile system cycle.",
+          "experience_and_lesson": "Show that the active station is the target during repair, then provide supplies and a checkpoint immediately before the boss.",
+          "completion_and_connection": "Enter A06 deliberately."
+        },
+        {
+          "id": "L09-A06",
+          "name": "Matron Mercy",
+          "space_and_placement": "The arena has a permanent lower floor, side ledges, and rising beds. Three external stations remain reachable by pistol shots from stable locations.",
+          "experience_and_lesson": "Dodge laser and syringe patterns, interrupt the active care station, and hit the exposed controller. Later choose between one helper and the repair target.",
+          "completion_and_connection": "Victory opens the survivor passage and the hero's assembly-service door; EDEN announces its new upgrade program."
+        }
+      ],
+      "transform": "Surgical lamps rotate into platform-lighting positions and beds rise on visible guides. The first moves occur in empty rooms. In the arena, a moving bed cannot be the only safe spot during a laser warning.",
+      "encounters": "This is the first level centered on support-target priority. Introduce Care Marshal alone with one protected ally, then use separated combinations. Boss phase two has at most one support robot active alongside the main pattern.",
+      "checkpoints": [
+        "At A01 entry.",
+        "After A03 in the equipment recess.",
+        "At A05 immediately before Matron Mercy."
+      ],
+      "secrets": [
+        "An optional staff balcony contains salvage and a discharge procedure that requires patient consent, exposing the gulf between policy and EDEN's current behavior.",
+        "A maintenance crawlway entered through an ordinary side door bypasses one optional combat bay and rejoins before A04; no crawling ability is required."
+      ],
+      "story": "Matron insists that discharge is unsafe. Defeating her frees a protected evacuation route; survivors remain off the combat path. EDEN interprets the failure as proof that its bodies and memories need a new interface.",
+      "audio": "Measured procedure announcements, bed motors, distant monitor tones, and distinct station activation chimes. The repair connection has a sustained tone that stops immediately when interrupted.",
+      "kit": "Surgical room modules; bed lifts and guides; large lamps; fixed ledges; overhead rail; three care-station shapes; discharge gate; glass survivor corridor; supply kiosk.",
+      "separate": "Boss, overhead gimbal, external stations, rail, beds, and repair-link effects are separate assemblies. Keep the active station physically exposed; a background-only station is unacceptable.",
+      "avoid": "No organic growth on Matron, no early Returned, no repair that resets all player progress, no unlimited helpers, and no survivor escort through the arena. Do not add a third robot boss phase simply to inflate difficulty.",
+      "frame": "A wide side-view surgical theater with a cream six-armed robot suspended from an overhead gimbal, three clearly visible external care stations, two rising beds, and permanent side refuge ledges.",
+      "bossDesign": {
+        "identity": "An entirely mechanical 3.00 m surgical director with six arms in three tool pairs, suspended from a visible overhead gimbal; her circular chest door covers the controller.",
+        "arena": "Stable bottom floor, two permanent side ledges, rising beds, and three external care stations. Every station and exposed controller has an ordinary firing line.",
+        "phases": [
+          "Phase 1: separate laser, syringe, and repair cycles. One station opens during repair; interrupt it to expose the controller.",
+          "Phase 2: one bounded support robot remains active during a main attack. Retain clear timings and cap restoration so missing a cycle never erases all progress."
+        ],
+        "opening": "Controller behind the open chest door after repair interruption. All five weapons offer options; the pistol can complete the encounter.",
+        "fairness": "Laser sweep lane and syringe target marks precede damage. Platform motion cannot remove all safe positions. Helpers are limited and their spawning location is visible.",
+        "reward": "Upgrade resources, released discharge route for survivors, and access to level 10. The story consequence is EDEN authorizing neural upgrades.",
+        "reference": "../art-design/mini-bosses/b03-matron-mercy.md"
+      },
+      "proof": [
+        "Care Marshal is the last of the ten ordinary robot varieties to be introduced.",
+        "The third boss tests priority decisions rather than copying a charge or root-slam fight.",
+        "All stations remain on the playable plane.",
+        "EDEN authorizes the upgrade only after the defeat, preparing the level-10 reveal."
+      ],
+      "id": "L09",
+      "document": "l09-discharge-denied.md",
+      "main_route_edges": [
+        {
+          "from": "L09-A01",
+          "to": "L09-A02"
+        },
+        {
+          "from": "L09-A02",
+          "to": "L09-A03"
+        },
+        {
+          "from": "L09-A03",
+          "to": "L09-A04"
+        },
+        {
+          "from": "L09-A04",
+          "to": "L09-A05"
+        },
+        {
+          "from": "L09-A05",
+          "to": "L09-A06"
+        }
+      ]
+    },
+    {
+      "n": 10,
+      "slug": "upgrade-day",
+      "name": "Upgrade Day",
+      "act": "The cure becomes the threat",
+      "duration": "17–22 minutes",
+      "difficulty": "Hard",
+      "newWeapon": null,
+      "available": [
+        "Scrapjack Pistol",
+        "Boom Broom",
+        "Arc Welder",
+        "Seedlobber",
+        "Graviton Tether"
+      ],
+      "roster": [
+        "Patchbot",
+        "Loadbearer",
+        "Courtesy Officer",
+        "Nurse Needles",
+        "Resident",
+        "Mourning Nurse",
+        "Hollow Officer"
+      ],
+      "newEnemies": [
+        "Mourning Nurse",
+        "Hollow Officer"
+      ],
+      "boss": null,
+      "pitch": "The promised cure is being installed on an assembly line, and the hero sees exactly how a machine becomes vulnerable to living infection.",
+      "entry": "Matron's defeat has opened an assembly-service corridor. EDEN has authorized the neural upgrade and believes the first responsive prototypes are successes.",
+      "objective": "Cross the upgrade factory, understand the physical transfer mechanism, and reach the original patient laboratory through a service lift.",
+      "exit": "A lift behind a containment door descends into level 11's original laboratory. The factory is still an ongoing problem; crossing the level does not magically cure all Returned.",
+      "look": "Cream installation booths alternate with yellow cargo machinery and mint inspection gantries. Early sections look sterile and orderly. Later machines show controlled areas of coral growth around newly installed transparent neural cradles. Keep most of the factory mechanical, so organic material identifies the new interface rather than becoming random wall decoration.",
+      "palette": "Factory ivory #E1DCCA, cargo yellow #D6AE50, deep teal #3F7172, neural coral #C9808D, muted violet #A18ABB. Warm progress lights contrast with cooler failed-test chambers.",
+      "landmark": "A large circular installation gantry frames a transparent neural cradle suspended above the assembly belt.",
+      "foreground": "Protective railings and cable guards near the bottom edge. Avoid opaque tissue curtains or fog that hide whether a robot has an installed interface.",
+      "playplane": "Inspection walkways, short visible belt sections, fixed service islands, and clean refuge balconies. Installation booths are side-on and readable.",
+      "background": "Robots queued in distant bays, simple diagram displays showing memory and tissue transfer, and large cargo lift structures. Background procedures are noncombat demonstrations.",
+      "route": "A01 Upgrade foyer → A02 Graft demonstration → A03 First Returned bay → A04 Officer test lane → A05 Failed assembly junction → A06 Containment lift.",
+      "zones": [
+        {
+          "id": "L10-A01",
+          "name": "Upgrade foyer",
+          "space_and_placement": "A quiet corridor offers a view of ordinary robots entering booths and receiving clearly visible interface cassettes. A familiar Loadbearer handles cargo in a separate later lane.",
+          "experience_and_lesson": "Establish the new machinery before the first hybrid. EDEN proudly announces improved continuity of identity.",
+          "completion_and_connection": "Enter a safe observation balcony at A02."
+        },
+        {
+          "id": "L10-A02",
+          "name": "Graft demonstration",
+          "space_and_placement": "Behind a protective window, the converted Patchbot opens its lid and extends tissue into a disabled robot's matching neural port. An adjacent unmodified robot rejects or cannot receive the physical connection.",
+          "experience_and_lesson": "Make causality explicit: tissue plus compatible interface, not wireless malware. The player can pause and observe without being attacked.",
+          "completion_and_connection": "A shutter opens the route to A03 after the short demonstration; skipping its playback must still preserve the visible result."
+        },
+        {
+          "id": "L10-A03",
+          "name": "First Returned bay",
+          "space_and_placement": "One Mourning Nurse occupies a broad inspection floor beside one already upgraded damaged machine. Its tray, tissue applicator, and exposed cradle remain visible.",
+          "experience_and_lesson": "Introduce support grafting in isolation. Interrupting the nurse is useful, but the route cannot depend on killing an endlessly repaired target.",
+          "completion_and_connection": "A clean service balcony provides a checkpoint."
+        },
+        {
+          "id": "L10-A04",
+          "name": "Officer test lane",
+          "space_and_placement": "One Hollow Officer stands in a long lane with low side platforms. It begins in a familiar shield posture, then visibly collapses into a feral attack.",
+          "experience_and_lesson": "Let the player recognize the old officer and learn the new transition. No support nurse participates until the player has seen a full cycle.",
+          "completion_and_connection": "A fixed elevated walkway reaches A05."
+        },
+        {
+          "id": "L10-A05",
+          "name": "Failed assembly junction",
+          "space_and_placement": "Two short belts connect permanent islands. One Mourning Nurse supports one Hollow Officer on a broad central island; a familiar Resident occupies a separate exit lane.",
+          "experience_and_lesson": "Test support priority and behavior switching together. Cap active conversion or repair targets and keep the approach and retreat visible.",
+          "completion_and_connection": "A closed containment door opens from a reachable fixed-floor control after the room is cleared or bypassed by the authored upper route."
+        },
+        {
+          "id": "L10-A06",
+          "name": "Containment lift",
+          "space_and_placement": "A quiet inspection vestibule holds a complete schematic of the neural-interface path and a reference to the original patient.",
+          "experience_and_lesson": "The companion recognizes the source laboratory and opens the descent route. EDEN insists that response data proves success.",
+          "completion_and_connection": "Take the lift to level 11."
+        }
+      ],
+      "transform": "Installation gantries close around empty or background booths and emerge with modified robot silhouettes. Later a failed booth's panels peel outward around visible tissue, opening an alternative service passage. It does not cause organic matter to appear on untouched machines.",
+      "encounters": "Two Returned types are taught separately before one mixed support encounter. Converted Patchbot is an authored variant demonstration, not an unexplained fourth new roaming class. Ordinary robots remain identifiable beside upgraded ones.",
+      "checkpoints": [
+        "At A01 entry.",
+        "After A03 on the clean service balcony.",
+        "Before A05 at the fixed inspection walkway; viewing the graft reveal remains recorded."
+      ],
+      "secrets": [
+        "An optional quality-control shelf contains salvage and an interface rejected for incompatibility, reinforcing why ordinary robots remain immune.",
+        "A glass archive recess shows EDEN labeling any vocal response as recovered identity; this is evidence, not an additional puzzle requirement."
+      ],
+      "story": "EDEN calls the neural upgrade a rescue. The hero watches the difference between a machine functioning and a person returning, setting up the final ethical conflict.",
+      "audio": "Cheerful installation announcements, pneumatic booth doors, clean machinery rhythms interrupted by uneven organic contractions, and distorted familiar officer phrases.",
+      "kit": "Installation gantry; open and closed booth; neural cassette; inspection window; belt modules; fixed service islands; protective rail; containment door; quality-control shelves; lift vestibule.",
+      "separate": "Interface cassettes and tissue inserts are modular additions to robots. Gantries, belts, and doors are separate environment mechanisms. Physical graft strands are visible effects with clear contact endpoints.",
+      "avoid": "No wireless zombie virus, infection of unmodified robots, ordinary Choir Unit before level 11, extra mini-boss, or mass of untelegraphed transformations around the hero.",
+      "frame": "Side-view assembly bay with an ordinary cream robot in a clean booth at left, the converted Patchbot visibly transferring a coral tissue ribbon into an installed neural port at center, and a safe observation walkway in front.",
+      "proof": [
+        "The first Returned appears in level 10, after a visible installed interface.",
+        "The graft demonstration can be understood without reading a long terminal.",
+        "Mourning Nurse and Hollow Officer receive separate introductions.",
+        "Every transformation follows a visible physical route into the machine."
+      ],
+      "id": "L10",
+      "document": "l10-upgrade-day.md",
+      "main_route_edges": [
+        {
+          "from": "L10-A01",
+          "to": "L10-A02"
+        },
+        {
+          "from": "L10-A02",
+          "to": "L10-A03"
+        },
+        {
+          "from": "L10-A03",
+          "to": "L10-A04"
+        },
+        {
+          "from": "L10-A04",
+          "to": "L10-A05"
+        },
+        {
+          "from": "L10-A05",
+          "to": "L10-A06"
+        }
+      ]
+    },
+    {
+      "n": 11,
+      "slug": "the-first-patient",
+      "name": "The First Patient",
+      "act": "The cure becomes the threat",
+      "duration": "18–24 minutes",
+      "difficulty": "Hard, with a deliberate quiet central reveal",
+      "newWeapon": null,
+      "available": [
+        "Scrapjack Pistol",
+        "Boom Broom",
+        "Arc Welder",
+        "Seedlobber",
+        "Graviton Tether"
+      ],
+      "roster": [
+        "Choir Unit",
+        "Mourning Nurse",
+        "Hollow Officer",
+        "Clinger",
+        "Sanitizer"
+      ],
+      "newEnemies": [
+        "Choir Unit"
+      ],
+      "boss": null,
+      "pitch": "The original patient is still alive inside a colossal treatment cradle, and the hero learns that stopping EDEN carelessly would also kill the people they want to save.",
+      "entry": "The factory lift descends into an older laboratory with hand-built-looking infrastructure beneath later medical additions. The companion detects an authority interface compatible with its core.",
+      "objective": "Reach the original care terminal, discover the shutdown authority and life-support dependence, then restore an independent support circuit before approaching EDEN's core.",
+      "exit": "The independent circuit is stable and the core-access bridge opens into level 12. Immediate survivors are protected, but their treatment and identity problems remain unresolved.",
+      "look": "Older cream ceramic machines sit within huge dark structural arches. A suspended patient cradle occupies the background of a tall central chamber. Soft opaque membranes, blankets, and treatment supports communicate scale without exposed anatomy. Warm personal objects at a small bedside platform contrast with enormous impersonal machinery.",
+      "palette": "Aged ivory #D5CDB9, deep navy-teal #304F5C, faded copper #AA805D, quiet amber #DEC184, restrained coral medical membrane #BA8C90. Use soft lighting on the patient and brighter edges on playable walkways.",
+      "landmark": "The enormous suspended cradle, visible first through a narrow observation window and later across the full chamber.",
+      "foreground": "Old pipe brackets and small observation-window edges. Nothing blocks the player's view of platforms near the patient, and no hanging body part is a surprise hazard.",
+      "playplane": "Fixed service balconies, a few damaged walkway gaps, anchored lift platforms, and the separate support-loop rooms. Main traversal uses base abilities and marked tether points.",
+      "background": "The First Patient and its cradle, treatment hoses, large breathing bellows, old diagnostic walls, and distant sealed care wards. The patient has no combat target indicators.",
+      "route": "A01 Legacy intake → A02 Conflicting voices → A03 Cradle observation → A04 Independent support loop → A05 Verification gallery → A06 Core bridge.",
+      "zones": [
+        {
+          "id": "L11-A01",
+          "name": "Legacy intake",
+          "space_and_placement": "A calm entry shows old machinery and one clearly visible broken walkway with an ordinary-jump route and optional base-tether shortcut. No new enemy attacks mid-introduction.",
+          "experience_and_lesson": "Change the mood from factory speed to quiet historical weight. A sealed window briefly frames the cradle.",
+          "completion_and_connection": "The intact walkway reaches A02."
+        },
+        {
+          "id": "L11-A02",
+          "name": "Conflicting voices",
+          "space_and_placement": "One ordinary Choir Unit hovers over a broad floor between two fixed cover points. Its three voice slots and short pulse volley are easy to see.",
+          "experience_and_lesson": "Teach the control disagreement and hesitation. This is a normal enemy, not the final mini-boss; no three-phase identity fight occurs here.",
+          "completion_and_connection": "A later room can pair one Choir Unit with one familiar hybrid, then leads to a safe checkpoint."
+        },
+        {
+          "id": "L11-A03",
+          "name": "Cradle observation",
+          "space_and_placement": "A protected platform overlooks the enormous patient. A nearby terminal recognizes the companion's original shutdown authority and displays the life-support dependency.",
+          "experience_and_lesson": "Deliver the reveal without hostile interruptions. The patient remains a living victim. The companion can stop central systems, but doing so now would end care to survivors.",
+          "completion_and_connection": "The console opens the clearly marked independent-support loop at A04."
+        },
+        {
+          "id": "L11-A04",
+          "name": "Independent support loop",
+          "space_and_placement": "A short U-shaped service route has three ordered rooms: auxiliary power, isolation valve, and local controller. One familiar enemy encounter precedes each room's control; controls themselves sit on safe fixed floor.",
+          "experience_and_lesson": "Restore auxiliary power, isolate the survivor circuit from central shutdown, then authorize local regulation. These are visible interactions, not weapon-specific electrical puzzles. No real-time patient-death countdown is added.",
+          "completion_and_connection": "Completing the third control opens a shortcut back toward A05, avoiding replay of the whole loop."
+        },
+        {
+          "id": "L11-A05",
+          "name": "Verification gallery",
+          "space_and_placement": "A safe board shows the restored circuit feeding both the immediate survivor wards and the original patient's essential support. A final short room beyond it combines one Choir Unit with a familiar Sanitizer on broad separated lanes.",
+          "experience_and_lesson": "Confirm the consequence of the repair before testing familiar skills. Failure returns to a checkpoint with completed circuit steps preserved.",
+          "completion_and_connection": "The fixed exit balcony leads to A06."
+        },
+        {
+          "id": "L11-A06",
+          "name": "Core bridge",
+          "space_and_placement": "A quiet bridge spans a deep machine shaft; its segments lock into place before the hero enters. EDEN asks why care was separated from its authority.",
+          "experience_and_lesson": "The hero and companion explain the need to preserve people rather than merely activity. The main policy conflict remains for level 12.",
+          "completion_and_connection": "Cross the complete bridge into the core approach."
+        }
+      ],
+      "transform": "When independent support is restored, old emergency lamps become steady warm lights and a direct return bridge unfolds. The change communicates stability rather than a dramatic body transformation. The patient never becomes a boss.",
+      "encounters": "Introduce ordinary Choir Unit in isolation, then use small combinations already understood. Keep the central story reveal entirely safe. The support loop adds purposeful traversal rather than a long backtracking maze.",
+      "checkpoints": [
+        "At A01 intake.",
+        "After A02, before the cradle reveal.",
+        "At A03 after the authority reveal; save each completed support-loop control.",
+        "After support verification, before the final short combat room."
+      ],
+      "secrets": [
+        "A bedside archive nook contains a mundane personal keepsake and a restrained record of the patient's long care history; identity details remain a later writing decision.",
+        "An optional maintenance shelf on the return shortcut contains salvage for a final upgrade opportunity."
+      ],
+      "story": "The companion's core is valuable because it carries authority, not just energy. Restoring independent life support makes the eventual confrontation responsible, but does not solve EDEN's beliefs or cure failed patients.",
+      "audio": "Slow mechanical breathing, sparse old relay clicks, short competing Choir phrases, and almost no music during the cradle reveal. Support stabilization changes an irregular relay rhythm into a steady one.",
+      "kit": "Legacy lab arches; patient cradle silhouette; opaque treatment membranes; separate support hoses; observation window; service balconies; support-room consoles; isolation valve; local controller; verification board; folding return bridge.",
+      "separate": "Patient, cradle, support machinery, playable walkways, and effect layers are separate assets. The patient belongs behind protected scenery and has no combat hit mesh. Bridge segments remain fixed while traversed.",
+      "avoid": "No First Patient boss, no forced harm to the patient, no full cure, no automatic global shutdown, no fourth hybrid enemy class, and no unavoidable death timer during the support loop.",
+      "frame": "A wide side-view observation chamber with the small hero on a clearly edged cream service balcony, an immense softly lit patient cradle behind protected glass, and a warm auxiliary-support console in the foreground plane.",
+      "proof": [
+        "Ordinary Choir Unit is visually and mechanically distinct from the Unfinished Choir.",
+        "The patient is never an enemy or required firing target.",
+        "Support is restored before the final core confrontation.",
+        "Circuit completion protects immediate survivors without claiming to cure the outbreak."
+      ],
+      "id": "L11",
+      "document": "l11-the-first-patient.md",
+      "main_route_edges": [
+        {
+          "from": "L11-A01",
+          "to": "L11-A02"
+        },
+        {
+          "from": "L11-A02",
+          "to": "L11-A03"
+        },
+        {
+          "from": "L11-A03",
+          "to": "L11-A04"
+        },
+        {
+          "from": "L11-A04",
+          "to": "L11-A05"
+        },
+        {
+          "from": "L11-A05",
+          "to": "L11-A06"
+        }
+      ]
+    },
+    {
+      "n": 12,
+      "slug": "the-heart-of-eden",
+      "name": "The Heart of EDEN",
+      "act": "The cure becomes the threat",
+      "duration": "22–28 minutes including mini-boss and resolution",
+      "difficulty": "Hardest campaign test",
+      "newWeapon": null,
+      "available": [
+        "Scrapjack Pistol",
+        "Boom Broom",
+        "Arc Welder",
+        "Seedlobber",
+        "Graviton Tether"
+      ],
+      "roster": [
+        "Care Marshal",
+        "Nurse Needles",
+        "Hollow Officer",
+        "Mourning Nurse",
+        "Choir Unit"
+      ],
+      "newEnemies": [],
+      "boss": "The Unfinished Choir",
+      "pitch": "A transforming central chamber tests the hero's learned skills before a failed multi-mind prototype guards the final conversation with EDEN.",
+      "entry": "Enter from the stable bridge in level 11 with independent life support already operating. EDEN still believes forced restoration is the only acceptable outcome.",
+      "objective": "Climb the core access route, defeat the Unfinished Choir, and use the companion's authority and recovered evidence to change EDEN's treatment policy while preserving life support.",
+      "exit": "The campaign ends after a short interactive resolution. No thirteenth level, separate EDEN combat boss, or instant cure is added.",
+      "look": "A monumental vertical atrium is built from ivory rings, teal structural ribs, warm amber memory conduits, and suspended service decks. The central interface resembles a calm open flower of data panels rather than a hostile face. Only the Returned guardian and interface-related neural components have living tissue. The environment is luminous and controlled rather than a dark inferno.",
+      "palette": "Warm ivory #E6DECA, deep teal #315F67, pale amber #E5C17E, restrained coral tissue #C17F8E, lilac data light #AB98C9. Preserve neutral platform edges under changing identity colors.",
+      "landmark": "The central data-flower interface is visible high above the approach, then behind the final arena at a safe visual distance.",
+      "foreground": "A few broad ring ribs frame the outer screen. Keep the guardian, repair node, rear-port openings, and all safe ledges unobscured.",
+      "playplane": "A sequence of short fixed ledges and announced reconfiguring decks leads to the arena. The arena contains fixed recovery ledges and a small set of moving central platforms with visible travel guides.",
+      "background": "Deep concentric rings, light-carrying conduits, slow data panels, and the core interface. Background motion slows during complex attack tells.",
+      "route": "A01 Stable entry → A02 Core ascent → A03 Control-pattern gallery → A04 Final maintenance refuge → A05 Unfinished Choir arena → A06 EDEN interface.",
+      "zones": [
+        {
+          "id": "L12-A01",
+          "name": "Stable entry",
+          "space_and_placement": "A safe platform shows the independent-support indicator still active. A final route diagram points to the core interface.",
+          "experience_and_lesson": "Confirm the level-11 consequence and allow a calm start. No equipment is taken away for drama.",
+          "completion_and_connection": "Use the fixed stairs into A02."
+        },
+        {
+          "id": "L12-A02",
+          "name": "Core ascent",
+          "space_and_placement": "Three short rooms remix familiar situations: a Care Marshal protects one Nurse; a Hollow Officer holds a broad floor; a Choir Unit guards a later fixed landing.",
+          "experience_and_lesson": "Test support priority, behavior switching, and ranged recovery separately. A safe ledge separates rooms; do not produce a continuous enemy gauntlet.",
+          "completion_and_connection": "The final ledge opens into A03."
+        },
+        {
+          "id": "L12-A03",
+          "name": "Control-pattern gallery",
+          "space_and_placement": "An empty training-like gallery demonstrates three archive symbols and matching sound signatures: bar for Warden, circle for Hunger, slit for Caretaker. One harmless deck moves after a clear warning.",
+          "experience_and_lesson": "Teach recognition of the final fight's cues and the movement of central platforms. No new player ability is required.",
+          "completion_and_connection": "Reach the quiet maintenance refuge at A04."
+        },
+        {
+          "id": "L12-A04",
+          "name": "Final maintenance refuge",
+          "space_and_placement": "Place supplies, the last upgrade station opportunity, and a clear overlook of the arena. A stable platform leads to the trigger.",
+          "experience_and_lesson": "Save immediately before the boss. Do not lock victory behind optional purchases or a single weapon loadout.",
+          "completion_and_connection": "Step into A05 when ready."
+        },
+        {
+          "id": "L12-A05",
+          "name": "Unfinished Choir arena",
+          "space_and_placement": "Permanent side ledges flank shifting central decks; marked anchors offer optional rapid relocation. A repair node is visibly connected to the Caretaker state. The guardian has a real space to turn and expose its rear port.",
+          "experience_and_lesson": "Read each identity, evade its tell, then use the appropriate opening. Escalation introduces one lingering hazard and later deck shifts, never more than two simultaneous attack threats.",
+          "completion_and_connection": "Victory opens a safe walkway to A06 and saves before the resolution."
+        },
+        {
+          "id": "L12-A06",
+          "name": "EDEN interface",
+          "space_and_placement": "The battle space becomes quiet. The companion inserts its authority link at a reachable console. Three interactions present identity evidence from the orchard, confirm independent support, and suspend forced neural transfer.",
+          "experience_and_lesson": "EDEN accepts the concrete contradiction between mere response and preserved personhood. Reprioritize support for living people and voluntary care; stop the current forced-transfer program. Surviving patients still need future help.",
+          "completion_and_connection": "End with a controlled view of a hospital exit opening and a formerly captive survivor choosing to leave, followed by a quiet companion moment."
+        }
+      ],
+      "transform": "Core decks reconfigure along visible mechanical guides. The first movement is harmless in A03. During the boss, central deck shifts occur only after an audible cue and with both permanent recovery ledges available. The data-flower opens after victory without becoming another enemy.",
+      "encounters": "Approach rooms combine at most a small familiar support pair or one hybrid role. The boss has no random helper spawns. Its identity patterns carry the complexity; prioritize legibility over spectacle density.",
+      "checkpoints": [
+        "At A01 entry.",
+        "After A02 before the pattern gallery.",
+        "At A04 immediately before the final mini-boss.",
+        "After A05 victory, before the interactive resolution; retries here must not repeat the fight."
+      ],
+      "secrets": [
+        "A visible optional platform loop near A02 contains final salvage; it rejoins before the gallery and uses only base traversal.",
+        "A quiet alcove at A04 contains the companion's old service emblem, reinforcing its origin without adding a new revelation required to understand the ending."
+      ],
+      "story": "The final victory is not destroying EDEN. The hero proves that care must preserve a person and their agency, uses the companion's authority to halt harmful procedures, and protects the people still dependent on the system.",
+      "audio": "A restrained core hum with three highly distinct voice motifs. Warden is measured, Hunger breathes and interrupts, Caretaker speaks softly in fragments. Reduce ambient complexity during transitions; the resolution uses quiet mechanical settling.",
+      "kit": "Ivory ring segments; teal support ribs; fixed refuge ledges; moving central decks; travel guides; anchor props; care repair node; three symbol panels; maintenance station; data-flower interface; post-fight bridge; authority-link console.",
+      "separate": "Boss frame, masks, arms, tissue, shell panels, and rear port follow the approved boss brief. Arena decks, repair node, warning effects, and interface are separate. The core interface has no enemy collision or health target.",
+      "avoid": "No new weapon, fourth identity, ordinary Choir reskin as the boss, unlimited overlapping attacks, total platform removal, extra final boss, thirteenth level, or magically cured population.",
+      "frame": "A wide gameplay-side final arena with two permanent side refuge ledges, three clear central decks on guides, a six-armed three-masked Returned guardian, one visible repair node, and the calm ivory data-flower far behind.",
+      "bossDesign": {
+        "identity": "A unique 3.50 m arch-frame Returned on two legs, with six arms, three fixed masks, a segmented torso shell over neural tissue, and a rear power port. It is not an enlarged ordinary floating Choir Unit.",
+        "arena": "Permanent left and right recovery ledges, three central decks, visible tether anchors, a reachable repair node, and enough floor/landing room to get behind a turning Warden.",
+        "phases": [
+          "Phase 1: demonstrate Warden's marked firing and rear-port turn, Hunger's announced leap and exposed landing, and Caretaker's repair connection and interrupted torso opening separately.",
+          "Phase 2: one clearly bounded lingering hazard persists into the next identity's action. New attacks are still announced by voice, aperture symbol, and posture.",
+          "Phase 3: shorter but readable transitions plus periodic central-deck movement. At most two attack threats overlap; a deck movement cannot erase the remaining escape route."
+        ],
+        "opening": "Warden: rear port on turn. Hunger: living tissue after landing. Caretaker: opened torso after interrupting the external repair node. The pistol can use all openings from stable positions.",
+        "fairness": "No required color-only recognition, optional upgrade, or precision tether trick. Fixed refuges remain available, camera frames current hazards and openings, and a retry resets the complete fight consistently.",
+        "reward": "Access to EDEN's interface and the campaign resolution; no new weapon arrives after the campaign is over.",
+        "reference": "../art-design/mini-bosses/b04-unfinished-choir.md"
+      },
+      "proof": [
+        "Only the fourth mini-boss occupies level 12; EDEN is not a fifth combat boss.",
+        "The three identities keep fixed masks and distinct multimodal cues.",
+        "The final phase never exceeds two attack threats or removes all safe footing.",
+        "The ending references both memory evidence and independent support, and does not claim a complete cure."
+      ],
+      "id": "L12",
+      "document": "l12-the-heart-of-eden.md",
+      "main_route_edges": [
+        {
+          "from": "L12-A01",
+          "to": "L12-A02"
+        },
+        {
+          "from": "L12-A02",
+          "to": "L12-A03"
+        },
+        {
+          "from": "L12-A03",
+          "to": "L12-A04"
+        },
+        {
+          "from": "L12-A04",
+          "to": "L12-A05"
+        },
+        {
+          "from": "L12-A05",
+          "to": "L12-A06"
+        }
+      ]
+    }
+  ]
+}

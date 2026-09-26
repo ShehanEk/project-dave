@@ -16,15 +16,19 @@ EDEN's machines maintain cheerful gardens and immaculate neighborhoods above a s
 ## Start here
 
 - [Game concept and lore](dead-eden-concept.md): the setting, characters, factions, enemy roster, weapons, twelve levels, and four unique mini-bosses.
+- [Detailed level briefs](level-design/README.md): twelve standalone AI-ready descriptions covering routes, encounters, visuals, checkpoints, story beats, and environment prompts.
+- [Structured campaign reference](level-design/campaign.json): the same twelve-level plan in JSON, including all 72 main-route areas.
 - [Art reference index](art-design/README.md): links to every individual enemy and weapon brief.
 - [Shared visual style guide](art-design/style-guide.md): consistent proportions, materials, silhouettes, reference-image workflow, and modeling guidance.
 - [Complete reference pack](dead-eden-art-reference-pack.zip): downloadable copy of the concept, art index, style guide, and asset briefs.
+- [Level-design reference pack](dead-eden-level-design-pack.zip): downloadable level briefs and campaign JSON, bundled with the concept and linked art references.
 
 ## Current scope
 
 | Area | Planned content |
 | --- | --- |
 | Campaign | 12 levels |
+| Detailed level design | 12 standalone briefs with 72 ordered areas and reusable AI prompts |
 | Mini-bosses | 4 unique encounters, at levels 3, 6, 9, and 12 |
 | Ordinary enemies | 10 robot varieties and 10 zombie varieties |
 | Later enemies | 3 Returned types, plus a converted Patchbot variant |
@@ -42,6 +46,11 @@ Generate and approve a neutral design first. Use that approved image as a refere
 
 ```text
 dead-eden-concept.md
+level-design/
+  README.md
+  design-guide.md
+  campaign.json
+  l01-...md      # One detailed brief per level, through l12
 art-design/
   README.md
   style-guide.md
@@ -51,6 +60,7 @@ art-design/
   mini-bosses/   # 4 briefs
   weapons/       # 5 briefs, each with 3 upgrades
 dead-eden-art-reference-pack.zip
+dead-eden-level-design-pack.zip
 ```
 
-The Markdown files are the editable source of truth. The ZIP is a snapshot and should be rebuilt when its contents change.
+The Markdown and campaign JSON files are the editable sources of truth. The ZIP files are snapshots and should be rebuilt when their contents change.
