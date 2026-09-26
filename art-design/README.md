@@ -1,6 +1,6 @@
 # DEAD EDEN — Art design reference pack
 
-**Selected Clipper design: [B — Sturdy retro machine](../concept-art/r01-clipper/SELECTED.md).** Its canonical brief and prompts now follow that reference. The [concept-art index](../concept-art/README.md) preserves the other designs as unselected exploration history.
+**Selected Clipper design: [B — Sturdy retro machine](../concept-art/r01-clipper/SELECTED.md).** Its canonical brief and prompts now follow that reference. The [concept-art index](../concept-art/README.md) contains the selected image, its source prompt, and modeling handoff notes.
 
 For proposed hero and companion briefs, see [character design](../design/02-characters/README.md). For collectible object descriptions, see the [artifact catalog](../design/03-progression/artifact-catalog.md). Use the [AI entry guide](../AI_START_HERE.md) to connect these visuals to the gameplay rules.
 

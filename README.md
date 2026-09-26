@@ -24,7 +24,7 @@ EDEN's machines maintain cheerful gardens and immaculate neighborhoods above a s
 - [Structured campaign reference](level-design/campaign.json): the same twelve-level plan in JSON, including all 72 main-route areas.
 - [Art reference index](art-design/README.md): links to every individual enemy and weapon brief.
 - [Selected Clipper design](concept-art/r01-clipper/SELECTED.md): B — Sturdy retro machine, with its approved reference and matching written brief.
-- [Concept art gallery](concept-art/README.md): generated images, selection status, and preserved exploration history.
+- [Concept art gallery](concept-art/README.md): selected images, source prompts, and modeling handoff notes.
 - [Shared visual style guide](art-design/style-guide.md): consistent proportions, materials, silhouettes, reference-image workflow, and modeling guidance.
 
 ## Current scope
@@ -85,9 +85,8 @@ concept-art/
   README.md
   r01-clipper/
     SELECTED.md  # B is the confirmed reference
-    round-01/    # Selected B alongside unselected A and C
-    round-02/    # Unselected scary wheeled variant
-    round-03/    # Unselected humanoid variant and transparent derivative
+    r01-clipper-b-retro-v1.png  # Selected source image
+    generation-prompt.md      # Original prompt for B
 ```
 
 The Markdown files own the written design. Campaign JSON and the design manifest provide structured summaries and navigation. Explicit visual selections are recorded separately; other new system numbers, names, and unapproved visual choices remain proposed and untested.

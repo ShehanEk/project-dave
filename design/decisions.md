@@ -21,7 +21,7 @@ A proposal may be used consistently for further concept work without another app
 | C07 | Twelve levels; a unique mini-boss every three levels, increasing in difficulty. |
 | C08 | Use separate organized editable files; remove duplicate ZIP archives and do not recreate them. |
 | C09 | At least ten robot and ten zombie varieties, with robot-zombie hybrids introduced later through a coherent lore explanation. |
-| C10 | R01 Clipper uses [B — Sturdy retro machine](../concept-art/r01-clipper/SELECTED.md) as its selected visual reference. Preserve its wheeled body, separate short eye stalks, two-blade shears and retro mechanical construction. Other Clipper candidates are unselected. |
+| C10 | R01 Clipper uses [B — Sturdy retro machine](../concept-art/r01-clipper/SELECTED.md) as its selected visual reference. Preserve its wheeled body, separate short eye stalks, two-blade shears and retro mechanical construction. Only the selected concept art and its supporting notes and prompt are kept in the current repository. |
 
 ## Established baseline
 
