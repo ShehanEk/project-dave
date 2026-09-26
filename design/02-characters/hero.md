@@ -6,12 +6,14 @@
 **Status:** Working design proposal. Confirmed decisions and established lore remain constraints; new details and numbers are untested proposals.  
 **Purpose:** Proposed protagonist identity, motivation, silhouette, personality, and sprite reference.
 
-**Decision references:** C04, P05 — see the [decision register](../decisions.md).  
-**Read with:** [companion](companion.md) · [player controls](../01-core/player-controls.md) · [style guide](../../art-design/style-guide.md)
+**Decision references:** C12, C04, P05 — see the [decision register](../decisions.md).  
+**Read with:** [story scenes](../05-presentation/story-scenes.md) · [player controls](../01-core/player-controls.md) · [style guide](../../art-design/style-guide.md)
 
 ## Established foundation
 
-The protagonist is a scrappy treasure hunter who enters EDEN seeking a valuable power core and finds it inside a talkative maintenance robot. The adventure changes what the hero considers worth saving. No personal name or final appearance was previously fixed.
+The protagonist is a scrappy treasure hunter who enters EDEN alone seeking a valuable power core and finds it mounted inside Sunnyvale's maintenance depot. The adventure changes what the hero considers worth saving. No personal name or final appearance was previously fixed.
+
+The hero travels alone under C12. Clues come from records, the environment, survivors, and EDEN; upgrades and story controls are operated directly by the hero.
 
 ## Proposed identity
 
@@ -25,7 +27,7 @@ Rook's strength is practical attention, not military training. They notice loose
 
 Dry humor, quick improvisation, and initial impatience with sentimental attachments. They are competent but occasionally reckless around valuables. Humor comes from bargaining with an absurdly polite system rather than mocking sick people.
 
-Rook can admit a mistake without losing confidence. The companion's personhood becomes difficult to dismiss after the attempted core extraction. By the end, Rook gives up the easiest sale to preserve people and their ability to choose.
+Rook can admit a mistake without losing confidence. After the depot alarm, records and encounters with survivors make it impossible to dismiss EDEN as abandoned salvage. By the end, Rook gives up selling the power core to preserve people and their ability to choose.
 
 Do not make the hero a silent empty vessel or an incessant comedian. Short dialogue leaves room for the player.
 
@@ -41,7 +43,7 @@ A small belt pouch holds gems and personal finds. It is not a visible gun holste
 
 Separate body, jacket, trousers, boots, neck cloth, pouch, hair mass, and held weapon. The default neutral sprite has empty hands because weapons are separate assets, not because the gameplay adds an unarmed fighting system.
 
-Required studies: neutral left- and right-facing sprites, optional front/back construction drawings; running; low and high jump; landing; one-handed pistol hold; two-handed shotgun, welder, and Seedlobber holds; tether brace; reload; hit recovery; weapon swap; examining an artifact; talking to the companion.
+Required studies: neutral left- and right-facing sprites, optional front/back construction drawings; running; low and high jump; landing; one-handed pistol hold; two-handed shotgun, welder, and Seedlobber holds; tether brace; reload; hit recovery; weapon swap; examining an artifact; operating a fixed maintenance bench; reading a care terminal; responding to EDEN's announcements.
 
 Give grips and shoulders sufficient space for the existing weapon drawings. Clothing should deform cleanly without hiding hand contact or foot placement.
 

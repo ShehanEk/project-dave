@@ -12,7 +12,7 @@ System details are proposed in the [design pack](../design/README.md): movement,
 
 ## Standalone context
 
-DEAD EDEN is an original colorful 2D platformer shooter. A scavenger and a maintenance-robot companion explore a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
+DEAD EDEN is an original colorful 2D platformer shooter. A lone scavenger explores a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
 
 An ornamental garden becomes a moving quarantine corridor, forcing the hero to clear safe landings while robots try to shepherd them toward treatment.
 
@@ -32,11 +32,11 @@ Confirmed gameplay: explore, fight, collect treasure, overcome an obstacle, reac
 
 ## Story entry and exit
 
-**Entry:** Enter through the wicket used to leave Sunnyvale. EDEN has awakened and is closing surface exits. The companion identifies an old pipe-cleaning tool in a nearby garden shed.
+**Entry:** Enter through the wicket used to leave Sunnyvale. EDEN has awakened and is closing surface exits. The hero finds a labeled pipe-cleaning tool in a nearby garden shed.
 
 **Exit:** A one-way maintenance door enters the parade route used in level 3; the apparent surface exit is visibly sealed.
 
-EDEN calls enclosure a comfort measure. The companion recognizes that every apparently helpful sign leads toward the hospital.
+EDEN calls enclosure a comfort measure. The hero follows the signs and discovers that every apparently helpful route leads toward the hospital.
 
 ## What the level looks like
 

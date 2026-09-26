@@ -25,7 +25,7 @@ Use a short confirmation or hold option to prevent accidental changes; allow an 
 
 Each physical weapon has its own identity and current resource state. Loaded rounds, reserve rounds, and heat belong to that object. A swap does not refill ammo, zero heat, create duplicate projectiles, or produce a second copy.
 
-The proposed upgrade ledger records purchased stages by weapon type. This is progression data, not stored weapons. When a matching weapon is physically picked up, the companion applies its earned fittings. No free rounds are created by a larger magazine. See the ownership document for the exact proposal.
+The proposed upgrade ledger records purchased stages by weapon type. This is progression data, not stored weapons. When a matching weapon is physically picked up, the hero fits its already-earned modular upgrades during the pickup presentation. No free rounds are created by a larger magazine. See the ownership document for the exact proposal.
 
 ## Ground safety
 

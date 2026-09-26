@@ -1,0 +1,537 @@
+{
+  "schema_version": 1,
+  "kind": "prototype_execution_plan_not_runtime_level_data",
+  "project": "DEAD EDEN",
+  "level": "L01",
+  "status": "planned_unimplemented_unplaytested",
+  "engine": {
+    "family": "Godot",
+    "major": 4,
+    "language": "GDScript",
+    "renderer_proposal": "Compatibility",
+    "exact_version": null,
+    "pin_version_at": "M0"
+  },
+  "build_path_from_repo_root": "prototypes/sunnyvale-godot",
+  "target_platform_proposal": "Windows desktop; keyboard and mouse",
+  "duration": {
+    "main_route_target_seconds": 750,
+    "first_playthrough_range_seconds": [
+      600,
+      900
+    ],
+    "optional_branch_seconds": [
+      90,
+      120
+    ],
+    "requires_measured_playtests": true
+  },
+  "constraints": {
+    "solo_hero": true,
+    "companion_present": false,
+    "max_carried_weapons": 1,
+    "weapon_types_in_this_slice": [
+      "W01"
+    ],
+    "enemy_types": [
+      "Z01",
+      "R01"
+    ],
+    "boss_count": 0,
+    "returned_present": false,
+    "new_gameplay_abilities": false
+  },
+  "prototype_only_elaborations": [
+    "Extended beats within the six existing areas",
+    "Extra authored Resident and Clipper encounters",
+    "Recovery stations CP01 and CP02",
+    "One optional same-type pistol swap at depot",
+    "One service-walkway switch in A04"
+  ],
+  "economy": {
+    "main_route_gems": 45,
+    "main_route_gems_available_before_bench": 45,
+    "optional_gems": 20,
+    "total_gems": 65,
+    "quickcycle_price": 40,
+    "purchasable_stages": [
+      1
+    ],
+    "artifact_id": "A01",
+    "artifact_mandatory": false
+  },
+  "tuning": {
+    "status": "proposed_unverified",
+    "hero_height_px": 96,
+    "run_speed_h_per_s": 4.0,
+    "jump_apex_h": 1.6,
+    "jump_time_to_apex_s": 0.42,
+    "coyote_time_s": 0.1,
+    "jump_buffer_s": 0.12,
+    "hero_health": 6,
+    "damage_immunity_s": 1.0,
+    "pistol_damage": 1,
+    "pistol_base_interval_s": 0.32,
+    "pistol_quickcycle_interval_s": 0.24,
+    "resident_health": 3,
+    "clipper_exposed_motor_health": 3
+  },
+  "areas": [
+    {
+      "id": "L01-A01",
+      "name": "Perimeter gate",
+      "seconds": 75,
+      "residents": 0,
+      "clippers": 0,
+      "gems": 5,
+      "small": 5,
+      "clusters": 0,
+      "cp": "CP00",
+      "beats": [
+        {
+          "id": "L01-A01-B01",
+          "name": "Arrival and route read",
+          "target_seconds": 20
+        },
+        {
+          "id": "L01-A01-B02",
+          "name": "Two low steps and short jump",
+          "target_seconds": 20
+        },
+        {
+          "id": "L01-A01-B03",
+          "name": "Inert shooting target",
+          "target_seconds": 20
+        },
+        {
+          "id": "L01-A01-B04",
+          "name": "Gem trail and open gate",
+          "target_seconds": 15
+        }
+      ]
+    },
+    {
+      "id": "L01-A02",
+      "name": "Front gardens",
+      "seconds": 150,
+      "residents": 2,
+      "clippers": 2,
+      "gems": 10,
+      "small": 5,
+      "clusters": 1,
+      "cp": "CP01",
+      "beats": [
+        {
+          "id": "L01-A02-B01",
+          "name": "First Resident in isolation",
+          "target_seconds": 30
+        },
+        {
+          "id": "L01-A02-B02",
+          "name": "First Clipper beside stone planter",
+          "target_seconds": 30
+        },
+        {
+          "id": "L01-A02-B03",
+          "name": "Garden-wall jump trail",
+          "target_seconds": 25
+        },
+        {
+          "id": "L01-A02-B04",
+          "name": "Resident in the next yard",
+          "target_seconds": 25
+        },
+        {
+          "id": "L01-A02-B05",
+          "name": "Second Clipper practice lane",
+          "target_seconds": 25
+        },
+        {
+          "id": "L01-A02-B06",
+          "name": "Safe porch and recovery station",
+          "target_seconds": 15
+        }
+      ]
+    },
+    {
+      "id": "L01-A03",
+      "name": "Rooftop walk",
+      "seconds": 135,
+      "residents": 2,
+      "clippers": 0,
+      "gems": 10,
+      "small": 5,
+      "clusters": 1,
+      "cp": "CP02",
+      "beats": [
+        {
+          "id": "L01-A03-B01",
+          "name": "Porch-step ascent",
+          "target_seconds": 25
+        },
+        {
+          "id": "L01-A03-B02",
+          "name": "First moving-platform crossing",
+          "target_seconds": 30
+        },
+        {
+          "id": "L01-A03-B03",
+          "name": "Resident on broad far terrace",
+          "target_seconds": 25
+        },
+        {
+          "id": "L01-A03-B04",
+          "name": "Roof-height sequence and second Resident",
+          "target_seconds": 30
+        },
+        {
+          "id": "L01-A03-B05",
+          "name": "Safe descent and recovery station",
+          "target_seconds": 25
+        }
+      ]
+    },
+    {
+      "id": "L01-A04",
+      "name": "Neighborhood square",
+      "seconds": 165,
+      "residents": 4,
+      "clippers": 2,
+      "gems": 20,
+      "small": 10,
+      "clusters": 2,
+      "cp": "CP03",
+      "beats": [
+        {
+          "id": "L01-A04-B01",
+          "name": "Clock and fountain overlook",
+          "target_seconds": 20
+        },
+        {
+          "id": "L01-A04-B02",
+          "name": "First mixed encounter",
+          "target_seconds": 30
+        },
+        {
+          "id": "L01-A04-B03",
+          "name": "Raised flowerbed traversal",
+          "target_seconds": 20
+        },
+        {
+          "id": "L01-A04-B04",
+          "name": "Two staggered Residents",
+          "target_seconds": 25
+        },
+        {
+          "id": "L01-A04-B05",
+          "name": "Service-walkway switch",
+          "target_seconds": 20
+        },
+        {
+          "id": "L01-A04-B06",
+          "name": "Second mixed encounter",
+          "target_seconds": 25
+        },
+        {
+          "id": "L01-A04-B07",
+          "name": "Quiet far porch and recovery station",
+          "target_seconds": 25
+        }
+      ]
+    },
+    {
+      "id": "L01-A05",
+      "name": "Maintenance depot",
+      "seconds": 90,
+      "residents": 0,
+      "clippers": 0,
+      "gems": 0,
+      "small": 0,
+      "clusters": 0,
+      "cp": "CP04",
+      "beats": [
+        {
+          "id": "L01-A05-B01",
+          "name": "Workshop and mounted core",
+          "target_seconds": 15
+        },
+        {
+          "id": "L01-A05-B02",
+          "name": "Release latch triggers EDEN",
+          "target_seconds": 20
+        },
+        {
+          "id": "L01-A05-B03",
+          "name": "Read transformed exit and save",
+          "target_seconds": 15
+        },
+        {
+          "id": "L01-A05-B04",
+          "name": "Optional Quickcycle purchase",
+          "target_seconds": 25
+        },
+        {
+          "id": "L01-A05-B05",
+          "name": "Practice target and emergency hatch",
+          "target_seconds": 15
+        }
+      ]
+    },
+    {
+      "id": "L01-A06",
+      "name": "Alarm exit",
+      "seconds": 135,
+      "residents": 1,
+      "clippers": 2,
+      "gems": 0,
+      "small": 0,
+      "clusters": 0,
+      "cp": "CP05",
+      "beats": [
+        {
+          "id": "L01-A06-B01",
+          "name": "Preview quarantine rails",
+          "target_seconds": 25
+        },
+        {
+          "id": "L01-A06-B02",
+          "name": "Familiar Clipper lane",
+          "target_seconds": 25
+        },
+        {
+          "id": "L01-A06-B03",
+          "name": "Safe raised path and settled panels",
+          "target_seconds": 25
+        },
+        {
+          "id": "L01-A06-B04",
+          "name": "Final Resident and Clipper encounter",
+          "target_seconds": 35
+        },
+        {
+          "id": "L01-A06-B05",
+          "name": "Service wicket and completion",
+          "target_seconds": 25
+        }
+      ]
+    }
+  ],
+  "encounters": [
+    {
+      "id": "L01-E01",
+      "beat_id": "L01-A02-B01",
+      "residents": 1,
+      "clippers": 0,
+      "gem_drops": 0,
+      "max_simultaneous_attackers": 1
+    },
+    {
+      "id": "L01-E02",
+      "beat_id": "L01-A02-B02",
+      "residents": 0,
+      "clippers": 1,
+      "gem_drops": 0,
+      "max_simultaneous_attackers": 1
+    },
+    {
+      "id": "L01-E03",
+      "beat_id": "L01-A02-B04",
+      "residents": 1,
+      "clippers": 0,
+      "gem_drops": 0,
+      "max_simultaneous_attackers": 1
+    },
+    {
+      "id": "L01-E04",
+      "beat_id": "L01-A02-B05",
+      "residents": 0,
+      "clippers": 1,
+      "gem_drops": 0,
+      "max_simultaneous_attackers": 1
+    },
+    {
+      "id": "L01-E05",
+      "beat_id": "L01-A03-B03",
+      "residents": 1,
+      "clippers": 0,
+      "gem_drops": 0,
+      "max_simultaneous_attackers": 1
+    },
+    {
+      "id": "L01-E06",
+      "beat_id": "L01-A03-B04",
+      "residents": 1,
+      "clippers": 0,
+      "gem_drops": 0,
+      "max_simultaneous_attackers": 1
+    },
+    {
+      "id": "L01-E07",
+      "beat_id": "L01-A04-B02",
+      "residents": 1,
+      "clippers": 1,
+      "gem_drops": 0,
+      "max_simultaneous_attackers": 1
+    },
+    {
+      "id": "L01-E08",
+      "beat_id": "L01-A04-B04",
+      "residents": 2,
+      "clippers": 0,
+      "gem_drops": 0,
+      "max_simultaneous_attackers": 1
+    },
+    {
+      "id": "L01-E09",
+      "beat_id": "L01-A04-B06",
+      "residents": 1,
+      "clippers": 1,
+      "gem_drops": 0,
+      "max_simultaneous_attackers": 1
+    },
+    {
+      "id": "L01-E10",
+      "beat_id": "L01-A06-B02",
+      "residents": 0,
+      "clippers": 1,
+      "gem_drops": 0,
+      "max_simultaneous_attackers": 1
+    },
+    {
+      "id": "L01-E11",
+      "beat_id": "L01-A06-B04",
+      "residents": 1,
+      "clippers": 1,
+      "gem_drops": 0,
+      "max_simultaneous_attackers": 1
+    }
+  ],
+  "optional_branches": [
+    {
+      "id": "L01-OPT01",
+      "area": "L01-A02",
+      "artifact": "A01",
+      "gems": 0,
+      "seconds": [
+        45,
+        60
+      ]
+    },
+    {
+      "id": "L01-OPT02",
+      "area": "L01-A03",
+      "artifact": null,
+      "gems": 20,
+      "seconds": [
+        45,
+        60
+      ]
+    }
+  ],
+  "checkpoints": [
+    {
+      "id": "CP00",
+      "area": "L01-A01",
+      "trigger": "new_game",
+      "kind": "initial_snapshot"
+    },
+    {
+      "id": "CP01",
+      "area": "L01-A02",
+      "trigger": "interact_safe_portrait_porch_station",
+      "kind": "recovery"
+    },
+    {
+      "id": "CP02",
+      "area": "L01-A03",
+      "trigger": "interact_safe_descent_station",
+      "kind": "recovery"
+    },
+    {
+      "id": "CP03",
+      "area": "L01-A04",
+      "trigger": "interact_far_porch_station",
+      "kind": "recovery"
+    },
+    {
+      "id": "CP04",
+      "area": "L01-A05",
+      "trigger": "awakening_sequence_complete",
+      "kind": "story_snapshot"
+    },
+    {
+      "id": "CP05",
+      "area": "L01-A06",
+      "trigger": "cross_service_wicket",
+      "kind": "completion_snapshot"
+    }
+  ],
+  "milestones": [
+    {
+      "id": "M0",
+      "depends_on": [],
+      "status": "not_started"
+    },
+    {
+      "id": "M1",
+      "depends_on": [
+        "M0"
+      ],
+      "status": "not_started"
+    },
+    {
+      "id": "M2",
+      "depends_on": [
+        "M1"
+      ],
+      "status": "not_started"
+    },
+    {
+      "id": "M3",
+      "depends_on": [
+        "M2"
+      ],
+      "status": "not_started"
+    },
+    {
+      "id": "M4",
+      "depends_on": [
+        "M3"
+      ],
+      "status": "not_started"
+    },
+    {
+      "id": "M5",
+      "depends_on": [
+        "M4"
+      ],
+      "status": "not_started"
+    },
+    {
+      "id": "M6",
+      "depends_on": [
+        "M5"
+      ],
+      "status": "not_started"
+    },
+    {
+      "id": "M7",
+      "depends_on": [
+        "M6"
+      ],
+      "status": "not_started"
+    }
+  ],
+  "owners": {
+    "scope": "00-scope-and-decisions.md",
+    "pacing": "01-player-journey-and-pacing.md",
+    "areas": "02-area-blueprints.md",
+    "systems": "03-gameplay-systems.md",
+    "architecture": "04-godot-architecture.md",
+    "assets": "05-content-and-assets.md",
+    "milestones": "06-build-milestones.md",
+    "validation": "07-acceptance-and-playtesting.md",
+    "prompts": "08-ai-execution-prompts.md",
+    "progress": "09-progress-and-handoff.md"
+  }
+}

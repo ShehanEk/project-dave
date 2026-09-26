@@ -16,7 +16,7 @@ Use the selected [Sunnyvale gallery](../concept-art/l01-sunnyvale/README.md): A0
 
 ## Standalone context
 
-DEAD EDEN is an original colorful 2D platformer shooter. A scavenger and a maintenance-robot companion explore a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
+DEAD EDEN is an original colorful 2D platformer shooter. A lone scavenger explores a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
 
 A perfect artificial suburb slowly reveals that its inhabitants have died and its cheerful maintenance routines cannot tell the difference.
 
@@ -26,7 +26,7 @@ Confirmed gameplay: explore, fight, collect treasure, overcome an obstacle, reac
 
 | Field | Design |
 | --- | --- |
-| Main objective | Find the rumored core inside the neighborhood maintenance depot, meet the companion, and escape onto the garden path after the extraction attempt awakens EDEN. |
+| Main objective | Find the rumored power core in the neighborhood maintenance depot and escape onto the garden path after attempting to release its mounted housing awakens EDEN. |
 | Intended difficulty | Introductory |
 | First successful exploration target | 10–14 minutes; excludes repeated failures and exhaustive secret hunting |
 | New weapon | Scrapjack Pistol (available at entry) |
@@ -38,9 +38,9 @@ Confirmed gameplay: explore, fight, collect treasure, overcome an obstacle, reac
 
 **Entry:** The scavenger climbs through a broken perimeter service gate seeking a valuable power core. EDEN's local systems still operate under standing instructions; the central intelligence has not yet fully awakened.
 
-**Exit:** The companion remains alive with its core installed and follows the hero toward the quarantine gardens of level 2.
+**Exit:** The power core remains installed in the depot. The hero escapes alone toward the quarantine gardens of level 2.
 
-The horror comes from the same meal being delivered to the same unresponsive resident, then from discovering that the advertised treasure has a personality. EDEN initially speaks with sincere hospitality.
+The horror comes from the same meal being delivered to the same unresponsive resident, then from discovering that the advertised treasure is still powering an occupied facility. EDEN initially speaks with sincere hospitality.
 
 ## What the level looks like
 
@@ -102,9 +102,9 @@ The route lists ordered areas, not exact world coordinates. Each area may span m
 
 ### L01-A05 — Maintenance depot
 
-**Space and placement:** A compact workshop shows neatly sorted spare parts, an inactive care console, and the maintenance companion held in a charging cradle. No hostile spawn interrupts the interaction.
+**Space and placement:** A compact workshop shows neatly sorted spare parts, a fixed maintenance bench, and the sought-after power core inside a bolted floor-mounted housing. A care console displays active ward circuits. No hostile spawn interrupts the interaction.
 
-**Player experience and lesson:** The hero tries to access the companion's core; the cradle calls the central intelligence. EDEN fully awakens, the companion objects, and both choose escape. The core remains installed.
+**Player experience and lesson:** The hero opens the power-core access panel and tries its release latch. A safety interlock locks the housing and calls the central intelligence. EDEN fully awakens and orders containment; the hero takes the emergency exit. The core remains installed and powering the facility.
 
 **Completion and connection:** The event opens a clearly lit emergency hatch into A06 and changes the neighborhood's lighting.
 
@@ -112,7 +112,7 @@ The route lists ordered areas, not exact world coordinates. Each area may span m
 
 **Space and placement:** Garden panels rotate into temporary railings while ceiling cloud lights shift to a quarantine pattern. These movements happen ahead of the player, never beneath an occupied landing.
 
-**Player experience and lesson:** A single familiar Clipper tests movement under new presentation, not a new mechanic. Reach the service wicket with the companion.
+**Player experience and lesson:** A single familiar Clipper tests movement under new presentation, not a new mechanic. Reach the service wicket alone.
 
 **Completion and connection:** Crossing the wicket completes the level and leads directly to level 2.
 
@@ -139,7 +139,7 @@ The list above records weapon types introduced by this point, not a carried inve
 
 - At A01 entry.
 - After A04, before entering the depot.
-- After the A05 companion event, before A06; retain the awakening and companion state on retry.
+- After the A05 depot event, before A06; retain EDEN's awakening, the installed power core, and the open emergency hatch on retry.
 
 Working checkpoint proposal: retry restores the single carried weapon and world pickup state saved at the checkpoint, with useful resources for that weapon and completed story objectives preserved. It does not recover a gun abandoned elsewhere or grant a second gun. Local enemies, hazards, and moving geometry reset coherently; swapped weapons and collected treasure must not duplicate. Practice sections retain the described catch ledges. Exact health, ammunition, death penalties, and dropped-weapon persistence across level changes remain undecided.
 
@@ -158,9 +158,9 @@ Birdlike mechanical chirps, soft sprinkler clicks, and a gentle neighborhood jin
 
 ## Environment asset kit and layer separation
 
-**Required kit:** Rounded house fronts and roof corners; porch and garden-wall modules; fence posts; planter blocks; clock landmark; depot workbench; charging cradle; cloud-ceiling panels; examination-flower light; rotating quarantine rail.
+**Required kit:** Rounded house fronts and roof corners; porch and garden-wall modules; fence posts; planter blocks; clock landmark; depot workbench; fixed power-core housing and care console; cloud-ceiling panels; examination-flower light; rotating quarantine rail.
 
-**Separate objects:** House shells, collision terraces, moving platform, rotating fences, and lights must be distinct assets. The companion and enemies use separate character assets; do not merge their drawings into architecture.
+**Separate objects:** House shells, collision terraces, moving platform, rotating fences, and lights must be distinct assets. The hero and enemies use separate character assets; the fixed core housing and console are separate environment props.
 
 Draw the largest architectural silhouettes first, then separate moving parts and props. Record pivot intent for rotating, sliding, lifting and opening elements. Plan repeatable illustrated tiles or modules for floors, rails and corridors; keep unique landmarks separate. Keep foreground, playable, background and effects on distinct drawing layers. Final sprite resolution, atlas layout, animation method, file format and collision setup remain undecided.
 
@@ -202,7 +202,7 @@ L01-A01: Perimeter gate. A flat entrance apron leads to two low garden steps and
 L01-A02: Front gardens. Two short yards are separated by a low wall. One Resident patrols the first yard. One Clipper waits in the second, facing a sturdy stone planter. Connection: A porch step leads upward to A03; the ground route remains a safe fallback during practice.
 L01-A03: Rooftop walk. Three broad roof terraces are linked by a slow maintenance platform over a shallow service lane. Put one Resident on a wide far terrace, not on the landing edge. Connection: The final roof descends gently into A04.
 L01-A04: Neighborhood square. A wide clear square surrounds a nonblocking fountain. Place one Clipper on the lower lane and two staggered Residents on the farther side, with a central raised flowerbed for separation. Connection: The clock landmark marks the depot door into A05.
-L01-A05: Maintenance depot. A compact workshop shows neatly sorted spare parts, an inactive care console, and the maintenance companion held in a charging cradle. No hostile spawn interrupts the interaction. Connection: The event opens a clearly lit emergency hatch into A06 and changes the neighborhood's lighting.
+L01-A05: Maintenance depot. A compact workshop shows neatly sorted spare parts, a fixed maintenance bench, and the sought-after power core inside a bolted floor-mounted housing. A care console displays active ward circuits. No hostile spawn interrupts the interaction. Connection: The event opens a clearly lit emergency hatch into A06 and changes the neighborhood's lighting.
 L01-A06: Alarm exit. Garden panels rotate into temporary railings while ceiling cloud lights shift to a quarantine pattern. These movements happen ahead of the player, never beneath an occupied landing. Connection: Crossing the wicket completes the level and leads directly to level 2.
 Use pale simple masses for architecture, dark clean top edges for playable surfaces, muted noninteractive background shapes, small human scale silhouettes, and visible supports for moving platforms. Separate player paths, stable refuges, and hazards through shape as well as color. Do not invent measured physics values. No decorative clutter, text generated inside the picture, impossible perspective, overlapping panels, extra level, or unlisted boss. The last area is an exit or story beat, not a boss arena. The written brief remains authoritative if the generated image contradicts it.
 ```
@@ -213,8 +213,8 @@ After approving an environment keyframe, attach it to preserve the visual langua
 
 ```text
 Using the attached approved environment keyframe, create a clean modular environment asset reference sheet for DEAD EDEN level 1, "Welcome to Sunnyvale". Match these materials and colors: Warm cream #EFE0BE, soft peach #DF9E80, lawn green #87B45E, pale sky blue #A9D6DD, dark teal service recesses #365D62. Golden simulated morning light; sharper cyan utility light appears inside the depot.
-Required asset family: Rounded house fronts and roof corners; porch and garden-wall modules; fence posts; planter blocks; clock landmark; depot workbench; charging cradle; cloud-ceiling panels; examination-flower light; rotating quarantine rail.
-Separation rules: House shells, collision terraces, moving platform, rotating fences, and lights must be distinct assets. The companion and enemies use separate character assets; do not merge their drawings into architecture.
+Required asset family: Rounded house fronts and roof corners; porch and garden-wall modules; fence posts; planter blocks; clock landmark; depot workbench; fixed power-core housing and care console; cloud-ceiling panels; examination-flower light; rotating quarantine rail.
+Separation rules: House shells, collision terraces, moving platform, rotating fences, and lights must be distinct assets. The hero and enemies use separate character assets; the fixed core housing and console are separate environment props.
 Draw complete individual 2D objects with clear gaps, consistent canvas scale, clean outlines, flat colors and crisp cel shadows on warm off-white. Prioritize gameplay side views; include a separate moving-part drawing only where a mechanism needs explanation. Show fixed and moving components separately without inventing internal engineering. No character redesigns, combined scene collage, text labels, UI, watermark, heavy weathering, or tiny decorative noise. Keep all playable contact surfaces clean and identifiable. This is art reference for later 2D asset production, not a technical fabrication drawing.
 ```
 
@@ -231,7 +231,7 @@ Do not silently add weapons, bosses, traversal skills, unearned upgrades, infect
 ## Review criteria
 
 - The first moving-platform failure has a recoverable lower route.
-- The companion encounter leaves its core installed.
+- The depot event leaves the power core installed and the hero traveling alone.
 - EDEN's central awakening occurs once at A05, while earlier local routines remain understandable.
 
 - All six areas have a readable entry, purpose, safe response, and exit.

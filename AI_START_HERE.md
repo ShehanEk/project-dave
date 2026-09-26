@@ -4,6 +4,10 @@
 
 This repository develops an original colorful 2D platformer shooter concept. **The current task is idea development, not implementation.** Use the separate documents below to refine one area without inventing incompatible mechanics elsewhere.
 
+## Level 1 prototype route
+
+A separate [Godot prototype execution plan](prototype-plans/level-01-sunnyvale/README.md) defines a 10–15 minute Sunnyvale slice. Read its scope, structured specification, and progress record before implementation work. This folder is currently planning only. When the user explicitly asks to execute it, follow its milestone prompts; that instruction authorizes the prototype while unrelated campaign work remains concept-only.
+
 ## Minimum reading
 
 1. Read [core-gameplay.md](core-gameplay.md) for the confirmed loop, treasure, and weapon rules.
@@ -15,14 +19,15 @@ This repository develops an original colorful 2D platformer shooter concept. **T
 
 | Task | Read first | Add only when relevant |
 | --- | --- | --- |
+| Level 1 Godot prototype | [Prototype plan](prototype-plans/level-01-sunnyvale/README.md), scope and progress record | Area blueprints, Godot architecture, current milestone and acceptance checks |
 | Overall gameplay | G01 loop, G02 controls, G03 swaps | G04 camera, S01 checkpoint, W04 encounters |
-| Hero or companion concept art | H01 hero or H02 companion | H03 relationship, shared art style, relevant held weapon brief |
+| Hero concept art | H01 hero | N01 story scenes, shared art style, relevant held weapon brief |
 | Health or save behavior | S01 health/checkpoints | G03 swap, S02 ammunition, S04 ownership |
 | Weapon behavior or balance | S02 resources, S04 upgrades | Existing weapon art brief, W02 statuses, W04 boss fairness |
 | Treasure and progression | S03 economy, S04 upgrades, S05 artifacts | S01 saving and relevant level brief |
 | Enemy or environmental interaction | W01 factions, W02 states, W03 objects | Existing enemy brief and W04 fairness |
 | Level refinement | Existing level brief and shared level guide | G02 movement, W04 encounters, S02 supply, S03 budget, S05 artifacts |
-| Story or dialogue | N01 scenes, N02 writing | H03 relationship, main concept, relevant level |
+| Story or dialogue | N01 scenes, N02 writing | H01 solo hero, main concept, relevant level |
 | UI / accessibility | N03 interface | G03 swaps, G04 camera, S01 checkpoint, S04 upgrades |
 | Sound / music | N04 audio | N02 voices and relevant enemy, weapon, or level brief |
 
@@ -30,6 +35,7 @@ Find every ID in the [design index](design/README.md). Use the five section inde
 
 ## Rules that must survive every edit
 
+- The hero travels alone (C12). No companion, follower, or portable AI adviser; use fixed terminals and hero-operated benches for story and upgrades.
 - Explore → fight → collect treasure → overcome an obstacle → reach a checkpoint → upgrade.
 - Gems are primary treasure; artifacts are additional discoveries.
 - One carried weapon. A pickup exchanges it with the grounded weapon at that pickup's location.
@@ -65,4 +71,4 @@ Keep new balancing figures labeled untested. Keep proposed names/visuals editabl
 
 Visual direction is confirmed in **C11**: use [hand-drawn 2D art](art-design/style-guide.md) with clean outlines, flat colors, crisp cel shadows and layered scenery. The [selected gallery](concept-art/README.md) contains the 2D Clipper, Resident and three Sunnyvale scenes. Clipper retains B's mechanical identity (C10). Start from these selected PNGs for matching sprites and scene continuations; other assets must follow the same rendering style without copying Sunnyvale's palette into every region. These references are concept art, not production sprites or separated layers.
 
-[Main concept](dead-eden-concept.md) · [Twenty system documents](design/README.md) · [Twelve levels](level-design/README.md) · [Thirty-two enemy/weapon art briefs](art-design/README.md)
+[Main concept](dead-eden-concept.md) · [Eighteen system documents](design/README.md) · [Twelve levels](level-design/README.md) · [Thirty-two enemy/weapon art briefs](art-design/README.md)

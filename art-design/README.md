@@ -4,11 +4,11 @@
 
 Use the [selected Clipper, Resident and Sunnyvale scenes](../concept-art/README.md) with the [shared sprite and layer guide](style-guide.md). B's mechanical identity remains the Clipper foundation (C10).
 
-For proposed hero and companion briefs, see [character design](../design/02-characters/README.md). For collectible object descriptions, see the [artifact catalog](../design/03-progression/artifact-catalog.md). Use the [AI entry guide](../AI_START_HERE.md) to connect these visuals to the gameplay rules.
+For proposed hero brief, see [character design](../design/02-characters/README.md). For collectible object descriptions, see the [artifact catalog](../design/03-progression/artifact-catalog.md). Use the [AI entry guide](../AI_START_HERE.md) to connect these visuals to the gameplay rules.
 
 Thirty-two standalone asset briefs for image generation and later sprite and animation production: ten robots, ten zombies, three Returned enemy types, four mini-bosses, and five weapons with all fifteen upgrades.
 
-The level-10 converted Patchbot is documented as a separate variant and prompt inside its base brief. The First Patient is currently a noncombat story character, and the hero and companion are not enemy or weapon assets; they are outside this pack.
+The level-10 converted Patchbot is documented as a separate variant and prompt inside its base brief. The First Patient is currently a noncombat story character, and the hero is not an enemy or weapon asset; they are outside this pack.
 
 ## Start here
 

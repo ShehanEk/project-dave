@@ -17,20 +17,19 @@ Ordinary robots cannot catch a biological infection. A Returned conversion requi
 ## Proposed targeting rules
 All combat targets must be authored as hostile or protected. Visual species alone is not enough: a peaceful Rememberer and the First Patient are protected people.
 
-| Actor | Hero | Ordinary robots | Hostile zombies | Returned | Protected people / PIP |
+| Actor | Hero | Ordinary robots | Hostile zombies | Returned | Protected people |
 | --- | --- | --- | --- | --- | --- |
 | Ordinary robot | Pursues when encounter activates | Never intentionally attacks | Contains only in authored mixed encounters | Recognizes authorized Returned as allies | No damaging gameplay target |
 | Hostile zombie | Primary pursuit target | Retaliates against an active containment attacker | No intentional attack | Retaliates if physically attacked | No damaging gameplay target |
 | Returned | Primary pursuit target | Treats as allies; grafts only prepared hosts | Does not seek as a default target | No intentional attack | No damaging gameplay target |
 | Hero | Self-splash only where specified | Can damage hostile units | Can damage hostile individuals | Can damage hostile units | Shots and splash cannot harm or capture |
-| PIP | Supports through information | No combat action | No combat action | No combat action | Noncombat companion |
 
 Do not create a whole-world autonomous faction simulation. A mixed encounter declares participants and allowed cross-faction damage. Outside those encounters, incidental enemy attacks do not damage other enemies. This keeps authored openings predictable and prevents an unseen fight clearing the next room.
 
 Within an authored containment encounter, the participating robot and zombie attacks can damage each other. The hero may watch, bypass, or intervene. Cross-faction kills do not spawn extra currency; any reward is the room's fixed cache.
 
 ## Projectile ownership
-The hero's direct shots and arcs damage valid hostile targets and marked breakables. They cannot target PIP or protected people. Arc chains choose visible valid targets; do not jump through walls or use peaceful characters as conductive stepping stones.
+The hero's direct shots and arcs damage valid hostile targets and marked breakables. They cannot target protected people. Arc chains choose visible valid targets; do not jump through walls or use peaceful characters as conductive stepping stones.
 
 Hero Seedlobber explosions can hurt the hero, hostile targets, and designated breakables; they never harm protected characters. Enemy attacks hurt the hero and flagged environmental objects. Only the mixed-encounter rule permits enemy-on-enemy damage.
 
@@ -48,7 +47,7 @@ Cap all repeatable repairs. Boss-specific repair caps belong to their encounter 
 ## Protected-character contract
 Peaceful Rememberers have relaxed posture and no hostile targeting highlight. They stay peaceful when shot; they do not unexpectedly become enemies because the player misread a silhouette. Give a harmless blocked interaction cue rather than a hit confirmation.
 
-The First Patient cannot be attacked, harvested, captured, or used as a boss. PIP cannot be used as a shield, tether projectile, ammunition source, or revive machine. Survivor spaces and final life-support systems are not destructible combat targets.
+The First Patient cannot be attacked, harvested, captured, or used as a boss. Survivor spaces and final life-support systems are not destructible combat targets.
 
 ## Review examples
 A zombie scratches a Clipper: no spontaneous Returned form. A Mourning Nurse links to a robot with no neural cradle: no conversion. A hero explosion near the First Patient: no health change. A Patchbot reactivates a robot twice: the second attempt is disallowed. A peaceful Rememberer in a hostile group: protected status still wins.

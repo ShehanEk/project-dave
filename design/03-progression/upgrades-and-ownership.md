@@ -6,7 +6,7 @@
 **Status:** Working design proposal. Confirmed decisions and established lore remain constraints; new details and numbers are untested proposals.  
 **Purpose:** Keeps all fifteen established upgrades and proposes ownership across copies of a weapon type.
 
-**Decision references:** C04, C05, C06, P08, P10 — see the [decision register](../decisions.md).  
+**Decision references:** C12, C04, C05, C06, P08, P10 — see the [decision register](../decisions.md).  
 **Read with:** [treasure economy](treasure-economy.md) · [ammunition and resupply](ammunition-and-resupply.md) · [weapon swaps](../01-core/weapon-swaps.md) · [README](../../art-design/README.md)
 
 ## Fixed roster
@@ -25,7 +25,7 @@ Exact visual changes remain owned by the five existing weapon art briefs. Do not
 ## Proposed ownership model
 The campaign records an **earned stage for each weapon type**. This is a record of paid designs, not five carried weapons. A physical instance has its own ammunition, heat, world location, and currently fitted stage.
 
-Buying a stage modifies the held weapon and records the new earned stage. If the hero later picks up another physical copy of that type, PIP's saved maintenance pattern applies the paid fittings during the pickup presentation. No extra gems are charged. Copies lying elsewhere do not have to visibly change from a distance; they adopt the earned fittings when picked up.
+The hero operates a fixed maintenance bench to buy and fit a stage to the held weapon, recording the new earned stage. On later pickup of another physical copy of that type, the hero fits the already-earned modular upgrades during the pickup presentation. This is an abstract progression benefit, not a separate parts inventory or crafting system. No extra gems are charged. Copies lying elsewhere do not visibly change from a distance; they adopt the earned fittings when picked up.
 
 A dropped weapon keeps its fitted stage. Upgrades never decrease through ordinary swapping. The pickup comparison displays the stage that will be usable after pickup. A checkpoint rollback restores both the earned-stage record and the physical weapon states together.
 

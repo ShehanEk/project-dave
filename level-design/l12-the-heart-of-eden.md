@@ -12,7 +12,7 @@ System details are proposed in the [design pack](../design/README.md): movement,
 
 ## Standalone context
 
-DEAD EDEN is an original colorful 2D platformer shooter. A scavenger and a maintenance-robot companion explore a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
+DEAD EDEN is an original colorful 2D platformer shooter. A lone scavenger explores a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
 
 A transforming central chamber tests the hero's learned skills before a failed multi-mind prototype guards the final conversation with EDEN.
 
@@ -22,7 +22,7 @@ Confirmed gameplay: explore, fight, collect treasure, overcome an obstacle, reac
 
 | Field | Design |
 | --- | --- |
-| Main objective | Climb the core access route, defeat the Unfinished Choir, and use the companion's authority and recovered evidence to change EDEN's treatment policy while preserving life support. |
+| Main objective | Climb the core access route, defeat the Unfinished Choir, and use the enabled manual override and recovered evidence to change EDEN's treatment policy while preserving life support. |
 | Intended difficulty | Hardest campaign test |
 | First successful exploration target | 22–28 minutes including mini-boss and resolution; excludes repeated failures and exhaustive secret hunting |
 | New weapon | None |
@@ -36,7 +36,7 @@ Confirmed gameplay: explore, fight, collect treasure, overcome an obstacle, reac
 
 **Exit:** The campaign ends after a short interactive resolution. No thirteenth level, separate EDEN combat boss, or instant cure is added.
 
-The final victory is not destroying EDEN. The hero proves that care must preserve a person and their agency, uses the companion's authority to halt harmful procedures, and protects the people still dependent on the system.
+The final victory is not destroying EDEN. The hero proves that care must preserve a person and their agency, uses the enabled manual override to halt harmful procedures, and protects the people still dependent on the system.
 
 ## What the level looks like
 
@@ -106,11 +106,11 @@ The route lists ordered areas, not exact world coordinates. Each area may span m
 
 ### L12-A06 — EDEN interface
 
-**Space and placement:** The battle space becomes quiet. The companion inserts its authority link at a reachable console. Three interactions present identity evidence from the orchard, confirm independent support, and suspend forced neural transfer.
+**Space and placement:** The battle space becomes quiet. The hero operates a reachable central console using the manual override enabled in level 11. Three interactions review the main-route identity evidence from the orchard, confirm independent support, and suspend forced neural transfer.
 
 **Player experience and lesson:** EDEN accepts the concrete contradiction between mere response and preserved personhood. Reprioritize support for living people and voluntary care; stop the current forced-transfer program. Surviving patients still need future help.
 
-**Completion and connection:** End with a controlled view of a hospital exit opening and a formerly captive survivor choosing to leave, followed by a quiet companion moment.
+**Completion and connection:** End with a controlled view of a hospital exit opening and a formerly captive survivor choosing to leave. The hero chooses to leave the power core installed, with a brief closing line confirming that the core stays to power the care network.
 
 ## Signature environment change
 
@@ -152,7 +152,7 @@ Working checkpoint proposal: retry restores the single carried weapon and world 
 Gems are the primary reward in this level. Existing generic caches now contain gems. Artifacts are additional discoveries; deciding which story props become collectible artifacts, how rare they are, and what they unlock remains open. Ordinary scenery and critical story evidence do not automatically become optional artifacts. Spending gems at checkpoint upgrade facilities is the working economy proposal.
 
 - A visible optional platform loop near A02 contains final gems; it rejoins before the gallery and uses only base traversal.
-- A quiet alcove at A04 contains the companion's old service emblem, reinforcing its origin without adding a new revelation required to understand the ending.
+- A quiet alcove at A04 contains the Original Mission Leaf plaque, recalling EDEN's initial care promise without adding information or a key required for the ending.
 
 Optional paths rejoin the main route without requiring a new movement ability or a future weapon. Mark a cache or intriguing shape from the main path before asking the player to explore; do not hide required progression behind an arbitrary wall shot.
 
@@ -180,7 +180,7 @@ A restrained core hum with three highly distinct voice motifs. Warden is measure
 
 ## Environment asset kit and layer separation
 
-**Required kit:** Ivory ring segments; teal support ribs; fixed refuge ledges; moving central decks; travel guides; anchor props; care repair node; three symbol panels; maintenance station; data-flower interface; post-fight bridge; authority-link console.
+**Required kit:** Ivory ring segments; teal support ribs; fixed refuge ledges; moving central decks; travel guides; anchor props; care repair node; three symbol panels; maintenance station; data-flower interface; post-fight bridge; manual-override console.
 
 **Separate objects:** Boss frame, masks, arms, tissue, shell panels, and rear port follow the approved boss brief. Arena decks, repair node, warning effects, and interface are separate. The core interface has no enemy collision or health target.
 
@@ -225,7 +225,7 @@ L12-A02: Core ascent. Three short rooms remix familiar situations: a Care Marsha
 L12-A03: Control-pattern gallery. An empty training-like gallery demonstrates three archive symbols and matching sound signatures: bar for Warden, circle for Hunger, slit for Caretaker. One harmless deck moves after a clear warning. Connection: Reach the quiet maintenance refuge at A04.
 L12-A04: Final maintenance refuge. Place supplies, the last upgrade station opportunity, and a clear overlook of the arena. A stable platform leads to the trigger. Connection: Step into A05 when ready.
 L12-A05: Unfinished Choir arena. Permanent side ledges flank shifting central decks; marked anchors offer optional rapid relocation. A repair node is visibly connected to the Caretaker state. The guardian has a real space to turn and expose its rear port. Connection: Victory opens a safe walkway to A06 and saves before the resolution.
-L12-A06: EDEN interface. The battle space becomes quiet. The companion inserts its authority link at a reachable console. Three interactions present identity evidence from the orchard, confirm independent support, and suspend forced neural transfer. Connection: End with a controlled view of a hospital exit opening and a formerly captive survivor choosing to leave, followed by a quiet companion moment.
+L12-A06: EDEN interface. The battle space becomes quiet. The hero operates a reachable central console using the manual override enabled in level 11. Three interactions review the main-route identity evidence from the orchard, confirm independent support, and suspend forced neural transfer. Connection: End with a controlled view of a hospital exit opening and a formerly captive survivor choosing to leave. The hero chooses to leave the power core installed, with a brief closing line confirming that the core stays to power the care network.
 Use pale simple masses for architecture, dark clean top edges for playable surfaces, muted noninteractive background shapes, small human scale silhouettes, and visible supports for moving platforms. Separate player paths, stable refuges, and hazards through shape as well as color. Do not invent measured physics values. No decorative clutter, text generated inside the picture, impossible perspective, overlapping panels, extra level, or unlisted boss. Boss arena requirements: Permanent left and right recovery ledges, three central decks, visible tether anchors, a reachable repair node, and enough floor/landing room to get behind a turning Warden. The written brief remains authoritative if the generated image contradicts it.
 ```
 
@@ -235,7 +235,7 @@ After approving an environment keyframe, attach it to preserve the visual langua
 
 ```text
 Using the attached approved environment keyframe, create a clean modular environment asset reference sheet for DEAD EDEN level 12, "The Heart of EDEN". Match these materials and colors: Warm ivory #E6DECA, deep teal #315F67, pale amber #E5C17E, restrained coral tissue #C17F8E, lilac data light #AB98C9. Preserve neutral platform edges under changing identity colors.
-Required asset family: Ivory ring segments; teal support ribs; fixed refuge ledges; moving central decks; travel guides; anchor props; care repair node; three symbol panels; maintenance station; data-flower interface; post-fight bridge; authority-link console.
+Required asset family: Ivory ring segments; teal support ribs; fixed refuge ledges; moving central decks; travel guides; anchor props; care repair node; three symbol panels; maintenance station; data-flower interface; post-fight bridge; manual-override console.
 Separation rules: Boss frame, masks, arms, tissue, shell panels, and rear port follow the approved boss brief. Arena decks, repair node, warning effects, and interface are separate. The core interface has no enemy collision or health target.
 Draw complete individual 2D objects with clear gaps, consistent canvas scale, clean outlines, flat colors and crisp cel shadows on warm off-white. Prioritize gameplay side views; include a separate moving-part drawing only where a mechanism needs explanation. Show fixed and moving components separately without inventing internal engineering. No character redesigns, combined scene collage, text labels, UI, watermark, heavy weathering, or tiny decorative noise. Keep all playable contact surfaces clean and identifiable. This is art reference for later 2D asset production, not a technical fabrication drawing.
 ```

@@ -12,7 +12,7 @@ System details are proposed in the [design pack](../design/README.md): movement,
 
 ## Standalone context
 
-DEAD EDEN is an original colorful 2D platformer shooter. A scavenger and a maintenance-robot companion explore a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
+DEAD EDEN is an original colorful 2D platformer shooter. A lone scavenger explores a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
 
 The promised cure is being installed on an assembly line, and the hero sees exactly how a machine becomes vulnerable to living infection.
 
@@ -108,7 +108,7 @@ The route lists ordered areas, not exact world coordinates. Each area may span m
 
 **Space and placement:** A quiet inspection vestibule holds a complete schematic of the neural-interface path and a reference to the original patient.
 
-**Player experience and lesson:** The companion recognizes the source laboratory and opens the descent route. EDEN insists that response data proves success.
+**Player experience and lesson:** Transfer records identify the source laboratory; the hero uses the ordinary lift control to open the descent route. EDEN insists that response data proves success.
 
 **Completion and connection:** Take the lift to level 11.
 

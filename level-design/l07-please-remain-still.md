@@ -12,7 +12,7 @@ System details are proposed in the [design pack](../design/README.md): movement,
 
 ## Standalone context
 
-DEAD EDEN is an original colorful 2D platformer shooter. A scavenger and a maintenance-robot companion explore a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
+DEAD EDEN is an original colorful 2D platformer shooter. A lone scavenger explores a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
 
 A candy-colored hospital treats escape as a symptom, turning patient transport and cleaning systems into carefully coordinated hazards.
 
@@ -32,7 +32,7 @@ Confirmed gameplay: explore, fight, collect treasure, overcome an obstacle, reac
 
 ## Story entry and exit
 
-**Entry:** The restored supply lift arrives inside Happy Hearts Hospital. The companion expects a transit corridor but finds quarantine beds and living survivors.
+**Entry:** The restored supply lift arrives inside Happy Hearts Hospital. The hero expects a transit corridor but finds quarantine beds and living survivors.
 
 **Exit:** The ward archive gate opens into level 8. The survivors remain in a protected care area; no combat escort system is introduced.
 
@@ -106,7 +106,7 @@ The route lists ordered areas, not exact world coordinates. Each area may span m
 
 ### L07-A06 — Observation ward
 
-**Space and placement:** A safe console faces survivors behind glass. The companion reads care records that count biological activity but ignore patient awareness.
+**Space and placement:** A safe console faces survivors behind glass. The console presents care records that count biological activity but ignore patient awareness; the hero reads them directly.
 
 **Player experience and lesson:** Open the archive passage. EDEN comments on unreliable biological memory, preparing the orchard reveal.
 
@@ -206,7 +206,7 @@ L07-A02: Vaccination corridor. One Nurse Needles stands beyond two broad cover r
 L07-A03: Patient transport lane. One Orderly patrols a long clear hallway ending in a visible collection ramp. Fixed raised shelves provide a vault route and clear back access. Connection: Reach a supply alcove checkpoint before A04.
 L07-A04: Sterilization gallery. One Sanitizer operates on a broad floor divided by two raised clean islands. A separate static nozzle demonstrates a warning stripe and safe cooling pause. Connection: A clean rear landing leads into A05.
 L07-A05: Bed-lift junction. A short lift shaft connects three fixed floors. On the middle floor, a Nurse and an Orderly occupy separate visible lanes. The top floor hosts one Sanitizer alone. Connection: A final fixed balcony leads to A06.
-L07-A06: Observation ward. A safe console faces survivors behind glass. The companion reads care records that count biological activity but ignore patient awareness. Connection: Exit into level 8 without moving survivors through enemy rooms.
+L07-A06: Observation ward. A safe console faces survivors behind glass. The console presents care records that count biological activity but ignore patient awareness; the hero reads them directly. Connection: Exit into level 8 without moving survivors through enemy rooms.
 Use pale simple masses for architecture, dark clean top edges for playable surfaces, muted noninteractive background shapes, small human scale silhouettes, and visible supports for moving platforms. Separate player paths, stable refuges, and hazards through shape as well as color. Do not invent measured physics values. No decorative clutter, text generated inside the picture, impossible perspective, overlapping panels, extra level, or unlisted boss. The last area is an exit or story beat, not a boss arena. The written brief remains authoritative if the generated image contradicts it.
 ```
 

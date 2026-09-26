@@ -49,7 +49,7 @@ These are gameplay eligibility proposals, not changes to the art proportions.
 | Medium enemy | Courtesy Officer, Nurse Needles; Resident, Sprinter, Spitter, Clinger, Puffer, Howler, Burrower, hostile Rememberer; Hollow Officer, Mourning Nurse | Cannot capture | Capture only while visibly staggered and physically exposed |
 | Rooted medium | Gardener | Cannot capture | Only after roots release and a visible stagger; no pulling through solid floor |
 | Fixed or heavy | Bloom Sentry, Orderly, Sanitizer, Loadbearer, Care Marshal, Graftback, ordinary Choir Unit | Immune | Immune |
-| Boss or protected | All four mini-bosses, PIP, First Patient, peaceful Rememberers | Immune | Immune |
+| Boss or protected | All four mini-bosses, First Patient, peaceful Rememberers | Immune | Immune |
 
 A converted Patchbot retains its small frame classification. Capture immunity has a distinct broken-lock cue. A shielded front or closed shell cannot be bypassed by locking through it. Burrowed enemies and off-plane scenery are invalid targets.
 

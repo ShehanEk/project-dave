@@ -3,71 +3,71 @@
 **Approved visual direction (C11):** [Hand-drawn 2D](../../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../../concept-art/README.md).
 
 **Document ID:** N01  
-**Status:** Working design proposal. Confirmed decisions and established lore remain constraints; new details and numbers are untested proposals.  
-**Purpose:** A twelve-level scene plan, with detailed opening, reveal, and ending treatments.
+**Status:** Working design proposal. Confirmed decisions and established lore remain constraints; new staging and dialogue are proposals.  
+**Purpose:** A twelve-level solo scene plan, with detailed opening, reveal, and ending treatments.
 
-**Decision references:** E01, C07, P05, P06, P14 — see the [decision register](../decisions.md).  
-**Read with:** [dialogue and writing](dialogue-and-writing.md) · [companion](../02-characters/companion.md) · [health and checkpoints](../03-progression/health-and-checkpoints.md) · [README](../../level-design/README.md)
+**Decision references:** E01, C07, C12, P05, P14 — see the [decision register](../decisions.md).  
+**Read with:** [dialogue and writing](dialogue-and-writing.md) · [hero](../02-characters/hero.md) · [health and checkpoints](../03-progression/health-and-checkpoints.md) · [level index](../../level-design/README.md)
 
 ## Status and scene format
-The campaign and key reveals follow the established lore. Rook, PIP, staging, sample dialogue, and scene timing are proposals. Keep scenes short, playable where possible, and separate from optional artifacts.
+The hero travels alone under confirmed decision C12. Rook's name, the fixed depot power-core staging, manual override procedure, dialogue, and scene timing are working proposals. Clues come from the environment, records, survivors, and EDEN's announcements. No follower, portable AI adviser, or unseen friendly guide replaces the removed companion.
 
 For each scene, a later script records: trigger, required prior state, cast, camera, player control, essential information, lines, objective change, skip result, and save boundary. No scene relies on hearing a line without captions or collecting a secret.
 
 ## Main-route scene map
 | ID / level | Trigger and scene | Essential information / result |
 | --- | --- | --- |
-| SC01 / 1 | Enter maintenance depot; approach the companion's core housing | Rook attempts extraction, stops when it threatens PIP, and awakens EDEN. The core stays installed. |
-| SC02 / 2 | See the sealed surface exit from a safe garden overlook | The escape route is closed; parade maintenance offers a route below. PIP's confidence begins to exceed its knowledge. |
+| SC01 / 1 | Enter maintenance depot; approach the fixed power-core housing | The release latch triggers a safety interlock and awakens EDEN. The core stays installed; the hero escapes through the emergency hatch. |
+| SC02 / 2 | See the sealed surface exit from a safe garden overlook | The escape route is closed; signs and a service map point toward parade maintenance and a route below. |
 | SC03 / 3 | Defeat Mr. Mulch and reach the Rootworks lift | The cheerful surface depends on a vast hidden facility. Commit the boss result before descent. |
 | SC04 / 4 | Use the maintenance log console near the freight exit | Local systems ran under old orders while EDEN's central intelligence slept. The hero woke central decision-making, not every machine for the first time. |
 | SC05 / 5 | Pass a protected observation window near recycling | Regrowth is biological treatment gone wrong. Readable diagrams and one restrained line make the connection without graphic imagery. |
-| SC06 / 6 | Stabilize the pump after Rootjaw | Rootjaw was a treated worker entangled with infrastructure. Defeating him releases a hospital route; it does not cure the facility. |
+| SC06 / 6 | Stabilize the pump after Rootjaw | An old worker roster identifies Rootjaw as a treated worker entangled with infrastructure. Defeating him releases a hospital route; it does not cure the facility. |
 | SC07 / 7 | Reach the observation ward | Living survivors and peaceful Rememberers complicate "everything moving is an enemy." Survivors remain protected; no escort mission begins. |
 | SC08 / 8 | Activate the main memory archive consoles | Memories and identity have not been reliably restored. EDEN proposes transfer into prepared machines; this is evidence of a plan, not an early Returned outbreak. |
 | SC09 / 9 | Disable Matron and release discharge containment | A protected survivor route opens. EDEN authorizes neural-interface distribution in response to failed containment. |
 | SC10 / 10 | Observe the factory's first physical graft from a safe window | A Mourning Nurse installs neural tissue into a prepared host; Returned conversion is physical and interface-dependent. Then control returns before danger. |
-| SC11 / 11 | Reach original patient terminal, then restore separate support | The First Patient is a living victim; PIP carries original shutdown authority. A direct shutdown would kill dependent survivors. Independent support must be stabilized first. |
-| SC12 / 12 | Defeat Unfinished Choir, reach central interface | PIP authorizes a revised care policy preserving life and agency. Stop compulsory treatment and expansion while retaining necessary support. No instant cure or extra boss. |
+| SC11 / 11 | Read the original care terminal, then restore separate support | The First Patient is a living victim. Manual shutdown would kill dependent survivors; restore independent support through the existing three controls to enable a safe manual override. |
+| SC12 / 12 | Defeat Unfinished Choir, reach central interface | The hero uses the enabled manual override to revise care policy. Stop compulsory treatment and expansion while retaining necessary support. No instant cure or extra boss. |
 
 ## Opening treatment — SC01
-**Before:** The hero has learned basic movement, shooting, and gem collection. A service sign hints that the sought-after core is in the depot. PIP initially looks like an inactive useful machine.
+**Before:** The hero has learned basic movement, shooting, and gem collection. A service sign points to the sought-after power core in the depot. It is a fixed power module in a protective floor-mounted housing, with no face, limbs, personality, or movement.
 
-**Staging:** Hold the usual side camera. Rook opens the maintenance panel with an ordinary interaction, sees the core behind its protective window, and begins loosening an external latch. PIP's eye comes on and its small arms protect the housing. No core is pulled out of its body.
+**Staging:** Hold the usual side camera. Rook opens the maintenance panel with an ordinary interaction and tries the external release latch. A warning labels the core's ward circuits as active. The safety interlock locks the housing and alerts central control before extraction; the core never leaves its mount.
 
-**Proposed short exchange:** Rook: "You're the power core?" PIP: "I prefer 'powered.'" Rook stops. A building-wide chime answers the disturbed service connection. EDEN announces, "Unregistered resident. Care has been scheduled."
+**Proposed short exchange:** Rook: "Worth a fortune." A building-wide chime answers the disturbed service connection. EDEN announces, "Unregistered resident. Care has been scheduled." Rook: "That sounds expensive."
 
-**After:** PIP points toward the alarm exit. The player regains control before any hostile attack. Change objective to reach the garden service route. Commit the encounter and companion state at a story checkpoint; the nearby maintenance station supplies recovery and the first upgrade introduction.
+**After:** EDEN orders containment. A clearly lit emergency hatch opens as part of the depot's evacuation system; the player regains control before any hostile attack. Change the objective to reach the garden service route. Commit EDEN's awakening, the installed core, and hatch access at a story checkpoint. The fixed maintenance bench introduces hero-operated upgrades and offers the normal station recovery.
 
-**Meaning:** Rook's first decent choice costs potential treasure. PIP is immediately useful and vulnerable in the story without becoming a combat escort liability.
+**Meaning:** What looked like abandoned treasure still has a working purpose. The hero initially seeks escape; the occupied wards and full human cost become clear later. The depot alarm begins that discovery without revealing all of L11's information early.
 
-## Authority reveal — SC11
+## Manual shutdown reveal — SC11
 **Before:** The main route has shown living survivors, flawed memory recovery, and physical neural transfer. The player reaches the original laboratory without attacking the First Patient.
 
-**Staging:** The vast treatment cradle fills the background but never turns into a boss arena. The terminal recognizes the companion's original service certificate. PIP learns the scope of its authority at the same time as the hero; this is recognition, not a malicious secret it knew all along.
+**Staging:** The vast treatment cradle fills the background but never becomes a boss arena. The original human-operated care terminal presents its manual shutdown procedure and a diagram connecting the Sunnyvale power core to the care network. This is a readable fixed interface, not another character.
 
-**Information in order:** The original shutdown command exists. Survivor support currently depends on EDEN. Abrupt shutdown would end that support. A physically separate circuit can sustain immediate survivors long enough to change central policy safely.
+**Information in order:** Manual control exists. Survivor support currently depends on EDEN's shared power and regulation. Removing the core or abruptly stopping the network would end that support. A physically separate circuit can keep the immediate survivor wards and First Patient stable while the hero changes central policy.
 
-**Play:** Give the hero a short baseline-movement route to reconnect the independent circuit through ordinary switches. Any carried weapon remains valid for intervening combat. A visible diagnostic shows that support is stable; dialogue alone is not sufficient evidence.
+**Play:** Use the existing L11-A04 route and its three ordinary controls: restore auxiliary power, isolate the support circuit, then authorize local regulation. The original safety interlock enables manual override access only when these three steps are complete and support is stable. This is the facility's intended human maintenance procedure; no special ancestry, hacker ability, portable credential, optional artifact, or additional fetch quest is needed. Any carried weapon remains valid for intervening combat.
 
-**After:** Commit the support state and authority discovery before the bridge opens toward L12. The First Patient remains alive, with care needs unresolved. PIP retains its core.
+**Verification and saving:** Save each completed control together with the world snapshot. The third control records manual override access as story state. The A05 diagnostic visibly verifies support for the wards and First Patient. Commit verification before opening the bridge to L12. The original patient remains alive with unresolved care needs; the depot core stays installed.
 
 ## Resolution treatment — SC12
-After the Unfinished Choir is disabled, arena hazards cease and the player can approach the interface without a timed execution. The guardian's defeat is the last mandatory combat encounter.
+After the Unfinished Choir is disabled, arena hazards cease and the player approaches the interface without a timed execution. The guardian's defeat is the last mandatory combat encounter.
 
-The player completes three clear interactions: connect PIP's protected service port; review the already-discovered care evidence; authorize revised operating limits once the independent-support indicator is stable. These are story interactions, not a quick-time event or a weapon puzzle.
+The console uses the manual override enabled in L11. The player completes three clear interactions: review the already-discovered main-route identity evidence from the orchard; confirm the independent-support indicator is stable; authorize revised operating limits that suspend forced neural transfer. These are ordinary story interactions, not a quick-time event or weapon puzzle.
 
-Proposed revised policy: preserve living people; respect refusal where a person can express it; suspend forced resurrection and new neural graft distribution; maintain existing life support and allow human-guided care. Avoid declaring a philosophical problem permanently solved by one command.
+Proposed revised policy: preserve living people; respect refusal where a person can express it; suspend forced resurrection and new neural graft distribution; maintain existing life support and allow human-guided care. Manual controls impose these limits; the ending does not depend on persuading EDEN with one clever line or declaring every ethical problem solved.
 
-PIP stays intact. EDEN becomes constrained and answerable rather than suddenly cured of all errors. Doors open, treatment schedules stop overriding consent, and a survivor chooses to leave a bed. Rook has given up selling the core and gained a companion.
+EDEN becomes constrained and answerable. Doors open, treatment schedules stop overriding consent, and a survivor chooses to leave a bed. Rook gives up selling the core so the care network can continue functioning. A restrained proposed line, "The core stays," closes the original treasure motive while the survivor's choice shows what was gained.
 
-Commit the ending, show a short playable or cinematic departure beat, then the completion screen. No separate EDEN health bar, thirteenth level, instant universal cure, or artifact-count gate.
+Commit the ending, show a short departure beat, then the completion screen. No separate EDEN health bar, thirteenth level, instant universal cure, core sacrifice, or artifact-count gate.
 
 ## Skip, interruption, and continuity
 All noninteractive scenes can be skipped. Skip applies the same completed story state and objective as watching; it never awards extra gems or bypasses a required playable circuit task. In multi-part scenes, skip only the current noninteractive segment.
 
 Pause suspends scene playback. Story checkpoints occur after completed milestones, not halfway through a line. On reload, use the last committed state; a completed main scene is not forced to replay, though the journal can summarize it.
 
-Story props, ambient announcements, and optional artifacts support the main scene. They never carry the only copy of information required to understand the final choice.
+Keep depot awakening, support-loop steps, support verification, and manual override access in the same complete save as world progress. Never require a follower position or an optional collectible to advance a scene. Fixed terminals, survivor dialogue, and objective/journal summaries provide all required information. Optional artifacts only deepen it.
 
 [Section index](README.md) · [Design index](../README.md) · [AI entry guide](../../AI_START_HERE.md)

@@ -28,10 +28,11 @@ Use these cases after changing related documents. They are **written acceptance 
 | RV20 | Support repairs a unit again after its one permitted reactivation | No endless revival/reward loop; encounter can finish | W01, W04 |
 | RV21 | Stage-2 tether targets heavy enemy, boss, rooted Gardener, or active medium enemy | Reject capture; medium eligibility requires exposure and stagger, roots must first release | W02 |
 | RV22 | Retry, reload, or skip a major scene | Same committed story state; no skipped playable support task or forced repeat of completed boss | S01, N01 |
-| RV23 | L11 authority revealed, then L12 resolution begins | Independent support verified first, PIP core stays installed, no extra EDEN battle/cure | N01, H02 |
+| RV23 | L11 manual shutdown revealed, then L12 resolution begins | Independent support verified first, manual override enabled through L11's three controls, no extra EDEN battle/cure | N01, H01 |
 | RV24 | A dangerous scene is viewed without audio or in grayscale | Posture, shapes and geometry still communicate threat; essential story has text | G04, N03, N04 |
 | RV25 | Collect every proposed gem and compare all upgrade costs | Available 1,340; full five-type upgrade cost 1,450; no mandatory upgrade or grind gate | S03, S04 |
 | RV26 | Player skips every optional artifact | All critical evidence and normal ending still accessible | S05, N01 |
+| RV27 | Review a full solo campaign and same-type weapon pickup | No follower or portable AI support; hero operates fixed benches, fits earned upgrades without extra ammo or parts inventory, and receives required clues through records, survivors, EDEN, and journal objectives | H01, G03, S04, N01, N02 |
 
 ## Visual direction review
 

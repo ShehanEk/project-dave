@@ -12,7 +12,7 @@ System details are proposed in the [design pack](../design/README.md): movement,
 
 ## Standalone context
 
-DEAD EDEN is an original colorful 2D platformer shooter. A scavenger and a maintenance-robot companion explore a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
+DEAD EDEN is an original colorful 2D platformer shooter. A lone scavenger explores a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
 
 A luminous orchard stores human memories inside trees, and fragments of ordinary lives briefly quiet the failed patients beneath them.
 
@@ -32,7 +32,7 @@ Confirmed gameplay: explore, fight, collect treasure, overcome an obstacle, reac
 
 ## Story entry and exit
 
-**Entry:** The hospital archive passage enters a glass-roofed memory conservatory. The hero seeks a route to discharge control while the companion investigates memory restoration.
+**Entry:** The hospital archive passage enters a glass-roofed memory conservatory. The hero seeks a route to discharge control and examines memory-restoration records along the way.
 
 **Exit:** A service gate opens toward level 9's surgical discharge theater. This plan is a record of proposed work, not proof that hybrids have already spread.
 
@@ -68,7 +68,7 @@ The route lists ordered areas, not exact world coordinates. Each area may span m
 
 **Space and placement:** A peaceful Rememberer repeats the act of straightening a small keepsake on a bench. The path passes safely behind a low rail, and no hostile enemy interrupts this first observation.
 
-**Player experience and lesson:** Teach that not every moving patient is a combat target. The companion comments on the repeated memory. No reward or gate depends on harming the patient.
+**Player experience and lesson:** Teach that not every moving patient is a combat target. A quiet patient gesture and a nearby archive playback reveal the repeated memory. No reward or gate depends on harming the patient.
 
 **Completion and connection:** A short branch stair leads to A02.
 
@@ -106,7 +106,7 @@ The route lists ordered areas, not exact world coordinates. Each area may span m
 
 ### L08-A06 — Transfer records
 
-**Space and placement:** A safe terminal displays three clear abstract components: stored memories, cultivated neural tissue, and a robot interface. The companion recognizes the intended connection.
+**Space and placement:** A safe terminal displays three clear abstract components: stored memories, cultivated neural tissue, and a robot interface. The labeled diagram makes the intended transfer process readable to the hero and player.
 
 **Player experience and lesson:** Recover the transfer proposal and open the surgical service gate. EDEN announces an evaluation rather than releasing hybrids yet.
 
@@ -206,7 +206,7 @@ L08-A02: Branch archive. Wide branches form a gentle ascent. One familiar Clinge
 L08-A03: Alarm grove. One Howler stands on a broad floor with two clearly visible Residents resting farther away. It visibly inhales before the call. Connection: A quiet branch refuge provides a checkpoint.
 L08-A04: Memory clearing. A console beside the central tree plays a gentle recognizable personal memory. Two selected patients sit or stand within its bounded light area. Connection: The console also opens a standard archive gate leading to A05.
 L08-A05: Upper canopy. A fixed balcony alternates with thick branch platforms. One Bloom Sentry guards a distant landing; a later Howler can draw one nearby Resident. Keep the two situations in separate camera spaces. Connection: Reach an enclosed archive booth at A06.
-L08-A06: Transfer records. A safe terminal displays three clear abstract components: stored memories, cultivated neural tissue, and a robot interface. The companion recognizes the intended connection. Connection: Proceed to level 9.
+L08-A06: Transfer records. A safe terminal displays three clear abstract components: stored memories, cultivated neural tissue, and a robot interface. The labeled diagram makes the intended transfer process readable to the hero and player. Connection: Proceed to level 9.
 Use pale simple masses for architecture, dark clean top edges for playable surfaces, muted noninteractive background shapes, small human scale silhouettes, and visible supports for moving platforms. Separate player paths, stable refuges, and hazards through shape as well as color. Do not invent measured physics values. No decorative clutter, text generated inside the picture, impossible perspective, overlapping panels, extra level, or unlisted boss. The last area is an exit or story beat, not a boss arena. The written brief remains authoritative if the generated image contradicts it.
 ```
 

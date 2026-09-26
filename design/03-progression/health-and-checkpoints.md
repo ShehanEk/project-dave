@@ -6,7 +6,7 @@
 **Status:** Working design proposal. Confirmed decisions and established lore remain constraints; new details and numbers are untested proposals.  
 **Purpose:** Defines damage, recovery, the exact retry boundary, and prevention of duplicated rewards.
 
-**Decision references:** C04, C05, P07, P08 — see the [decision register](../decisions.md).  
+**Decision references:** C12, C04, C05, P07, P08 — see the [decision register](../decisions.md).  
 **Read with:** [ammunition and resupply](ammunition-and-resupply.md) · [upgrades and ownership](upgrades-and-ownership.md) · [weapon swaps](../01-core/weapon-swaps.md)
 
 ## Proposed health model
@@ -26,7 +26,7 @@ Care supplies placed on the route are finite within a checkpoint attempt. A chec
 ## What counts as a save
 A **recovery checkpoint** is a visibly safe maintenance station. First activation heals, services the held weapon, and commits the state below. Returning to an already activated station can service and commit again; enemy and treasure states do not reset merely because it is used.
 
-A **maintenance checkpoint** is a recovery checkpoint with an upgrade bench. Put one at each level's start or first safe hub and each level's exit; additional midpoint recovery-only stations follow the existing level briefs. The L1 start is the initial entry snapshot, with its first usable bench in the depot after meeting PIP. Boss preparation stations are maintenance checkpoints.
+A **maintenance checkpoint** is a recovery checkpoint with an upgrade bench. Put one at each level's start or first safe hub and each level's exit; additional midpoint recovery-only stations follow the existing level briefs. The L1 start is the initial entry snapshot, with its first usable bench in the depot after EDEN's awakening. Boss preparation stations are maintenance checkpoints.
 
 A **story checkpoint** commits after an irreversible main-story event or level transition. It saves current health and weapon resources without granting an invisible refill. Place a recovery station nearby when a refill is needed. No story scene can leave a half-committed quest state.
 
@@ -39,11 +39,11 @@ Saving and reloading use the same checkpoint boundary as death. Show "Progress s
 | World weapons | Identities, positions, resource states, and fitted stages of dropped/authored pickups in the active level |
 | Progression | Gem wallet, earned upgrade stages by weapon type, recorded artifact IDs |
 | World progress | Consumed treasure and supplies, defeated encounter groups, switches, doors, completed objectives |
-| Story | Completed scenes, protected survivor outcomes, route state and latest committed story milestone |
+| Story | Completed scenes, protected survivor outcomes, route state, depot awakening/core state, support-loop controls, support verification, manual override access, and latest committed story milestone |
 
 On death, restore **all** of these from one snapshot. Gems, artifacts, purchases, enemies, and pickups acquired or changed after it roll back together. A weapon taken after it returns to its saved location; the saved held weapon returns to the hero. This is rollback, not recovery of an abandoned arsenal.
 
-Routine particles, falling debris, audio playback positions, and PIP's exact hover position do not need persistence. Rebuild them in safe idle states. Moving platforms and timed hazards restart at their defined checkpoint-safe phases; the saved player position cannot depend on a random phase.
+Routine particles, falling debris, and audio playback positions do not need persistence. Rebuild them in safe idle states. Moving platforms and timed hazards restart at their defined checkpoint-safe phases; the saved player position cannot depend on a random phase.
 
 ## Purchases and exploitation rules
 Every successful upgrade purchase atomically deducts gems, records the new type-wide stage, fits the held weapon, and commits the complete current state. A failed or cancelled purchase changes nothing. A power interruption must never yield the upgrade without its cost.

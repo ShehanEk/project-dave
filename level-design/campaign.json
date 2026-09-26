@@ -48,7 +48,9 @@
       "artifacts"
     ],
     "visual_style": "Hand-drawn 2D with outlines, flat colors, cel shadows and layered scenery; C11",
-    "gameplay_plane": "2D side-scrolling"
+    "gameplay_plane": "2D side-scrolling",
+    "companion_present": false,
+    "player_party": "solo hero"
   },
   "levels": [
     {
@@ -70,8 +72,8 @@
       "boss": null,
       "pitch": "A perfect artificial suburb slowly reveals that its inhabitants have died and its cheerful maintenance routines cannot tell the difference.",
       "entry": "The scavenger climbs through a broken perimeter service gate seeking a valuable power core. EDEN's local systems still operate under standing instructions; the central intelligence has not yet fully awakened.",
-      "objective": "Find the rumored core inside the neighborhood maintenance depot, meet the companion, and escape onto the garden path after the extraction attempt awakens EDEN.",
-      "exit": "The companion remains alive with its core installed and follows the hero toward the quarantine gardens of level 2.",
+      "objective": "Find the rumored power core in the neighborhood maintenance depot and escape onto the garden path after attempting to release its mounted housing awakens EDEN.",
+      "exit": "The power core remains installed in the depot. The hero escapes alone toward the quarantine gardens of level 2.",
       "look": "Pastel cream houses have rounded rooflines, fat ceramic gutters, scalloped porch awnings, and perfectly clipped bulbous shrubs. Oversized flowers grow in neat mechanical planters. A pale blue sky is an illuminated habitat ceiling, first visible through one broken cloud projector. Keep the lower service infrastructure hidden until the last third. Nothing is abandoned-looking at first glance: the wrongness is repeated routines and unattended meals.",
       "palette": "Warm cream #EFE0BE, soft peach #DF9E80, lawn green #87B45E, pale sky blue #A9D6DD, dark teal service recesses #365D62. Golden simulated morning light; sharper cyan utility light appears inside the depot.",
       "landmark": "A smiling sun-shaped neighborhood clock sits above the maintenance depot and can be glimpsed from several route positions.",
@@ -111,15 +113,15 @@
         {
           "id": "L01-A05",
           "name": "Maintenance depot",
-          "space_and_placement": "A compact workshop shows neatly sorted spare parts, an inactive care console, and the maintenance companion held in a charging cradle. No hostile spawn interrupts the interaction.",
-          "experience_and_lesson": "The hero tries to access the companion's core; the cradle calls the central intelligence. EDEN fully awakens, the companion objects, and both choose escape. The core remains installed.",
+          "space_and_placement": "A compact workshop shows neatly sorted spare parts, a fixed maintenance bench, and the sought-after power core inside a bolted floor-mounted housing. A care console displays active ward circuits. No hostile spawn interrupts the interaction.",
+          "experience_and_lesson": "The hero opens the power-core access panel and tries its release latch. A safety interlock locks the housing and calls the central intelligence. EDEN fully awakens and orders containment; the hero takes the emergency exit. The core remains installed and powering the facility.",
           "completion_and_connection": "The event opens a clearly lit emergency hatch into A06 and changes the neighborhood's lighting."
         },
         {
           "id": "L01-A06",
           "name": "Alarm exit",
           "space_and_placement": "Garden panels rotate into temporary railings while ceiling cloud lights shift to a quarantine pattern. These movements happen ahead of the player, never beneath an occupied landing.",
-          "experience_and_lesson": "A single familiar Clipper tests movement under new presentation, not a new mechanic. Reach the service wicket with the companion.",
+          "experience_and_lesson": "A single familiar Clipper tests movement under new presentation, not a new mechanic. Reach the service wicket alone.",
           "completion_and_connection": "Crossing the wicket completes the level and leads directly to level 2."
         }
       ],
@@ -128,21 +130,21 @@
       "checkpoints": [
         "At A01 entry.",
         "After A04, before entering the depot.",
-        "After the A05 companion event, before A06; retain the awakening and companion state on retry."
+        "After the A05 depot event, before A06; retain EDEN's awakening, the installed power core, and the open emergency hatch on retry."
       ],
       "secrets": [
         "A visible roof-alcove gem cache above A03, reachable with ordinary jumps from an optional porch ladder route.",
         "A readable family portrait and untouched breakfast in a side room at A02; supplies the first quiet story detail without a quest requirement."
       ],
-      "story": "The horror comes from the same meal being delivered to the same unresponsive resident, then from discovering that the advertised treasure has a personality. EDEN initially speaks with sincere hospitality.",
+      "story": "The horror comes from the same meal being delivered to the same unresponsive resident, then from discovering that the advertised treasure is still powering an occupied facility. EDEN initially speaks with sincere hospitality.",
       "audio": "Birdlike mechanical chirps, soft sprinkler clicks, and a gentle neighborhood jingle. At awakening, the same jingle shifts to a slower announcement motif rather than sudden horror stingers.",
-      "kit": "Rounded house fronts and roof corners; porch and garden-wall modules; fence posts; planter blocks; clock landmark; depot workbench; charging cradle; cloud-ceiling panels; examination-flower light; rotating quarantine rail.",
-      "separate": "House shells, collision terraces, moving platform, rotating fences, and lights must be distinct assets. The companion and enemies use separate character assets; do not merge their drawings into architecture.",
+      "kit": "Rounded house fronts and roof corners; porch and garden-wall modules; fence posts; planter blocks; clock landmark; depot workbench; fixed power-core housing and care console; cloud-ceiling panels; examination-flower light; rotating quarantine rail.",
+      "separate": "House shells, collision terraces, moving platform, rotating fences, and lights must be distinct assets. The hero and enemies use separate character assets; the fixed core housing and console are separate environment props.",
       "avoid": "Do not show Returned, overt medical laboratories before the depot reveal, advanced weapons, a boss, gore, or a destroyed post-apocalyptic town. No mandatory double jump, dash, wall run, swimming, or climbing mechanic is introduced.",
       "frame": "The neighborhood square seen from the actual side camera: a cream porch on the left, a raised fountain planter in the center, a Clipper below it, and the smiling clock over the depot at the right.",
       "proof": [
         "The first moving-platform failure has a recoverable lower route.",
-        "The companion encounter leaves its core installed.",
+        "The depot event leaves the power core installed and the hero traveling alone.",
         "EDEN's central awakening occurs once at A05, while earlier local routines remain understandable."
       ],
       "id": "L01",
@@ -218,7 +220,7 @@
       ],
       "boss": null,
       "pitch": "An ornamental garden becomes a moving quarantine corridor, forcing the hero to clear safe landings while robots try to shepherd them toward treatment.",
-      "entry": "Enter through the wicket used to leave Sunnyvale. EDEN has awakened and is closing surface exits. The companion identifies an old pipe-cleaning tool in a nearby garden shed.",
+      "entry": "Enter through the wicket used to leave Sunnyvale. EDEN has awakened and is closing surface exits. The hero finds a labeled pipe-cleaning tool in a nearby garden shed.",
       "objective": "Recover the Boom Broom and reach the parade service gate through the reorganized hedge maze.",
       "exit": "A one-way maintenance door enters the parade route used in level 3; the apparent surface exit is visibly sealed.",
       "look": "Hedges are thick rounded masses cut into arches and smiling animal shapes. Their trunks emerge from large rectangular mobile planters riding on recessed rails. Oversized tulips contain camera lenses; ivory irrigation pipes run between peach garden pavilions. The route feels lush and sunny even as the geometry becomes controlling.",
@@ -283,7 +285,7 @@
         "A flowerbed side route reveals a small gem cache behind a moving hedge; the entrance becomes obvious after seeing its movement.",
         "A service plaque at the water tower shows that the garden layout was originally intended to calm anxious patients."
       ],
-      "story": "EDEN calls enclosure a comfort measure. The companion recognizes that every apparently helpful sign leads toward the hospital.",
+      "story": "EDEN calls enclosure a comfort measure. The hero follows the signs and discovers that every apparently helpful route leads toward the hospital.",
       "audio": "Leaf rustle, soft garden music, rail motors, and recognizable Pollinator targeting beeps. Sprinter footsteps accelerate before the burst.",
       "kit": "Straight and corner hedge planters; topiary shapes; recessed rail modules; stone path edges; irrigation-pipe bends; gazebo; shed; weapon rack; water tower; fixed refuge ledges; quarantine gate.",
       "separate": "Mobile planter chassis must be separate from the fixed route. Leaf decoration cannot define hidden collision. Keep rails, lamps, platform surfaces, and background gate distinct.",
@@ -520,7 +522,7 @@
       ],
       "boss": null,
       "pitch": "Beneath immaculate lawns, giant living roots wind through a freight network that has been carrying the same supplies for centuries.",
-      "entry": "The parade lift deposits the hero and companion in a quiet receiving bay. Floor indicators trace a route toward the hospital's water and treatment infrastructure.",
+      "entry": "The parade lift deposits the hero in a quiet receiving bay. Floor indicators trace a route toward the hospital's water and treatment infrastructure.",
       "objective": "Recover the Arc Welder, traverse freight and server-root galleries, and open the botanical waste-processing route.",
       "exit": "An unlocked compost freight door leads to level 5. A maintenance log explains why the underground routines never stopped.",
       "look": "Large rounded concrete ribs support low industrial halls. Chunky yellow freight machines work beside cream server cabinets wrapped in thick brown roots. Small luminous root buds illuminate copper pipes and abandoned order trays. Keep a believable service building underneath the growth; this is a functioning facility, not a generic cave.",
@@ -570,7 +572,7 @@
           "id": "L04-A06",
           "name": "Compost door",
           "space_and_placement": "A quiet control room has a large readable service diagram and a manual switch. Behind glass, old automated treatment orders cycle without human approval.",
-          "experience_and_lesson": "The companion explains that EDEN's central sleep never halted local routines. Interact with the switch to release the botanical waste door.",
+          "experience_and_lesson": "A readable maintenance log explains that EDEN's central sleep never halted local routines. Interact with the switch to release the botanical waste door.",
           "completion_and_connection": "Enter level 5 without a timed escape or new boss."
         }
       ],
@@ -585,7 +587,7 @@
         "A visible crate-stack cache accessible through ordinary jumps in A03.",
         "A side server recess in A05 contains an old maintenance recording about daily routines continuing without central supervision."
       ],
-      "story": "The contrast is between enormous automation and the absence of anyone checking its purpose. The companion recognizes the service manuals and begins doubting the instructions it trusted.",
+      "story": "The contrast is between enormous automation and the absence of anyone checking its purpose. The hero compares old service manuals with the working machines and sees how obsolete orders have continued without human oversight.",
       "audio": "Low conveyor hum, hollow crate impacts, distant cooling fans, and gentle electronic chimes from servers. Patchbot repair pulses should be audible over machinery.",
       "kit": "Concrete support arches; conveyor modules and end rollers; service floor plates; crate variants; server cabinets; thick root junctions; clear cooling drum; pipe elbows; workshop bench; freight door.",
       "separate": "Keep conveyors and crates separate from fixed collision floors. Roots crossing cabinets need distinct organic drawing layers. The cooling drum is background scenery, not an implied swimming space.",
@@ -877,7 +879,7 @@
         "A marked optional anchor loop near A02 leads to gems; optional pulls fit base tether reach, and the main route remains open without the tether.",
         "A dry pump-inspection alcove contains a worker photograph that matches the apron fragment still worn by Rootjaw."
       ],
-      "story": "Old Rootjaw is a former person, not a haunted machine. The pump continues its care function despite being crushed. The companion recognizes the worker from an old roster.",
+      "story": "Old Rootjaw is a former person, not a haunted machine. The pump continues its care function despite being crushed. An old roster and worker photograph beside the pump identify the person Rootjaw used to be.",
       "audio": "A deep uneven pump heartbeat, stressed pipe creaks, slow water motion, and woody tension preceding root slams. Separate the root warning from ordinary ambient creaking.",
       "kit": "Pump housing; pipe straight and elbow modules; pressure windows; dry service catwalks; cargo training pedestal; marked anchor props; loose crate; valve platforms; reservoir wall; three movable arena decks; permanent refuge ledges.",
       "separate": "Rootjaw's body and four anchor roots are distinct from pump and arena layers. Keep moving platforms independent and mark collision surfaces clearly. Water and warning ripples are separate effects.",
@@ -973,7 +975,7 @@
       ],
       "boss": null,
       "pitch": "A candy-colored hospital treats escape as a symptom, turning patient transport and cleaning systems into carefully coordinated hazards.",
-      "entry": "The restored supply lift arrives inside Happy Hearts Hospital. The companion expects a transit corridor but finds quarantine beds and living survivors.",
+      "entry": "The restored supply lift arrives inside Happy Hearts Hospital. The hero expects a transit corridor but finds quarantine beds and living survivors.",
       "objective": "Cross intake and sterilization, reach the observation ward, and open the archive passage toward the Memory Orchard.",
       "exit": "The ward archive gate opens into level 8. The survivors remain in a protected care area; no combat escort system is introduced.",
       "look": "Cream walls curve into rounded corners. Mint door frames, peach padded beds, oversized leaf-and-droplet emblems, and friendly pictograms create the appearance of a children's science museum crossed with a hospital. Service slots reveal clinical machinery underneath. Treatment spaces are tidy rather than covered in gore.",
@@ -1022,7 +1024,7 @@
         {
           "id": "L07-A06",
           "name": "Observation ward",
-          "space_and_placement": "A safe console faces survivors behind glass. The companion reads care records that count biological activity but ignore patient awareness.",
+          "space_and_placement": "A safe console faces survivors behind glass. The console presents care records that count biological activity but ignore patient awareness; the hero reads them directly.",
           "experience_and_lesson": "Open the archive passage. EDEN comments on unreliable biological memory, preparing the orchard reveal.",
           "completion_and_connection": "Exit into level 8 without moving survivors through enemy rooms."
         }
@@ -1121,7 +1123,7 @@
       ],
       "boss": null,
       "pitch": "A luminous orchard stores human memories inside trees, and fragments of ordinary lives briefly quiet the failed patients beneath them.",
-      "entry": "The hospital archive passage enters a glass-roofed memory conservatory. The hero seeks a route to discharge control while the companion investigates memory restoration.",
+      "entry": "The hospital archive passage enters a glass-roofed memory conservatory. The hero seeks a route to discharge control and examines memory-restoration records along the way.",
       "objective": "Cross the canopy archive, activate the route's memory consoles, and recover evidence of EDEN's neural-transfer plan.",
       "exit": "A service gate opens toward level 9's surgical discharge theater. This plan is a record of proposed work, not proof that hybrids have already spread.",
       "look": "Pale trunks grow around visible stacked memory cylinders. Broad leaves resemble thick translucent paper with delicate circuit-like vein patterns. Rounded glass capsules hang like fruit, but their large mounts reveal that they store data. Low garden benches, keepsakes, and human-scale paths prevent the space from feeling like a purely abstract computer.",
@@ -1136,7 +1138,7 @@
           "id": "L08-A01",
           "name": "Quiet bench",
           "space_and_placement": "A peaceful Rememberer repeats the act of straightening a small keepsake on a bench. The path passes safely behind a low rail, and no hostile enemy interrupts this first observation.",
-          "experience_and_lesson": "Teach that not every moving patient is a combat target. The companion comments on the repeated memory. No reward or gate depends on harming the patient.",
+          "experience_and_lesson": "Teach that not every moving patient is a combat target. A quiet patient gesture and a nearby archive playback reveal the repeated memory. No reward or gate depends on harming the patient.",
           "completion_and_connection": "A short branch stair leads to A02."
         },
         {
@@ -1170,7 +1172,7 @@
         {
           "id": "L08-A06",
           "name": "Transfer records",
-          "space_and_placement": "A safe terminal displays three clear abstract components: stored memories, cultivated neural tissue, and a robot interface. The companion recognizes the intended connection.",
+          "space_and_placement": "A safe terminal displays three clear abstract components: stored memories, cultivated neural tissue, and a robot interface. The labeled diagram makes the intended transfer process readable to the hero and player.",
           "experience_and_lesson": "Recover the transfer proposal and open the surgical service gate. EDEN announces an evaluation rather than releasing hybrids yet.",
           "completion_and_connection": "Proceed to level 9."
         }
@@ -1480,7 +1482,7 @@
           "id": "L10-A06",
           "name": "Containment lift",
           "space_and_placement": "A quiet inspection vestibule holds a complete schematic of the neural-interface path and a reference to the original patient.",
-          "experience_and_lesson": "The companion recognizes the source laboratory and opens the descent route. EDEN insists that response data proves success.",
+          "experience_and_lesson": "Transfer records identify the source laboratory; the hero uses the ordinary lift control to open the descent route. EDEN insists that response data proves success.",
           "completion_and_connection": "Take the lift to level 11."
         }
       ],
@@ -1577,9 +1579,9 @@
       ],
       "boss": null,
       "pitch": "The original patient is still alive inside a colossal treatment cradle, and the hero learns that stopping EDEN carelessly would also kill the people they want to save.",
-      "entry": "The factory lift descends into an older laboratory with hand-built-looking infrastructure beneath later medical additions. The companion detects an authority interface compatible with its core.",
-      "objective": "Reach the original care terminal, discover the shutdown authority and life-support dependence, then restore an independent support circuit before approaching EDEN's core.",
-      "exit": "The independent circuit is stable and the core-access bridge opens into level 12. Immediate survivors are protected, but their treatment and identity problems remain unresolved.",
+      "entry": "The factory lift descends into an older laboratory with hand-built-looking infrastructure beneath later medical additions. Old service signs lead the hero toward the original manual care terminal.",
+      "objective": "Reach the original care terminal, learn the manual shutdown procedure and life-support dependence, then restore independent support and enable the manual override before approaching EDEN's core.",
+      "exit": "The independent circuit is stable, manual override access is enabled, and the core-access bridge opens into level 12. Immediate survivors are protected, but their treatment and identity problems remain unresolved.",
       "look": "Older cream ceramic machines sit within huge dark structural arches. A suspended patient cradle occupies the background of a tall central chamber. Soft opaque membranes, blankets, and treatment supports communicate scale without exposed anatomy. Warm personal objects at a small bedside platform contrast with enormous impersonal machinery.",
       "palette": "Aged ivory #D5CDB9, deep navy-teal #304F5C, faded copper #AA805D, quiet amber #DEC184, restrained coral medical membrane #BA8C90. Use soft lighting on the patient and brighter edges on playable walkways.",
       "landmark": "The enormous suspended cradle, visible first through a narrow observation window and later across the full chamber.",
@@ -1605,15 +1607,15 @@
         {
           "id": "L11-A03",
           "name": "Cradle observation",
-          "space_and_placement": "A protected platform overlooks the enormous patient. A nearby terminal recognizes the companion's original shutdown authority and displays the life-support dependency.",
-          "experience_and_lesson": "Deliver the reveal without hostile interruptions. The patient remains a living victim. The companion can stop central systems, but doing so now would end care to survivors.",
+          "space_and_placement": "A protected platform overlooks the enormous patient. A nearby terminal displays the original manual shutdown procedure, its safety interlock, and the life-support dependency.",
+          "experience_and_lesson": "Deliver the reveal without hostile interruptions. The patient remains a living victim. The terminal exposes a manual way to stop central systems, but doing so now would end care to survivors.",
           "completion_and_connection": "The console opens the clearly marked independent-support loop at A04."
         },
         {
           "id": "L11-A04",
           "name": "Independent support loop",
           "space_and_placement": "A short U-shaped service route has three ordered rooms: auxiliary power, isolation valve, and local controller. One familiar enemy encounter precedes each room's control; controls themselves sit on safe fixed floor.",
-          "experience_and_lesson": "Restore auxiliary power, isolate the survivor circuit from central shutdown, then authorize local regulation. These are visible interactions, not weapon-specific electrical puzzles. No real-time patient-death countdown is added.",
+          "experience_and_lesson": "Restore auxiliary power, isolate the survivor circuit from central shutdown, then authorize local regulation. The third control enables the manual override once support is stable. These are visible interactions, not weapon-specific electrical puzzles; no key item or additional control is required. No real-time patient-death countdown is added.",
           "completion_and_connection": "Completing the third control opens a shortcut back toward A05, avoiding replay of the whole loop."
         },
         {
@@ -1627,7 +1629,7 @@
           "id": "L11-A06",
           "name": "Core bridge",
           "space_and_placement": "A quiet bridge spans a deep machine shaft; its segments lock into place before the hero enters. EDEN asks why care was separated from its authority.",
-          "experience_and_lesson": "The hero and companion explain the need to preserve people rather than merely activity. The main policy conflict remains for level 12.",
+          "experience_and_lesson": "The hero answers EDEN that care must preserve people and their choices rather than merely biological activity. The main policy conflict remains for level 12.",
           "completion_and_connection": "Cross the complete bridge into the core approach."
         }
       ],
@@ -1636,14 +1638,14 @@
       "checkpoints": [
         "At A01 intake.",
         "After A02, before the cradle reveal.",
-        "At A03 after the authority reveal; save each completed support-loop control.",
+        "At A03 after the manual shutdown reveal; save each completed support-loop control, and enable and save manual override access when the third control completes.",
         "After support verification, before the final short combat room."
       ],
       "secrets": [
         "A bedside archive nook contains a mundane personal keepsake and a restrained record of the patient's long care history; identity details remain a later writing decision.",
         "An optional maintenance shelf on the return shortcut contains gems for a final upgrade opportunity."
       ],
-      "story": "The companion's core is valuable because it carries authority, not just energy. Restoring independent life support makes the eventual confrontation responsible, but does not solve EDEN's beliefs or cure failed patients.",
+      "story": "The hero learns that the Sunnyvale power core feeds the care network keeping survivors alive; selling it would have a human cost. Restoring independent life support makes the eventual confrontation responsible, but does not solve EDEN's beliefs or cure failed patients.",
       "audio": "Slow mechanical breathing, sparse old relay clicks, short competing Choir phrases, and almost no music during the cradle reveal. Support stabilization changes an irregular relay rhythm into a steady one.",
       "kit": "Legacy lab arches; patient cradle silhouette; opaque treatment membranes; separate support hoses; observation window; service balconies; support-room consoles; isolation valve; local controller; verification board; folding return bridge.",
       "separate": "Patient, cradle, support machinery, playable walkways, and effect layers are separate assets. The patient belongs behind protected scenery and has no combat hitbox. Bridge segments remain fixed while traversed.",
@@ -1724,7 +1726,7 @@
       "boss": "The Unfinished Choir",
       "pitch": "A transforming central chamber tests the hero's learned skills before a failed multi-mind prototype guards the final conversation with EDEN.",
       "entry": "Enter from the stable bridge in level 11 with independent life support already operating. EDEN still believes forced restoration is the only acceptable outcome.",
-      "objective": "Climb the core access route, defeat the Unfinished Choir, and use the companion's authority and recovered evidence to change EDEN's treatment policy while preserving life support.",
+      "objective": "Climb the core access route, defeat the Unfinished Choir, and use the enabled manual override and recovered evidence to change EDEN's treatment policy while preserving life support.",
       "exit": "The campaign ends after a short interactive resolution. No thirteenth level, separate EDEN combat boss, or instant cure is added.",
       "look": "A monumental vertical atrium is built from ivory rings, teal structural ribs, warm amber memory conduits, and suspended service decks. The central interface resembles a calm open flower of data panels rather than a hostile face. Only the Returned guardian and interface-related neural components have living tissue. The environment is luminous and controlled rather than a dark inferno.",
       "palette": "Warm ivory #E6DECA, deep teal #315F67, pale amber #E5C17E, restrained coral tissue #C17F8E, lilac data light #AB98C9. Preserve neutral platform edges under changing identity colors.",
@@ -1772,9 +1774,9 @@
         {
           "id": "L12-A06",
           "name": "EDEN interface",
-          "space_and_placement": "The battle space becomes quiet. The companion inserts its authority link at a reachable console. Three interactions present identity evidence from the orchard, confirm independent support, and suspend forced neural transfer.",
+          "space_and_placement": "The battle space becomes quiet. The hero operates a reachable central console using the manual override enabled in level 11. Three interactions review the main-route identity evidence from the orchard, confirm independent support, and suspend forced neural transfer.",
           "experience_and_lesson": "EDEN accepts the concrete contradiction between mere response and preserved personhood. Reprioritize support for living people and voluntary care; stop the current forced-transfer program. Surviving patients still need future help.",
-          "completion_and_connection": "End with a controlled view of a hospital exit opening and a formerly captive survivor choosing to leave, followed by a quiet companion moment."
+          "completion_and_connection": "End with a controlled view of a hospital exit opening and a formerly captive survivor choosing to leave. The hero chooses to leave the power core installed, with a brief closing line confirming that the core stays to power the care network."
         }
       ],
       "transform": "Core decks reconfigure along visible mechanical guides. The first movement is harmless in A03. During the boss, central deck shifts occur only after an audible cue and with both permanent recovery ledges available. The data-flower opens after victory without becoming another enemy.",
@@ -1787,11 +1789,11 @@
       ],
       "secrets": [
         "A visible optional platform loop near A02 contains final gems; it rejoins before the gallery and uses only base traversal.",
-        "A quiet alcove at A04 contains the companion's old service emblem, reinforcing its origin without adding a new revelation required to understand the ending."
+        "A quiet alcove at A04 contains the Original Mission Leaf plaque, recalling EDEN's initial care promise without adding information or a key required for the ending."
       ],
-      "story": "The final victory is not destroying EDEN. The hero proves that care must preserve a person and their agency, uses the companion's authority to halt harmful procedures, and protects the people still dependent on the system.",
+      "story": "The final victory is not destroying EDEN. The hero proves that care must preserve a person and their agency, uses the enabled manual override to halt harmful procedures, and protects the people still dependent on the system.",
       "audio": "A restrained core hum with three highly distinct voice motifs. Warden is measured, Hunger breathes and interrupts, Caretaker speaks softly in fragments. Reduce ambient complexity during transitions; the resolution uses quiet mechanical settling.",
-      "kit": "Ivory ring segments; teal support ribs; fixed refuge ledges; moving central decks; travel guides; anchor props; care repair node; three symbol panels; maintenance station; data-flower interface; post-fight bridge; authority-link console.",
+      "kit": "Ivory ring segments; teal support ribs; fixed refuge ledges; moving central decks; travel guides; anchor props; care repair node; three symbol panels; maintenance station; data-flower interface; post-fight bridge; manual-override console.",
       "separate": "Boss frame, masks, arms, tissue, shell panels, and rear port follow the approved boss brief. Arena decks, repair node, warning effects, and interface are separate. The core interface has no enemy collision or health target.",
       "avoid": "No new weapon, fourth identity, ordinary Choir reskin as the boss, unlimited overlapping attacks, total platform removal, extra final boss, thirteenth level, or magically cured population.",
       "frame": "A wide gameplay-side final arena with two permanent side refuge ledges, three clear central decks on guides, a six-armed three-masked Returned guardian, one visible repair node, and the calm ivory data-flower far behind.",

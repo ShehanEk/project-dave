@@ -2,12 +2,13 @@
 
 **Approved visual direction (C11):** [Hand-drawn 2D](art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](concept-art/README.md).
 
-For the complete organized specification, start with the [AI entry guide](AI_START_HERE.md), [twenty detailed design documents](design/README.md), and [decision register](design/decisions.md). This file is the short overview; detailed system files own the proposed rules.
+For the complete organized specification, start with the [AI entry guide](AI_START_HERE.md), [eighteen detailed design documents](design/README.md), and [decision register](design/decisions.md). This file is the short overview; detailed system files own the proposed rules.
 
 ## Confirmed decisions
 
 The game remains a concept project. These decisions take priority over earlier descriptions that assumed several carried weapons or a permanent backup pistol.
 
+- **Solo hero (C12):** The hero explores alone, with no companion or follower.
 - **Core loop:** Explore → fight → collect treasure → overcome an obstacle → reach a checkpoint → upgrade → explore again.
 - **Primary treasure:** Gems.
 - **Other treasure:** Artifacts can also be found.
@@ -60,7 +61,7 @@ Encountering a new weapon at its planned introduction level does not force the p
 
 **Working persistence proposal:** A checkpoint commits the one held weapon, world pickups, resources, wallet, earned upgrade stages, artifacts, encounters, and story objectives together. Death or reload restores that complete snapshot, rolling back changes after it. Purchases and major story milestones commit complete states. See [health and checkpoints](design/03-progression/health-and-checkpoints.md) for recovery, story-save differences, and level boundaries.
 
-**Working upgrade proposal:** A maintenance facility modifies the carried weapon through its three successive stages. Purchased stages are recorded by weapon type and apply to later physical copies when picked up. This record is not a stored arsenal. Each physical weapon retains its ammunition, heat, and fitted stage when dropped; swapping never refills it. See [upgrades and ownership](design/03-progression/upgrades-and-ownership.md).
+**Working upgrade proposal:** The hero uses a fixed maintenance bench to modify the carried weapon through its three successive stages. Purchased stages are recorded by weapon type and apply to later physical copies through the hero's pickup fitting presentation. This record is not a stored arsenal. Each physical weapon retains its ammunition, heat, and fitted stage when dropped; swapping never refills it. See [upgrades and ownership](design/03-progression/upgrades-and-ownership.md).
 
 Recovery stations heal and service the one carried weapon. Story-only saves preserve current resources. Proposed ammunition, heat, reload, and renewable supply rules are defined in [weapon resources](design/03-progression/ammunition-and-resupply.md). Their quantities remain untested. Required fights cannot become impossible because a finite supply ran out.
 

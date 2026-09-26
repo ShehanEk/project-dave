@@ -5,7 +5,7 @@
 A game concept for a colorful **hand-drawn 2D platformer shooter** about a scavenger, an overprotective AI, robots, and failed resurrection patients.
 
 **Working title:** DEAD EDEN\
-**Stage:** Concept development and visual design. No game implementation or finished sprites or animations yet.
+**Stage:** Concept development, visual design, and Level 1 Godot prototype planning. No game implementation or finished sprites or animations yet.
 
 The project takes inspiration from the treasure-hunting adventure of *Dangerous Dave* and the expressive environments and transformations of *Super Mario Bros. Wonder*, while developing its own world, characters, and visual identity.
 
@@ -17,8 +17,9 @@ EDEN's machines maintain cheerful gardens and immaculate neighborhoods above a s
 
 ## Start here
 
+- [Level 1 Godot prototype plan](prototype-plans/level-01-sunnyvale/README.md): a 10–15 minute playable-slice plan, six-area blueprints, build milestones, validation, and copy-ready execution prompts.
 - [AI entry guide](AI_START_HERE.md): reading routes, rule ownership, handoff prompt, and consistency checks for AI agents.
-- [Detailed design pack](design/README.md): twenty focused documents organized into core rules, characters, progression, world interactions, and presentation.
+- [Detailed design pack](design/README.md): eighteen focused documents organized into core rules, characters, progression, world interactions, and presentation.
 - [Decision register](design/decisions.md): confirmed user choices, established lore, and clearly labeled new proposals.
 - [Core gameplay rules](core-gameplay.md): the explore–fight–treasure loop, gems and artifacts, one carried weapon, ground swaps, and proposed checkpoint upgrades.
 - [Game concept and lore](dead-eden-concept.md): the setting, characters, factions, enemy roster, weapons, twelve levels, and four unique mini-bosses.
@@ -33,10 +34,11 @@ EDEN's machines maintain cheerful gardens and immaculate neighborhoods above a s
 
 | Area | Planned content |
 | --- | --- |
+| Level 1 prototype plan | Godot; 12:30 main-route target, 10–15 minute first-playthrough requirement; implementation not started |
 | Campaign | 12 levels |
 | Detailed level design | 12 standalone briefs with 72 ordered areas and reusable AI prompts |
-| Detailed game systems | 20 documents across five sections, plus indexes, manifest, and review scenarios |
-| Hero and companion | Proposed identities, appearance briefs, sprite and pose studies, and relationship arc |
+| Detailed game systems | 18 documents across five sections, plus indexes, manifest, and review scenarios |
+| Hero | Proposed identity, appearance brief, sprite and pose studies, and solo character arc |
 | Artifact catalog | 12 proposed optional lore finds, one per level |
 | Mini-bosses | 4 unique encounters, at levels 3, 6, 9, and 12 |
 | Ordinary enemies | 10 robot varieties and 10 zombie varieties |
@@ -58,6 +60,8 @@ The selected 2D Clipper and Resident establish the mechanical and biological cha
 
 ```text
 AI_START_HERE.md
+prototype-plans/
+  level-01-sunnyvale/  # Plan, blueprints, Godot architecture, execution prompts
 dead-eden-concept.md
 core-gameplay.md
 design/
@@ -66,7 +70,7 @@ design/
   manifest.json
   review-scenarios.md
   01-core/          # Loop, controls, swaps, camera
-  02-characters/    # Hero, companion, relationship
+  02-characters/    # Solo hero
   03-progression/   # Health, ammo, gems, upgrades, artifacts
   04-world/         # Factions, states, objects, encounters
   05-presentation/  # Scenes, dialogue, interface, sound

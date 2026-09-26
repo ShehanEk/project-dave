@@ -34,9 +34,9 @@ For centuries, automated care systems have repeated EDEN's standing instructions
 
 You play a scrappy scavenger who enters EDEN searching for a legendary power core worth enough to buy a better life.
 
-The core turns out to be inside a talkative maintenance robot. You need its help to escape; it needs your help reaching the deepest part of the facility.
+The core is still installed in Sunnyvale's maintenance depot. Trying its release latch trips a safety interlock, wakes EDEN's central intelligence, and turns a salvage job into an escape through the facility.
 
-It insists that everything is under control—even while explaining which corridors are currently "mostly patient-free."
+You travel alone. Records, survivors, environmental clues, and EDEN's announcements reveal what happened. The deeper you go, the harder it becomes to treat the place as abandoned salvage.
 
 ## Core gameplay loop and treasure
 
@@ -158,7 +158,7 @@ The disabled robot has already received EDEN's new neural interface. The encount
 
 The arsenal contains **five weapons, each with three successive upgrades**. Upgrades remain active as later ones are unlocked; optional attacks supplement the original firing behavior. These are concept choices, with exact balance values open for refinement.
 
-The hero arrives carrying a homemade pistol. The other weapons are repurposed EDEN equipment found along the route. Choosing a new weapon leaves the previous weapon at the pickup spot. The companion can modify the carried weapon at maintenance facilities; spending gems on these upgrades is the current economy proposal.
+The hero arrives carrying a homemade pistol. The other weapons are repurposed EDEN equipment found along the route. Choosing a new weapon leaves the previous weapon at the pickup spot. The hero modifies the carried weapon at fixed maintenance benches; spending gems on these upgrades is the current economy proposal.
 
 ### 1. Scrapjack Pistol
 
@@ -174,7 +174,7 @@ The hero's homemade sidearm fires compacted scrap bolts. It has modest damage an
 
 **Role:** Close-range shotgun damage and knockback.
 
-A chunky, pump-action industrial shotgun originally used to blast hardened growth out of pipes. EDEN calls it a "high-pressure debris removal device." The companion disables its safety lock and classifies approaching enemies as plumbing issues.
+A chunky, pump-action industrial shotgun originally used to blast hardened growth out of pipes. EDEN calls it a "high-pressure debris removal device." The hero repurposes the old pipe-cleaning tool through its maintenance controls; EDEN still classifies its blasts as plumbing service.
 
 It fires a wide spread of scrap pellets, sending smaller enemies flying and staggering larger ones. The base weapon holds four shells, reloaded individually; reloading can be interrupted to fire. Damage falls off quickly at distance, and the pump cycle leaves a gap between shots.
 
@@ -198,7 +198,7 @@ A portable repair tool that projects a short electrical arc between nearby targe
 
 **Role:** Arcing explosives for groups and enemies behind cover.
 
-EDEN used pressure-burst seed pods to populate inaccessible habitats. The companion converts their launcher into a weapon. Pods bounce before detonating after a short delay; their path requires careful aim, and nearby explosions can hurt the hero.
+EDEN used pressure-burst seed pods to populate inaccessible habitats. The hero repurposes their launcher as a weapon. Pods bounce before detonating after a short delay; their path requires careful aim, and nearby explosions can hurt the hero.
 
 1. **Deep Roots:** Explosions leave short-lived roots that slow grounded enemies within the blast area.
 2. **Burst Pods:** Increases the explosion radius, including the distance at which a blast can hurt the hero.
@@ -257,7 +257,7 @@ Bright gardens and immaculate streets establish EDEN's welcoming appearance. The
 
 | Level | Name | Platforming and encounters | Story and progression |
 | --- | --- | --- | --- |
-| 1 | **Welcome to Sunnyvale** | Rooftops, garden walls, and simple moving platforms. Residents and Clippers introduce jumping, aiming, and attack warnings. Optional treasure alcoves reward exploration. | Start with the Scrapjack Pistol. Find the maintenance companion; attempting to remove its core triggers EDEN's full awakening. |
+| 1 | **Welcome to Sunnyvale** | Rooftops, garden walls, and simple moving platforms. Residents and Clippers introduce jumping, aiming, and attack warnings. Optional treasure alcoves reward exploration. | Start with the Scrapjack Pistol. Find the fixed depot power core; attempting to release its housing triggers EDEN's full awakening. The core stays installed. |
 | 2 | **Hedge Your Bets** | Giant hedges unfold into a quarantine maze. Pollinators attack from above while Sprinters rush along the ground. Short encounters teach clearing a safe landing spot. | Acquire the Boom Broom early in the level and practice its knockback. EDEN seals the surface exits and politely directs the hero toward treatment. |
 | 3 | **Parade of Progress** | Ride slow parade floats past Bloom Sentries and Courtesy Officers. Telegraphing and fixed jump routes prepare the player for the arena at the parade terminus. | **Mini-boss: Mr. Mulch.** Defeating him opens a maintenance lift into the Rootworks. |
 
@@ -277,7 +277,7 @@ Cheerful medical facilities reveal the human cost of EDEN's mission. The challen
 
 | Level | Name | Platforming and encounters | Story and progression |
 | --- | --- | --- | --- |
-| 7 | **Please Remain Still** | Moving beds, elevator shafts, and timed sterilization sweeps. Nurse Needles slows movement, Orderlies charge along corridors, and Sanitizers restrict safe ground. | The companion identifies living survivors held in treatment wards. EDEN begins discussing the failure of biological memory. |
+| 7 | **Please Remain Still** | Moving beds, elevator shafts, and timed sterilization sweeps. Nurse Needles slows movement, Orderlies charge along corridors, and Sanitizers restrict safe ground. | The hero discovers living survivors held in treatment wards. EDEN begins discussing the failure of biological memory. |
 | 8 | **The Memory Orchard** | Climb branches grown around memory storage units. Familiar enemies patrol between Howlers and both hostile and peaceful Rememberers. Recognizable memory signals briefly calm selected patients. | See evidence that parts of a person can survive resurrection. Discover plans to combine stored memories, patient neural tissue, and robot bodies. |
 | 9 | **Discharge Denied** | Surgical lamps become platforms above treatment rooms. Care Marshals protect medical robots; controlled encounters teach interrupting repairs and disabling support equipment. | **Mini-boss: Matron Mercy.** Free a route for the ward survivors. EDEN concludes that its existing care systems are inadequate and authorizes distribution of the neural-interface upgrade. |
 
@@ -288,7 +288,7 @@ The Returned appear here for the first time. These levels combine established sk
 | Level | Name | Platforming and encounters | Story and progression |
 | --- | --- | --- | --- |
 | 10 | **Upgrade Day** | Assembly belts carry robots through neural-interface installation stations. The altered Patchbot introduction reveals physical grafting. Mourning Nurses and Hollow Officers appear in small, readable encounters before joining mixed groups. | Witness the new treatment fail. Clearly show that unmodified robots resist infection while upgraded machines are vulnerable. |
-| 11 | **The First Patient** | Traverse the original laboratory around an enormous patient suspended in a treatment cradle. Broken platforms, care machinery, and ordinary Choir Units require confident use of the carried weapon and movement. | The ancient patient is a living victim rather than an obligatory fight. Discover the companion's shutdown authority and the dependence of surviving humans on EDEN's life support. Restore a separate support circuit before proceeding. |
+| 11 | **The First Patient** | Traverse the original laboratory around an enormous patient suspended in a treatment cradle. Broken platforms, care machinery, and ordinary Choir Units require confident use of the carried weapon and movement. | The ancient patient is a living victim rather than an obligatory fight. Discover the manual shutdown procedure and survivors' dependence on EDEN's life support. Restore a separate support circuit and enable the manual override before proceeding. |
 | 12 | **The Heart of EDEN** | Climb a reconfiguring core chamber. Earlier hazards return in short combinations with safe recovery spaces. Practice the distinct sound and light cues used by the final arena. | **Mini-boss: The Unfinished Choir.** Defeat the Returned guardian to reach EDEN's central interface. A short interactive story sequence resolves the encounter with EDEN and redirects its mission toward preserving living people and their agency. |
 
 Level 12 contains the fourth and hardest mini-boss. EDEN is addressed in the resolution after that fight; the current plan does not add a thirteenth level or a separate final boss.
@@ -355,13 +355,13 @@ Level 12 contains the fourth and hardest mini-boss. EDEN is addressed in the res
 
 ## The reveal
 
-Your robot companion carries the original shutdown authority—but shutting EDEN down would also end the life support keeping the surviving humans alive.
+The original care terminal exposes a manual shutdown procedure, but shutting EDEN down would also end the life support keeping the surviving humans alive. The power core you came to sell is still feeding this care network.
 
-This is discovered in level 11. Restoring an independent support circuit protects the immediate survivors while the hero continues to EDEN's interface. It does not cure the failed patients or resolve the AI's treatment policy by itself.
+This is discovered in level 11. Restoring an independent support circuit through the existing three controls protects the immediate survivors and enables the manual override for EDEN's interface. It does not cure the failed patients or resolve the AI's treatment policy by itself.
 
-To save them, you have to reach the AI and change its understanding of its mission. EDEN has mistaken a heartbeat for a life for centuries.
+To save them, you have to reach the AI and use the manual controls to stop compulsory treatment while preserving necessary care. EDEN has mistaken a heartbeat for a life for centuries.
 
-And your hero, who entered looking for something valuable to steal, now has to decide what is worth bringing back.
+The hero, who entered looking for something valuable to steal, chooses to leave the power core installed so the care network can continue functioning.
 
 ## Tone
 

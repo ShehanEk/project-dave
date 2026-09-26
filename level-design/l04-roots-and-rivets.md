@@ -12,7 +12,7 @@ System details are proposed in the [design pack](../design/README.md): movement,
 
 ## Standalone context
 
-DEAD EDEN is an original colorful 2D platformer shooter. A scavenger and a maintenance-robot companion explore a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
+DEAD EDEN is an original colorful 2D platformer shooter. A lone scavenger explores a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
 
 Beneath immaculate lawns, giant living roots wind through a freight network that has been carrying the same supplies for centuries.
 
@@ -32,11 +32,11 @@ Confirmed gameplay: explore, fight, collect treasure, overcome an obstacle, reac
 
 ## Story entry and exit
 
-**Entry:** The parade lift deposits the hero and companion in a quiet receiving bay. Floor indicators trace a route toward the hospital's water and treatment infrastructure.
+**Entry:** The parade lift deposits the hero in a quiet receiving bay. Floor indicators trace a route toward the hospital's water and treatment infrastructure.
 
 **Exit:** An unlocked compost freight door leads to level 5. A maintenance log explains why the underground routines never stopped.
 
-The contrast is between enormous automation and the absence of anyone checking its purpose. The companion recognizes the service manuals and begins doubting the instructions it trusted.
+The contrast is between enormous automation and the absence of anyone checking its purpose. The hero compares old service manuals with the working machines and sees how obsolete orders have continued without human oversight.
 
 ## What the level looks like
 
@@ -108,7 +108,7 @@ The route lists ordered areas, not exact world coordinates. Each area may span m
 
 **Space and placement:** A quiet control room has a large readable service diagram and a manual switch. Behind glass, old automated treatment orders cycle without human approval.
 
-**Player experience and lesson:** The companion explains that EDEN's central sleep never halted local routines. Interact with the switch to release the botanical waste door.
+**Player experience and lesson:** A readable maintenance log explains that EDEN's central sleep never halted local routines. Interact with the switch to release the botanical waste door.
 
 **Completion and connection:** Enter level 5 without a timed escape or new boss.
 

@@ -12,7 +12,7 @@ System details are proposed in the [design pack](../design/README.md): movement,
 
 ## Standalone context
 
-DEAD EDEN is an original colorful 2D platformer shooter. A scavenger and a maintenance-robot companion explore a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
+DEAD EDEN is an original colorful 2D platformer shooter. A lone scavenger explores a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
 
 The original patient is still alive inside a colossal treatment cradle, and the hero learns that stopping EDEN carelessly would also kill the people they want to save.
 
@@ -22,7 +22,7 @@ Confirmed gameplay: explore, fight, collect treasure, overcome an obstacle, reac
 
 | Field | Design |
 | --- | --- |
-| Main objective | Reach the original care terminal, discover the shutdown authority and life-support dependence, then restore an independent support circuit before approaching EDEN's core. |
+| Main objective | Reach the original care terminal, learn the manual shutdown procedure and life-support dependence, then restore independent support and enable the manual override before approaching EDEN's core. |
 | Intended difficulty | Hard, with a deliberate quiet central reveal |
 | First successful exploration target | 18–24 minutes; excludes repeated failures and exhaustive secret hunting |
 | New weapon | None |
@@ -32,11 +32,11 @@ Confirmed gameplay: explore, fight, collect treasure, overcome an obstacle, reac
 
 ## Story entry and exit
 
-**Entry:** The factory lift descends into an older laboratory with hand-built-looking infrastructure beneath later medical additions. The companion detects an authority interface compatible with its core.
+**Entry:** The factory lift descends into an older laboratory with hand-built-looking infrastructure beneath later medical additions. Old service signs lead the hero toward the original manual care terminal.
 
-**Exit:** The independent circuit is stable and the core-access bridge opens into level 12. Immediate survivors are protected, but their treatment and identity problems remain unresolved.
+**Exit:** The independent circuit is stable, manual override access is enabled, and the core-access bridge opens into level 12. Immediate survivors are protected, but their treatment and identity problems remain unresolved.
 
-The companion's core is valuable because it carries authority, not just energy. Restoring independent life support makes the eventual confrontation responsible, but does not solve EDEN's beliefs or cure failed patients.
+The hero learns that the Sunnyvale power core feeds the care network keeping survivors alive; selling it would have a human cost. Restoring independent life support makes the eventual confrontation responsible, but does not solve EDEN's beliefs or cure failed patients.
 
 ## What the level looks like
 
@@ -82,9 +82,9 @@ The route lists ordered areas, not exact world coordinates. Each area may span m
 
 ### L11-A03 — Cradle observation
 
-**Space and placement:** A protected platform overlooks the enormous patient. A nearby terminal recognizes the companion's original shutdown authority and displays the life-support dependency.
+**Space and placement:** A protected platform overlooks the enormous patient. A nearby terminal displays the original manual shutdown procedure, its safety interlock, and the life-support dependency.
 
-**Player experience and lesson:** Deliver the reveal without hostile interruptions. The patient remains a living victim. The companion can stop central systems, but doing so now would end care to survivors.
+**Player experience and lesson:** Deliver the reveal without hostile interruptions. The patient remains a living victim. The terminal exposes a manual way to stop central systems, but doing so now would end care to survivors.
 
 **Completion and connection:** The console opens the clearly marked independent-support loop at A04.
 
@@ -92,7 +92,7 @@ The route lists ordered areas, not exact world coordinates. Each area may span m
 
 **Space and placement:** A short U-shaped service route has three ordered rooms: auxiliary power, isolation valve, and local controller. One familiar enemy encounter precedes each room's control; controls themselves sit on safe fixed floor.
 
-**Player experience and lesson:** Restore auxiliary power, isolate the survivor circuit from central shutdown, then authorize local regulation. These are visible interactions, not weapon-specific electrical puzzles. No real-time patient-death countdown is added.
+**Player experience and lesson:** Restore auxiliary power, isolate the survivor circuit from central shutdown, then authorize local regulation. The third control enables the manual override once support is stable. These are visible interactions, not weapon-specific electrical puzzles; no key item or additional control is required. No real-time patient-death countdown is added.
 
 **Completion and connection:** Completing the third control opens a shortcut back toward A05, avoiding replay of the whole loop.
 
@@ -108,7 +108,7 @@ The route lists ordered areas, not exact world coordinates. Each area may span m
 
 **Space and placement:** A quiet bridge spans a deep machine shaft; its segments lock into place before the hero enters. EDEN asks why care was separated from its authority.
 
-**Player experience and lesson:** The hero and companion explain the need to preserve people rather than merely activity. The main policy conflict remains for level 12.
+**Player experience and lesson:** The hero answers EDEN that care must preserve people and their choices rather than merely biological activity. The main policy conflict remains for level 12.
 
 **Completion and connection:** Cross the complete bridge into the core approach.
 
@@ -142,7 +142,7 @@ The list above records weapon types introduced by this point, not a carried inve
 
 - At A01 intake.
 - After A02, before the cradle reveal.
-- At A03 after the authority reveal; save each completed support-loop control.
+- At A03 after the manual shutdown reveal; save each completed support-loop control, and enable and save manual override access when the third control completes.
 - After support verification, before the final short combat room.
 
 Working checkpoint proposal: retry restores the single carried weapon and world pickup state saved at the checkpoint, with useful resources for that weapon and completed story objectives preserved. It does not recover a gun abandoned elsewhere or grant a second gun. Local enemies, hazards, and moving geometry reset coherently; swapped weapons and collected treasure must not duplicate. Practice sections retain the described catch ledges. Exact health, ammunition, death penalties, and dropped-weapon persistence across level changes remain undecided.
@@ -204,7 +204,7 @@ Design a clean side-elevation level-layout study for DEAD EDEN level 11, "The Fi
 Use six adjacent panels, one for each area, or generate them individually if the full sheet loses clarity. Each panel must preserve its entry and exit direction; explicit local vertical movement may be shown. Space descriptions:
 L11-A01: Legacy intake. A calm entry shows old machinery and one clearly visible broken walkway with an ordinary-jump route and optional base-tether shortcut. No new enemy attacks mid-introduction. Connection: The intact walkway reaches A02.
 L11-A02: Conflicting voices. One ordinary Choir Unit hovers over a broad floor between two fixed cover points. Its three voice slots and short pulse volley are easy to see. Connection: A later room can pair one Choir Unit with one familiar hybrid, then leads to a safe checkpoint.
-L11-A03: Cradle observation. A protected platform overlooks the enormous patient. A nearby terminal recognizes the companion's original shutdown authority and displays the life-support dependency. Connection: The console opens the clearly marked independent-support loop at A04.
+L11-A03: Cradle observation. A protected platform overlooks the enormous patient. A nearby terminal displays the original manual shutdown procedure, its safety interlock, and the life-support dependency. Connection: The console opens the clearly marked independent-support loop at A04.
 L11-A04: Independent support loop. A short U-shaped service route has three ordered rooms: auxiliary power, isolation valve, and local controller. One familiar enemy encounter precedes each room's control; controls themselves sit on safe fixed floor. Connection: Completing the third control opens a shortcut back toward A05, avoiding replay of the whole loop.
 L11-A05: Verification gallery. A safe board shows the restored circuit feeding both the immediate survivor wards and the original patient's essential support. A final short room beyond it combines one Choir Unit with a familiar Sanitizer on broad separated lanes. Connection: The fixed exit balcony leads to A06.
 L11-A06: Core bridge. A quiet bridge spans a deep machine shaft; its segments lock into place before the hero enters. EDEN asks why care was separated from its authority. Connection: Cross the complete bridge into the core approach.

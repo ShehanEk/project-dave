@@ -40,7 +40,9 @@
       "upgrade"
     ],
     "visual_style": "Hand-drawn 2D; clean outlines, flat painted colors, crisp cel shadows, layered backgrounds",
-    "gameplay_plane": "2D side-scrolling"
+    "gameplay_plane": "2D side-scrolling",
+    "companion_present": false,
+    "player_party": "solo hero"
   },
   "selected_visual_references": [
     {
@@ -113,12 +115,10 @@
     },
     {
       "id": "02-characters",
-      "title": "Hero and companion",
+      "title": "Hero",
       "index": "design/02-characters/README.md",
       "documents": [
-        "H01",
-        "H02",
-        "H03"
+        "H01"
       ]
     },
     {
@@ -170,7 +170,8 @@
         "C04",
         "C05",
         "C06",
-        "P01"
+        "P01",
+        "C12"
       ],
       "dependencies": [
         "core-gameplay.md",
@@ -239,49 +240,13 @@
       "owns": "Proposed protagonist identity, motivation, silhouette, personality, and sprite reference.",
       "decision_refs": [
         "C04",
-        "P05"
+        "P05",
+        "C12"
       ],
       "dependencies": [
-        "design/02-characters/companion.md",
+        "design/05-presentation/story-scenes.md",
         "design/01-core/player-controls.md",
         "art-design/style-guide.md"
-      ]
-    },
-    {
-      "id": "H02",
-      "path": "design/02-characters/companion.md",
-      "title": "Companion — PIP (working proposal)",
-      "status": "proposed_details_with_confirmed_and_established_constraints",
-      "owns": "The maintenance companion's identity, limited abilities, appearance, and authority reveal.",
-      "decision_refs": [
-        "C04",
-        "C05",
-        "E01",
-        "P06"
-      ],
-      "dependencies": [
-        "design/02-characters/hero.md",
-        "design/02-characters/relationship-and-banter.md",
-        "design/05-presentation/story-scenes.md"
-      ]
-    },
-    {
-      "id": "H03",
-      "path": "design/02-characters/relationship-and-banter.md",
-      "title": "Hero–companion relationship and dialogue behavior",
-      "status": "proposed_details_with_confirmed_and_established_constraints",
-      "owns": "Relationship arc, scene-level changes, and rules for useful banter without hint spam.",
-      "decision_refs": [
-        "E01",
-        "P05",
-        "P06",
-        "P14"
-      ],
-      "dependencies": [
-        "design/02-characters/hero.md",
-        "design/02-characters/companion.md",
-        "design/05-presentation/dialogue-and-writing.md",
-        "design/05-presentation/story-scenes.md"
       ]
     },
     {
@@ -294,7 +259,8 @@
         "C04",
         "C05",
         "P07",
-        "P08"
+        "P08",
+        "C12"
       ],
       "dependencies": [
         "design/03-progression/ammunition-and-resupply.md",
@@ -349,7 +315,8 @@
         "C05",
         "C06",
         "P08",
-        "P10"
+        "P10",
+        "C12"
       ],
       "dependencies": [
         "design/03-progression/treasure-economy.md",
@@ -456,19 +423,19 @@
       "path": "design/05-presentation/story-scenes.md",
       "title": "Story scenes and campaign continuity",
       "status": "proposed_details_with_confirmed_and_established_constraints",
-      "owns": "A twelve-level scene plan, with detailed opening, reveal, and ending treatments.",
+      "owns": "A twelve-level solo scene plan, with detailed opening, reveal, and ending treatments.",
       "decision_refs": [
         "E01",
         "C07",
         "P05",
-        "P06",
-        "P14"
+        "P14",
+        "C12"
       ],
       "dependencies": [
         "design/05-presentation/dialogue-and-writing.md",
-        "design/02-characters/companion.md",
         "design/03-progression/health-and-checkpoints.md",
-        "level-design/README.md"
+        "level-design/README.md",
+        "design/02-characters/hero.md"
       ]
     },
     {
@@ -480,13 +447,13 @@
       "decision_refs": [
         "E01",
         "P05",
-        "P06",
-        "P14"
+        "P14",
+        "C12"
       ],
       "dependencies": [
         "design/05-presentation/story-scenes.md",
-        "design/02-characters/relationship-and-banter.md",
-        "design/05-presentation/audio-direction.md"
+        "design/05-presentation/audio-direction.md",
+        "design/02-characters/hero.md"
       ]
     },
     {
@@ -540,9 +507,7 @@
     {
       "task": "hero_art",
       "document_ids": [
-        "H01",
-        "H02",
-        "H03"
+        "H01"
       ],
       "additional_references": [
         "art-design/style-guide.md"
@@ -613,7 +578,7 @@
       "document_ids": [
         "N01",
         "N02",
-        "H03"
+        "H01"
       ],
       "additional_references": [
         "dead-eden-concept.md"
@@ -668,5 +633,22 @@
     "gallery": "concept-art/README.md",
     "unpictured_asset_appearances": "proposed until individually selected",
     "sprite_animation_pipeline": "undecided"
-  }
+  },
+  "prototype_plans": [
+    {
+      "id": "L01-PROTOTYPE",
+      "status": "planning_complete_implementation_not_started",
+      "decision_ref": "C13",
+      "engine": "Godot",
+      "duration_target_minutes": [
+        10,
+        15
+      ],
+      "entry": "prototype-plans/level-01-sunnyvale/README.md",
+      "specification": "prototype-plans/level-01-sunnyvale/prototype-spec.json",
+      "progress": "prototype-plans/level-01-sunnyvale/09-progress-and-handoff.md",
+      "implementation_path": "prototypes/sunnyvale-godot",
+      "implementation_requested_in_current_task": false
+    }
+  ]
 }

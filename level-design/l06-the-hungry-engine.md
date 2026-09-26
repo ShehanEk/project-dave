@@ -12,7 +12,7 @@ System details are proposed in the [design pack](../design/README.md): movement,
 
 ## Standalone context
 
-DEAD EDEN is an original colorful 2D platformer shooter. A scavenger and a maintenance-robot companion explore a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
+DEAD EDEN is an original colorful 2D platformer shooter. A lone scavenger explores a beautiful artificial habitat maintained by EDEN, an AI whose failed resurrection treatments create zombies. Ordinary robots are mechanical and cannot be infected without an installed biological neural interface. The Returned first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
 
 The hospital's water plant is being strangled by a mutated botanical worker whose roots have become part of the pumping cycle.
 
@@ -36,7 +36,7 @@ Confirmed gameplay: explore, fight, collect treasure, overcome an obstacle, reac
 
 **Exit:** Root pressure relaxes, the pump stabilizes, and a hospital supply elevator becomes available for level 7.
 
-Old Rootjaw is a former person, not a haunted machine. The pump continues its care function despite being crushed. The companion recognizes the worker from an old roster.
+Old Rootjaw is a former person, not a haunted machine. The pump continues its care function despite being crushed. An old roster and worker photograph beside the pump identify the person Rootjaw used to be.
 
 ## What the level looks like
 

@@ -6,7 +6,7 @@
 
 Decision C11 selects the generated **hand-drawn 2D style** for the whole game. Use the [selected concept-art gallery](../concept-art/README.md) as the visual reference: Clipper, Resident, front gardens, neighborhood square and quarantine exit. Clipper retains B's sturdy retro-machine identity from C10.
 
-These references establish rendering and the depicted designs. Unpictured characters and props still need individual design choices. Hero and companion identities remain proposals. Gameplay, lore, twelve levels, four mini-bosses, five weapons and their three upgrades remain governed by their written briefs.
+These references establish rendering and the depicted designs. Unpictured characters and props still need individual design choices. The hero's identity remains a proposal; the hero travels alone under C12. Gameplay, lore, twelve levels, four mini-bosses, five weapons and their three upgrades remain governed by their written briefs.
 
 ## Linework, color and shading
 

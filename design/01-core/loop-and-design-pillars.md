@@ -6,7 +6,7 @@
 **Status:** Working design proposal. Confirmed decisions and established lore remain constraints; new details and numbers are untested proposals.  
 **Purpose:** The player rhythm, intended experience, content boundaries, and pacing rules.
 
-**Decision references:** C01, C02, C03, C04, C05, C06, P01 — see the [decision register](../decisions.md).  
+**Decision references:** C12, C01, C02, C03, C04, C05, C06, P01 — see the [decision register](../decisions.md).  
 **Read with:** [core gameplay](../../core-gameplay.md) · [player controls](player-controls.md) · [treasure economy](../03-progression/treasure-economy.md)
 
 ## What the game should feel like
@@ -23,7 +23,7 @@ The confirmed loop is **explore → fight → collect treasure → overcome an o
 | A meaningful weapon choice | The weapon in my hands changes my approach. | One carried weapon; all mandatory encounters support the legitimate choice. |
 | Treasure with purpose | Looking around pays off. | Gems reward routes and fund proposed upgrades; artifacts provide distinctive discoveries. |
 | Dangerous care | The world is dangerous for a believable reason. | Enemies and hazards reflect EDEN's original maintenance or medical functions. |
-| People inside the machinery | There is more here than targets and loot. | Preserve quiet companion scenes, peaceful Rememberers, and the First Patient. |
+| People inside the machinery | There is more here than targets and loot. | Preserve quiet discoveries, peaceful Rememberers, survivor encounters, and the First Patient. |
 
 ## A typical section
 
@@ -45,7 +45,7 @@ Do not simulate choice by giving one weapon a mandatory immunity counter. No ear
 
 ## Scope for the first complete design
 
-Single-player, authored twelve-level campaign, four scheduled unique mini-bosses, five weapon types with three upgrades each. No crafting tree, multiplayer, procedural campaign, random equipment rarity, companion loadout, stealth skill tree, stamina meter, or second weapon slot is assumed.
+A solo hero explores without a follower. Single-player, authored twelve-level campaign, four scheduled unique mini-bosses, five weapon types with three upgrades each. No crafting tree, multiplayer, procedural campaign, random equipment rarity, stealth skill tree, stamina meter, or second weapon slot is assumed.
 
 These exclusions are proposed scope boundaries, not permanent bans on future ideas. Proposing one requires documenting what existing design it changes.
 

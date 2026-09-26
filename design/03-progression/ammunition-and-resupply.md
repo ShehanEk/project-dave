@@ -42,7 +42,7 @@ Recovery stations fill the carried shotgun's loaded and reserve capacity, or See
 New authored weapon pickups start with useful ammunition specified by the level designer. A previously dropped gun retains its actual count. Do not mark every pickup as "new" to manufacture a refill loop.
 
 ## Mandatory encounter safety net
-An arena that locks its exits provides a reachable **service dispenser** with renewable, non-treasure ammunition and a separate renewable **throwable prop pad** wherever tether entry is possible. Dispensers are environmental machines, not a companion ability.
+An arena that locks its exits provides a reachable **service dispenser** with renewable, non-treasure ammunition and a separate renewable **throwable prop pad** wherever tether entry is possible. Dispensers are fixed environmental machines operated by the hero.
 
 A dispenser grants one cartridge at a time, with a proposed 6-second cooldown. It works even at zero ammunition, requires no gems and no kill, and cannot become permanently destroyed or blocked. It refills only the held finite-ammunition weapon. Its safe approach still requires ordinary timing.
 

@@ -18,7 +18,7 @@ The [AI entry guide](../AI_START_HERE.md) identifies each system's owner. Read [
 - Ten ordinary robot and ten zombie types introduced by level 9.
 - Returned first appear in level 10 through installed neural interfaces and physical tissue transfer. Choir Unit appears in level 11 and is distinct from the final mini-boss.
 - The First Patient is a living victim, not a compulsory enemy. Peaceful Rememberers are never required kills.
-- Level 11 establishes the companion's shutdown authority and restores an independent life-support circuit. Level 12 resolves the conflict with EDEN after the fourth mini-boss. There is no separate final combat boss or thirteenth level.
+- Level 11 reveals the manual shutdown procedure, restores an independent life-support circuit, and enables the manual override through the existing three support controls. Level 12 resolves the conflict with EDEN after the fourth mini-boss. There is no separate final combat boss or thirteenth level.
 
 ## Side-view space and camera
 
@@ -66,7 +66,7 @@ Do not remove equipment or force one optional purchase for a dramatic beat. Do n
 
 The confirmed loop is explore, fight, collect treasure, overcome an obstacle, reach a checkpoint, and upgrade. Gems are the primary treasure; artifacts are an additional type. [Treasure economy](../design/03-progression/treasure-economy.md) proposes gem budgets and upgrade costs; the [artifact catalog](../design/03-progression/artifact-catalog.md) proposes one optional journal-only find per level. Exact alcoves still need allocation in these layouts. Signal interesting detours and reconnect them cleanly. Critical evidence and required items belong on the main route; no hidden collectible quota or future-weapon backtracking is assumed.
 
-Quiet spaces are part of pacing: the companion discovery, peaceful Rememberer, transfer records, First Patient reveal, and final EDEN interface must be understandable without simultaneous combat. Environmental storytelling can be visual rather than a wall of text.
+Quiet spaces are part of pacing: the depot awakening, peaceful Rememberer, transfer records, First Patient reveal, and final EDEN interface must be understandable without simultaneous combat. Environmental storytelling can be visual rather than a wall of text.
 
 ## Environment transformations
 

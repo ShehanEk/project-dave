@@ -52,9 +52,9 @@ Gems use brief pitched ticks with limited variation; dense trails should not cre
 Room ambience indicates scale: quiet enclosed homes, open artificial gardens, resonant freight shafts, insulated medical corridors, and distant pump chambers. Stereo position follows the 2D play lane; background depth may color ambience but cannot falsely suggest an attack at a reachable position.
 
 ## Mix and interruption rules
-Priority: immediate danger → damage/resource failure → interaction/save feedback → essential story → optional banter → music detail → ambience. Duck lower layers briefly rather than merely making every priority sound louder.
+Priority: immediate danger → damage/resource failure → interaction/save feedback → essential story → optional remarks → music detail → ambience. Duck lower layers briefly rather than merely making every priority sound louder.
 
-Limit simultaneous identical sounds and avoid stacking ten robot hits at full volume. Keep voice intelligible over machinery. Optional banter stops when an imminent attack or essential story line begins; interrupted jokes are not immediately repeated.
+Limit simultaneous identical sounds and avoid stacking ten robot hits at full volume. Keep voice intelligible over machinery. Optional remarks stop when an imminent attack or essential story line begins; interrupted jokes are not immediately repeated.
 
 Offer reduced dynamic range for quieter listening, separate volume controls, and sound captions that describe meaningful events. Caption "Syringe launcher charging — right" only if the threat is actually on the right; do not invent omniscient alerts for hidden plot events.
 
