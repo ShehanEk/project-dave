@@ -1,0 +1,44 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/debug/m6_characters_demo.gd" id="1_demo"]
+[ext_resource type="Script" path="res://scripts/world/block.gd" id="2_block"]
+[ext_resource type="PackedScene" path="res://scenes/actors/hero.tscn" id="3_hero"]
+[ext_resource type="PackedScene" path="res://scenes/actors/resident.tscn" id="4_resident"]
+[ext_resource type="PackedScene" path="res://scenes/actors/clipper.tscn" id="5_clipper"]
+[ext_resource type="PackedScene" path="res://scenes/objects/route_switch.tscn" id="6_switch"]
+
+[node name="M6CharactersDemo" type="Node2D"]
+script = ExtResource("1_demo")
+
+[node name="Geometry" type="Node2D" parent="."]
+
+[node name="Floor" type="StaticBody2D" parent="Geometry"]
+position = Vector2(-100, 560)
+script = ExtResource("2_block")
+size = Vector2(2500, 200)
+kind = 0
+
+[node name="Backstop" type="StaticBody2D" parent="Geometry"]
+position = Vector2(1640, 460)
+script = ExtResource("2_block")
+size = Vector2(48, 100)
+kind = 4
+
+[node name="Hero" parent="." instance=ExtResource("3_hero")]
+position = Vector2(100, 560)
+
+[node name="Camera" type="Camera2D" parent="."]
+position = Vector2(300, 460)
+zoom = Vector2(1.4, 1.4)
+
+[node name="Resident" parent="." instance=ExtResource("4_resident")]
+position = Vector2(480, 560)
+
+[node name="RouteSwitch" parent="." instance=ExtResource("6_switch")]
+position = Vector2(950, 560)
+switch_id = "M6DEMO-SW01"
+
+[node name="Clipper" parent="." instance=ExtResource("5_clipper")]
+position = Vector2(2000, 560)
+patrol_min_x = 1950.0
+patrol_max_x = 2050.0

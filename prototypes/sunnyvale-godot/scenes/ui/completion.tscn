@@ -1,0 +1,105 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/completion_screen.gd" id="1_completion"]
+[ext_resource type="Theme" path="res://assets/ui/c11_theme.tres" id="2_theme"]
+
+[node name="CompletionScreen" type="CanvasLayer"]
+script = ExtResource("1_completion")
+
+[node name="Dim" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.55)
+mouse_filter = 2
+
+[node name="Panel" type="Panel" parent="."]
+theme = ExtResource("2_theme")
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -220.0
+offset_right = 280.0
+offset_bottom = 220.0
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 536.0
+offset_bottom = 420.0
+theme_override_constants/separation = 14
+
+[node name="TitleLabel" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.212, 0.365, 0.384, 1)
+theme_override_font_sizes/font_size = 28
+text = "Sunnyvale complete."
+
+[node name="StatsView" type="VBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TimeLabel" type="Label" parent="Panel/VBox/StatsView"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.165, 0.125, 1)
+theme_override_font_sizes/font_size = 22
+text = "Active play time: 0:00"
+
+[node name="GemsLabel" type="Label" parent="Panel/VBox/StatsView"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.702, 0.443, 0.129, 1)
+theme_override_font_sizes/font_size = 22
+text = "Gems found: 0 / 65"
+
+[node name="KeyLabel" type="Label" parent="Panel/VBox/StatsView"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.302, 0.243, 0.176, 1)
+theme_override_font_sizes/font_size = 22
+text = "Welcome Key: Not found"
+
+[node name="QuickcycleLabel" type="Label" parent="Panel/VBox/StatsView"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.302, 0.243, 0.176, 1)
+theme_override_font_sizes/font_size = 22
+text = "Quickcycle: Not obtained"
+
+[node name="ButtonRow" type="HBoxContainer" parent="Panel/VBox/StatsView"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="PlayAgainButton" type="Button" parent="Panel/VBox/StatsView/ButtonRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Play again"
+
+[node name="QuitButton" type="Button" parent="Panel/VBox/StatsView/ButtonRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Quit"
+
+[node name="ConfirmView" type="VBoxContainer" parent="Panel/VBox"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="WarningLabel" type="Label" parent="Panel/VBox/ConfirmView"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.165, 0.125, 1)
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 2
+text = "Start a new run? Progress will be reset."
+
+[node name="ConfirmRow" type="HBoxContainer" parent="Panel/VBox/ConfirmView"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ConfirmButton" type="Button" parent="Panel/VBox/ConfirmView/ConfirmRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Confirm"
+
+[node name="CancelButton" type="Button" parent="Panel/VBox/ConfirmView/ConfirmRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Cancel"

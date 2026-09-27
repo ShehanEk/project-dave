@@ -1,0 +1,323 @@
+[gd_scene load_steps=24 format=3]
+
+[ext_resource type="Script" path="res://scripts/levels/area_root.gd" id="1_arearoot"]
+[ext_resource type="Script" path="res://scripts/world/block.gd" id="2_block"]
+[ext_resource type="PackedScene" path="res://scenes/objects/moving_platform.tscn" id="3_movplat"]
+[ext_resource type="PackedScene" path="res://scenes/objects/service_walkway.tscn" id="4_walkway"]
+[ext_resource type="PackedScene" path="res://scenes/objects/emergency_hatch.tscn" id="5_hatch"]
+[ext_resource type="PackedScene" path="res://scenes/objects/gem.tscn" id="6_gem"]
+[ext_resource type="PackedScene" path="res://scenes/objects/gem_cache.tscn" id="7_cache"]
+[ext_resource type="PackedScene" path="res://scenes/objects/artifact_pickup.tscn" id="8_artifact"]
+[ext_resource type="PackedScene" path="res://scenes/objects/care_capsule.tscn" id="9_capsule"]
+[ext_resource type="PackedScene" path="res://scenes/objects/route_switch.tscn" id="10_switch"]
+[ext_resource type="PackedScene" path="res://scenes/objects/core_console.tscn" id="11_console"]
+[ext_resource type="PackedScene" path="res://scenes/objects/maintenance_bench.tscn" id="12_bench"]
+[ext_resource type="PackedScene" path="res://scenes/objects/weapon_pad.tscn" id="13_pad"]
+[ext_resource type="PackedScene" path="res://scenes/objects/recovery_station.tscn" id="14_station"]
+[ext_resource type="PackedScene" path="res://scenes/objects/exit_wicket.tscn" id="15_wicket"]
+[ext_resource type="PackedScene" path="res://scenes/objects/pit_hazard.tscn" id="16_pit"]
+[ext_resource type="PackedScene" path="res://scenes/objects/kill_plane.tscn" id="17_kill"]
+[ext_resource type="PackedScene" path="res://scenes/objects/tutorial_prompt.tscn" id="18_tuto"]
+[ext_resource type="PackedScene" path="res://scenes/objects/scenery.tscn" id="19_scenery"]
+[ext_resource type="Script" path="res://scripts/combat/encounter_group.gd" id="20_group"]
+[ext_resource type="PackedScene" path="res://scenes/actors/resident.tscn" id="21_resident"]
+[ext_resource type="PackedScene" path="res://scenes/objects/beat_zone.tscn" id="22_beat"]
+[ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="23_routepoint"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_approach"]
+size = Vector2(80, 900)
+
+[node name="SampleArea" type="Node2D"]
+script = ExtResource("1_arearoot")
+area_id = "L01-TEST-SAMPLE"
+width = 1600.0
+camera_top = -520.0
+camera_bottom = 100.0
+
+[node name="Geometry" type="Node2D" parent="."]
+
+[node name="FloorA" type="StaticBody2D" parent="Geometry"]
+position = Vector2(0, 0)
+script = ExtResource("2_block")
+size = Vector2(500, 300)
+kind = 0
+
+[node name="GapPlatform" parent="Geometry" instance=ExtResource("3_movplat")]
+point_a = Vector2(584, 10)
+point_b = Vector2(616, 10)
+speed = 90.0
+pause_time = 0.6
+width = 160.0
+thickness = 20.0
+
+[node name="FloorB1a" type="StaticBody2D" parent="Geometry"]
+position = Vector2(700, 0)
+script = ExtResource("2_block")
+size = Vector2(80, 300)
+kind = 0
+
+[node name="FloorB1b" type="StaticBody2D" parent="Geometry"]
+position = Vector2(820, 0)
+script = ExtResource("2_block")
+size = Vector2(80, 300)
+kind = 0
+
+[node name="Walkway" parent="Geometry" instance=ExtResource("4_walkway")]
+position = Vector2(900, 0)
+switch_id = "L01-SW01"
+width = 60.0
+thickness = 20.0
+
+[node name="FloorB2" type="StaticBody2D" parent="Geometry"]
+position = Vector2(960, 0)
+script = ExtResource("2_block")
+size = Vector2(640, 300)
+kind = 0
+
+[node name="Hatch" parent="Geometry" instance=ExtResource("5_hatch")]
+position = Vector2(1100, 0)
+size = Vector2(64, 192)
+
+[node name="Scenery" type="Node2D" parent="."]
+
+[node name="Sign" parent="Scenery" instance=ExtResource("19_scenery")]
+position = Vector2(60, 0)
+kind = 11
+size = Vector2(90, 60)
+text = "L01-TEST-SAMPLE"
+
+[node name="House" parent="Scenery" instance=ExtResource("19_scenery")]
+position = Vector2(220, 0)
+kind = 0
+size = Vector2(140, 130)
+
+[node name="Shrub" parent="Scenery" instance=ExtResource("19_scenery")]
+position = Vector2(380, 0)
+kind = 2
+size = Vector2(64, 64)
+
+[node name="Clock" parent="Scenery" instance=ExtResource("19_scenery")]
+position = Vector2(1030, -220)
+kind = 4
+size = Vector2(90, 90)
+
+[node name="Fence" parent="Scenery" instance=ExtResource("19_scenery")]
+position = Vector2(1400, 0)
+kind = 1
+size = Vector2(160, 50)
+
+[node name="Entities" type="Node2D" parent="."]
+
+[node name="Gem_G001" parent="Entities" instance=ExtResource("6_gem")]
+position = Vector2(150, -20)
+entity_id = "L01-TEST-G001"
+value = 1
+
+[node name="GemCache_CACHE01" parent="Entities" instance=ExtResource("7_cache")]
+position = Vector2(190, 0)
+entity_id = "L01-TEST-CACHE01"
+value = 20
+
+[node name="Artifact_A01" parent="Entities" instance=ExtResource("8_artifact")]
+position = Vector2(230, -18)
+entity_id = "L01-TEST-A01"
+artifact_id = "A01"
+
+[node name="CareCapsule_HS01" parent="Entities" instance=ExtResource("9_capsule")]
+position = Vector2(420, -20)
+entity_id = "L01-TEST-HS01"
+heal = 2
+
+[node name="GemCluster_GC01" parent="Entities" instance=ExtResource("6_gem")]
+position = Vector2(860, -20)
+entity_id = "L01-TEST-GC01"
+value = 5
+
+[node name="RouteSwitch_SW01" parent="Entities" instance=ExtResource("10_switch")]
+position = Vector2(880, 0)
+switch_id = "L01-SW01"
+
+[node name="CoreConsole" parent="Entities" instance=ExtResource("11_console")]
+position = Vector2(1030, 0)
+
+[node name="MaintenanceBench" parent="Entities" instance=ExtResource("12_bench")]
+position = Vector2(1180, 0)
+
+[node name="WeaponPad" parent="Entities" instance=ExtResource("13_pad")]
+position = Vector2(1260, 0)
+pad_id = "L01-A05-PAD01"
+
+[node name="RecoveryStation_CP01" parent="Entities" instance=ExtResource("14_station")]
+position = Vector2(1340, 0)
+checkpoint_id = "CP01"
+
+[node name="ExitWicket" parent="Entities" instance=ExtResource("15_wicket")]
+position = Vector2(1560, 0)
+
+[node name="PitHazard" parent="Entities" instance=ExtResource("16_pit")]
+position = Vector2(1300, -160)
+damage = 1
+size = Vector2(160, 40)
+
+[node name="KillPlane" parent="Entities" instance=ExtResource("17_kill")]
+position = Vector2(800, 700)
+damage = 0
+reset_target = NodePath("../../Markers/Spawn_CP00")
+
+[node name="TutorialPrompt" parent="Entities" instance=ExtResource("18_tuto")]
+position = Vector2(96, -140)
+text = "Press Jump to begin!"
+action = &"jump"
+
+[node name="Encounters" type="Node2D" parent="."]
+
+[node name="EncounterGroup_E_TEST" type="Node2D" parent="Encounters"]
+script = ExtResource("20_group")
+group_id = "L01-TEST-E01"
+lane_rect = Rect2(200, -500, 300, 900)
+reactivate_cooldown = 0.35
+
+[node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E_TEST"]
+position = Vector2(260, 0)
+collision_layer = 0
+collision_mask = 2
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E_TEST/ApproachZone"]
+shape = SubResource("RectangleShape2D_approach")
+
+[node name="Resident" parent="Encounters/EncounterGroup_E_TEST" instance=ExtResource("21_resident")]
+position = Vector2(300, 0)
+entity_id = "L01-TEST-Z01-01"
+
+[node name="Beats" type="Node2D" parent="."]
+
+[node name="Beat_ENTRY" parent="Beats" instance=ExtResource("22_beat")]
+position = Vector2(300, -200)
+beat_id = "L01-TEST-B01"
+size = Vector2(300, 600)
+
+[node name="Beat_DEPOT" parent="Beats" instance=ExtResource("22_beat")]
+position = Vector2(1150, -200)
+beat_id = "L01-TEST-B02"
+size = Vector2(500, 600)
+
+[node name="Markers" type="Node2D" parent="."]
+
+[node name="Spawn_CP00" type="Marker2D" parent="Markers"]
+position = Vector2(96, -4)
+
+[node name="Respawn_CP01" type="Marker2D" parent="Markers"]
+position = Vector2(1340, 0)
+
+[node name="Route" type="Node2D" parent="."]
+
+[node name="M01_MoveToGem" type="Marker2D" parent="Route"]
+position = Vector2(150, 0)
+script = ExtResource("23_routepoint")
+action = 0
+tolerance = 12.0
+
+[node name="B01_OpenCache" type="Marker2D" parent="Route"]
+position = Vector2(190, 0)
+script = ExtResource("23_routepoint")
+action = 3
+branch = "OPT01"
+tolerance = 16.0
+
+[node name="B02_TakeArtifact" type="Marker2D" parent="Route"]
+position = Vector2(230, 0)
+script = ExtResource("23_routepoint")
+action = 3
+branch = "OPT01"
+tolerance = 16.0
+
+[node name="M02_PastEncounter" type="Marker2D" parent="Route"]
+position = Vector2(300, 0)
+script = ExtResource("23_routepoint")
+action = 0
+tolerance = 12.0
+
+[node name="M03_PastCapsule" type="Marker2D" parent="Route"]
+position = Vector2(420, 0)
+script = ExtResource("23_routepoint")
+action = 0
+tolerance = 12.0
+
+[node name="M04_WaitPlatformArrive" type="Marker2D" parent="Route"]
+position = Vector2(500, 0)
+script = ExtResource("23_routepoint")
+action = 2
+tolerance = 20.0
+platform = NodePath("../../Geometry/GapPlatform")
+platform_target = Vector2(584, 10)
+
+[node name="M05_RideToFarSide" type="Marker2D" parent="Route"]
+position = Vector2(520, 0)
+script = ExtResource("23_routepoint")
+action = 2
+tolerance = 20.0
+platform = NodePath("../../Geometry/GapPlatform")
+platform_target = Vector2(616, 10)
+
+[node name="M06_StepOffPlatform" type="Marker2D" parent="Route"]
+position = Vector2(720, 0)
+script = ExtResource("23_routepoint")
+action = 0
+tolerance = 12.0
+
+[node name="M07_JumpSmallGap" type="Marker2D" parent="Route"]
+position = Vector2(770, 0)
+script = ExtResource("23_routepoint")
+action = 1
+tolerance = 10.0
+hold_jump = 0.1
+
+[node name="M08_PastGemCluster" type="Marker2D" parent="Route"]
+position = Vector2(860, 0)
+script = ExtResource("23_routepoint")
+action = 0
+tolerance = 12.0
+
+[node name="M09_PullSwitch" type="Marker2D" parent="Route"]
+position = Vector2(880, 0)
+script = ExtResource("23_routepoint")
+action = 3
+tolerance = 16.0
+
+[node name="M10_CrossWalkway" type="Marker2D" parent="Route"]
+position = Vector2(980, 0)
+script = ExtResource("23_routepoint")
+action = 0
+tolerance = 12.0
+
+[node name="M11_UseConsole" type="Marker2D" parent="Route"]
+position = Vector2(1030, 0)
+script = ExtResource("23_routepoint")
+action = 3
+tolerance = 16.0
+
+[node name="M12_UseBench" type="Marker2D" parent="Route"]
+position = Vector2(1180, 0)
+script = ExtResource("23_routepoint")
+action = 3
+tolerance = 16.0
+
+[node name="M13_UsePad" type="Marker2D" parent="Route"]
+position = Vector2(1260, 0)
+script = ExtResource("23_routepoint")
+action = 3
+tolerance = 16.0
+
+[node name="M14_UseStation" type="Marker2D" parent="Route"]
+position = Vector2(1340, 0)
+script = ExtResource("23_routepoint")
+action = 3
+tolerance = 16.0
+
+[node name="M15_ToExit" type="Marker2D" parent="Route"]
+position = Vector2(1580, 0)
+script = ExtResource("23_routepoint")
+action = 0
+tolerance = 12.0

@@ -3,13 +3,13 @@
   "kind": "prototype_execution_plan_not_runtime_level_data",
   "project": "DEAD EDEN",
   "level": "L01",
-  "status": "planned_unimplemented_unplaytested",
+  "status": "implemented_unverified",
   "engine": {
     "family": "Godot",
     "major": 4,
     "language": "GDScript",
     "renderer_proposal": "Compatibility",
-    "exact_version": null,
+    "exact_version": "4.7.2.stable.official.ed1daf0bf",
     "pin_version_at": "M0"
   },
   "build_path_from_repo_root": "prototypes/sunnyvale-godot",
@@ -470,56 +470,57 @@
     {
       "id": "M0",
       "depends_on": [],
-      "status": "not_started"
+      "status": "verified"
     },
     {
       "id": "M1",
       "depends_on": [
         "M0"
       ],
-      "status": "not_started"
+      "status": "verified"
     },
     {
       "id": "M2",
       "depends_on": [
         "M1"
       ],
-      "status": "not_started"
+      "status": "verified"
     },
     {
       "id": "M3",
       "depends_on": [
         "M2"
       ],
-      "status": "not_started"
+      "status": "verified"
     },
     {
       "id": "M4",
       "depends_on": [
         "M3"
       ],
-      "status": "not_started"
+      "status": "verified"
     },
     {
       "id": "M5",
       "depends_on": [
         "M4"
       ],
-      "status": "not_started"
+      "status": "verified"
     },
     {
       "id": "M6",
       "depends_on": [
         "M5"
       ],
-      "status": "not_started"
+      "status": "verified"
     },
     {
       "id": "M7",
       "depends_on": [
         "M6"
       ],
-      "status": "not_started"
+      "status": "implemented_unverified",
+      "notes": "Playable, timing unverified. Functional matrix T01-T20 verified, T21 mechanically verified (visual readability half partially verified). Completion gates 1-5 verified. Gate 6 (>=3 first-time playtests) pending: no testers available this session. Gate 7 partially verified: macOS release export boots to title verified; save/continue/complete verified only on the macOS debug export of the same preset/source; Windows export built and file-type-confirmed but not launch-tested (T22-Windows pending, no Wine on the verifying host). See ../../prototypes/sunnyvale-godot/reports/functional-matrix.md and reports/export-report.md."
     }
   ],
   "owners": {

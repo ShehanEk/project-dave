@@ -1,0 +1,98 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/title_screen.gd" id="1_title"]
+[ext_resource type="Theme" path="res://assets/ui/c11_theme.tres" id="2_theme"]
+
+[node name="TitleScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_title")
+
+[node name="Background" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.663, 0.839, 0.867, 1)
+
+[node name="Panel" type="Panel" parent="."]
+theme = ExtResource("2_theme")
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -180.0
+offset_right = 260.0
+offset_bottom = 180.0
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 496.0
+offset_bottom = 340.0
+theme_override_constants/separation = 16
+
+[node name="TitleLabel" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.212, 0.365, 0.384, 1)
+theme_override_font_sizes/font_size = 28
+text = "DEAD EDEN — Sunnyvale"
+
+[node name="MessageLabel" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.545, 0.243, 0.145, 1)
+theme_override_font_sizes/font_size = 20
+autowrap_mode = 2
+text = ""
+
+[node name="MainView" type="VBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="ButtonRow" type="VBoxContainer" parent="Panel/VBox/MainView"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="NewGameButton" type="Button" parent="Panel/VBox/MainView/ButtonRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "New Game"
+
+[node name="ContinueButton" type="Button" parent="Panel/VBox/MainView/ButtonRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Continue"
+
+[node name="QuitButton" type="Button" parent="Panel/VBox/MainView/ButtonRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Quit"
+
+[node name="ConfirmView" type="VBoxContainer" parent="Panel/VBox"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="WarningLabel" type="Label" parent="Panel/VBox/ConfirmView"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.165, 0.125, 1)
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 2
+text = "Start a New Game? Your saved run will be deleted."
+
+[node name="ConfirmRow" type="HBoxContainer" parent="Panel/VBox/ConfirmView"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ConfirmButton" type="Button" parent="Panel/VBox/ConfirmView/ConfirmRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Confirm"
+
+[node name="CancelButton" type="Button" parent="Panel/VBox/ConfirmView/ConfirmRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Cancel"

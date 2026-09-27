@@ -1,0 +1,19 @@
+{"event": "run_start", "t_active": 0.0, "t_wall": 0.0, "build": "sunnyvale-proto-m5", "engine": "4.7.2.stable"}
+{"event": "area_enter", "t_active": 0.0, "t_wall": 0.0, "area_id": "L01-A01"}
+{"event": "death", "t_active": 50.0, "t_wall": 55.0, "x": 100.0, "y": 0.0, "area_id": "L01-A01", "cause": "health_zero"}
+{"event": "checkpoint_commit", "t_active": 90.0, "t_wall": 100.0, "checkpoint_id": "CP01"}
+{"event": "area_exit", "t_active": 90.0, "t_wall": 100.0, "area_id": "L01-A01"}
+{"event": "area_enter", "t_active": 90.0, "t_wall": 100.0, "area_id": "L01-A02"}
+{"event": "branch_enter", "t_active": 100.0, "t_wall": 112.0, "branch_id": "OPT01"}
+{"event": "branch_exit", "t_active": 115.0, "t_wall": 130.0, "branch_id": "OPT01"}
+{"event": "pause_start", "t_active": 120.0, "t_wall": 140.0}
+{"event": "pause_end", "t_active": 120.0, "t_wall": 170.0}
+{"event": "checkpoint_commit", "t_active": 150.0, "t_wall": 205.0, "checkpoint_id": "CP02"}
+{"event": "area_exit", "t_active": 150.0, "t_wall": 205.0, "area_id": "L01-A02"}
+{"event": "area_enter", "t_active": 150.0, "t_wall": 205.0, "area_id": "L01-A05"}
+{"event": "upgrade_purchase", "t_active": 160.0, "t_wall": 218.0, "weapon_type": "W01", "stage": 1}
+{"event": "checkpoint_commit", "t_active": 160.0, "t_wall": 218.0, "checkpoint_id": "UPG01"}
+{"event": "area_exit", "t_active": 190.0, "t_wall": 250.0, "area_id": "L01-A05"}
+{"event": "area_enter", "t_active": 190.0, "t_wall": 250.0, "area_id": "L01-A06"}
+{"event": "checkpoint_commit", "t_active": 200.0, "t_wall": 262.0, "checkpoint_id": "CP05"}
+{"event": "completion", "t_active": 200.0, "t_wall": 262.0, "active_seconds": 200.0, "gems_found": 45, "artifact_found": true, "upgrade_stage": 1}

@@ -1,0 +1,27 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/block.gd" id="1_block"]
+[ext_resource type="PackedScene" path="res://scenes/actors/hero.tscn" id="2_hero"]
+[ext_resource type="PackedScene" path="res://scenes/actors/game_camera.tscn" id="3_cam"]
+[ext_resource type="PackedScene" path="res://scenes/actors/resident.tscn" id="4_resident"]
+[ext_resource type="Script" path="res://scripts/debug/m2_resident_solo.gd" id="5_solo"]
+
+[node name="M2ResidentSolo" type="Node2D"]
+script = ExtResource("5_solo")
+
+[node name="Geometry" type="Node2D" parent="."]
+
+[node name="Floor" type="StaticBody2D" parent="Geometry"]
+position = Vector2(-100, 560)
+script = ExtResource("1_block")
+size = Vector2(1400, 200)
+kind = 0
+
+[node name="Resident" parent="." instance=ExtResource("4_resident")]
+position = Vector2(700, 560)
+
+[node name="Hero" parent="." instance=ExtResource("2_hero")]
+position = Vector2(100, 560)
+
+[node name="GameCamera" parent="." instance=ExtResource("3_cam")]
+world_limits = Rect2(-200, -600, 1700, 1600)

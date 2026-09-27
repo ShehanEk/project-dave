@@ -1,0 +1,243 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/pause_menu.gd" id="1_pause"]
+[ext_resource type="Theme" path="res://assets/ui/c11_theme.tres" id="2_theme"]
+
+[node name="PauseMenu" type="CanvasLayer"]
+script = ExtResource("1_pause")
+
+[node name="Dim" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.45)
+mouse_filter = 2
+
+[node name="Panel" type="Panel" parent="."]
+theme = ExtResource("2_theme")
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -250.0
+offset_right = 280.0
+offset_bottom = 250.0
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+offset_left = 24.0
+offset_top = 18.0
+offset_right = 536.0
+offset_bottom = 480.0
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.212, 0.365, 0.384, 1)
+theme_override_font_sizes/font_size = 28
+text = "Paused"
+
+[node name="MainView" type="VBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ResumeButton" type="Button" parent="Panel/VBox/MainView"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Resume"
+
+[node name="JournalButton" type="Button" parent="Panel/VBox/MainView"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Journal"
+
+[node name="SettingsButton" type="Button" parent="Panel/VBox/MainView"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Settings"
+
+[node name="RestartButton" type="Button" parent="Panel/VBox/MainView"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Restart from checkpoint"
+
+[node name="QuitButton" type="Button" parent="Panel/VBox/MainView"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Quit to title"
+
+[node name="JournalView" type="VBoxContainer" parent="Panel/VBox"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ObjectiveLabel" type="Label" parent="Panel/VBox/JournalView"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.212, 0.365, 0.384, 1)
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 2
+text = "Objective: Find the maintenance depot."
+
+[node name="ArtifactLabel" type="Label" parent="Panel/VBox/JournalView"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.302, 0.243, 0.176, 1)
+theme_override_font_sizes/font_size = 20
+autowrap_mode = 2
+text = "Artifacts: 1 undiscovered."
+
+[node name="BackButton" type="Button" parent="Panel/VBox/JournalView"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Back"
+
+[node name="RestartConfirmView" type="VBoxContainer" parent="Panel/VBox"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="WarningLabel" type="Label" parent="Panel/VBox/RestartConfirmView"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.165, 0.125, 1)
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 2
+text = "Restart from checkpoint CP00? Progress since then will be lost."
+
+[node name="ConfirmRow" type="HBoxContainer" parent="Panel/VBox/RestartConfirmView"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ConfirmButton" type="Button" parent="Panel/VBox/RestartConfirmView/ConfirmRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Confirm"
+
+[node name="CancelButton" type="Button" parent="Panel/VBox/RestartConfirmView/ConfirmRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Cancel"
+
+[node name="QuitConfirmView" type="VBoxContainer" parent="Panel/VBox"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="WarningLabel" type="Label" parent="Panel/VBox/QuitConfirmView"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.165, 0.125, 1)
+theme_override_font_sizes/font_size = 22
+autowrap_mode = 2
+text = "Quit to title? Unsaved progress since the last checkpoint will be lost."
+
+[node name="ConfirmRow" type="HBoxContainer" parent="Panel/VBox/QuitConfirmView"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ConfirmButton" type="Button" parent="Panel/VBox/QuitConfirmView/ConfirmRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Confirm"
+
+[node name="CancelButton" type="Button" parent="Panel/VBox/QuitConfirmView/ConfirmRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Cancel"
+
+[node name="SettingsView" type="VBoxContainer" parent="Panel/VBox"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="SubtitlesRow" type="HBoxContainer" parent="Panel/VBox/SettingsView"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="Panel/VBox/SettingsView/SubtitlesRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.165, 0.125, 1)
+theme_override_font_sizes/font_size = 20
+text = "Subtitles"
+
+[node name="SubtitlesCheck" type="CheckButton" parent="Panel/VBox/SettingsView/SubtitlesRow"]
+layout_mode = 2
+button_pressed = true
+
+[node name="TextSizeRow" type="HBoxContainer" parent="Panel/VBox/SettingsView"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="Panel/VBox/SettingsView/TextSizeRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.165, 0.125, 1)
+theme_override_font_sizes/font_size = 20
+text = "Text size"
+
+[node name="TextSizeOption" type="OptionButton" parent="Panel/VBox/SettingsView/TextSizeRow"]
+layout_mode = 2
+
+[node name="ReducedMotionRow" type="HBoxContainer" parent="Panel/VBox/SettingsView"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="Panel/VBox/SettingsView/ReducedMotionRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.165, 0.125, 1)
+theme_override_font_sizes/font_size = 20
+text = "Reduced shake / motion"
+
+[node name="ReducedMotionCheck" type="CheckButton" parent="Panel/VBox/SettingsView/ReducedMotionRow"]
+layout_mode = 2
+
+[node name="MasterRow" type="HBoxContainer" parent="Panel/VBox/SettingsView"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="Panel/VBox/SettingsView/MasterRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.165, 0.125, 1)
+theme_override_font_sizes/font_size = 20
+text = "Master volume"
+
+[node name="MasterSlider" type="HSlider" parent="Panel/VBox/SettingsView/MasterRow"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 0.8
+
+[node name="MusicRow" type="HBoxContainer" parent="Panel/VBox/SettingsView"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="Panel/VBox/SettingsView/MusicRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.165, 0.125, 1)
+theme_override_font_sizes/font_size = 20
+text = "Music volume"
+
+[node name="MusicSlider" type="HSlider" parent="Panel/VBox/SettingsView/MusicRow"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 0.8
+
+[node name="SfxRow" type="HBoxContainer" parent="Panel/VBox/SettingsView"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="Panel/VBox/SettingsView/SfxRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.165, 0.125, 1)
+theme_override_font_sizes/font_size = 20
+text = "Effects volume"
+
+[node name="SfxSlider" type="HSlider" parent="Panel/VBox/SettingsView/SfxRow"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 0.8
+
+[node name="BackButton" type="Button" parent="Panel/VBox/SettingsView"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Back"

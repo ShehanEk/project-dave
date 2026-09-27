@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/objects/maintenance_bench.gd" id="1_bench"]
+[ext_resource type="Script" path="res://scripts/world/toast_label.gd" id="2_toast"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bench"]
+size = Vector2(108, 48)
+
+[node name="MaintenanceBench" type="Area2D"]
+script = ExtResource("1_bench")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -24)
+shape = SubResource("RectangleShape2D_bench")
+
+[node name="Respawn" type="Marker2D" parent="."]
+position = Vector2(0, 0)
+
+[node name="Toast" type="Label" parent="."]
+offset_left = -80.0
+offset_top = -134.0
+offset_right = 80.0
+offset_bottom = -108.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+text = ""
+script = ExtResource("2_toast")

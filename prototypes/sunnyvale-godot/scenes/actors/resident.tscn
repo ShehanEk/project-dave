@@ -1,0 +1,47 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/resident.gd" id="1_resident"]
+[ext_resource type="Resource" path="res://data/tuning/resident.tres" id="2_tuning"]
+[ext_resource type="Script" path="res://scripts/combat/hit_zone.gd" id="3_hitzone"]
+[ext_resource type="Script" path="res://scripts/combat/attack_box.gd" id="4_attackbox"]
+[ext_resource type="Script" path="res://scripts/actors/visuals/resident_visual.gd" id="5_visual"]
+[ext_resource type="Texture2D" path="res://assets/characters/resident_full_2x.png" id="6_photo"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(48, 84)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hitzone"]
+size = Vector2(48, 84)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_attack"]
+size = Vector2(56, 60)
+
+[node name="Resident" type="CharacterBody2D"]
+z_index = 1
+script = ExtResource("1_resident")
+tuning = ExtResource("2_tuning")
+
+[node name="Visual" type="Node2D" parent="."]
+script = ExtResource("5_visual")
+
+[node name="Photo" type="Sprite2D" parent="Visual"]
+texture = ExtResource("6_photo")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -42)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="HitZone" type="Area2D" parent="."]
+script = ExtResource("3_hitzone")
+blocks = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitZone"]
+position = Vector2(0, -42)
+shape = SubResource("RectangleShape2D_hitzone")
+
+[node name="AttackBox" type="Area2D" parent="."]
+script = ExtResource("4_attackbox")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackBox"]
+position = Vector2(0, -46)
+shape = SubResource("RectangleShape2D_attack")

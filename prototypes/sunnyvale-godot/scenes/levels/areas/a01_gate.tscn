@@ -1,0 +1,264 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/levels/area_root.gd" id="1_arearoot"]
+[ext_resource type="Script" path="res://scripts/world/block.gd" id="2_block"]
+[ext_resource type="PackedScene" path="res://scenes/objects/gem.tscn" id="3_gem"]
+[ext_resource type="PackedScene" path="res://scenes/objects/practice_target.tscn" id="4_target"]
+[ext_resource type="PackedScene" path="res://scenes/objects/scenery.tscn" id="5_scenery"]
+[ext_resource type="PackedScene" path="res://scenes/objects/tutorial_prompt.tscn" id="6_tuto"]
+[ext_resource type="PackedScene" path="res://scenes/objects/beat_zone.tscn" id="7_beat"]
+[ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="8_routepoint"]
+[ext_resource type="Script" path="res://scripts/world/visuals/area_backdrop.gd" id="9_backdrop"]
+
+[node name="A01Gate" type="Node2D"]
+script = ExtResource("1_arearoot")
+area_id = "L01-A01"
+width = 3400.0
+camera_top = -700.0
+camera_bottom = 160.0
+
+[node name="Background" type="Node2D" parent="."]
+
+[node name="Sky" type="Parallax2D" parent="Background"]
+script = ExtResource("9_backdrop")
+mode = 0
+tile_width = 3400.0
+horizon_y = 0.0
+broken_projector = true
+
+[node name="Homes" type="Parallax2D" parent="Background"]
+script = ExtResource("9_backdrop")
+mode = 1
+tile_width = 3400.0
+horizon_y = 0.0
+row_seed = 1
+
+[node name="Geometry" type="Node2D" parent="."]
+
+[node name="FloorApron" type="StaticBody2D" parent="Geometry"]
+position = Vector2(0, 0)
+script = ExtResource("2_block")
+size = Vector2(900, 300)
+kind = 0
+
+[node name="LowGround" type="StaticBody2D" parent="Geometry"]
+position = Vector2(900, 0)
+script = ExtResource("2_block")
+size = Vector2(750, 200)
+kind = 0
+
+[node name="StepA" type="StaticBody2D" parent="Geometry"]
+position = Vector2(950, -60)
+script = ExtResource("2_block")
+size = Vector2(150, 60)
+kind = 0
+
+[node name="StepB" type="StaticBody2D" parent="Geometry"]
+position = Vector2(1100, -120)
+script = ExtResource("2_block")
+size = Vector2(150, 120)
+kind = 0
+
+[node name="LandingC" type="StaticBody2D" parent="Geometry"]
+position = Vector2(1346, -120)
+script = ExtResource("2_block")
+size = Vector2(300, 120)
+kind = 0
+
+[node name="GroundMain" type="StaticBody2D" parent="Geometry"]
+position = Vector2(1646, 0)
+script = ExtResource("2_block")
+size = Vector2(1754, 300)
+kind = 0
+
+[node name="Scenery" type="Node2D" parent="."]
+
+[node name="EntryGate" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(40, 0)
+kind = 17
+size = Vector2(140, 110)
+
+[node name="House1" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(310, 0)
+kind = 0
+size = Vector2(150, 140)
+
+[node name="Shrub1" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(560, 0)
+kind = 2
+size = Vector2(60, 60)
+
+[node name="Planter1" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(1400, -120)
+kind = 7
+size = Vector2(50, 50)
+
+[node name="Lamp1" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(2150, 0)
+kind = 6
+size = Vector2(30, 150)
+
+[node name="Clock" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(3150, -500)
+kind = 4
+size = Vector2(100, 100)
+
+[node name="ExitGateFrame" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(3320, 0)
+kind = 15
+size = Vector2(140, 150)
+
+[node name="Entities" type="Node2D" parent="."]
+
+[node name="TutorialPrompt_Move" parent="Entities" instance=ExtResource("6_tuto")]
+position = Vector2(220, -140)
+text = "Move: A / D"
+action = &"move_right"
+
+[node name="TutorialPrompt_Jump" parent="Entities" instance=ExtResource("6_tuto")]
+position = Vector2(820, -140)
+text = "Jump: Space"
+action = &"jump"
+
+[node name="Gem_G001" parent="Entities" instance=ExtResource("3_gem")]
+position = Vector2(850, -20)
+entity_id = "L01-A01-G001"
+value = 1
+
+[node name="Gem_G002" parent="Entities" instance=ExtResource("3_gem")]
+position = Vector2(1450, -140)
+entity_id = "L01-A01-G002"
+value = 1
+
+[node name="TutorialPrompt_Fire" parent="Entities" instance=ExtResource("6_tuto")]
+position = Vector2(1900, -140)
+text = "Aim + Fire: Mouse"
+action = &"fire"
+
+[node name="PracticeTarget" parent="Entities" instance=ExtResource("4_target")]
+position = Vector2(2200, -150)
+
+[node name="Gem_G003" parent="Entities" instance=ExtResource("3_gem")]
+position = Vector2(2450, -20)
+entity_id = "L01-A01-G003"
+value = 1
+
+[node name="Gem_G004" parent="Entities" instance=ExtResource("3_gem")]
+position = Vector2(2700, -20)
+entity_id = "L01-A01-G004"
+value = 1
+
+[node name="Gem_G005" parent="Entities" instance=ExtResource("3_gem")]
+position = Vector2(2950, -20)
+entity_id = "L01-A01-G005"
+value = 1
+
+[node name="Beats" type="Node2D" parent="."]
+
+[node name="Beat_B01" parent="Beats" instance=ExtResource("7_beat")]
+position = Vector2(540, -150)
+beat_id = "L01-A01-B01"
+size = Vector2(700, 500)
+
+[node name="Beat_B02" parent="Beats" instance=ExtResource("7_beat")]
+position = Vector2(1275, -100)
+beat_id = "L01-A01-B02"
+size = Vector2(750, 450)
+
+[node name="Beat_B03" parent="Beats" instance=ExtResource("7_beat")]
+position = Vector2(1975, -100)
+beat_id = "L01-A01-B03"
+size = Vector2(650, 400)
+
+[node name="Beat_B04" parent="Beats" instance=ExtResource("7_beat")]
+position = Vector2(2850, -100)
+beat_id = "L01-A01-B04"
+size = Vector2(1100, 400)
+
+[node name="Markers" type="Node2D" parent="."]
+
+[node name="Spawn_CP00" type="Marker2D" parent="Markers"]
+position = Vector2(160, -4)
+
+[node name="Route" type="Node2D" parent="."]
+
+[node name="R01_CrossApron" type="Marker2D" parent="Route"]
+position = Vector2(700, 0)
+script = ExtResource("8_routepoint")
+action = 0
+tolerance = 12.0
+
+[node name="R02_JumpStepA" type="Marker2D" parent="Route"]
+position = Vector2(922, 0)
+script = ExtResource("8_routepoint")
+action = 1
+tolerance = 6.0
+hold_jump = 0.12
+
+[node name="R03_OnStepA" type="Marker2D" parent="Route"]
+position = Vector2(1020, -60)
+script = ExtResource("8_routepoint")
+action = 0
+tolerance = 10.0
+
+[node name="R04_JumpStepB" type="Marker2D" parent="Route"]
+position = Vector2(1072, -60)
+script = ExtResource("8_routepoint")
+action = 1
+tolerance = 6.0
+hold_jump = 0.12
+
+[node name="R05_OnStepB" type="Marker2D" parent="Route"]
+position = Vector2(1170, -120)
+script = ExtResource("8_routepoint")
+action = 0
+tolerance = 10.0
+
+[node name="R06_JumpGap" type="Marker2D" parent="Route"]
+position = Vector2(1230, -120)
+script = ExtResource("8_routepoint")
+action = 1
+tolerance = 8.0
+hold_jump = 0.16
+
+[node name="R07_OnLanding" type="Marker2D" parent="Route"]
+position = Vector2(1450, -120)
+script = ExtResource("8_routepoint")
+action = 0
+tolerance = 12.0
+
+[node name="R08_CrossLanding" type="Marker2D" parent="Route"]
+position = Vector2(1600, -120)
+script = ExtResource("8_routepoint")
+action = 0
+tolerance = 12.0
+
+[node name="R09_AfterDrop" type="Marker2D" parent="Route"]
+position = Vector2(1800, 0)
+script = ExtResource("8_routepoint")
+action = 0
+tolerance = 12.0
+
+[node name="R10_ShootingLane" type="Marker2D" parent="Route"]
+position = Vector2(2050, 0)
+script = ExtResource("8_routepoint")
+action = 0
+tolerance = 12.0
+
+[node name="R11_GemTrail1" type="Marker2D" parent="Route"]
+position = Vector2(2450, 0)
+script = ExtResource("8_routepoint")
+action = 0
+tolerance = 12.0
+
+[node name="R12_GemTrail2" type="Marker2D" parent="Route"]
+position = Vector2(2750, 0)
+script = ExtResource("8_routepoint")
+action = 0
+tolerance = 12.0
+
+[node name="R13_ToExit" type="Marker2D" parent="Route"]
+position = Vector2(3370, 0)
+script = ExtResource("8_routepoint")
+action = 0
+tolerance = 16.0

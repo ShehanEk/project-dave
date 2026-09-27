@@ -1,0 +1,30 @@
+{"event": "run_start", "t_active": 0.0, "t_wall": 0.0, "build": "0.7.0-m7", "engine": "4.7.2.stable.official", "window_w": 1280, "window_h": 720}
+{"event": "area_enter", "t_active": 0.0, "t_wall": 0.0, "area_id": "L01-A01"}
+{"event": "beat_enter", "t_active": 2.0, "t_wall": 2.0, "beat_id": "L01-A01-B01", "area_id": "L01-A01"}
+{"event": "checkpoint_commit", "t_active": 80.0, "t_wall": 80.0, "checkpoint_id": "CP01"}
+{"event": "area_exit", "t_active": 80.0, "t_wall": 80.0, "area_id": "L01-A01"}
+{"event": "area_enter", "t_active": 80.0, "t_wall": 80.0, "area_id": "L01-A02"}
+{"event": "branch_enter", "t_active": 95.0, "t_wall": 95.0, "branch_id": "OPT01"}
+{"event": "branch_exit", "t_active": 145.0, "t_wall": 145.0, "branch_id": "OPT01"}
+{"event": "death", "t_active": 170.0, "t_wall": 170.0, "x": 512.0, "y": 300.0, "area_id": "L01-A02", "cause": "clipper_charge"}
+{"event": "restart_from_checkpoint", "t_active": 170.0, "t_wall": 175.0, "checkpoint_id": "CP01"}
+{"event": "checkpoint_commit", "t_active": 230.0, "t_wall": 235.0, "checkpoint_id": "CP02"}
+{"event": "area_exit", "t_active": 230.0, "t_wall": 235.0, "area_id": "L01-A02"}
+{"event": "area_enter", "t_active": 230.0, "t_wall": 235.0, "area_id": "L01-A03"}
+{"event": "pause_start", "t_active": 260.0, "t_wall": 265.0}
+{"event": "pause_end", "t_active": 260.0, "t_wall": 325.0}
+{"event": "checkpoint_commit", "t_active": 340.0, "t_wall": 405.0, "checkpoint_id": "CP03"}
+{"event": "area_exit", "t_active": 340.0, "t_wall": 405.0, "area_id": "L01-A03"}
+{"event": "area_enter", "t_active": 340.0, "t_wall": 405.0, "area_id": "L01-A04"}
+{"event": "checkpoint_commit", "t_active": 400.0, "t_wall": 465.0, "checkpoint_id": "CP04"}
+{"event": "area_exit", "t_active": 400.0, "t_wall": 465.0, "area_id": "L01-A04"}
+{"event": "area_enter", "t_active": 400.0, "t_wall": 465.0, "area_id": "L01-A05"}
+{"event": "upgrade_purchase", "t_active": 410.0, "t_wall": 475.0, "weapon_type": "pistol", "stage": 1}
+{"event": "checkpoint_commit", "t_active": 412.0, "t_wall": 477.0, "checkpoint_id": "UPG01"}
+{"event": "weapon_swap", "t_active": 413.0, "t_wall": 478.0, "old_id": "P01-S0", "new_id": "P01-S1"}
+{"event": "checkpoint_commit", "t_active": 440.0, "t_wall": 505.0, "checkpoint_id": "CP05"}
+{"event": "area_exit", "t_active": 440.0, "t_wall": 505.0, "area_id": "L01-A05"}
+{"event": "area_enter", "t_active": 440.0, "t_wall": 505.0, "area_id": "L01-A06"}
+{"event": "checkpoint_commit", "t_active": 470.0, "t_wall": 535.0, "checkpoint_id": "CP06"}
+{"event": "area_exit", "t_active": 470.0, "t_wall": 535.0, "area_id": "L01-A06"}
+{"event": "completion", "t_active": 470.0, "t_wall": 535.0, "active_seconds": 470.0, "gems_found": 58, "artifact_found": true, "upgrade_stage": 1}

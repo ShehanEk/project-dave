@@ -1,0 +1,80 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/clipper.gd" id="1_clipper"]
+[ext_resource type="Resource" path="res://data/tuning/clipper.tres" id="2_tuning"]
+[ext_resource type="Script" path="res://scripts/combat/clipper_front_hit_zone.gd" id="3_front"]
+[ext_resource type="Script" path="res://scripts/combat/hit_zone.gd" id="4_hitzone"]
+[ext_resource type="Script" path="res://scripts/combat/attack_box.gd" id="5_attackbox"]
+[ext_resource type="Script" path="res://scripts/actors/visuals/clipper_visual.gd" id="6_visual"]
+[ext_resource type="Texture2D" path="res://assets/characters/clipper_body_2x.png" id="7_photo"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(64, 48)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_front"]
+size = Vector2(24, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rear"]
+size = Vector2(20, 32)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_shell"]
+size = Vector2(30, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_attack"]
+size = Vector2(16, 40)
+
+[node name="Clipper" type="CharacterBody2D"]
+z_index = 1
+script = ExtResource("1_clipper")
+tuning = ExtResource("2_tuning")
+
+[node name="Visual" type="Node2D" parent="."]
+script = ExtResource("6_visual")
+
+[node name="Photo" type="Sprite2D" parent="Visual"]
+texture = ExtResource("7_photo")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -24)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="FrontHitZone" type="Area2D" parent="."]
+script = ExtResource("3_front")
+blocks = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FrontHitZone"]
+shape = SubResource("RectangleShape2D_front")
+
+[node name="RearHitZone" type="Area2D" parent="."]
+script = ExtResource("4_hitzone")
+blocks = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RearHitZone"]
+shape = SubResource("RectangleShape2D_rear")
+
+[node name="ShellHitZone" type="Area2D" parent="."]
+script = ExtResource("4_hitzone")
+blocks = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ShellHitZone"]
+shape = SubResource("RectangleShape2D_shell")
+
+[node name="AttackBox" type="Area2D" parent="."]
+script = ExtResource("5_attackbox")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackBox"]
+shape = SubResource("RectangleShape2D_attack")
+
+[node name="HintLabel" type="Label" parent="."]
+offset_left = -100.0
+offset_top = -108.0
+offset_right = 100.0
+offset_bottom = -80.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.2, 0.165, 0.125, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "Its motor is exposed when it stalls."
+visible = false

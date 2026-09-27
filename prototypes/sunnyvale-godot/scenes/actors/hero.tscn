@@ -1,0 +1,62 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/hero.gd" id="1_hero"]
+[ext_resource type="Resource" path="res://data/tuning/hero.tres" id="2_tuning"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/scrapjack.tscn" id="3_gun"]
+[ext_resource type="Script" path="res://scripts/actors/visuals/hero_visual.gd" id="4_visual"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(40, 96)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurtbox"]
+size = Vector2(40, 96)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_interact"]
+radius = 72.0
+
+[node name="Hero" type="CharacterBody2D"]
+script = ExtResource("1_hero")
+tuning = ExtResource("2_tuning")
+
+[node name="Visual" type="Node2D" parent="."]
+script = ExtResource("4_visual")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -48)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+monitorable = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+position = Vector2(0, -48)
+shape = SubResource("RectangleShape2D_hurtbox")
+
+[node name="InteractSensor" type="Area2D" parent="."]
+position = Vector2(0, -48)
+collision_layer = 0
+collision_mask = 32
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractSensor"]
+shape = SubResource("CircleShape2D_interact")
+
+[node name="PromptLabel" type="Label" parent="."]
+offset_left = -60.0
+offset_top = -140.0
+offset_right = 60.0
+offset_bottom = -112.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+text = "Interact"
+
+[node name="AimPivot" type="Node2D" parent="."]
+position = Vector2(0, -35)
+
+[node name="Scrapjack" parent="AimPivot" instance=ExtResource("3_gun")]

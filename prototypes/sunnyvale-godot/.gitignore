@@ -1,0 +1,9 @@
+# Godot 4 editor/import cache
+.godot/
+# Local exports and test builds
+exports/
+*.exe
+*.pck
+*.dmg
+# OS clutter
+.DS_Store

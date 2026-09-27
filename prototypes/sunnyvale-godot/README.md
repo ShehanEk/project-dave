@@ -1,0 +1,173 @@
+# DEAD EDEN — Sunnyvale prototype
+
+A single-level (L01) Godot 4 prototype of DEAD EDEN's opening area. Design
+authority: `../../prototype-plans/level-01-sunnyvale/`. Implementation
+contracts (autoloads, IDs, node contracts, hard rules): `CONVENTIONS.md`.
+
+## Opening the project
+
+Godot **4.7.2.stable.official**. Open `project.godot` in the Godot editor,
+or run headless/windowed from the command line:
+
+```sh
+/Applications/Godot.app/Contents/MacOS/Godot --path .          # editor
+/Applications/Godot.app/Contents/MacOS/Godot --path . --headless --quit-after 120  # smoke run
+```
+
+The project boots to a title screen (`scenes/main.tscn`): **New Game**,
+**Continue** (enabled only when a valid save exists — a corrupt primary save
+transparently falls back to its own backup), and **Quit**.
+
+## Running an exported build
+
+`export_presets.cfg` defines two local-test presets ("Windows Desktop",
+x86_64, embedded PCK; "macOS", universal, unsigned) built with:
+
+```sh
+Godot --headless --path . --export-release "Windows Desktop" exports/windows/Sunnyvale.exe
+Godot --headless --path . --export-release "macOS" exports/macos/Sunnyvale.zip
+```
+
+(A third, undeclared-preset **macOS debug** build —
+`Godot --headless --path . --export-debug "macOS" exports/macos-debug/SunnyvaleDebug.zip`
+— exists only to carry the M7 export-verification driver described in
+`reports/export-report.md`; it is not part of the two-preset deliverable.)
+
+`exports/` is gitignored — re-run the commands above to produce a build; see
+`reports/export-report.md` for exact commands, sizes, and verification
+evidence (macOS release export: boots to the title screen with no errors,
+verified this session; save/continue/complete outside the editor verified
+only on the macOS debug export of the same preset and source, since a
+release export cannot run the export-verification driver — the release
+build itself was not separately hand-played through save/continue/complete;
+Windows: exported and file-type-confirmed, launch itself pending an actual
+Windows PC — no Wine on the verifying Mac).
+
+- **macOS**: unzip `Sunnyvale.zip` and open `DEAD EDEN - Sunnyvale
+  Prototype.app`. The build is unsigned (no Apple Developer ID on this
+  project — Godot's own official arm64 template is pre-signed ad-hoc by the
+  Godot Foundation, which is only what lets it run on Apple Silicon at all,
+  not a publisher signature), so Gatekeeper **may** refuse a plain
+  double-click with **"cannot be opened because the developer cannot be
+  verified"** (or, since adding the project's `.pck` after that template
+  signing breaks its resource seal — confirmed via `spctl -a -vv`, which
+  reports `code has no resources but signature indicates they must be
+  present` — a stricter Mac could instead say the app **"is damaged and
+  can't be opened."** in that harder-to-recover case, delete the `.app` and
+  re-unzip a fresh copy from `Sunnyvale.zip` rather than trying to repair it in place). If a dialog
+  appears: right-click (or Control-click) the `.app` → **Open** → **Open** in
+  the confirmation dialog; this is a one-time step per Mac. (This session's
+  own verification launched the exact same build cleanly with no dialog at
+  all, including with a quarantine flag added to simulate a downloaded copy
+  — Gatekeeper strictness varies by Mac/OS version/settings, so treat the
+  above as "if it complains," not a certainty.)
+- **Windows**: unzip if needed and run `Sunnyvale.exe` directly — it is a
+  single embedded-PCK executable, nothing else to install. Windows
+  SmartScreen may show an "unknown publisher" warning on first run for the
+  same reason (unsigned build); choose **More info → Run anyway**.
+
+Saves, settings, and playtest logs from an exported build land in the same
+kind of per-OS `user://` location as the editor (see below), keyed by the
+project's own name — a Windows build's save directory is **not** shared with
+the macOS build, but note that a macOS **debug** export and macOS **release**
+export of this same project *do* share one `app_userdata/DEAD EDEN -
+Sunnyvale Prototype/` folder (same product name), so a checkpoint saved by
+one is visible to the other, exactly like two ordinary launches of the same
+build.
+
+## Controls
+
+| Action | Key / button |
+| --- | --- |
+| Move | A/D or arrow keys |
+| Jump | Space / W / Up |
+| Fire | Left mouse button |
+| Interact | E |
+| Pause / back out of a dialog / skip a scene | Escape |
+| Journal (also opens from the pause menu) | Tab |
+| Skip a noninteractive scene (e.g. SC01) | Enter |
+
+Pause (Escape) opens **Resume, Journal, Settings, Restart from checkpoint,
+Quit to title** — gameplay, enemies, timers, and active-play-time
+accumulation all stop while it's open (`get_tree().paused`). It only opens
+during normal gameplay; it never fights a scene/dialog that already treats
+Escape as its own skip/decline (SC01, the bench, the weapon-swap pad, the
+completion screen).
+
+## Saves, settings, and playtest logs
+
+Everything lives under the user data directory (Godot's `user://`):
+
+| Platform | Path |
+| --- | --- |
+| macOS | `~/Library/Application Support/Godot/app_userdata/DEAD EDEN - Sunnyvale Prototype/sunnyvale/` |
+| Windows | `%APPDATA%\Godot\app_userdata\DEAD EDEN - Sunnyvale Prototype\sunnyvale\` |
+
+- `checkpoint.json` / `checkpoint.bak.json` — the save and its own backup
+  (`CheckpointService`). New Game (when replacing an existing run) and a
+  confirmed "Play again" both clear these.
+- `settings.json` — subtitles/text size/reduced-motion/volume, written
+  separately from the checkpoint by `Settings` (never rolled back, never
+  cleared by New Game/Play again).
+- `playtests/run_<timestamp>.jsonl` — one line per logged event
+  (`Telemetry`, local-only, never uploaded) for one played run: `run_start`,
+  `area_enter`/`area_exit`, `beat_enter`, `branch_enter`/`branch_exit`,
+  `encounter_complete`, `checkpoint_commit`, `death`,
+  `restart_from_checkpoint`, `pause_start`/`pause_end`, `sc01_start`/
+  `sc01_end`, `upgrade_purchase`, `weapon_swap`, `completion`. A run only
+  starts logging once New Game/Continue is actually pressed on the title
+  screen, OR "Play again" is confirmed on the completion screen
+  (`LevelDirector._on_play_again_confirmed()` calls `Telemetry.run_start()`
+  directly, the same as a real player's next run) — every test that drives
+  either path redirects `Telemetry.set_playtest_dir()` to a throwaway folder
+  first (an M7 pass found and fixed two tests that drove "Play again"
+  without doing so; see `reports/export-report.md`).
+
+Summarize a log against 07-acceptance-and-playtesting.md's report template:
+
+```sh
+python3 tools/summarize_playtest.py "<path to a run_....jsonl>"
+```
+
+## Tests
+
+```sh
+tools/test.sh              # full suite, 60fps fixed step (~30s)
+tools/test.sh m5           # only cases whose filename contains "m5"
+FPS=30 tools/test.sh       # repeat at a 30fps fixed step
+```
+
+Tests never touch a real save or a real playtest log — `tests/run_tests.gd`
+redirects `CheckpointService` to one throwaway `user://` folder for the
+whole run (reasserted before every case, and checked afterward against
+regressions — AUD-01) and cleans it up afterward; `Telemetry` has no such
+run-wide redirect, since most cases never touch it at all — each case that
+actually starts a real run (`run_start()`) redirects `Telemetry.
+set_playtest_dir()` to its own throwaway folder itself, same pattern, before
+doing so.
+
+## Current milestone status
+
+See `../../prototype-plans/level-01-sunnyvale/09-progress-and-handoff.md`
+for the authoritative, evidence-backed milestone table. Summary: M0-M6
+verified, including a subsequent adversarial-review pass that found and
+fixed real bugs across M4/M5 (see 09's own "M4/M5 adversarial review fixes"
+session log entry) and an M6 integration/verification pass across the
+parallel audio, characters, environment, and fx/UI presentation work (see
+09's own "M6 presentation pass — integration and verification" session log
+entry, and `reports/asset-inventory.md` for the full per-asset provenance
+table and honest remaining production-art gaps). M7 (validation/export):
+functional matrix T01-T20 verified, T21 mechanically verified with its
+purely visual readability half only partially verified (M6 captures only —
+see `reports/functional-matrix.md`'s T21 note), and completion gates 1-5
+verified (`reports/functional-matrix.md`); export: the macOS release build
+boots to the title screen with no errors, and save/continue/complete is
+verified on the macOS debug export of the same preset/source (not
+separately hand-played on the release build); Windows built and
+file-type-confirmed but not launch-tested (no Wine on the verifying host;
+`reports/export-report.md`). **Playable, timing unverified — implemented,
+unverified (gate 6 and T22-Windows/gate 7 pending)**: gate 6 (three+
+first-time playtests) and gate 7's Windows launch (T22-Windows, no Wine on
+this host) are the two remaining pending items, by explicit decision — no
+testers were available this session, and nothing here substitutes an
+estimate for a measured result.

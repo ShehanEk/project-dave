@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/objects/gem_cache.gd" id="1_cache"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cache"]
+size = Vector2(56, 40)
+
+[node name="GemCache" type="Area2D"]
+script = ExtResource("1_cache")
+entity_id = "L01-OPT02-CACHE01"
+value = 20
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -20)
+shape = SubResource("RectangleShape2D_cache")

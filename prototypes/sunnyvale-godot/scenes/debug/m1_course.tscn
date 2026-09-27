@@ -1,0 +1,179 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/block.gd" id="1_block"]
+[ext_resource type="PackedScene" path="res://scenes/actors/hero.tscn" id="2_hero"]
+[ext_resource type="PackedScene" path="res://scenes/actors/game_camera.tscn" id="3_cam"]
+[ext_resource type="PackedScene" path="res://scenes/objects/practice_target.tscn" id="4_target"]
+[ext_resource type="PackedScene" path="res://scenes/objects/blocked_panel.tscn" id="5_panel"]
+[ext_resource type="PackedScene" path="res://scenes/objects/moving_platform.tscn" id="6_platform"]
+[ext_resource type="Script" path="res://scripts/debug/m1_course.gd" id="7_course"]
+
+[node name="M1Course" type="Node2D"]
+script = ExtResource("7_course")
+
+[node name="Geometry" type="Node2D" parent="."]
+
+[node name="FloorStart" type="StaticBody2D" parent="Geometry"]
+position = Vector2(0, 560)
+script = ExtResource("1_block")
+size = Vector2(300, 200)
+kind = 0
+
+[node name="PointBlankWall" type="StaticBody2D" parent="Geometry"]
+position = Vector2(220, 460)
+script = ExtResource("1_block")
+size = Vector2(40, 100)
+kind = 2
+
+[node name="Floor2" type="StaticBody2D" parent="Geometry"]
+position = Vector2(300, 560)
+script = ExtResource("1_block")
+size = Vector2(200, 200)
+kind = 0
+
+[node name="Step1" type="StaticBody2D" parent="Geometry"]
+position = Vector2(500, 520)
+script = ExtResource("1_block")
+size = Vector2(150, 240)
+kind = 1
+
+[node name="Step2" type="StaticBody2D" parent="Geometry"]
+position = Vector2(650, 480)
+script = ExtResource("1_block")
+size = Vector2(400, 280)
+kind = 1
+
+[node name="StepDown" type="StaticBody2D" parent="Geometry"]
+position = Vector2(1050, 560)
+script = ExtResource("1_block")
+size = Vector2(150, 200)
+kind = 0
+
+[node name="FlatToPanel" type="StaticBody2D" parent="Geometry"]
+position = Vector2(1200, 560)
+script = ExtResource("1_block")
+size = Vector2(500, 200)
+kind = 0
+
+[node name="PadA" type="StaticBody2D" parent="Geometry"]
+position = Vector2(1777, 560)
+script = ExtResource("1_block")
+size = Vector2(120, 200)
+kind = 0
+
+[node name="PadB" type="StaticBody2D" parent="Geometry"]
+position = Vector2(2031, 560)
+script = ExtResource("1_block")
+size = Vector2(120, 200)
+kind = 0
+
+[node name="PadC" type="StaticBody2D" parent="Geometry"]
+position = Vector2(2324, 560)
+script = ExtResource("1_block")
+size = Vector2(120, 200)
+kind = 0
+
+[node name="LandingAfterD" type="StaticBody2D" parent="Geometry"]
+position = Vector2(2636, 560)
+script = ExtResource("1_block")
+size = Vector2(164, 200)
+kind = 0
+
+[node name="CatchA" type="StaticBody2D" parent="Geometry"]
+position = Vector2(1700, 690)
+script = ExtResource("1_block")
+size = Vector2(77, 100)
+kind = 4
+
+[node name="CatchB" type="StaticBody2D" parent="Geometry"]
+position = Vector2(1897, 690)
+script = ExtResource("1_block")
+size = Vector2(134, 100)
+kind = 4
+
+[node name="CatchC" type="StaticBody2D" parent="Geometry"]
+position = Vector2(2151, 690)
+script = ExtResource("1_block")
+size = Vector2(173, 100)
+kind = 4
+
+[node name="CatchD" type="StaticBody2D" parent="Geometry"]
+position = Vector2(2444, 690)
+script = ExtResource("1_block")
+size = Vector2(192, 100)
+kind = 4
+
+[node name="FloorPreCorridor" type="StaticBody2D" parent="Geometry"]
+position = Vector2(2800, 560)
+script = ExtResource("1_block")
+size = Vector2(100, 200)
+kind = 0
+
+[node name="CorridorFloor" type="StaticBody2D" parent="Geometry"]
+position = Vector2(2900, 560)
+script = ExtResource("1_block")
+size = Vector2(300, 200)
+kind = 0
+
+[node name="CorridorCeiling" type="StaticBody2D" parent="Geometry"]
+position = Vector2(2900, 150)
+script = ExtResource("1_block")
+size = Vector2(300, 300)
+kind = 3
+
+[node name="FloorPostCorridor" type="StaticBody2D" parent="Geometry"]
+position = Vector2(3200, 560)
+script = ExtResource("1_block")
+size = Vector2(150, 200)
+kind = 0
+
+[node name="LedgeA" type="StaticBody2D" parent="Geometry"]
+position = Vector2(3350, 560)
+script = ExtResource("1_block")
+size = Vector2(100, 200)
+kind = 0
+
+[node name="LedgeB" type="StaticBody2D" parent="Geometry"]
+position = Vector2(3850, 560)
+script = ExtResource("1_block")
+size = Vector2(150, 200)
+kind = 0
+
+[node name="SafetyNetPlatformGap" type="StaticBody2D" parent="Geometry"]
+position = Vector2(3450, 900)
+script = ExtResource("1_block")
+size = Vector2(400, 100)
+kind = 4
+
+[node name="FloorFinish" type="StaticBody2D" parent="Geometry"]
+position = Vector2(4000, 560)
+script = ExtResource("1_block")
+size = Vector2(300, 200)
+kind = 0
+
+[node name="GlobalSafetyNet" type="StaticBody2D" parent="Geometry"]
+position = Vector2(-200, 1400)
+script = ExtResource("1_block")
+size = Vector2(4700, 100)
+kind = 4
+
+[node name="PracticeTarget" parent="." instance=ExtResource("4_target")]
+position = Vector2(900, 430)
+
+[node name="BlockedPanel" parent="." instance=ExtResource("5_panel")]
+position = Vector2(1450, 500)
+size = Vector2(32, 60)
+
+[node name="MovingPlatform" parent="." instance=ExtResource("6_platform")]
+point_a = Vector2(3525, 570)
+point_b = Vector2(3775, 570)
+speed = 100.0
+pause_time = 0.5
+width = 140.0
+thickness = 20.0
+
+[node name="Hero" parent="." instance=ExtResource("2_hero")]
+position = Vector2(60, 560)
+
+[node name="GameCamera" parent="." instance=ExtResource("3_cam")]
+world_limits = Rect2(-300, -800, 5000, 2600)
