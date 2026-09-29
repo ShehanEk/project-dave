@@ -10,6 +10,16 @@ extends Node2D
 @onready var camera: GameCamera = $GameCamera
 
 
+## debug-demos-touch-real-save: redirect BEFORE any child (the area's
+## recovery station commits CP03 when the route bot uses it) can touch
+## CheckpointService — `_enter_tree()` runs parent-first, ahead of every
+## child's `_ready()`. This is a manual capture demo, never a test, so
+## nothing else redirects it away from the real player's save directory.
+func _enter_tree() -> void:
+	CheckpointService.set_save_dir("user://debug_demo_throwaway/m3_a04_demo")
+	Session.new_run()
+
+
 func _ready() -> void:
 	hero.debug_invulnerable = true
 	var spawn := area.get_marker("Spawn_CP00")

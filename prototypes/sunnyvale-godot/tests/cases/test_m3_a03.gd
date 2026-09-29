@@ -1,25 +1,25 @@
 extends TestCase
 ## M3 area: L01-A03 Rooftop walk (scenes/levels/areas/a03_roofs.tscn).
 ## Porch-step ascent -> first moving-platform crossing (with an untested but
-## present ground-level recovery lane below) -> Resident E05 on a broad far
-## terrace -> a short roof-height sequence to Resident E06's broad landing ->
+## present ground-level recovery lane below) -> Staffer E05 on a broad far
+## terrace -> a short roof-height sequence to Staffer E06's broad landing ->
 ## protected descent with CP02 -> broad descending terraces to the exit seam.
 ## OPT02 is a small up-and-back detour right after the platform landing that
-## opens the 20-value gem cache and rejoins the main route in place.
-## Population/treasure per 02-area-blueprints.md: 2 Residents, 0 Clippers,
-## 5 small gems + 1 cluster (10) on the main route, 20 in the OPT02 cache.
+## opens the 20-value chip cache and rejoins the main route in place.
+## Population/treasure per 02-area-blueprints.md: 2 Staffers, 0 Clippers,
+## 5 small chips + 1 cluster (10) on the main route, 20 in the OPT02 cache.
 
 const AREA := "res://scenes/levels/areas/a03_roofs.tscn"
 
 const EXPECTED_BEATS := [
 	"L01-A03-B01", "L01-A03-B02", "L01-A03-B03", "L01-A03-B04", "L01-A03-B05",
 ]
-const EXPECTED_GEMS := [
+const EXPECTED_CHIPS := [
 	"L01-A03-G001", "L01-A03-G002", "L01-A03-G003", "L01-A03-G004", "L01-A03-G005",
 ]
 const CLUSTER_ID := "L01-A03-GC01"
 const CACHE_ID := "L01-OPT02-CACHE01"
-const EXPECTED_ENEMIES := ["L01-E05-Z01-01", "L01-E06-Z01-01"]
+const EXPECTED_ENEMIES := ["L01-E05-CY01-01", "L01-E06-CY01-01"]
 
 
 func run() -> void:
@@ -38,16 +38,16 @@ func _test_main_route_reaches_exit() -> void:
 			"A03 main route reaches the exit seam (failure=%s, pos=%s)"
 			% [result.failure, result.hero_final_position])
 
-	for id in EXPECTED_GEMS:
-		check(Session.is_collected(id), "main route collects gem %s" % id)
-	check(Session.is_collected(CLUSTER_ID), "main route collects the gem cluster %s" % CLUSTER_ID)
-	# Session.gems_found() sums collected VALUES (small=1, cluster=5), not
+	for id in EXPECTED_CHIPS:
+		check(Session.is_collected(id), "main route collects chip %s" % id)
+	check(Session.is_collected(CLUSTER_ID), "main route collects the chip cluster %s" % CLUSTER_ID)
+	# Session.chips_found() sums collected VALUES (small=1, cluster=5), not
 	# item counts, so 5 small + 1 cluster totals 10, matching the wallet.
-	check(Session.gems_found() == EXPECTED_GEMS.size() * 1 + 5,
-			"main-route treasure totals 10 gems worth of value (5 small + 1 cluster) (got %d)"
-			% Session.gems_found())
-	check(Session.get_wallet() == EXPECTED_GEMS.size() * 1 + 5,
-			"main-route treasure totals 10 gems worth of wallet value (got %d)" % Session.get_wallet())
+	check(Session.chips_found() == EXPECTED_CHIPS.size() * 1 + 5,
+			"main-route treasure totals 10 chips worth of value (5 small + 1 cluster) (got %d)"
+			% Session.chips_found())
+	check(Session.get_wallet() == EXPECTED_CHIPS.size() * 1 + 5,
+			"main-route treasure totals 10 chips worth of wallet value (got %d)" % Session.get_wallet())
 	check(not Session.is_collected(CACHE_ID), "the OPT02 cache is untouched when that branch is disabled")
 
 	check(Session.is_defeated(EXPECTED_ENEMIES[0]) or not Session.is_defeated(EXPECTED_ENEMIES[0]),
@@ -84,7 +84,7 @@ func _test_opt02_branch_opens_cache_and_reaches_exit() -> void:
 			% [result.failure, result.hero_final_position])
 	check(Session.is_collected(CACHE_ID), "the OPT02 branch opens the optional cache")
 	check(Session.get_wallet() == wallet_before + 10 + 20,
-			"OPT02 run collects the main route's 10 gems plus the cache's 20 (before=%d after=%d)"
+			"OPT02 run collects the main route's 10 chips plus the cache's 20 (before=%d after=%d)"
 			% [wallet_before, Session.get_wallet()])
 
 	print("[test_m3_a03] OPT02 branch seconds=%.2f" % result.seconds)
@@ -105,11 +105,11 @@ func _test_static_population_matches_blueprint() -> void:
 				"beat %d is %s in route order (got %s)" % [i, EXPECTED_BEATS[i], beat_ids[i]])
 
 	var entity_ids: PackedStringArray = area.get_entity_ids()
-	var expected_entities := EXPECTED_GEMS.duplicate()
+	var expected_entities := EXPECTED_CHIPS.duplicate()
 	expected_entities.append(CLUSTER_ID)
 	expected_entities.append(CACHE_ID)
 	check(entity_ids.size() == expected_entities.size(),
-			"exactly %d tracked entities: 5 gems + 1 cluster + the OPT02 cache (got %d: %s)"
+			"exactly %d tracked entities: 5 chips + 1 cluster + the OPT02 cache (got %d: %s)"
 			% [expected_entities.size(), entity_ids.size(), entity_ids])
 	for id in expected_entities:
 		check(entity_ids.has(id), "entity_ids includes %s" % id)
@@ -136,15 +136,15 @@ func _test_static_population_matches_blueprint() -> void:
 			"E05's lane (ends at x=%.0f) does not overlap E06's lane (starts at x=%.0f)"
 			% [e05_end, e06_start])
 
-	# Each Resident starts at least 2H (192px) beyond the edge of its own
+	# Each Staffer starts at least 2H (192px) beyond the edge of its own
 	# lane closest to the approach, i.e. away from where the hero lands.
 	var h := 96.0
-	var resident05: Node = e05.get_node("Resident_Z01_01")
-	var resident06: Node = e06.get_node("Resident_Z01_01")
-	check(resident05.global_position.x - e05.lane_rect.position.x >= 2.0 * h,
-			"E05's Resident stands at least 2H beyond its lane's landing edge")
-	check(resident06.global_position.x - e06.lane_rect.position.x >= 2.0 * h,
-			"E06's Resident stands at least 2H beyond its lane's landing edge")
+	var staffer05: Node = e05.get_node("Staffer_CY01_01")
+	var staffer06: Node = e06.get_node("Staffer_CY01_01")
+	check(staffer05.global_position.x - e05.lane_rect.position.x >= 2.0 * h,
+			"E05's Staffer stands at least 2H beyond its lane's landing edge")
+	check(staffer06.global_position.x - e06.lane_rect.position.x >= 2.0 * h,
+			"E06's Staffer stands at least 2H beyond its lane's landing edge")
 
 	var route_points: Array = area.get_route_points([])
 	check(route_points.size() >= 10,

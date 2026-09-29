@@ -28,7 +28,7 @@ const INTERACT_TAP_TIME := 1.0 / 60.0
 ## trying skip alone first and giving it a moment to react avoids ever
 ## pressing `pause` while SC01 is still genuinely running (which would race
 ## PauseMenu's own cutscene-aware open check into pausing the game instead of
-## skipping, stalling this bot). Every OTHER modal (bench/pad/completion
+## skipping, stalling this bot). Every OTHER modal (workbench/pad/completion
 ## confirms) ignores `skip` entirely and closes on `pause`, so it falls
 ## through to the `pause` tap unaffected, just delayed by this long.
 const DISMISS_PAUSE_DELAY := 0.25
@@ -330,7 +330,7 @@ func _tick_interact(delta: float) -> void:
 		_interact_released = true
 	if _interact_timer >= 0.3:
 		if hero and not hero.input_enabled:
-			# The interact opened a modal (bench/pad confirm, SC01, ...) that
+			# The interact opened a modal (workbench/pad confirm, SC01, ...) that
 			# disabled gameplay input. RouteBot makes no gameplay CHOICES on
 			# the player's behalf (never confirms a purchase/swap) — it just
 			# backs out exactly like a player who wants to keep moving, same

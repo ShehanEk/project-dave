@@ -27,8 +27,8 @@ real testers close it.
 
 Explain only the basic controls (see the project `README.md`'s control
 table — move, jump, fire, interact, pause, journal). Do **not** explain or
-hint at the route, where treasure or the optional branches are, enemy
-tactics, or that upgrades exist. Do not coach: if they ask "where do I go?"
+hint at the route, where treasure, the keycard or the optional branches
+are, enemy tactics, or that upgrades exist. Do not coach: if they ask "where do I go?"
 or "what does this do?", say only "explore and find out" or repeat the
 control they asked about. Coaching invalidates the run for the timing gate.
 
@@ -88,7 +88,7 @@ python3 tools/summarize_playtest.py "path/to/run_....jsonl"
 
 This prints the machine-derivable fields of `report-template.md` (main-route
 successful-progress time, optional branch time, raw active first-completion
-time, pause time, deaths/restarts, per-area times, gems/upgrade/artifact).
+time, pause time, deaths/restarts, per-area times, chips/upgrade/evidence).
 It leaves the fields only a human facilitator can fill in —
 tester familiarity, functional failures, confusion/dull sections, machine
 and observed performance, and next-retest notes — marked

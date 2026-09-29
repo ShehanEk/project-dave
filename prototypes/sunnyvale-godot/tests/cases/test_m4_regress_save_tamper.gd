@@ -2,7 +2,7 @@ extends TestCase
 ## REGRESSION (ADV-07): CheckpointService.validate_snapshot() used to accept
 ## several tampered-but-well-typed saves (a third weapon instance, the same
 ## instance both held and on a pad, a deleted world weapon, an out-of-range
-## upgrade stage, an extra top-level field, a negative gem value, an absurd
+## upgrade stage, an extra top-level field, a negative chip value, an absurd
 ## wallet, health 0), and Hero.take_damage() treated health 0 as "already
 ## dead", permanently undamageable. Its own doc says validate_snapshot()
 ## rejects "an out-of-range value, a non-whitelisted id string ... or a
@@ -47,7 +47,7 @@ func run() -> void:
 
 	s = _base()
 	s["collected"] = {"L01-A01-G001": -500}
-	_rejects(s, "negative gem value in collected")
+	_rejects(s, "negative chip value in collected")
 
 	s = _base()
 	s["wallet"] = 1e300

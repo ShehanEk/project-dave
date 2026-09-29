@@ -20,7 +20,7 @@ func _init() -> void:
 	monitorable = true
 
 
-## Override to refuse (e.g. bench locked before SC01). Ineligible objects are
+## Override to refuse (e.g. workbench locked before SC01). Ineligible objects are
 ## never highlighted.
 func can_interact(_hero: Node) -> bool:
 	return true

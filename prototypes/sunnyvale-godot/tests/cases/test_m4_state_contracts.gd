@@ -2,34 +2,34 @@ extends TestCase
 ## M4 state-contract harness (04-godot-architecture.md "Save design" /
 ## 06-build-milestones.md M4 / 07-acceptance-and-playtesting.md's functional
 ## matrix). Covers:
-##   (a) snapshot restoration: save at a station, collect a gem, take
+##   (a) snapshot restoration: save at a station, collect a chip, take
 ##       damage, defeat an enemy, flip a swap, then die -> one consistent
-##       snapshot restored, no duplicate IDs, gem collectible again, wallet
+##       snapshot restored, no duplicate IDs, chip collectible again, wallet
 ##       matches, enemy back at idle placement with full health.
 ##   (b) the upgrade transaction, including a forced persistence failure,
 ##       refusal (locked), insufficient funds, and repeat purchase.
 ##   (c) CheckpointService file-level contracts: malformed JSON, wrong
 ##       schema, a tampered/non-whitelisted id or scene-path, primary
 ##       corrupt + valid backup, and a save/load round trip.
-## Plus focused functional-matrix checks: T09 (45 main-route gem value,
+## Plus focused functional-matrix checks: T09 (45 main-route chip value,
 ## collected at runtime through Session), T12 (capsule/station reuse), T13
 ## (same-type swap confirm/cancel/swap-back), T14 (upgrade via the real
 ## Session API), T15 (post-upgrade swap inherits the type-wide stage), T19
 ## (save failure / invalid save never half-loads).
 ##
-## No player-facing dev toggle exists for the bench's `awakening_done` gate
+## No player-facing dev toggle exists for the workbench's `awakening_done` gate
 ## (per 06's M4 note, a toggle may only simulate it FOR TESTS) — every test
-## below that needs the bench unlocked sets the story flag directly on
+## below that needs the workbench unlocked sets the story flag directly on
 ## Session, exactly as 06 prescribes.
 
 const LEVEL_01 := "res://scenes/levels/level_01.tscn"
-const BENCH_PANEL_SCENE := "res://scenes/ui/bench_panel.tscn"
+const WORKBENCH_PANEL_SCENE := "res://scenes/ui/workbench_panel.tscn"
 const WEAPON_PAD_SCENE := "res://scenes/objects/weapon_pad.tscn"
 const PAD_ID := "L01-A05-PAD01"
 
 
 func run() -> void:
-	_test_gem_economy_runtime_t09()
+	_test_chip_economy_runtime_t09()
 	await _test_snapshot_restoration()
 	await _test_care_and_station_reuse_t12()
 	_test_weapon_pad_swap_t13_t15()
@@ -37,9 +37,9 @@ func run() -> void:
 	_test_checkpoint_service_validation_t19()
 
 
-# --- T09: 45 main-route gem value, collected at runtime -----------------------
+# --- T09: 45 main-route chip value, collected at runtime -----------------------
 
-func _test_gem_economy_runtime_t09() -> void:
+func _test_chip_economy_runtime_t09() -> void:
 	Session.new_run()
 	var level: LevelDirector = load(LEVEL_01).instantiate()
 	add_child(level)
@@ -51,14 +51,14 @@ func _test_gem_economy_runtime_t09() -> void:
 		if entities == null:
 			continue
 		for child in entities.get_children():
-			if child is Gem:
+			if child is Chip:
 				check(Session.collect(child.entity_id, child.value),
 						"runtime collect succeeds for %s (first time)" % child.entity_id)
 				total += child.value
 				count += 1
-	check(total == 45, "collecting every main-route (A01-A04) gem through Session totals 45 gems (got %d from %d pickups)" % [total, count])
+	check(total == 45, "collecting every main-route (A01-A04) chip through Session totals 45 chips (got %d from %d pickups)" % [total, count])
 	check(Session.get_wallet() == 45, "Session wallet reflects the same 45 (got %d)" % Session.get_wallet())
-	check(Session.gems_found() == 45, "gems_found() (collection total) also reads 45 (got %d)" % Session.gems_found())
+	check(Session.chips_found() == 45, "chips_found() (collection total) also reads 45 (got %d)" % Session.chips_found())
 
 	level.queue_free()
 
@@ -81,16 +81,16 @@ func _test_snapshot_restoration() -> void:
 
 	# Now change everything the snapshot contract covers, all AFTER the
 	# commit, so every one of these must roll back on death.
-	var gem: Gem = a02.get_node("Entities/Gem_G001")
-	var gem_id: String = gem.entity_id
-	var gem_value: int = gem.value
-	check(Session.collect(gem_id, gem_value), "collect a gem after the commit")
+	var chip: Chip = a02.get_node("Entities/Chip_G001")
+	var chip_id: String = chip.entity_id
+	var chip_value: int = chip.value
+	check(Session.collect(chip_id, chip_value), "collect a chip after the commit")
 
 	Session.apply_damage(2)
 	check(Session.get_health() == Session.MAX_HEALTH - 2, "take damage after the commit")
 
-	var resident: Resident = a02.get_node("Encounters/EncounterGroup_E01/Resident")
-	var enemy_id: String = resident.entity_id
+	var staffer: Staffer = a02.get_node("Encounters/EncounterGroup_E01/Staffer")
+	var enemy_id: String = staffer.entity_id
 	Session.mark_defeated(enemy_id)
 	check(Session.is_defeated(enemy_id), "defeat an enemy after the commit")
 
@@ -104,8 +104,8 @@ func _test_snapshot_restoration() -> void:
 
 	check(Session.state["checkpoint_id"] == "CP01", "rollback restores checkpoint_id to CP01 (got %s)" % Session.state["checkpoint_id"])
 	check(Session.get_health() == Session.MAX_HEALTH, "rollback restores full health from the CP01 commit (got %d)" % Session.get_health())
-	check(Session.get_wallet() == 0, "rollback restores the pre-gem wallet (got %d)" % Session.get_wallet())
-	check(not Session.is_collected(gem_id), "rollback un-collects the post-commit gem")
+	check(Session.get_wallet() == 0, "rollback restores the pre-chip wallet (got %d)" % Session.get_wallet())
+	check(not Session.is_collected(chip_id), "rollback un-collects the post-commit chip")
 	check(not Session.is_defeated(enemy_id), "rollback un-defeats the post-commit enemy")
 	check(Session.equipped_weapon() == "L01-W01-P01", "rollback restores the pre-swap equipped weapon (got %s)" % Session.equipped_weapon())
 	check(Session.weapon_on_pad(PAD_ID) == "L01-W01-P02", "rollback restores the pre-swap pad occupant")
@@ -114,25 +114,25 @@ func _test_snapshot_restoration() -> void:
 	check(level.areas.size() == 6, "rebuild still has exactly 6 areas (no duplicates)")
 	check(level.get_node_or_null("AreasOld") == null, "the pre-rebuild Areas container was freed, not left as a duplicate")
 	var fresh_a02: AreaRoot = level.areas[1]
-	var fresh_gem: Gem = fresh_a02.get_node_or_null("Entities/Gem_G001")
-	check(is_instance_valid(fresh_gem), "a fresh, uncollected Gem_G001 exists in the rebuilt A02")
-	var fresh_resident: Resident = fresh_a02.get_node_or_null("Encounters/EncounterGroup_E01/Resident")
-	check(is_instance_valid(fresh_resident), "the rebuilt A02 has a fresh Resident at E01's authored (idle) placement")
-	if is_instance_valid(fresh_resident):
-		check(fresh_resident._health == fresh_resident.tuning.health,
-				"the rebuilt Resident is back at full health (got %d want %d)" % [fresh_resident._health, fresh_resident.tuning.health])
+	var fresh_chip: Chip = fresh_a02.get_node_or_null("Entities/Chip_G001")
+	check(is_instance_valid(fresh_chip), "a fresh, uncollected Chip_G001 exists in the rebuilt A02")
+	var fresh_staffer: Staffer = fresh_a02.get_node_or_null("Encounters/EncounterGroup_E01/Staffer")
+	check(is_instance_valid(fresh_staffer), "the rebuilt A02 has a fresh Staffer at E01's authored (idle) placement")
+	if is_instance_valid(fresh_staffer):
+		check(fresh_staffer._health == fresh_staffer.tuning.health,
+				"the rebuilt Staffer is back at full health (got %d want %d)" % [fresh_staffer._health, fresh_staffer.tuning.health])
 
-	# Gem collectible again: walking onto the fresh gem collects it fresh.
-	level.hero.global_position = fresh_gem.global_position
+	# Chip collectible again: walking onto the fresh chip collects it fresh.
+	level.hero.global_position = fresh_chip.global_position
 	await physics_frames(3)
-	check(Session.is_collected(gem_id), "the rolled-back gem is collectible again after rebuild")
-	check(Session.get_wallet() == gem_value, "collecting it again grants its value exactly once (got %d want %d)" % [Session.get_wallet(), gem_value])
+	check(Session.is_collected(chip_id), "the rolled-back chip is collectible again after rebuild")
+	check(Session.get_wallet() == chip_value, "collecting it again grants its value exactly once (got %d want %d)" % [Session.get_wallet(), chip_value])
 
 	level.queue_free()
 	await physics_frames(2)
 
 
-# --- T12: care capsule / station reuse -----------------------------------------
+# --- T12: med-patch / station reuse -----------------------------------------
 
 func _test_care_and_station_reuse_t12() -> void:
 	Session.new_run()
@@ -141,16 +141,16 @@ func _test_care_and_station_reuse_t12() -> void:
 	await physics_frames(3)
 
 	var a02: AreaRoot = level.areas[1]
-	var capsule: CareCapsule = a02.get_node("Entities/CareCapsule_HS01")
+	var capsule: MedPatch = a02.get_node("Entities/MedPatch_HS01")
 	level.hero.global_position = capsule.global_position
 	await physics_frames(3)
 	check(not Session.is_collected(capsule.entity_id),
-			"a full-health hero leaves the care capsule uncollected and in place")
+			"a full-health hero leaves the med-patch uncollected and in place")
 	check(is_instance_valid(capsule), "the capsule node itself still exists (not freed) while full health")
 
-	var gem: Gem = a02.get_node("Entities/Gem_G001")
-	check(Session.collect(gem.entity_id, gem.value), "setup: collect a gem before the station commit")
-	var enemy_id := "L01-E01-Z01-01"
+	var chip: Chip = a02.get_node("Entities/Chip_G001")
+	check(Session.collect(chip.entity_id, chip.value), "setup: collect a chip before the station commit")
+	var enemy_id := "L01-E01-CY01-01"
 	Session.mark_defeated(enemy_id)
 
 	var station: RecoveryStation = a02.get_node("Entities/RecoveryStation_CP01")
@@ -159,11 +159,11 @@ func _test_care_and_station_reuse_t12() -> void:
 	check(Session.state["checkpoint_id"] == "CP01", "first station use commits CP01")
 	var wallet_after_first := Session.get_wallet()
 
-	# Reuse: heals/saves again, but never respawns the gem or revives the enemy.
+	# Reuse: heals/saves again, but never respawns the chip or revives the enemy.
 	station.interact(level.hero)
 	await physics_frames(2)
 	check(Session.get_wallet() == wallet_after_first,
-			"reusing the station does not respawn the already-collected gem (wallet %d -> %d)" % [wallet_after_first, Session.get_wallet()])
+			"reusing the station does not respawn the already-collected chip (wallet %d -> %d)" % [wallet_after_first, Session.get_wallet()])
 	check(Session.is_defeated(enemy_id), "reusing the station does not revive the defeated enemy")
 	check(Session.get_health() == Session.MAX_HEALTH, "reusing the station heals to full again")
 	check(Session.state["checkpoint_id"] == "CP01", "reusing the station commits again (still CP01)")
@@ -231,7 +231,7 @@ func _test_upgrade_transaction_t14() -> void:
 	CheckpointService.set_save_dir(test_dir)
 	CheckpointService.clear()
 
-	# Locked: bench offline before the story flag (M5's SC01; simulated here
+	# Locked: workbench offline before the story flag (M5's SC01; simulated here
 	# per 06's M4 note, directly on Session, never via a player-facing toggle).
 	var locked: Dictionary = Session.purchase_upgrade("W01", 1, 40)
 	check(not locked.get("ok", false) and locked.get("reason", "") == "locked",
@@ -357,11 +357,11 @@ func _test_checkpoint_service_validation_t19() -> void:
 	rich["health"] = 4
 	rich["checkpoint_id"] = "CP02"
 	rich["collected"] = {"L01-A02-G001": 1, "L01-A02-GC01": 5}
-	rich["artifacts"] = ["A01"]
+	rich["evidence"] = ["EF01"]
 	rich["upgrades"] = {"W01": 1}
 	rich["equipped_weapon"] = "L01-W01-P02"
 	rich["world_weapons"] = {"L01-W01-P01": "L01-A05-PAD01"}
-	rich["defeated"] = {"L01-E01-Z01-01": true}
+	rich["defeated"] = {"L01-E01-CY01-01": true}
 	rich["switches"] = {"L01-SW01": true}
 	check(CheckpointService.save_snapshot(rich), "a fully-populated snapshot saves successfully")
 	var round_trip := CheckpointService.load_latest()
@@ -377,7 +377,7 @@ func _test_checkpoint_service_validation_t19() -> void:
 		check(String(rt.get("checkpoint_id", "")) == "CP02", "round trip: checkpoint_id")
 		check(_int_dicts_equal(rt.get("collected", {}), rich["collected"]),
 				"round trip: collected (JSON round-trips ints as floats; compared by value, not Variant type)")
-		check(rt.get("artifacts", []) == rich["artifacts"], "round trip: artifacts")
+		check(rt.get("evidence", []) == rich["evidence"], "round trip: evidence")
 		check(_int_dicts_equal(rt.get("upgrades", {}), rich["upgrades"]), "round trip: upgrades")
 		check(String(rt.get("equipped_weapon", "")) == "L01-W01-P02", "round trip: equipped_weapon")
 		check(rt.get("world_weapons", {}) == rich["world_weapons"], "round trip: world_weapons")

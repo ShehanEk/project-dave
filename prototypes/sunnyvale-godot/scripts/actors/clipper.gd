@@ -12,6 +12,12 @@ extends CharacterBody2D
 signal defeated(entity_id: String)
 signal hint_requested(text: String)
 
+## M7 Kenney part B: no class_name on the puff script (see its own doc
+## comment) — reached through this plain preload + its static `spawn()`,
+## the same pattern every other Kenney-particle call site in this project
+## already uses (chip.gd, hero.gd, staffer.gd, ...).
+const KenneyPuff := preload("res://scripts/effects/kenney/kenney_puff.gd")
+
 enum State { PATROL, WINDUP, CHARGE, STALL, RECOVERY, DEFEATED }
 
 const H := 96.0
@@ -20,8 +26,13 @@ const HEIGHT := 48.0
 const HALF_WIDTH := WIDTH * 0.5
 const HIT_FLASH_TIME := 0.15
 const DEFEAT_FADE_TIME := 0.35
-const HINT_DISPLAY_TIME := 2.5
-const HINT_TEXT := "Its motor is exposed when it stalls."
+const HINT_DISPLAY_TIME := 4.0
+const HINT_TEXT := "Armored! Make it crash into stone, then shoot the motor on its back."
+## M7 Kenney part B readability: the hint label's own base font size, scaled
+## by Settings.scaled_font_size() exactly like every other readable-prompt
+## label in this pass (tutorial_prompt.gd, subtitle_panel.gd). >= 22px at
+## Normal text size per the task brief.
+const HINT_BASE_FONT_SIZE := 24
 
 const OUTLINE := Color("#332a20")
 const SHELL := Color("#6ead48")
@@ -61,6 +72,17 @@ var _frontal_hits: int = 0
 var _hint_shown: bool = false
 var _group: EncounterGroup = null
 var _area_root: Node2D = null
+## Local-space point of the most recent blocked frontal hit (M7 readability:
+## the deflection spark/chevron draws here, not at a fixed spot), valid only
+## while _shell_hit_flash_timer > 0.
+var _shell_hit_flash_local_pos: Vector2 = Vector2.ZERO
+## The wall/backstop StaticBody2D this Clipper's charge most recently stalled
+## against, so the stall can leave a one-time crack mark on it (M7
+## readability: 02 "a subtle crack/impact mark on the stone after the first
+## stall"). Never touches collision/size/position — only that node's own
+## optional `cracked` flag (a plain StaticBody2D never has one; only Block
+## instances opt in), so this is a no-op against any other solid.
+var _last_stall_wall: Node = null
 
 @onready var front_hit_zone: ClipperFrontHitZone = $FrontHitZone
 @onready var rear_hit_zone: HitZone = $RearHitZone
@@ -73,7 +95,19 @@ var _area_root: Node2D = null
 ## resolves on the motor, not the shell.
 @onready var shell_hit_zone: HitZone = $ShellHitZone
 @onready var attack_box: AttackBox = $AttackBox
-@onready var hint_label: Label = $HintLabel
+## Kenney part B fix (hint-label-covers-hero, this pass): screen-anchored
+## (a `CanvasLayer` child, `HintLayer`, ignores this node's own world
+## transform entirely — see clipper.tscn) top-center toast, NOT a world-space
+## label following this Clipper. A world-anchored panel at a fixed local
+## offset could sit over the hero whenever the hero stood/jumped near that
+## offset (confirmed: a hero at Hero.tuning's own max jump apex height
+## (~250px above ground) within the panel's local x-extent rendered directly
+## behind it, hiding everything above the knees — a very ordinary "walk up
+## and mash fire into the shield" sequence, exactly what lands the 2 blocked
+## hits `frontal_hint_threshold` requires). Screen-anchoring removes the
+## hazard entirely: the hint's on-screen position no longer depends on
+## either actor's world position.
+@onready var hint_label: Label = $HintLayer/HintLabel
 ## Untyped on purpose (M6 art pass adds no class_name — see
 ## scripts/actors/visuals/clipper_visual.gd).
 @onready var visual = $Visual
@@ -99,8 +133,30 @@ func _ready() -> void:
 	if hint_label:
 		hint_label.text = HINT_TEXT
 		hint_label.visible = false
+		_apply_hint_text_size()
+		var settings := get_node_or_null("/root/Settings")
+		if settings and not settings.changed.is_connected(_apply_hint_text_size):
+			settings.changed.connect(_apply_hint_text_size)
 	_update_zone_positions()
 	queue_redraw()
+
+
+func _exit_tree() -> void:
+	var settings := get_node_or_null("/root/Settings")
+	if settings and settings.changed.is_connected(_apply_hint_text_size):
+		settings.changed.disconnect(_apply_hint_text_size)
+
+
+## M7 Kenney part B readability: scales the hint label's font with Settings'
+## text-size setting, same idiom as subtitle_panel.gd/controls_panel.gd (a
+## missing Settings autoload — an isolated test scene — just keeps the base
+## size, per every other reader's own `if settings:` guard in this project).
+func _apply_hint_text_size() -> void:
+	if not hint_label:
+		return
+	var settings := get_node_or_null("/root/Settings")
+	hint_label.add_theme_font_size_override("font_size",
+			settings.scaled_font_size(HINT_BASE_FONT_SIZE) if settings else HINT_BASE_FONT_SIZE)
 
 
 func _find_group() -> EncounterGroup:
@@ -192,8 +248,14 @@ func _update_visual_pose(_delta: float) -> void:
 		lean_amount = 1.0
 	elif state == State.PATROL and not is_zero_approx(velocity.x):
 		lean_amount = 0.35
+	# M7 readability: fraction of the stall still remaining (1.0 just after
+	# stalling, 0.0 the instant it ends) drives the shrinking stall-timer
+	# ring in clipper_visual.gd; -1.0 (any non-STALL state) hides it.
+	var stall_remaining := -1.0
+	if state == State.STALL:
+		stall_remaining = 1.0 - clampf(_state_timer / maxf(0.001, tuning.wall_stall_time), 0.0, 1.0)
 	visual.update_pose(facing, lean_amount, eye_retract, shear_open, is_stalled(),
-			_shell_hit_flash_timer > 0.0, _motor_hit_flash_timer > 0.0, -1.0)
+			_shell_hit_flash_timer > 0.0, _motor_hit_flash_timer > 0.0, -1.0, stall_remaining)
 
 
 func _apply_gravity(delta: float) -> void:
@@ -300,13 +362,13 @@ func _tick_charge_post() -> void:
 		var col := get_slide_collision(i)
 		var n := col.get_normal()
 		if n.x * float(_lock_dir) < -0.3:
-			_enter_stall()
+			_enter_stall(col.get_collider())
 			return
 	if _traveled >= tuning.charge_max_distance():
 		_enter_brake_recovery()
 
 
-func _enter_stall() -> void:
+func _enter_stall(wall: Node = null) -> void:
 	state = State.STALL
 	attack_box.active = false
 	velocity = Vector2.ZERO
@@ -318,6 +380,14 @@ func _enter_stall() -> void:
 	# this one sits stalled/recovering.
 	if _group != null:
 		_group.release_attack_token(self)
+	# M7 readability (02 "a subtle crack/impact mark on the stone after the
+	# first stall"): mark the wall this charge actually hit, once. `"cracked"
+	# in wall` is false for any StaticBody2D that isn't a Block (e.g. a
+	# synthetic test backstop or a plain wall), so this is a harmless no-op
+	# everywhere except the real stone backstops.
+	_last_stall_wall = wall
+	if wall != null and "cracked" in wall:
+		wall.cracked = true
 
 
 func _tick_stall(delta: float) -> void:
@@ -376,14 +446,34 @@ func _update_zone_positions() -> void:
 	attack_box.position = Vector2(f * (HALF_WIDTH + 6.0), -HEIGHT * 0.5)
 
 
-func _on_front_blocked_hit() -> void:
+## Host for a one-shot Kenney effect that must outlive whatever spawned it
+## (the Clipper itself is fine for the frontal clang since it's still very
+## much alive right after a blocked hit, but using the current scene root —
+## the same fallback `_spawn_container()`/`chip.gd` etc. already use — keeps
+## a stray effect from being silently freed early if a caller ever fires this
+## from `_defeat()`'s own teardown path).
+func _effect_host() -> Node:
+	var scene := get_tree().current_scene
+	return scene if scene != null else get_tree().root
+
+
+func _on_front_blocked_hit(hit_position: Vector2) -> void:
 	if state == State.DEFEATED:
 		return
 	_shell_hit_flash_timer = HIT_FLASH_TIME
+	_shell_hit_flash_local_pos = to_local(hit_position)
+	# M7 Kenney part B: a short, capped metallic spark burst at the exact
+	# impact point, ADDITIVE to the shape-based chevron/spark drawn below and
+	# clipper_visual.gd's own shield-flash — never a replacement for either.
+	KenneyPuff.spawn(&"clipper_spark", hit_position, _effect_host())
 	_frontal_hits += 1
 	if _frontal_hits >= tuning.frontal_hint_threshold and not _hint_shown:
 		_hint_shown = true
 		hint_requested.emit(HINT_TEXT)
+		# The hint supersedes any tutorial prompt still on screen (the E02
+		# "armored in front" prompt says nearly the same thing and would
+		# otherwise overlap it).
+		get_tree().call_group(&"tutorial_prompt", &"dismiss")
 		if hint_label:
 			hint_label.visible = true
 		_hint_timer = HINT_DISPLAY_TIME
@@ -412,6 +502,9 @@ func _defeat() -> void:
 	if entity_id != "" and Session:
 		Session.mark_defeated(entity_id)
 	Audio.play_sfx(&"clipper_defeat", global_position)
+	# M7 Kenney part B (task brief: "a small smoke puff + a few spark bits").
+	KenneyPuff.spawn(&"clipper_defeat_smoke", global_position, _effect_host())
+	KenneyPuff.spawn(&"clipper_defeat_spark", global_position, _effect_host())
 	defeated.emit(entity_id)
 	_defeat_timer = DEFEAT_FADE_TIME
 	queue_redraw()
@@ -438,6 +531,34 @@ func is_charging() -> bool:
 func _draw() -> void:
 	if state == State.WINDUP:
 		_draw_warning()
+	if _shell_hit_flash_timer > 0.0:
+		_draw_blocked_spark()
+
+
+## M7 readability (02: front hits must unmistakably read "armored", never
+## color alone): a bright deflection spark burst plus a small shield/chevron
+## glyph at the exact impact point, on top of Visual's own brief shield-flash
+## on the shell (clipper_visual.gd's `shell_hit_flash`) and the existing
+## bolt_blocked audio. Fades linearly with the same HIT_FLASH_TIME window the
+## shell-flash already uses, so it never outlasts that cue.
+func _draw_blocked_spark() -> void:
+	var k: float = clampf(_shell_hit_flash_timer / HIT_FLASH_TIME, 0.0, 1.0)
+	var p := _shell_hit_flash_local_pos
+	var c := HIT_FLASH
+	c.a = k
+	# Radiating spark burst (shape, not just a color flash).
+	var spark_len: float = lerpf(2.0, 11.0, k)
+	for i in 6:
+		var ang: float = float(i) / 6.0 * TAU + 0.4
+		var dir := Vector2(cos(ang), sin(ang))
+		draw_line(p, p + dir * spark_len, c, 2.0)
+	# A small chevron ("deflected") glyph, always fully opaque outline so it
+	# reads even as the spark fades.
+	var chevron := PackedVector2Array([
+		p + Vector2(-6.0, -3.0), p + Vector2(0.0, 3.0), p + Vector2(6.0, -3.0),
+	])
+	draw_polyline(chevron, OUTLINE, 3.0, true)
+	draw_polyline(chevron, IVORY, 1.6, true)
 
 
 func _draw_warning() -> void:
@@ -446,7 +567,7 @@ func _draw_warning() -> void:
 	var settings := get_node_or_null("/root/Settings")
 	var reduced_motion: bool = settings != null and settings.get_reduced_motion()
 	# AD-05 fix: never dips below 0.8 alpha now (was 0.2), plus an outline
-	# stroke, matching resident.gd's own warning-triangle fix — measured
+	# stroke, matching staffer.gd's own warning-triangle fix — measured
 	# contrast against sky/lawn/wall backdrops was under 2:1 at the old low
 	# point. Also raised further above the ~80px-tall body sprite (was
 	# -HEIGHT-30 = -78, inside the sprite's own bounds and paintable-over by
@@ -454,6 +575,15 @@ func _draw_warning() -> void:
 	var pulse: float = 0.95 if reduced_motion else 0.9 + 0.1 * sin(_state_timer * TAU * 3.0)
 	var c := WARN_COLOR
 	c.a = pulse
+	# M7 readability bugfix: this triangle spans local y (-102..-82) (top.y=-96,
+	# points at +14/+14/-6). An earlier world-space HintLabel used to span a
+	# nearly identical band, risking overlap if the Clipper re-entered WINDUP
+	# while the hint was still showing. Kenney part B fix (hint-label-covers-
+	# hero): the hint is now `HintLayer`, a screen-anchored CanvasLayer toast
+	# (see clipper.tscn / the `hint_label` doc comment above) — it no longer
+	# occupies any position in this Clipper's local space at all, so it can
+	# never overlap this triangle (or the hero) regardless of either actor's
+	# position.
 	var top := Vector2(0.0, -HEIGHT - 48.0)
 	var pts := PackedVector2Array([
 		top + Vector2(-8.0, 14.0), top + Vector2(8.0, 14.0), top + Vector2(0.0, -6.0),

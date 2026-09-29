@@ -37,7 +37,7 @@ func _ready() -> void:
 
 
 ## Polled by hand in `_physics_process` rather than `_unhandled_input` or
-## idle `_process` — see BenchPanel's `_physics_process()` comment:
+## idle `_process` — see WorkbenchPanel's `_physics_process()` comment:
 ## `Input.action_press()` (RouteBot / tests) never dispatches a real input
 ## event, and idle `_process` can miss a press+release that both happen
 ## within one 60Hz physics tick under a fixed-fps test run.

@@ -3,14 +3,33 @@
 [ext_resource type="Script" path="res://scripts/debug/m6_characters_demo.gd" id="1_demo"]
 [ext_resource type="Script" path="res://scripts/world/block.gd" id="2_block"]
 [ext_resource type="PackedScene" path="res://scenes/actors/hero.tscn" id="3_hero"]
-[ext_resource type="PackedScene" path="res://scenes/actors/resident.tscn" id="4_resident"]
+[ext_resource type="PackedScene" path="res://scenes/actors/staffer.tscn" id="4_staffer"]
 [ext_resource type="PackedScene" path="res://scenes/actors/clipper.tscn" id="5_clipper"]
 [ext_resource type="PackedScene" path="res://scenes/objects/route_switch.tscn" id="6_switch"]
+[ext_resource type="Script" path="res://scripts/combat/encounter_group.gd" id="7_group"]
 
 [node name="M6CharactersDemo" type="Node2D"]
 script = ExtResource("1_demo")
 
+[node name="Backdrop" type="CanvasLayer" parent="."]
+layer = -100
+
+[node name="Night" type="ColorRect" parent="Backdrop"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.054902, 0.0901961, 0.14902, 1)
+
 [node name="Geometry" type="Node2D" parent="."]
+
+[node name="BoardFloor" type="StaticBody2D" parent="Geometry"]
+position = Vector2(-2150, 560)
+script = ExtResource("2_block")
+size = Vector2(1950, 200)
+kind = 0
 
 [node name="Floor" type="StaticBody2D" parent="Geometry"]
 position = Vector2(-100, 560)
@@ -31,7 +50,11 @@ position = Vector2(100, 560)
 position = Vector2(300, 460)
 zoom = Vector2(1.4, 1.4)
 
-[node name="Resident" parent="." instance=ExtResource("4_resident")]
+[node name="StafferGroup" type="Node2D" parent="."]
+script = ExtResource("7_group")
+group_id = "M6DEMO-E01"
+
+[node name="Staffer" parent="StafferGroup" instance=ExtResource("4_staffer")]
 position = Vector2(480, 560)
 
 [node name="RouteSwitch" parent="." instance=ExtResource("6_switch")]

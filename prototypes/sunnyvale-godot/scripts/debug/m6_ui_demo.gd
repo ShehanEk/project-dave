@@ -1,9 +1,9 @@
 extends Node2D
 ## M6 (presentation pass) capture demo (tools/capture.sh visual evidence):
 ## instances the full `level_01.tscn` (LevelDirector) and drives the real
-## BenchPanel/SwapConfirm modals through their real owners' `interact()` (not
+## WorkbenchPanel/SwapConfirm modals through their real owners' `interact()` (not
 ## a scripted stand-in), holding on: ordinary gameplay HUD (partial health,
-## a nonzero wallet, Quickcycle not yet owned), the Maintenance Bench panel,
+## a nonzero wallet, Quickcycle not yet owned), the Maintenance Workbench panel,
 ## and the depot's WeaponPad swap confirmation — the two M6-owned UI screens
 ## the other capture demos (m5_demo.gd, m5b_demo.gd) don't reach. Never
 ## confirms/declines a purchase or swap on the player's behalf; it only opens
@@ -35,30 +35,30 @@ func _ready() -> void:
 
 func _run_sequence() -> void:
 	var depot: AreaRoot = level.areas[DEPOT_AREA_INDEX]
-	var bench: MaintenanceBench = depot.get_node("Entities/MaintenanceBench")
+	var workbench: Workbench = depot.get_node("Entities/Workbench")
 	var pad: WeaponPad = depot.get_node("Entities/WeaponPad")
 
 	# Ordinary gameplay HUD: partial health, a nonzero wallet, Quickcycle not
-	# yet owned (readable partial-loss/gem/fire-readiness state, not just the
+	# yet owned (readable partial-loss/chip/fire-readiness state, not just the
 	# full/empty extremes other captures already show).
 	Session.apply_damage(2)
 	Session.collect("L01-A05-G001", 45)  # whitelisted id (CheckpointService validation)
 	await _wait(1.0)
 
-	# Maintenance Bench: gated on awakening_done, per CONVENTIONS ("isolated
+	# Maintenance Workbench: gated on awakening_done, per CONVENTIONS ("isolated
 	# tests that never run SC01 set the flag directly on Session instead").
 	Session.set_story("awakening_done", true)
-	bench.interact(level.hero)
+	workbench.interact(level.hero)
 	await _wait(1.2)
 	# Buy the Quickcycle (wallet 45 >= price 40) so the follow-up gameplay
 	# hold below can show its held-weapon attachment and HUD pip actually
-	# owned, not just the pre-purchase bench screen.
+	# owned, not just the pre-purchase workbench screen.
 	for child in get_tree().current_scene.get_children():
-		if child is BenchPanel:
+		if child is WorkbenchPanel:
 			child._on_confirm_pressed()
 	await _wait(0.8)
 	for child in get_tree().current_scene.get_children():
-		if child is BenchPanel:
+		if child is WorkbenchPanel:
 			child._on_decline_pressed()  # "Close" once owned
 	await get_tree().physics_frame
 

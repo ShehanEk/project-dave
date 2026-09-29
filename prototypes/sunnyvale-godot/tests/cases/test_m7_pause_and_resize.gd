@@ -8,7 +8,7 @@ extends TestCase
 ## SC01's own hold timer freezes too. Neither ever checks an ENEMY, and
 ## nothing in the suite exercises a live window resize against the HUD's own
 ## anchored Controls. This case closes both gaps:
-##   1. Pause freezes a Resident's and a Clipper's own state machine (the
+##   1. Pause freezes a Staffer's and a Clipper's own state machine (the
 ##      engine's default PROCESS_MODE_PAUSABLE — CONVENTIONS.md: "every other
 ##      node in a level ... uses the engine's default pausable process
 ##      mode" — is what CONVENTIONS documents, but nothing before this case
@@ -22,7 +22,7 @@ const HUD_SCENE := "res://scenes/ui/hud.tscn"
 
 
 func run() -> void:
-	await _test_pause_freezes_resident()
+	await _test_pause_freezes_staffer()
 	await _test_pause_freezes_clipper()
 	await _test_resize_keeps_hud_anchored()
 
@@ -35,26 +35,26 @@ func _make_hero(pos: Vector2) -> Hero:
 	return hero
 
 
-func _test_pause_freezes_resident() -> void:
+func _test_pause_freezes_staffer() -> void:
 	Session.new_run()
-	var resident: Resident = load("res://scenes/actors/resident.tscn").instantiate()
-	add_child(resident)
-	resident.global_position = Vector2(0, 96)
+	var staffer: Staffer = load("res://scenes/actors/staffer.tscn").instantiate()
+	add_child(staffer)
+	staffer.global_position = Vector2(0, 96)
 	# No EncounterGroup ancestor: attacks freely (CONVENTIONS.md), so a hero
 	# within engage_range triggers WINDUP on its own next tick.
 	var hero := _make_hero(Vector2(40, 96))
 	await physics_frames(3)
-	check(resident.state == Resident.State.WINDUP,
-			"setup: an isolated Resident within engage_range enters WINDUP on its own (got state %d)" % resident.state)
+	check(staffer.state == Staffer.State.WINDUP,
+			"setup: an isolated Staffer within engage_range enters WINDUP on its own (got state %d)" % staffer.state)
 
 	get_tree().paused = true
 	await physics_frames(1)
 	check(get_tree().paused, "setup: the tree is actually paused")
-	var frozen_state := resident.state
+	var frozen_state := staffer.state
 	for i in 90:  # 1.5s at 60Hz — comfortably longer than the whole windup+lunge+recovery cycle
 		await get_tree().physics_frame
-	check(resident.state == frozen_state,
-			"pause: a Resident's state machine does not advance while paused (was %d, still %d after 1.5s paused)" % [frozen_state, resident.state])
+	check(staffer.state == frozen_state,
+			"pause: a Staffer's state machine does not advance while paused (was %d, still %d after 1.5s paused)" % [frozen_state, staffer.state])
 
 	get_tree().paused = false
 	await physics_frames(1)
@@ -62,12 +62,12 @@ func _test_pause_freezes_resident() -> void:
 	var advanced := false
 	for i in 180:
 		await get_tree().physics_frame
-		if resident.state != frozen_state:
+		if staffer.state != frozen_state:
 			advanced = true
 			break
-	check(advanced, "pause: the Resident's state machine resumes advancing once unpaused")
+	check(advanced, "pause: the Staffer's state machine resumes advancing once unpaused")
 
-	resident.queue_free()
+	staffer.queue_free()
 	hero.queue_free()
 	get_tree().paused = false
 	await physics_frames(2)

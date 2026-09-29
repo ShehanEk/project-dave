@@ -104,7 +104,7 @@ func register_encounter_groups(areas: Array) -> void:
 				_encounter_groups[group_id] = groups[group_id]
 
 
-# --- event API (called directly by LevelDirector/CoreConsole/PauseMenu) --------
+# --- event API (called directly by LevelDirector/CoreNode/PauseMenu) --------
 
 func area_enter(area_id: String) -> void:
 	_write("area_enter", {"area_id": area_id})
@@ -146,11 +146,11 @@ func sc01_end(skipped: bool) -> void:
 	_write("sc01_end", {"skipped": skipped})
 
 
-func completion(active_seconds: float, gems_found: int, artifact_found: bool, upgrade_stage: int) -> void:
+func completion(active_seconds: float, chips_found: int, evidence_found: bool, upgrade_stage: int) -> void:
 	_write("completion", {
 		"active_seconds": active_seconds,
-		"gems_found": gems_found,
-		"artifact_found": artifact_found,
+		"chips_found": chips_found,
+		"evidence_found": evidence_found,
 		"upgrade_stage": upgrade_stage,
 	})
 

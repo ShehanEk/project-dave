@@ -1,6 +1,6 @@
 extends TestCase
 ## REGRESSION (ADV-01): pressing pause (Escape) during SC01 used to skip the
-## scene and commit CP04 outright (CoreConsole._hold() treated `pause` as a
+## scene and commit CP04 outright (CoreNode._hold() treated `pause` as a
 ## second skip action), so a player who reached for Escape to pause the
 ## game's only story scene lost it for good. story-scenes.md "Pause suspends
 ## scene playback"; interface-and-accessibility.md "Pause during dialogue;
@@ -17,7 +17,7 @@ func run() -> void:
 	var level: LevelDirector = load(LEVEL_01).instantiate()
 	add_child(level)
 	await physics_frames(3)
-	var console: CoreConsole = level.areas[4].get_node("Entities/CoreConsole")
+	var console: CoreNode = level.areas[4].get_node("Entities/CoreNode")
 	level.hero.global_position = console.global_position
 	await physics_frames(2)
 	console.interact(level.hero)

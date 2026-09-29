@@ -4,42 +4,55 @@ extends StaticBody2D
 ## Blockout geometry: a solid axis-aligned rectangle on the world layer.
 ## `position` is the rectangle's TOP-LEFT corner; `size` its extent in px.
 ## Hero height H = 96 px. Collision/size/position are never touched here
-## (M6 hard constraint) — only `_draw()` below changed, to read as the
-## approved hand-drawn C11 Sunnyvale look (art-design/style-guide.md: broad
-## flat colors, one or two crisp cel-shadow shapes, a confident outline,
-## continuous visible top edges) while keeping every top surface at least as
-## readable as the old flat-fill blockout: full-width crisp light top edge,
-## solid outline, and each kind now also draws a small, non-covering support/
-## texture detail that never encroaches on the top edge or the corners.
+## (M6 hard constraint) — only `_draw()` below changed.
+##
+## Revamp (C24) night pass (art-design/style-guide.md "Give playable
+## platforms continuous, visible top edges, lit or rim-lit"; level brief
+## "Usable surfaces have broad lit or rim-lit top edges"): every kind is dark
+## concrete or steel under a thin, full-width cold path-light-white top edge
+## (#D8E6F0) with a lit bevel under it, so every standing surface reads at
+## night; the depot floor swaps that edge for Arcadia teal (the brief's
+## "sharper teal utility light appears inside the depot"). Below the lit
+## upper face each block falls into a large near-black shadow mass (style
+## guide "Shadow: large, simple, near-black shadow shapes"), and its short
+## ends carry a faint slate rim so a ledge's silhouette still reads against
+## the night sky. Details never touch the top edge or the corners, and no
+## non-walkable prop elsewhere uses this bright edge.
 
 enum Kind { GROUND, PLATFORM, WALL, ROOF, BACKSTOP, PORCH, SCENERY_SOLID }
 
-## Base local color per kind (Sunnyvale palette:
-## level-design/l01-welcome-to-sunnyvale.md cream #EFE0BE, peach #DF9E80,
-## lawn #87B45E, sky #A9D6DD, teal #365D62). Kept as a dict (not per-kind
-## consts) so `fill_override` can still substitute cleanly.
+## Upper-face color per kind. Kept as a dict (not per-kind consts) so
+## `fill_override` can still substitute cleanly.
 const FILL := {
-	Kind.GROUND: Color("#87B45E"),      # lawn top
-	Kind.PLATFORM: Color("#c9a35a"),    # sun-worn porch/catch plank
-	Kind.WALL: Color("#c7b393"),        # cream garden wall render
-	Kind.ROOF: Color("#DF9E80"),        # peach terracotta roof tile
-	Kind.BACKSTOP: Color("#9a9a95"),    # indestructible stone
-	Kind.PORCH: Color("#EFE0BE"),       # cream porch decking
-	Kind.SCENERY_SOLID: Color("#9c8f7a"),
+	Kind.GROUND: Color("#1E2B3D"),      # campus paving
+	Kind.PLATFORM: Color("#253449"),    # steel catch plank / ledge
+	Kind.WALL: Color("#212E41"),        # cast-concrete garden wall
+	Kind.ROOF: Color("#1D2A3B"),        # office-wing roof slab
+	Kind.BACKSTOP: Color("#2B384B"),    # indestructible stone planter
+	Kind.PORCH: Color("#222F43"),       # entrance-canopy stone floor
+	Kind.SCENERY_SOLID: Color("#202C3D"),
 }
-const OUTLINE := Color("#332a20")
-const TOP_EDGE := Color("#fff4d6")
-const SHADOW_A := Color(0.0, 0.0, 0.0, 0.10)
-const SHADOW_B := Color(0.0, 0.0, 0.0, 0.16)
-const HIGHLIGHT := Color(1.0, 1.0, 1.0, 0.28)
+const OUTLINE := Color("#05070B")
+## Cold path-light white (level brief #D8E6F0): the walkable top edge.
+const TOP_EDGE := Color("#D8E6F0")
+const TOP_BEVEL := Color("#5A718C")
+const DEEP := Color("#0A0F18")
+const SUBSTRATE := Color("#121A27")
+const SIDE_RIM := Color(0.36, 0.45, 0.56, 0.55)
+const SEAM := Color(0.0, 0.0, 0.0, 0.32)
+const HIGHLIGHT := Color(0.85, 0.92, 1.0, 0.10)
+const TEAL := Color("#3FE0D0")
+const SEDUM := Color("#12261F")
 ## Depot metal floor (A05 interior) — the level brief's "depot metal floor"
-## look for L01-A05's own GROUND-kind blocks. Block never gains a per-
-## instance "surface" export (that would touch Geometry, out of M6 art
-## ownership) — instead it looks up its owning AreaRoot's `area_id`, a
-## read-only lookup that changes no collision/size/position/kind anywhere.
+## look for L01-A05's own GROUND-kind blocks (and its ROOF-kind ceiling).
+## Block never gains a per-instance "surface" export (that would touch
+## Geometry, out of art ownership) — instead it looks up its owning
+## AreaRoot's `area_id`, a read-only lookup that changes no collision/size/
+## position/kind anywhere.
 const DEPOT_AREA_ID := "L01-A05"
-const DEPOT_METAL := Color("#7d8b8c")
-const DEPOT_METAL_EDGE := Color("#cfdcdc")
+const DEPOT_METAL := Color("#1B2735")
+const DEPOT_EDGE := Color("#3FE0D0")
+const DEPOT_BEVEL := Color("#2A5A62")
 
 @export var size: Vector2 = Vector2(192, 48):
 	set(v):
@@ -52,6 +65,15 @@ const DEPOT_METAL_EDGE := Color("#cfdcdc")
 @export var fill_override: Color = Color(0, 0, 0, 0):
 	set(v):
 		fill_override = v
+		queue_redraw()
+## M7 readability (02 "a subtle crack/impact mark on the stone after the
+## first stall"): set once by clipper.gd when a Clipper's charge stalls
+## against this block. Only BACKSTOP-kind stone actually draws it; every
+## other kind ignores the flag, so a stray `cracked = true` elsewhere (e.g. a
+## test helper) never changes ordinary geometry's look.
+@export var cracked: bool = false:
+	set(v):
+		cracked = v
 		queue_redraw()
 
 var _shape_node: CollisionShape2D
@@ -97,152 +119,229 @@ func _owner_area_id() -> String:
 
 func _draw() -> void:
 	var fill: Color = fill_override if fill_override.a > 0.0 else FILL[kind]
-	var top_h: float = minf(6.0, size.y)
+	var in_depot := fill_override.a <= 0.0 and _owner_area_id() == DEPOT_AREA_ID
+	var edge := TOP_EDGE
+	var bevel := TOP_BEVEL
 	match kind:
 		Kind.GROUND:
-			if fill_override.a <= 0.0 and _owner_area_id() == DEPOT_AREA_ID:
+			if in_depot:
 				_draw_depot_floor()
+				edge = DEPOT_EDGE
+				bevel = DEPOT_BEVEL
 			else:
-				_draw_lawn_top(fill, top_h)
+				_draw_paving(fill)
 		Kind.PLATFORM:
-			_draw_plank(fill, top_h, false)
+			_draw_steel_ledge(fill)
 		Kind.WALL:
-			_draw_garden_wall(fill, top_h)
+			_draw_concrete_wall(fill)
 		Kind.ROOF:
-			_draw_roof_tiles(fill, top_h)
+			if in_depot:
+				_draw_depot_ceiling()
+				edge = Color(0.0, 0.0, 0.0, 0.0)
+			else:
+				_draw_roof_slab(fill)
 		Kind.BACKSTOP:
-			_draw_stone_backstop(fill, top_h)
+			_draw_stone_backstop(fill)
+			if cracked:
+				_draw_stone_crack()
 		Kind.PORCH:
-			_draw_plank(fill, top_h, true)
+			_draw_canopy_floor(fill)
 		Kind.SCENERY_SOLID:
-			_draw_plain(fill, top_h)
+			_draw_face(fill, 40.0)
 	# A stone backstop/planter gets a heavier outer silhouette (style guide:
 	# "heavier outer silhouettes") so it always reads as clearly
 	# indestructible next to ordinary ground/plank kinds.
 	draw_rect(Rect2(Vector2.ZERO, size), OUTLINE, false, 4.0 if kind == Kind.BACKSTOP else 3.0)
+	# The lit edge goes on last, over the outline's inner half, so the dark
+	# outline just above it only sharpens the line instead of eating it.
+	if edge.a > 0.0:
+		_draw_lit_edge(edge, bevel)
 
 
-func _draw_plain(fill: Color, top_h: float) -> void:
-	draw_rect(Rect2(Vector2.ZERO, size), fill)
-	draw_rect(Rect2(Vector2.ZERO, Vector2(size.x, top_h)), TOP_EDGE)
+## The shared body: a lit upper face `face_h` tall, a thin shadow line under
+## it, then the near-black mass the rest of the block falls into. Short
+## blocks are all face.
+func _draw_face(fill: Color, face_h: float) -> void:
+	draw_rect(Rect2(Vector2.ZERO, size), DEEP)
+	var fh: float = minf(face_h, size.y)
+	draw_rect(Rect2(Vector2.ZERO, Vector2(size.x, fh)), fill)
+	if size.y > fh + 4.0:
+		draw_rect(Rect2(Vector2(0.0, fh), Vector2(size.x, 4.0)), SEAM)
+		var sub_h: float = minf(36.0, size.y - fh - 4.0)
+		draw_rect(Rect2(Vector2(0.0, fh + 4.0), Vector2(size.x, sub_h)), SUBSTRATE)
+	# faint rim light on both short ends so a ledge's silhouette reads
+	# against the dark backdrop.
+	if size.x >= 12.0:
+		var rim_h: float = minf(size.y, fh + 20.0)
+		draw_line(Vector2(3.0, 5.0), Vector2(3.0, rim_h), SIDE_RIM, 1.5)
+		draw_line(Vector2(size.x - 3.0, 5.0), Vector2(size.x - 3.0, rim_h), SIDE_RIM, 1.5)
 
 
-## Lawn top: crisp light top edge (unchanged readability contract), a
-## slightly darker turf band just under it for a drawn cel-shadow, and small
-## drawn grass-tuft marks along the edge — never taller than the top edge
-## band itself, so they read as texture, not as something standing on the
-## surface a hero could trip on.
-func _draw_lawn_top(fill: Color, top_h: float) -> void:
-	draw_rect(Rect2(Vector2.ZERO, size), fill)
-	var turf_h: float = minf(16.0, size.y * 0.35)
-	if turf_h > 0.0:
-		draw_rect(Rect2(Vector2(0.0, top_h), Vector2(size.x, turf_h)), fill.darkened(0.14))
-	draw_rect(Rect2(Vector2.ZERO, Vector2(size.x, top_h)), TOP_EDGE)
-	if size.x >= 24.0:
-		var spacing: float = 26.0
-		var n: int = maxi(1, int(size.x / spacing))
-		var tuft := fill.darkened(0.32)
-		for i in n:
-			var x: float = (float(i) + 0.5) * size.x / float(n)
-			if x < 6.0 or x > size.x - 6.0:
-				continue
-			draw_line(Vector2(x - 3.5, 1.0), Vector2(x - 5.0, -6.0), tuft, 2.0)
-			draw_line(Vector2(x, 1.0), Vector2(x, -8.0), tuft, 2.0)
-			draw_line(Vector2(x + 3.5, 1.0), Vector2(x + 5.0, -6.0), tuft, 2.0)
+## The readability contract: a crisp, full-width lit line on the top edge
+## plus a lit bevel just under it.
+func _draw_lit_edge(edge: Color, bevel: Color) -> void:
+	var bevel_h: float = minf(3.0, maxf(size.y - 2.0, 0.0))
+	if bevel_h > 0.0:
+		draw_rect(Rect2(Vector2(0.0, 2.0), Vector2(size.x, bevel_h)), bevel)
+	draw_rect(Rect2(Vector2.ZERO, Vector2(size.x, minf(2.0, size.y))), edge)
 
 
-## Depot interior floor (A05 only, GROUND-kind blocks): brushed metal deck
-## with riveted panel seams and a cool highlighted top edge, matching the
-## level brief's "depot metal floor" and its cyan utility light.
-func _draw_depot_floor(_unused_fill: Color = Color.WHITE) -> void:
-	draw_rect(Rect2(Vector2.ZERO, size), DEPOT_METAL)
-	draw_rect(Rect2(Vector2(0.0, minf(10.0, size.y * 0.3)), Vector2(size.x, minf(10.0, size.y * 0.3))), SHADOW_A)
-	draw_rect(Rect2(Vector2.ZERO, Vector2(size.x, minf(5.0, size.y))), DEPOT_METAL_EDGE)
-	var panel: float = 110.0
-	var x: float = panel
-	while x < size.x - 4.0:
-		draw_line(Vector2(x, 2.0), Vector2(x, size.y), Color(0.0, 0.0, 0.0, 0.22), 2.0)
-		draw_circle(Vector2(x - panel * 0.5, 10.0), 3.0, Color(0.0, 0.0, 0.0, 0.35))
-		x += panel
+## Campus paving (GROUND): slab joints on the lit face, then deep shadow.
+func _draw_paving(fill: Color) -> void:
+	_draw_face(fill, 28.0)
+	if size.y >= 20.0 and size.x >= 40.0:
+		var joint := fill.darkened(0.35)
+		var x: float = 64.0
+		while x < size.x - 8.0:
+			draw_line(Vector2(x, 8.0), Vector2(x, minf(26.0, size.y - 2.0)), joint, 2.0)
+			x += 64.0
+		draw_line(Vector2(4.0, 7.0), Vector2(size.x - 4.0, 7.0), HIGHLIGHT, 1.0)
 
 
-## Porch/catch plank (PLATFORM) or wide porch decking (PORCH): horizontal
-## board seams plus a crisp light top edge; PORCH boards are wider and add a
-## thin baseboard skirt along the bottom so a tall porch reads as a built
-## deck, not a floating slab.
-func _draw_plank(fill: Color, top_h: float, wide_boards: bool) -> void:
-	draw_rect(Rect2(Vector2.ZERO, size), fill)
-	draw_rect(Rect2(Vector2.ZERO, Vector2(size.x, top_h)), TOP_EDGE)
-	var board_h: float = 22.0 if wide_boards else 14.0
-	var seam := fill.darkened(0.22)
-	var y: float = top_h + board_h
-	while y < size.y:
-		draw_line(Vector2(0.0, y), Vector2(size.x, y), seam, 1.5)
-		y += board_h
-	if wide_boards and size.y >= 10.0:
-		draw_rect(Rect2(Vector2(0.0, size.y - 6.0), Vector2(size.x, 6.0)), fill.darkened(0.3))
-	# visible end supports hint the plank/porch is held up, never floating.
-	if size.y >= 24.0:
+## Entrance-canopy stone floor (PORCH): larger polished tiles and a thin
+## Arcadia-teal wayfinding inlay under the lit edge.
+func _draw_canopy_floor(fill: Color) -> void:
+	_draw_face(fill, 34.0)
+	if size.y >= 14.0:
+		draw_line(Vector2(4.0, 9.0), Vector2(size.x - 4.0, 9.0), Color(TEAL, 0.5), 1.5)
+	if size.y >= 24.0 and size.x >= 40.0:
+		var joint := fill.darkened(0.35)
+		var x: float = 96.0
+		while x < size.x - 8.0:
+			draw_line(Vector2(x, 12.0), Vector2(x, minf(32.0, size.y - 2.0)), joint, 2.0)
+			x += 96.0
+
+
+## Steel catch plank / ledge (PLATFORM): a grated top band and, on tall
+## ones, a steel-clad column with panel seams and bolts under it.
+func _draw_steel_ledge(fill: Color) -> void:
+	var face_h: float = 14.0 if size.y <= 40.0 else 22.0
+	_draw_face(fill, face_h)
+	if size.y >= 10.0 and size.x >= 16.0:
+		var slot := fill.darkened(0.4)
+		var x: float = 8.0
+		while x < size.x - 6.0:
+			draw_line(Vector2(x, 6.0), Vector2(x, minf(face_h - 3.0, size.y - 2.0)), slot, 2.0)
+			x += 9.0
+	if size.y > 60.0:
+		var col_top: float = face_h + 4.0
+		var col := Rect2(Vector2(6.0, col_top), Vector2(size.x - 12.0, minf(140.0, size.y - col_top)))
+		draw_rect(col, fill.darkened(0.45))
+		var px: float = col.position.x + 40.0
+		while px < col.end.x - 6.0:
+			draw_line(Vector2(px, col.position.y), Vector2(px, col.end.y), SEAM, 2.0)
+			draw_circle(Vector2(px - 20.0, col.position.y + 10.0), 2.0, fill.lightened(0.1))
+			px += 40.0
+		draw_line(col.position + Vector2(1.0, 0.0), Vector2(col.position.x + 1.0, col.end.y), SIDE_RIM, 1.5)
+	elif size.y >= 24.0:
+		# visible end supports hint the plank is held up, never floating.
 		var strut_w: float = minf(10.0, size.x * 0.08)
-		for sx in [strut_w * 0.6, size.x - strut_w * 0.6]:
-			draw_line(Vector2(sx, size.y * 0.55), Vector2(sx, size.y), OUTLINE, 3.0)
+		for sx in [strut_w * 0.6 + 2.0, size.x - strut_w * 0.6 - 2.0]:
+			draw_line(Vector2(sx, face_h), Vector2(sx, size.y), OUTLINE, 3.0)
 
 
-## Garden wall (WALL): staggered stone/brick coursing under a light cream
-## cap, matching the level brief's "low garden walls."
-func _draw_garden_wall(fill: Color, top_h: float) -> void:
-	draw_rect(Rect2(Vector2.ZERO, size), fill)
-	draw_rect(Rect2(Vector2.ZERO, Vector2(size.x, top_h)), TOP_EDGE)
-	var course_h: float = 26.0
-	var brick_w: float = 46.0
-	var mortar := fill.darkened(0.28)
-	var row: int = 0
-	var y: float = top_h + 4.0
-	while y < size.y:
-		var offset: float = (brick_w * 0.5) if (row % 2 == 1) else 0.0
-		draw_line(Vector2(0.0, y), Vector2(size.x, y), mortar, 1.5)
-		var x: float = -offset
-		while x < size.x:
-			if x > 0.0:
-				draw_line(Vector2(x, y), Vector2(x, minf(y + course_h, size.y)), mortar, 1.5)
-			x += brick_w
-		y += course_h
-		row += 1
-
-
-## Roof terrace deck (ROOF): terracotta tile scoring on the walkable top
-## plus a scalloped gutter lip along the front (bottom) edge — the level
-## brief's "fat ceramic gutters, scalloped porch awnings."
-func _draw_roof_tiles(fill: Color, top_h: float) -> void:
-	draw_rect(Rect2(Vector2.ZERO, size), fill)
-	var tile_w: float = 30.0
-	var shadow := fill.darkened(0.18)
-	var x: float = tile_w
+## Cast-concrete garden wall (WALL): a lit cap over large form-work panels
+## with tie-hole dots.
+func _draw_concrete_wall(fill: Color) -> void:
+	_draw_face(fill, minf(size.y, 120.0))
+	if size.y >= 16.0:
+		draw_rect(Rect2(Vector2(0.0, 2.0), Vector2(size.x, minf(8.0, size.y - 2.0))), fill.lightened(0.12))
+	var panel_w: float = 64.0
+	var tie := fill.darkened(0.45)
+	var x: float = 0.0
 	while x < size.x:
-		draw_line(Vector2(x, top_h), Vector2(x - 10.0, size.y), shadow, 1.5)
-		x += tile_w
-	draw_rect(Rect2(Vector2.ZERO, Vector2(size.x, top_h)), TOP_EDGE)
-	if size.y >= 10.0:
-		var scallop_r: float = 9.0
-		var cx: float = scallop_r
-		var gutter_y: float = size.y
-		while cx < size.x:
-			draw_arc(Vector2(cx, gutter_y), scallop_r, 0.0, PI, 8, OUTLINE, 2.0)
-			cx += scallop_r * 1.7
+		if x > 0.0:
+			draw_line(Vector2(x, 10.0), Vector2(x, minf(120.0, size.y)), SEAM, 1.5)
+		var ty: float = 30.0
+		while ty < minf(116.0, size.y - 6.0):
+			for tx in [x + panel_w * 0.3, x + panel_w * 0.7]:
+				if tx < size.x - 4.0:
+					draw_circle(Vector2(tx, ty), 1.8, tie)
+			ty += 36.0
+		x += panel_w
+
+
+## Office-wing roof walkway (ROOF): a dark green-roof planting strip seen
+## edge-on under the lit edge, a steel fascia, and small soffit downlights
+## under the slab — a light near every rooftop landing.
+func _draw_roof_slab(fill: Color) -> void:
+	_draw_face(fill, size.y)
+	if size.y >= 18.0:
+		draw_rect(Rect2(Vector2(0.0, 5.0), Vector2(size.x, 6.0)), SEDUM)
+		var tuft := SEDUM.lightened(0.12)
+		var tx: float = 7.0
+		while tx < size.x - 7.0:
+			draw_line(Vector2(tx, 6.0), Vector2(tx + 3.0, 9.0), tuft, 1.5)
+			tx += 13.0
+		draw_line(Vector2(0.0, 12.5), Vector2(size.x, 12.5), fill.lightened(0.14), 1.5)
+	if size.y >= 26.0:
+		draw_rect(Rect2(Vector2(0.0, size.y - 5.0), Vector2(size.x, 5.0)), OUTLINE)
+		var lx: float = 45.0
+		while lx < size.x - 20.0:
+			draw_rect(Rect2(Vector2(lx - 5.0, size.y - 3.0), Vector2(10.0, 3.0)), Color(TOP_EDGE, 0.85))
+			lx += 90.0
 
 
 ## Backstop/planter stone (BACKSTOP): chunky beveled stone blocks with a
 ## heavier outline and mortar lines — reads as clearly indestructible, never
 ## confused with a breakable prop.
-func _draw_stone_backstop(fill: Color, top_h: float) -> void:
-	draw_rect(Rect2(Vector2.ZERO, size), fill)
-	draw_rect(Rect2(Vector2.ZERO, Vector2(size.x, top_h)), TOP_EDGE)
-	draw_rect(Rect2(Vector2(2.0, top_h + 2.0), Vector2(maxf(size.x - 4.0, 0.0), 4.0)), HIGHLIGHT)
-	var block_h: float = 22.0
-	var mortar := fill.darkened(0.34)
-	var y: float = top_h + block_h
-	while y < size.y:
+func _draw_stone_backstop(fill: Color) -> void:
+	_draw_face(fill, minf(size.y, 180.0))
+	if size.y >= 12.0:
+		draw_rect(Rect2(Vector2(3.0, 6.0), Vector2(maxf(size.x - 6.0, 0.0), 4.0)), HIGHLIGHT)
+	var block_h: float = 24.0
+	var mortar := fill.darkened(0.45)
+	var y: float = 5.0 + block_h
+	var row := 0
+	while y < minf(size.y, 180.0):
 		draw_line(Vector2(0.0, y), Vector2(size.x, y), mortar, 2.0)
+		var off: float = size.x * 0.5 if row % 2 == 0 else size.x * 0.25
+		if y + block_h <= size.y:
+			draw_line(Vector2(off, y), Vector2(off, minf(y + block_h, size.y)), mortar, 2.0)
 		y += block_h
+		row += 1
 	if size.x >= 10.0:
-		draw_line(Vector2(2.0, size.y - 2.0), Vector2(size.x - 2.0, size.y - 2.0), SHADOW_B, 3.0)
+		draw_line(Vector2(3.0, 10.0), Vector2(3.0, minf(size.y, 180.0) - 3.0), HIGHLIGHT, 2.0)
+
+
+## Subtle impact crack (M7 readability, 02): a jagged line plus a small
+## radiating chip pattern centered on the block, reading as "this stone has
+## been hit" without competing with the block's own mortar-line texture.
+## Pale on the dark night stone so it still reads, but thin and unfilled —
+## the design calls this "subtle".
+func _draw_stone_crack() -> void:
+	var c := Color(0.72, 0.8, 0.9, 0.6)
+	var mid := Vector2(size.x * 0.5, minf(size.y, 180.0) * 0.5)
+	var jag := PackedVector2Array([
+		mid + Vector2(-10.0, -14.0), mid + Vector2(-2.0, -4.0), mid + Vector2(4.0, -8.0),
+		mid + Vector2(-1.0, 4.0), mid + Vector2(7.0, 14.0),
+	])
+	draw_polyline(jag, c, 1.4, true)
+	for off in [Vector2(-6.0, 2.0), Vector2(5.0, -6.0)]:
+		draw_line(mid + off, mid + off + off.normalized() * 6.0, c, 1.0)
+
+
+## Depot interior floor (A05 only, GROUND-kind blocks): steel deck plates
+## with rivets under a teal utility-lit edge.
+func _draw_depot_floor() -> void:
+	_draw_face(DEPOT_METAL, 30.0)
+	var panel: float = 110.0
+	var x: float = panel
+	while x < size.x - 4.0:
+		draw_line(Vector2(x, 5.0), Vector2(x, minf(30.0, size.y)), SEAM, 2.0)
+		draw_circle(Vector2(x - panel * 0.5, 16.0), 2.2, DEPOT_METAL.lightened(0.18))
+		x += panel
+
+
+## Depot ceiling (A05 only, ROOF-kind): a steel I-beam ceiling. Not a
+## walkable surface, so no bright top edge — just a faint lit underside
+## where the utility lights below catch it.
+func _draw_depot_ceiling() -> void:
+	draw_rect(Rect2(Vector2.ZERO, size), Color("#101824"))
+	draw_rect(Rect2(Vector2(0.0, size.y - 8.0), Vector2(size.x, 8.0)), DEPOT_METAL)
+	var x: float = 60.0
+	while x < size.x - 4.0:
+		draw_rect(Rect2(Vector2(x - 3.0, 0.0), Vector2(6.0, size.y - 8.0)), Color("#172231"))
+		draw_circle(Vector2(x, size.y - 4.0), 1.8, DEPOT_METAL.lightened(0.2))
+		x += 120.0
+	draw_line(Vector2(0.0, size.y - 1.0), Vector2(size.x, size.y - 1.0), Color(TEAL, 0.35), 2.0)

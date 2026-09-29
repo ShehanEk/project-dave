@@ -18,7 +18,7 @@ func _ready() -> void:
 	Session.new_run()
 	# M6 evidence only: M6_REDUCED_MOTION=1 tools/capture.sh ... captures the
 	# same route with Settings.reduced_motion on (visual-only toggle already
-	# read by hero_visual.gd/resident.gd/clipper.gd/scrapjack.gd/
+	# read by hero_visual.gd/staffer.gd/clipper.gd/scrapjack.gd/
 	# area_backdrop.gd; never touched by RouteBot/physics/state machines).
 	if OS.get_environment("M6_REDUCED_MOTION") == "1":
 		Settings.set_reduced_motion(true)

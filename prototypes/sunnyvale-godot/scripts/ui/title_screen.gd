@@ -18,28 +18,34 @@ signal new_game_confirmed
 signal continue_confirmed(snapshot: Dictionary)
 signal quit_requested
 
-enum View { MAIN, NEW_GAME_CONFIRM }
+enum View { MAIN, NEW_GAME_CONFIRM, CONTROLS }
 
+@onready var _title_label: Label = $Panel/VBox/TitleLabel
 @onready var _new_game_button: Button = $Panel/VBox/MainView/ButtonRow/NewGameButton
 @onready var _continue_button: Button = $Panel/VBox/MainView/ButtonRow/ContinueButton
+@onready var _controls_button: Button = $Panel/VBox/MainView/ButtonRow/ControlsButton
 @onready var _quit_button: Button = $Panel/VBox/MainView/ButtonRow/QuitButton
 @onready var _message_label: Label = $Panel/VBox/MessageLabel
 @onready var _main_view: VBoxContainer = $Panel/VBox/MainView
 @onready var _confirm_view: VBoxContainer = $Panel/VBox/ConfirmView
 @onready var _confirm_button: Button = $Panel/VBox/ConfirmView/ConfirmRow/ConfirmButton
 @onready var _cancel_button: Button = $Panel/VBox/ConfirmView/ConfirmRow/CancelButton
+@onready var _controls_view: ControlsPanel = $Panel/VBox/ControlsView
 
 var _view: View = View.MAIN
 var _pause_was_pressed: bool = false
+var _help_was_pressed: bool = false
 var _text_size_bases: Dictionary = {}  # Control -> base font size (M6 text-size setting)
 
 
 func _ready() -> void:
 	_new_game_button.pressed.connect(_on_new_game_pressed)
 	_continue_button.pressed.connect(_on_continue_pressed)
+	_controls_button.pressed.connect(_on_controls_pressed)
 	_quit_button.pressed.connect(_on_quit_pressed)
 	_confirm_button.pressed.connect(_on_new_game_confirm)
 	_cancel_button.pressed.connect(_on_new_game_cancel)
+	_controls_view.back_pressed.connect(_on_controls_back)
 	_message_label.text = ""
 	refresh()
 	_show_main_view()
@@ -61,6 +67,8 @@ func _exit_tree() -> void:
 ## hardcoding each node's base size a second time here.
 func _collect_text_size_bases(root: Node) -> void:
 	for child in root.get_children():
+		if child is ControlsPanel:
+			continue  # manages its own text-size bases/listener (see its own doc comment)
 		if child is Label or child is Button:
 			_text_size_bases[child] = child.get_theme_font_size("font_size")
 		_collect_text_size_bases(child)
@@ -75,14 +83,26 @@ func _apply_text_size() -> void:
 					settings.scaled_font_size(base) if settings else base)
 
 
-## Polled by hand (see BenchPanel/SwapConfirm's identical comment): `pause`
-## also backs the New Game confirmation out, matching every other dialog's
-## Decline-wired-to-pause convention.
+## Polled by hand (see WorkbenchPanel/SwapConfirm's identical comment): `pause`
+## also backs the New Game confirmation AND the Controls view out, matching
+## every other dialog's Decline-wired-to-pause convention. `help` (F1) opens
+## the Controls view straight from the main view — the title screen's own
+## discoverability hint (also spelled out on the Controls button's own label).
 func _physics_process(_delta: float) -> void:
 	var pressed := Input.is_action_pressed("pause")
-	if pressed and not _pause_was_pressed and _view == View.NEW_GAME_CONFIRM:
-		_on_new_game_cancel()
+	var pause_edge := pressed and not _pause_was_pressed
 	_pause_was_pressed = pressed
+	if pause_edge:
+		if _view == View.NEW_GAME_CONFIRM:
+			_on_new_game_cancel()
+		elif _view == View.CONTROLS:
+			_on_controls_back()
+
+	var help_pressed := Input.is_action_pressed("help")
+	var help_edge := help_pressed and not _help_was_pressed
+	_help_was_pressed = help_pressed
+	if help_edge and _view == View.MAIN:
+		_on_controls_pressed()
 
 
 ## Re-reads `CheckpointService.has_valid_save()` to gate the Continue button.
@@ -100,18 +120,55 @@ func _checkpoint_service() -> Node:
 	return get_node_or_null("/root/CheckpointService")
 
 
-func _show_main_view() -> void:
+## `focus` lets a caller restore focus somewhere other than New Game — used by
+## `_on_controls_back()` so Back/Escape from Controls returns focus to the
+## Controls button itself, per the task's own spec, rather than New Game.
+func _show_main_view(focus: Control = null) -> void:
 	_view = View.MAIN
 	_main_view.visible = true
 	_confirm_view.visible = false
-	_new_game_button.grab_focus()
+	_controls_view.visible = false
+	_message_label.visible = true
+	_title_label.visible = true
+	(focus if focus else _new_game_button).grab_focus()
 
 
 func _show_confirm_view() -> void:
 	_view = View.NEW_GAME_CONFIRM
 	_main_view.visible = false
 	_confirm_view.visible = true
+	_controls_view.visible = false
+	_title_label.visible = true
 	_cancel_button.grab_focus()
+
+
+func _show_controls_view() -> void:
+	_view = View.CONTROLS
+	_main_view.visible = false
+	_confirm_view.visible = false
+	_controls_view.visible = true
+	# Reclaim the (otherwise empty, save-status-only) message line's vertical
+	# space, AND the redundant "DEAD EDEN" heading (the Controls
+	# view already has its own "Controls" title) for the Controls table —
+	# both restored by _show_main_view()/_show_confirm_view(). This is what
+	# gets every row visible with no scrolling at Settings' Normal text size;
+	# at Large text size the table itself still needs scrolling to reach the
+	# last few rows (ControlsPanel.HOST_BUDGET_HEIGHT's own doc comment) —
+	# the shared Panel has no more room to give at a 960x540-legible size.
+	_message_label.visible = false
+	_title_label.visible = false
+	_controls_view.refresh()
+	_controls_view.grab_back_focus()
+
+
+func _on_controls_pressed() -> void:
+	_play_sfx(&"ui_move")
+	_show_controls_view()
+
+
+func _on_controls_back() -> void:
+	_play_sfx(&"ui_back")
+	_show_main_view(_controls_button)
 
 
 func _on_new_game_pressed() -> void:

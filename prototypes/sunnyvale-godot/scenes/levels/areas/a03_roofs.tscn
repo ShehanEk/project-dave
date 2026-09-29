@@ -3,12 +3,12 @@
 [ext_resource type="Script" path="res://scripts/levels/area_root.gd" id="1_arearoot"]
 [ext_resource type="Script" path="res://scripts/world/block.gd" id="2_block"]
 [ext_resource type="PackedScene" path="res://scenes/objects/moving_platform.tscn" id="3_movplat"]
-[ext_resource type="PackedScene" path="res://scenes/objects/gem.tscn" id="4_gem"]
-[ext_resource type="PackedScene" path="res://scenes/objects/gem_cache.tscn" id="5_cache"]
+[ext_resource type="PackedScene" path="res://scenes/objects/chip.tscn" id="4_chip"]
+[ext_resource type="PackedScene" path="res://scenes/objects/chip_cache.tscn" id="5_cache"]
 [ext_resource type="PackedScene" path="res://scenes/objects/recovery_station.tscn" id="6_station"]
 [ext_resource type="PackedScene" path="res://scenes/objects/scenery.tscn" id="7_scenery"]
 [ext_resource type="Script" path="res://scripts/combat/encounter_group.gd" id="8_group"]
-[ext_resource type="PackedScene" path="res://scenes/actors/resident.tscn" id="9_resident"]
+[ext_resource type="PackedScene" path="res://scenes/actors/staffer.tscn" id="9_staffer"]
 [ext_resource type="PackedScene" path="res://scenes/objects/beat_zone.tscn" id="10_beat"]
 [ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="11_routepoint"]
 [ext_resource type="PackedScene" path="res://scenes/objects/kill_plane.tscn" id="12_killplane"]
@@ -31,14 +31,13 @@ camera_bottom = 140.0
 script = ExtResource("50_backdrop")
 mode = 0
 tile_width = 7050.0
-horizon_y = -280.0
+horizon_y = 0.0
 
 [node name="Homes" type="Parallax2D" parent="Background"]
 script = ExtResource("50_backdrop")
 mode = 1
 tile_width = 7050.0
-horizon_y = -280.0
-row_seed = 3
+horizon_y = 0.0
 
 [node name="Geometry" type="Node2D" parent="."]
 
@@ -156,8 +155,8 @@ size = Vector2(150, 50)
 [node name="Sign" parent="Scenery" instance=ExtResource("7_scenery")]
 position = Vector2(60, 0)
 kind = 11
-size = Vector2(90, 60)
-text = "L01-A03"
+size = Vector2(110, 60)
+text = "ROOF WALK"
 
 [node name="House01" parent="Scenery" instance=ExtResource("7_scenery")]
 position = Vector2(1650, -216)
@@ -200,9 +199,84 @@ kind = 1
 size = Vector2(150, 50)
 
 [node name="Clock" parent="Scenery" instance=ExtResource("7_scenery")]
-position = Vector2(6800, -420)
+position = Vector2(6800, -380)
 kind = 4
 size = Vector2(150, 150)
+
+[node name="RoofLamp_T1" parent="Scenery" instance=ExtResource("7_scenery")]
+position = Vector2(600, -64)
+kind = 6
+size = Vector2(30, 120)
+
+[node name="RoofLamp_T2" parent="Scenery" instance=ExtResource("7_scenery")]
+position = Vector2(1030, -136)
+kind = 6
+size = Vector2(30, 120)
+
+[node name="LandingLamp_RecoveryStep" parent="Scenery" instance=ExtResource("7_scenery")]
+position = Vector2(1400, 0)
+kind = 6
+size = Vector2(30, 150)
+
+[node name="RoofLamp_T3" parent="Scenery" instance=ExtResource("7_scenery")]
+position = Vector2(1470, -216)
+kind = 6
+size = Vector2(30, 120)
+
+[node name="LandingLamp_ServiceLane" parent="Scenery" instance=ExtResource("7_scenery")]
+position = Vector2(2150, 0)
+kind = 6
+size = Vector2(30, 160)
+
+[node name="RoofLamp_T4a" parent="Scenery" instance=ExtResource("7_scenery")]
+position = Vector2(2455, -216)
+kind = 6
+size = Vector2(30, 120)
+
+[node name="RoofLamp_T4b" parent="Scenery" instance=ExtResource("7_scenery")]
+position = Vector2(2880, -216)
+kind = 6
+size = Vector2(30, 120)
+
+[node name="RoofLamp_T4bEnd" parent="Scenery" instance=ExtResource("7_scenery")]
+position = Vector2(3440, -216)
+kind = 6
+size = Vector2(30, 120)
+
+[node name="RoofLamp_T6" parent="Scenery" instance=ExtResource("7_scenery")]
+position = Vector2(4040, -380)
+kind = 6
+size = Vector2(30, 120)
+
+[node name="RoofLamp_T7" parent="Scenery" instance=ExtResource("7_scenery")]
+position = Vector2(4440, -460)
+kind = 6
+size = Vector2(30, 120)
+
+[node name="RoofLamp_T8" parent="Scenery" instance=ExtResource("7_scenery")]
+position = Vector2(4830, -540)
+kind = 6
+size = Vector2(30, 120)
+
+[node name="RoofLamp_D1" parent="Scenery" instance=ExtResource("7_scenery")]
+position = Vector2(5880, -420)
+kind = 6
+size = Vector2(30, 120)
+
+[node name="RoofLamp_D2" parent="Scenery" instance=ExtResource("7_scenery")]
+position = Vector2(6070, -300)
+kind = 6
+size = Vector2(30, 120)
+
+[node name="RoofLamp_D3" parent="Scenery" instance=ExtResource("7_scenery")]
+position = Vector2(6460, -180)
+kind = 6
+size = Vector2(30, 120)
+
+[node name="LandingLamp_Exit" parent="Scenery" instance=ExtResource("7_scenery")]
+position = Vector2(6960, 0)
+kind = 6
+size = Vector2(30, 150)
 
 [node name="Supports" type="Node2D" parent="Scenery"]
 
@@ -268,37 +342,37 @@ size = Vector2(50, 140)
 
 [node name="Entities" type="Node2D" parent="."]
 
-[node name="Gem_G001" parent="Entities" instance=ExtResource("4_gem")]
+[node name="Chip_G001" parent="Entities" instance=ExtResource("4_chip")]
 position = Vector2(700, -84)
 entity_id = "L01-A03-G001"
 value = 1
 
-[node name="Gem_G002" parent="Entities" instance=ExtResource("4_gem")]
+[node name="Chip_G002" parent="Entities" instance=ExtResource("4_chip")]
 position = Vector2(1140, -156)
 entity_id = "L01-A03-G002"
 value = 1
 
-[node name="Gem_G003" parent="Entities" instance=ExtResource("4_gem")]
+[node name="Chip_G003" parent="Entities" instance=ExtResource("4_chip")]
 position = Vector2(1650, -236)
 entity_id = "L01-A03-G003"
 value = 1
 
-[node name="Gem_G004" parent="Entities" instance=ExtResource("4_gem")]
+[node name="Chip_G004" parent="Entities" instance=ExtResource("4_chip")]
 position = Vector2(2950, -236)
 entity_id = "L01-A03-G004"
 value = 1
 
-[node name="GemCluster_GC01" parent="Entities" instance=ExtResource("4_gem")]
+[node name="ChipCluster_GC01" parent="Entities" instance=ExtResource("4_chip")]
 position = Vector2(4060, -400)
 entity_id = "L01-A03-GC01"
 value = 5
 
-[node name="Gem_G005" parent="Entities" instance=ExtResource("4_gem")]
+[node name="Chip_G005" parent="Entities" instance=ExtResource("4_chip")]
 position = Vector2(5300, -560)
 entity_id = "L01-A03-G005"
 value = 1
 
-[node name="GemCache_OPT02" parent="Entities" instance=ExtResource("5_cache")]
+[node name="ChipCache_OPT02" parent="Entities" instance=ExtResource("5_cache")]
 position = Vector2(2630, -346)
 entity_id = "L01-OPT02-CACHE01"
 value = 20
@@ -321,7 +395,7 @@ lane_rect = Rect2(2850, -500, 620, 700)
 reactivate_cooldown = 0.35
 
 [node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E05"]
-position = Vector2(2900, -200)
+position = Vector2(3100, -200)
 collision_layer = 0
 collision_mask = 2
 monitoring = true
@@ -330,9 +404,9 @@ monitorable = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E05/ApproachZone"]
 shape = SubResource("RectangleShape2D_approach")
 
-[node name="Resident_Z01_01" parent="Encounters/EncounterGroup_E05" instance=ExtResource("9_resident")]
+[node name="Staffer_CY01_01" parent="Encounters/EncounterGroup_E05" instance=ExtResource("9_staffer")]
 position = Vector2(3230, -216)
-entity_id = "L01-E05-Z01-01"
+entity_id = "L01-E05-CY01-01"
 
 [node name="EncounterGroup_E06" type="Node2D" parent="Encounters"]
 script = ExtResource("8_group")
@@ -350,9 +424,9 @@ monitorable = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E06/ApproachZone"]
 shape = SubResource("RectangleShape2D_approach")
 
-[node name="Resident_Z01_01" parent="Encounters/EncounterGroup_E06" instance=ExtResource("9_resident")]
+[node name="Staffer_CY01_01" parent="Encounters/EncounterGroup_E06" instance=ExtResource("9_staffer")]
 position = Vector2(5090, -540)
-entity_id = "L01-E06-Z01-01"
+entity_id = "L01-E06-CY01-01"
 
 [node name="Beats" type="Node2D" parent="."]
 

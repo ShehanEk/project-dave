@@ -3,12 +3,12 @@
 [ext_resource type="Script" path="res://scripts/ui/subtitle_panel.gd" id="1_subtitle"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_subtitle"]
-bg_color = Color(0.2, 0.165, 0.125, 0.92)
+bg_color = Color(0.027, 0.035, 0.059, 0.9)
 border_width_left = 3
 border_width_top = 3
 border_width_right = 3
 border_width_bottom = 3
-border_color = Color(0.13, 0.105, 0.078, 1)
+border_color = Color(0.11, 0.165, 0.227, 1)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
@@ -40,7 +40,7 @@ theme_override_constants/separation = 6
 layout_mode = 2
 theme_override_colors/font_color = Color(0.561, 0.878, 0.788, 1)
 theme_override_font_sizes/font_size = 20
-text = "Rook"
+text = "Dave"
 
 [node name="TextLabel" type="Label" parent="Panel/VBox"]
 layout_mode = 2
@@ -58,8 +58,8 @@ offset_left = -220.0
 offset_top = -40.0
 offset_right = -16.0
 offset_bottom = -12.0
-theme_override_colors/font_color = Color(0.91, 0.87, 0.7, 1)
-theme_override_colors/font_outline_color = Color(0.2, 0.165, 0.125, 1)
+theme_override_colors/font_color = Color(0.847, 0.886, 0.925, 1)
+theme_override_colors/font_outline_color = Color(0.027, 0.035, 0.059, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 18
 horizontal_alignment = 2

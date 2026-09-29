@@ -11,7 +11,7 @@ extends Node2D
 ## empty so helpers/tests never crash on a partial scene):
 ##   Geometry   — Block / MovingPlatform / service_walkway solids
 ##   Scenery    — non-colliding props (scenery.tscn etc.)
-##   Entities   — pickups/interactables (gem, capsule, station, console, ...)
+##   Entities   — pickups/interactables (chip, capsule, station, console, ...)
 ##   Encounters — EncounterGroup nodes with their enemies
 ##   Beats      — BeatZone nodes (debug/telemetry beat markers)
 ##   Route      — RoutePoint chain(s) for the debug RouteBot

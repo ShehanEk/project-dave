@@ -1,5 +1,5 @@
 extends TestCase
-## M7 / 07-acceptance-and-playtesting.md T10 ("Optional routes: Welcome Key
+## M7 / 07-acceptance-and-playtesting.md T10 ("Optional routes: Lockout Notice
 ## and separate 20-value cache reachable without new abilities").
 ##
 ## test_m3_level.gd's own `_test_optional_branches()` already proves OPT01 and
@@ -9,8 +9,8 @@ extends TestCase
 ## collected, only that the branch's own route finishes. A branch that
 ## silently walked past its own reward (e.g. a moved/mis-tagged pickup) would
 ## still pass that test. This case reuses the same normal-movement RouteBot
-## traversal and adds the missing assertion: after OPT01, the Welcome Key
-## (artifact A01) is actually recorded; after OPT02, the 20-value cache is
+## traversal and adds the missing assertion: after OPT01, the Lockout Notice
+## (evidence A01) is actually recorded; after OPT02, the 20-value cache is
 ## actually collected.
 
 const LEVEL_01 := "res://scenes/levels/level_01.tscn"
@@ -49,17 +49,17 @@ func _run_branch(branch_id: String) -> void:
 	check(bot.success, "%s branch (normal movement only, no new abilities) completes and rejoins the main route (failure=%s)" % [branch_id, report.failure])
 
 	if branch_id == "OPT01":
-		print("[test_m7_optional_rewards] OPT01: has_artifact(A01)=%s wallet=%d gems_found=%d" % [
-				Session.has_artifact("A01"), Session.get_wallet(), Session.gems_found()])
-		check(Session.has_artifact("A01"),
-				"OPT01: the Welcome Key (artifact A01) is actually recorded after the branch, not just reachable in theory")
+		print("[test_m7_optional_rewards] OPT01: has_evidence(A01)=%s wallet=%d chips_found=%d" % [
+				Session.has_evidence("EF01"), Session.get_wallet(), Session.chips_found()])
+		check(Session.has_evidence("EF01"),
+				"OPT01: the Lockout Notice (evidence A01) is actually recorded after the branch, not just reachable in theory")
 	elif branch_id == "OPT02":
-		print("[test_m7_optional_rewards] OPT02: is_collected(%s)=%s wallet=%d gems_found=%d" % [
-				CACHE_ID, Session.is_collected(CACHE_ID), Session.get_wallet(), Session.gems_found()])
+		print("[test_m7_optional_rewards] OPT02: is_collected(%s)=%s wallet=%d chips_found=%d" % [
+				CACHE_ID, Session.is_collected(CACHE_ID), Session.get_wallet(), Session.chips_found()])
 		check(Session.is_collected(CACHE_ID),
 				"OPT02: the separate cache (%s) is actually collected after the branch" % CACHE_ID)
-		check(Session.gems_found() >= CACHE_VALUE,
-				"OPT02: gems_found includes at least the cache's own %d value (got %d)" % [CACHE_VALUE, Session.gems_found()])
+		check(Session.chips_found() >= CACHE_VALUE,
+				"OPT02: chips_found includes at least the cache's own %d value (got %d)" % [CACHE_VALUE, Session.chips_found()])
 
 	bot.queue_free()
 	level.queue_free()

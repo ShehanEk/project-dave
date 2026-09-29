@@ -7,6 +7,14 @@ criteria and timing protocol). See `playtests/README.md` and
 `playtests/results/README.md` for the kit that will collect the real
 measurement.
 
+**Revamp note (2026-09-29):** the bot-traversal figures below were recorded
+on the pre-revamp M7 build. The revamp changed story, names, look and
+collectibles, not level geometry, tuning or timings (it added one contact
+pickup, the keycard, on the A04 route), so the figures are expected to be
+close, but they were not re-recorded for this update; refresh them with
+`cd prototypes/sunnyvale-godot && NOIMPORT=1 tools/test.sh m3_level`. The
+area names and vocabulary here are the current ones.
+
 ## Status: the gate is UNVERIFIED
 
 No first-time player has completed a timed run of this build. **This
@@ -32,15 +40,15 @@ point as fast as its scripted inputs allow. Its time is therefore a **floor
 on bare traversal**, not a simulation of a first-time player, and must never
 be presented as pacing evidence.
 
-Re-run this session (`NOIMPORT=1 tools/test.sh m3_level`, current build):
+Re-run at M7 (`NOIMPORT=1 tools/test.sh m3_level`, the M7 build):
 
-| Area | Bot traversal (this run) | Bot traversal (09's prior recorded run) | 01's per-area budget |
+| Area | Bot traversal (M7 run) | Bot traversal (09's prior recorded run) | 01's per-area budget |
 | --- | ---: | ---: | ---: |
 | L01-A01 Perimeter gate | 9.38s | 9.38s | 75s |
 | L01-A02 Front gardens | 17.85s | 17.95s | 150s |
 | L01-A03 Rooftop walk | 20.72s | 22.18s | 135s |
-| L01-A04 Neighborhood square | 21.63s | 21.77s | 165s |
-| L01-A05 Maintenance depot | 8.60s | 8.02s | 90s |
+| L01-A04 Campus plaza | 21.63s | 21.77s | 165s |
+| L01-A05 Server depot | 8.60s | 8.02s | 90s |
 | L01-A06 Alarm exit | 17.35s | 17.75s | 135s |
 | **Main route total** | **95.53s** | **97.05s** | **750s (12:30)** |
 | OPT01 branch (full route with branch) | 95.58s | 107.95s | +45–60s over main route, per 01 |
@@ -57,7 +65,7 @@ detour costs almost nothing over the main route in raw bot traversal this
 run (main-route total 95.53s vs OPT01-branch total 95.58s, i.e. ~0.05s more
 end to end for taking the detour) — 01's own +45–60s budget for that branch
 is not visible in bare traversal time at all and depends entirely on the
-artifact/reading content the branch is meant to add, which no automated run
+evidence-file/reading content the branch is meant to add, which no automated run
 can measure. Reproduce with:
 `cd prototypes/sunnyvale-godot && NOIMPORT=1 tools/test.sh m3_level` (or
 `tools/test.sh m3_level` when nothing else is importing).
@@ -76,7 +84,7 @@ Bot traversal as a fraction of each area's design budget:
 Total main-route bot time (~96s) is about **13% of the 750s design budget**
 — consistent with a bot that skips all combat, reading, and exploration,
 which are exactly the activities the 12:30 budget is built from (01: "First-
-time aiming, ordinary traversal, a short story beat, and a brief bench
+time aiming, ordinary traversal, a short story beat, and a brief workbench
 visit are part of the experience"). This ratio being low and roughly even
 across areas is reassuring about geometry (no area's raw layout is
 disproportionately short relative to its budget) but says nothing about
@@ -88,18 +96,18 @@ whether combat, reading, and exploration will actually fill the remaining
 This section is **reasoning from design content and the traversal-floor
 data above**, not a prediction of measured times. Ranked by exposure:
 
-1. **L01-A05 Maintenance depot (highest concern).** Zero enemies, zero
-   main-route gems (`02-area-blueprints.md`: "Population: 0 Residents, 0
-   Clippers. Main-route treasure: 0 gems"), and the lowest bot/budget ratio
+1. **L01-A05 Server depot (highest concern).** Zero enemies, zero
+   main-route chips (`02-area-blueprints.md`: "Population: 0 Staffers, 0
+   Clippers. Main-route treasure: 0 chips"), and the lowest bot/budget ratio
    (~9–10%) of any area. Its entire 90s budget depends on the player
-   actually stopping to read the EDEN-wakes story beat and consider the
-   bench/upgrade choice (01: "Discovery; EDEN wakes, then a safe upgrade
+   actually stopping to read Adam's answer at the core node and consider the
+   workbench/upgrade choice (01: "Discovery; Adam answers, then a safe upgrade
    choice"). A player who skips dialogue quickly (Enter/skip is a supported
    input) or declines the upgrade without lingering could clear this area in
    well under half its budget with nothing else to fill the gap — it has no
    combat or platforming fallback to absorb that.
 2. **L01-A03 Rooftop walk.** Highest bot/budget ratio (~15–16%) among the
-   combat-bearing areas, and its "population" is light (2 Residents, 0
+   combat-bearing areas, and its "population" is light (2 Staffers, 0
    Clippers — `02`). It is explicitly a movement-focused area ("Confidence;
    movement with visible recovery" — 01), so a player who is comfortable
    with the platforming (which most players become by A03, having already
@@ -114,8 +122,8 @@ data above**, not a prediction of measured times. Ranked by exposure:
    (75s, smallest of the six) already assumes minimal content. Listed for
    completeness, not flagged as high-risk.
 4. **L01-A02 / L01-A04 / L01-A06 (lower concern).** These carry the bulk of
-   the enemy population (2+2, 4+2, 1+2 Residents/Clippers respectively —
-   `02`) and the largest gem hauls, giving first-time combat (aiming,
+   the enemy population (2+2, 4+2, 1+2 Staffers/Clippers respectively —
+   `02`) and the largest chip hauls, giving first-time combat (aiming,
    learning warning tells, retreating) the most room to naturally expand
    time beyond the bot's floor. Their bot/budget ratios (~12–13%) are also
    the most "average" of the six.
@@ -157,7 +165,7 @@ reiterates via the pacing-rules cross-reference):
 If a playtest instead comes in **over 900s**, 01's guidance is the mirror
 image: separate out confusion/failed-attempt time from purposeful play
 first, improve signage and recovery clarity, shorten empty travel, and
-reduce redundant encounters — cutting the depot reveal is explicitly the
+reduce redundant encounters — cutting the depot's Adam scene is explicitly the
 *last* resort, not the first.
 
 ## No invented numbers

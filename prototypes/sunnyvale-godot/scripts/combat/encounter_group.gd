@@ -9,6 +9,13 @@ extends Node2D
 ## `is_active` true the first time the hero enters it. If absent, the group
 ## starts active (useful for demo/test scenes that skip the approach beat).
 
+## Emitted exactly once, the moment `is_active` flips true from an
+## ApproachZone entry (never for a group that starts already active — there
+## is no "moment" to mark there). M7 readability: lets a scene-specific
+## one-shot cue (e.g. TutorialPrompt's `trigger_node`) key off the same
+## "encounter activated" moment the fight itself uses, with no polling.
+signal activated
+
 @export var group_id: String = ""
 ## Lane bounds in this node's parent space; enemies should stay leashed
 ## inside this rect (checked by the enemy itself via is_in_lane()).
@@ -50,8 +57,9 @@ func _physics_process(delta: float) -> void:
 
 
 func _on_approach_body_entered(body: Node) -> void:
-	if body.is_in_group("hero"):
+	if body.is_in_group("hero") and not is_active:
 		is_active = true
+		activated.emit()
 
 
 func is_in_lane(global_pos: Vector2) -> bool:

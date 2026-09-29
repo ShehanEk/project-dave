@@ -15,8 +15,8 @@ const FADE_TIME := 0.6
 ## (scenes/ui/subtitle_panel.tscn's own StyleBoxFlat) — now it's the exact
 ## same bg/border pair so every toast and the subtitle panel read as one
 ## consistent UI material.
-const BACKING := Color(0.2, 0.165, 0.125, 0.85)
-const OUTLINE := Color(0.13, 0.105, 0.078, 1.0)
+const BACKING := Color(0.027, 0.035, 0.059, 0.88)
+const OUTLINE := Color(0.11, 0.165, 0.227, 1.0)
 
 
 func _ready() -> void:

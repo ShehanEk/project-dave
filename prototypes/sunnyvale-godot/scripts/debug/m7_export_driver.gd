@@ -81,7 +81,7 @@ func _log_session_state(tag: String) -> void:
 			" objective=", Session.state.get("objective", "?"),
 			" health=", Session.state.get("health", "?"),
 			" wallet=", Session.state.get("wallet", "?"),
-			" gems_found=", Session.gems_found())
+			" chips_found=", Session.chips_found())
 
 
 func _fail(message: String) -> void:
@@ -222,7 +222,7 @@ func _run_continue() -> void:
 		for p in area.get_route_points([]):
 			bot.points.append(p)
 			bot._point_areas.append(area)
-	# A checkpoint/bench respawn marker sits partway through its own area (not
+	# A checkpoint/workbench respawn marker sits partway through its own area (not
 	# necessarily at that area's very first route point) — Continue resumes
 	# the hero there, so any authored point still BEHIND the hero's actual
 	# resume x would send RouteBot walking backward into geometry meant only

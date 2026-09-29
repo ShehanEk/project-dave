@@ -2,7 +2,7 @@ extends Node2D
 ## Demo autopilot for tools/capture.sh visual evidence over L01-A05
 ## (scenes/levels/areas/a05_depot.tscn): instances the area alone with a
 ## Hero/GameCamera/RouteBot exactly like tests/area_harness.gd, then lets the
-## RouteBot drive the full main route (console -> bench -> pad -> practice
+## RouteBot drive the full main route (console -> workbench -> pad -> practice
 ## target -> hatch -> exit seam) for the capture window. No timeout/free
 ## logic here (unlike the test harness) since this scene just needs to run
 ## for the fixed-frame capture.

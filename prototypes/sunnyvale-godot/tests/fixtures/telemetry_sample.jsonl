@@ -16,4 +16,4 @@
 {"event": "area_exit", "t_active": 190.0, "t_wall": 250.0, "area_id": "L01-A05"}
 {"event": "area_enter", "t_active": 190.0, "t_wall": 250.0, "area_id": "L01-A06"}
 {"event": "checkpoint_commit", "t_active": 200.0, "t_wall": 262.0, "checkpoint_id": "CP05"}
-{"event": "completion", "t_active": 200.0, "t_wall": 262.0, "active_seconds": 200.0, "gems_found": 45, "artifact_found": true, "upgrade_stage": 1}
+{"event": "completion", "t_active": 200.0, "t_wall": 262.0, "active_seconds": 200.0, "chips_found": 45, "evidence_found": true, "upgrade_stage": 1}

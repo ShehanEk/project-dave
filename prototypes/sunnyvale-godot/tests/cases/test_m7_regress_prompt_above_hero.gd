@@ -1,7 +1,7 @@
 extends TestCase
 ## REGRESSION (AD-17 follow-up): Hero._update_interact_prompt() re-placed the
 ## PromptLabel 64 px above the highlighted interactable's origin every frame.
-## For floor-level objects the hero stands beside (console, bench, pad) that
+## For floor-level objects the hero stands beside (console, workbench, pad) that
 ## is torso height, so the prompt drew over the hero. Fixed by leaving the
 ## label at its authored hero-relative offset (hero.tscn), and hiding it while
 ## the object's own Toast shows, since both share the band above the head.

@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/objects/chip.gd" id="1_chip"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_chip"]
+radius = 16.0
+
+[node name="Chip" type="Area2D"]
+script = ExtResource("1_chip")
+entity_id = ""
+value = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_chip")

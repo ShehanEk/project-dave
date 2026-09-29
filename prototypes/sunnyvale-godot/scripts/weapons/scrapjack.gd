@@ -40,6 +40,12 @@ const GRIP_FILL := Color("#438f88")      # teal wrap
 const QUICKCYCLE_FILL := Color("#a9714a")  # copper flywheel cover
 const AMBER := Color("#e8b65a")          # amber indicator / muzzle flash
 
+## M6.5 Kenney integration pass (assets/kenney/README.md section 5): a small
+## particle-pack burst that augments (never replaces) the drawn amber flash
+## in `_draw()` below. No class_name on the puff script (see its own doc
+## comment) — reached through this plain preload + its static `spawn()`.
+const KenneyPuff := preload("res://scripts/effects/kenney/kenney_puff.gd")
+
 
 func _ready() -> void:
 	if tuning == null:
@@ -101,6 +107,7 @@ func _try_fire() -> void:
 	if audio:
 		audio.play_sfx(&"pistol_fire_quick" if _current_stage() >= 1 else &"pistol_fire",
 				_muzzle.global_position)
+	KenneyPuff.spawn(&"muzzle_flash", _muzzle.global_position, _spawn_container())
 
 	var pivot: Node2D = get_parent()
 	var shoulder: Vector2 = pivot.global_position

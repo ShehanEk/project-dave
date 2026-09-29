@@ -39,7 +39,7 @@ func _ready() -> void:
 
 func _run_sequence() -> void:
 	var depot: AreaRoot = level.areas[DEPOT_AREA_INDEX]
-	var console: CoreConsole = depot.get_node("Entities/CoreConsole")
+	var console: CoreNode = depot.get_node("Entities/CoreNode")
 
 	# 1) Approach the console and start SC01: hold on the warning phase
 	# (ward-circuits tint + subtitle) long enough to read it.
@@ -58,7 +58,7 @@ func _run_sequence() -> void:
 		await get_tree().physics_frame
 	await _wait(0.8)
 
-	# 3) A06 is already showing the settled quarantine look the instant the
+	# 3) A06 is already showing the settled lockdown look the instant the
 	# hero could see it (EnvironmentState reacted live while still in the
 	# depot) — teleport in near the entrance rail/cloud-projector and hold.
 	var exit_area: AreaRoot = level.areas[EXIT_AREA_INDEX]
@@ -68,6 +68,7 @@ func _run_sequence() -> void:
 	# 4) Teleport onto the exit wicket itself to trigger the real ending:
 	# CP05, the final objective, and the completion screen.
 	var wicket: Area2D = exit_area.get_node("Entities/ExitWicket")
+	Session.take_keycard("L01-KC01", "L01-KC01-P")
 	level.hero.global_position = wicket.global_position
 	await _wait(1.2)
 

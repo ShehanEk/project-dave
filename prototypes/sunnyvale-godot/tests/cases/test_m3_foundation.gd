@@ -23,14 +23,14 @@ const SAMPLE_AREA := "res://scenes/debug/sample_area.tscn"
 
 func run() -> void:
 	await _test_bot_completes_main_route_and_branch()
-	await _test_gem_collects_once_and_respects_session()
-	await _test_care_capsule_gating()
+	await _test_chip_collects_once_and_respects_session()
+	await _test_med_patch_gating()
 	await _test_recovery_station_heals_and_commits()
 	await _test_walkway_extends_persists_never_retracts()
 	await _test_pit_hazard_costs_health_and_resets()
 	await _test_hatch_opens_from_story_flag()
-	await _test_core_console_sets_flags_once()
-	await _test_artifact_records_with_zero_gems()
+	await _test_core_node_sets_flags_once()
+	await _test_evidence_records_with_zero_chips()
 
 
 # --- 1. full traversal: main route, then the OPT01 branch -------------------
@@ -41,13 +41,13 @@ func _test_bot_completes_main_route_and_branch() -> void:
 
 	var r1: Dictionary = await harness.run_area(self, SAMPLE_AREA, [], 30.0)
 	check(r1.reached_exit, "sample area: main route reaches the exit (failure=%s, pos=%s)" % [r1.failure, r1.hero_final_position])
-	check(Session.is_collected("L01-TEST-G001"), "main route collects the loose gem")
-	check(Session.is_collected("L01-TEST-GC01"), "main route collects the gem cluster")
+	check(Session.is_collected("L01-TEST-G001"), "main route collects the loose chip")
+	check(Session.is_collected("L01-TEST-GC01"), "main route collects the chip cluster")
 	check(Session.get_switch("L01-SW01"), "main route pulls the route switch")
 	check(Session.get_story("awakening_done"), "main route's console interaction sets awakening_done")
 	check(Session.get_story("hatch_open"), "console interaction opens the hatch so the route can pass through it")
 	check(not Session.is_collected("L01-TEST-CACHE01"), "the OPT01 cache is untouched when that branch is disabled")
-	check(not Session.has_artifact("A01"), "the OPT01 artifact is untouched when that branch is disabled")
+	check(not Session.has_evidence("EF01"), "the OPT01 evidence is untouched when that branch is disabled")
 	check(r1.beat_times.has("L01-TEST-B01") and r1.beat_times.has("L01-TEST-B02"),
 			"both beat zones report an elapsed time (got %s)" % [r1.beat_times])
 
@@ -56,53 +56,53 @@ func _test_bot_completes_main_route_and_branch() -> void:
 	var r2: Dictionary = await harness.run_area(self, SAMPLE_AREA, ["OPT01"], 30.0)
 	check(r2.reached_exit, "sample area: OPT01 branch route also reaches the exit (failure=%s, pos=%s)" % [r2.failure, r2.hero_final_position])
 	check(Session.is_collected("L01-TEST-CACHE01"), "the OPT01 branch opens the optional cache")
-	check(Session.has_artifact("A01"), "the OPT01 branch records the optional artifact")
+	check(Session.has_evidence("EF01"), "the OPT01 branch records the optional evidence")
 	check(Session.get_wallet() == wallet_after_main + 20,
-			"branch adds exactly the cache's 20 gems on top of the main route's total (before=%d after=%d)"
+			"branch adds exactly the cache's 20 chips on top of the main route's total (before=%d after=%d)"
 			% [wallet_after_main, Session.get_wallet()])
 
 
-# --- 2. gems: one-time, Session-backed -------------------------------------
+# --- 2. chips: one-time, Session-backed -------------------------------------
 
-func _test_gem_collects_once_and_respects_session() -> void:
+func _test_chip_collects_once_and_respects_session() -> void:
 	Session.new_run()
-	var id := "L01-TEST-GEM-DIRECT"
-	check(not Session.is_collected(id), "sanity: gem not collected yet")
+	var id := "L01-TEST-CHIP-DIRECT"
+	check(not Session.is_collected(id), "sanity: chip not collected yet")
 
-	var gem1: Gem = load("res://scenes/objects/gem.tscn").instantiate()
-	gem1.entity_id = id
-	gem1.value = 1
-	add_child(gem1)
+	var chip1: Chip = load("res://scenes/objects/chip.tscn").instantiate()
+	chip1.entity_id = id
+	chip1.value = 1
+	add_child(chip1)
 	await physics_frames(2)
-	check(is_instance_valid(gem1) and not gem1.is_queued_for_deletion(), "an uncollected gem stays present")
+	check(is_instance_valid(chip1) and not chip1.is_queued_for_deletion(), "an uncollected chip stays present")
 
 	var fake_hero := Node2D.new()
 	fake_hero.add_to_group("hero")
-	gem1._on_body_entered(fake_hero)
+	chip1._on_body_entered(fake_hero)
 	await physics_frames(2)
-	check(Session.is_collected(id), "contact collects the gem via Session")
-	check(Session.gems_found() == 1, "collecting once records exactly one gem")
-	check(not is_instance_valid(gem1), "the collected gem removes itself")
+	check(Session.is_collected(id), "contact collects the chip via Session")
+	check(Session.chips_found() == 1, "collecting once records exactly one chip")
+	check(not is_instance_valid(chip1), "the collected chip removes itself")
 
 	# Re-instancing the SAME id (simulating a reload) must come back absent.
-	var gem2: Gem = load("res://scenes/objects/gem.tscn").instantiate()
-	gem2.entity_id = id
-	add_child(gem2)
+	var chip2: Chip = load("res://scenes/objects/chip.tscn").instantiate()
+	chip2.entity_id = id
+	add_child(chip2)
 	await physics_frames(2)
-	check(not is_instance_valid(gem2), "re-instancing an already-collected gem frees it in _ready")
+	check(not is_instance_valid(chip2), "re-instancing an already-collected chip frees it in _ready")
 
 	check(not Session.collect(id, 1), "Session.collect refuses a repeat for the same id")
-	check(Session.gems_found() == 1, "gems_found does not grow from the refused repeat")
+	check(Session.chips_found() == 1, "chips_found does not grow from the refused repeat")
 
 	fake_hero.queue_free()
 
 
-# --- 3. care capsule: gated by hero health ----------------------------------
+# --- 3. med-patch: gated by hero health ----------------------------------
 
-func _test_care_capsule_gating() -> void:
+func _test_med_patch_gating() -> void:
 	Session.new_run()
 	var id := "L01-TEST-HS-DIRECT"
-	var capsule: CareCapsule = load("res://scenes/objects/care_capsule.tscn").instantiate()
+	var capsule: MedPatch = load("res://scenes/objects/med_patch.tscn").instantiate()
 	capsule.entity_id = id
 	capsule.heal = 2
 	add_child(capsule)
@@ -250,16 +250,16 @@ func _test_hatch_opens_from_story_flag() -> void:
 	hatch2.queue_free()
 
 
-# --- 8. core console: the real SC01 event sets the awakening flags once ----
+# --- 8. core node: the real SC01 event sets the awakening flags once ----
 # (M5 replaced the M3 stub's instant flag-flip with the ~19s watch-through/
 # skippable scene in story-scenes.md; the skip path — proven identical to a
 # full watch-through by tests/cases/test_m5_story.gd T16 — is exercised here
-# so this M3-era foundation test still proves CoreConsole's per-entity-type
+# so this M3-era foundation test still proves CoreNode's per-entity-type
 # contract quickly.)
 
-func _test_core_console_sets_flags_once() -> void:
+func _test_core_node_sets_flags_once() -> void:
 	Session.new_run()
-	var console: CoreConsole = load("res://scenes/objects/core_console.tscn").instantiate()
+	var console: CoreNode = load("res://scenes/objects/core_node.tscn").instantiate()
 	add_child(console)
 	await physics_frames(2)
 	var fake_hero := Node2D.new()
@@ -272,7 +272,7 @@ func _test_core_console_sets_flags_once() -> void:
 	check(Session.get_story("awakening_done"), "first console interaction sets awakening_done")
 	check(Session.get_story("core_installed"), "first console interaction sets core_installed")
 	check(Session.get_story("hatch_open"), "first console interaction opens the hatch")
-	check(Session.get_objective() == "Reach the garden wicket.", "first interaction sets the post-awakening objective")
+	check(Session.get_objective() == Session.OBJECTIVE_POST_SC01, "first interaction sets the post-awakening objective")
 	check(Session.state["checkpoint_id"] == "CP04", "first interaction commits CP04")
 
 	var story_signals := [0]
@@ -285,23 +285,23 @@ func _test_core_console_sets_flags_once() -> void:
 	fake_hero.queue_free()
 
 
-# --- 9. artifact: records once, adds zero gems ------------------------------
+# --- 9. evidence: records once, adds zero chips ------------------------------
 
-func _test_artifact_records_with_zero_gems() -> void:
+func _test_evidence_records_with_zero_chips() -> void:
 	Session.new_run()
-	var pickup: ArtifactPickup = load("res://scenes/objects/artifact_pickup.tscn").instantiate()
+	var pickup: EvidencePickup = load("res://scenes/objects/evidence_pickup.tscn").instantiate()
 	add_child(pickup)
 	await physics_frames(2)
 	var fake_hero := Node2D.new()
 
 	var wallet_before: int = Session.get_wallet()
-	check(not Session.has_artifact("A01"), "sanity: artifact not yet recorded on a fresh run")
+	check(not Session.has_evidence("EF01"), "sanity: evidence not yet recorded on a fresh run")
 	pickup.interact(fake_hero)
 	await physics_frames(1)
-	check(Session.has_artifact("A01"), "interacting records the artifact")
-	check(Session.get_wallet() == wallet_before, "recording the artifact adds zero gems (wallet unchanged)")
+	check(Session.has_evidence("EF01"), "interacting records the evidence")
+	check(Session.get_wallet() == wallet_before, "recording the evidence adds zero chips (wallet unchanged)")
 	check(Session.is_collected(pickup.entity_id), "the pickup's own entity_id is marked collected (zero value)")
-	check(not Session.record_artifact("A01", pickup.entity_id), "recording the same artifact twice is refused")
+	check(not Session.record_evidence("EF01", pickup.entity_id), "recording the same evidence twice is refused")
 
 	pickup.queue_free()
 	fake_hero.queue_free()

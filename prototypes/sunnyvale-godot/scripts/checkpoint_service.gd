@@ -34,7 +34,7 @@ const SETTINGS_FILE := "settings.json"
 
 ## Kept in sync with Session's own constants (session.gd). Not read directly
 ## from Session so this file's validation never depends on autoload order.
-const SCHEMA_VERSION := 1
+const SCHEMA_VERSION := 2
 const LEVEL := "L01"
 const MAX_HEALTH := 6
 const MAX_OBJECTIVE_LEN := 300
@@ -44,7 +44,7 @@ const STORY_FLAGS: Array[String] = ["awakening_done", "core_installed", "hatch_o
 ## extra key (e.g. a stray res:// scene path stashed by a tampered file) is
 ## rejected outright (ADV-07).
 const ALLOWED_TOP_KEYS: Array[String] = ["schema_version", "build", "level",
-		"checkpoint_id", "health", "wallet", "collected", "artifacts",
+		"checkpoint_id", "health", "wallet", "collected", "evidence", "keycards",
 		"upgrades", "equipped_weapon", "world_weapons", "defeated",
 		"switches", "story", "objective", "active_seconds"]
 ## The only two weapon instances this prototype ever creates (CONVENTIONS.md
@@ -54,8 +54,8 @@ const ALLOWED_TOP_KEYS: Array[String] = ["schema_version", "build", "level",
 const WEAPON_INSTANCES: Array[String] = ["L01-W01-P01", "L01-W01-P02"]
 ## The only real weapon pad this prototype places (a05_depot.tscn).
 const WEAPON_PADS: Array[String] = ["L01-A05-PAD01"]
-## Total collectible gem value across the whole level (completion screen's
-## "gems found / 65") — a wallet can never exceed this (ADV-07).
+## Total collectible chip value across the whole level (completion screen's
+## "chips found / 65") — a wallet can never exceed this (ADV-07).
 const MAX_WALLET := 65
 ## Only Quickcycle stage 1 is purchasable in this prototype (CONVENTIONS.md
 ## "only Quickcycle stage 1 purchasable") — no upgrade field may ever record
@@ -69,7 +69,8 @@ var _re_checkpoint: RegEx
 var _re_weapon_type: RegEx
 var _re_weapon_instance: RegEx
 var _re_switch: RegEx
-var _re_artifact: RegEx
+var _re_evidence: RegEx
+var _re_keycard: RegEx
 var _re_generic_id: RegEx
 
 
@@ -78,8 +79,9 @@ func _ready() -> void:
 	_re_weapon_type = _compile("^W[0-9]{2}$")
 	_re_weapon_instance = _compile("^L01-W[0-9]{2}-P[0-9]{2}$")
 	_re_switch = _compile("^L01-SW[0-9]{2}$")
-	_re_artifact = _compile("^A[0-9]{2}$")
-	# Every other whitelisted id (gems, clusters, caches, capsules, enemies,
+	_re_evidence = _compile("^EF[0-9]{2}$")
+	_re_keycard = _compile("^L01-KC[0-9]{2}$")
+	# Every other whitelisted id (chips, clusters, caches, capsules, enemies,
 	# pads, consoles, ...): "L01" then one or more "-UPPERCASE0-9" segments.
 	# Never matches a scene path (lowercase/"res://"/"/") or a bare node name.
 	_re_generic_id = _compile("^L01(-[A-Z0-9]+)+$")
@@ -312,11 +314,17 @@ func validate_snapshot(data: Variant) -> Dictionary:
 		if int(v) < 0:
 			return {"ok": false, "error": "collected: negative value"}
 
-	if typeof(data.get("artifacts")) != TYPE_ARRAY:
-		return {"ok": false, "error": "artifacts: wrong type"}
-	for entry in data["artifacts"]:
-		if typeof(entry) != TYPE_STRING or not _re_artifact.search(String(entry)):
-			return {"ok": false, "error": "artifacts: non-whitelisted id"}
+	if typeof(data.get("evidence")) != TYPE_ARRAY:
+		return {"ok": false, "error": "evidence: wrong type"}
+	for entry in data["evidence"]:
+		if typeof(entry) != TYPE_STRING or not _re_evidence.search(String(entry)):
+			return {"ok": false, "error": "evidence: non-whitelisted id"}
+
+	if typeof(data.get("keycards")) != TYPE_ARRAY:
+		return {"ok": false, "error": "keycards: wrong type"}
+	for entry in data["keycards"]:
+		if typeof(entry) != TYPE_STRING or not _re_keycard.search(String(entry)):
+			return {"ok": false, "error": "keycards: non-whitelisted id"}
 
 	var upgrades_check := _check_id_value_dict(data.get("upgrades"), _re_weapon_type, TYPE_INT)
 	if not upgrades_check.ok:

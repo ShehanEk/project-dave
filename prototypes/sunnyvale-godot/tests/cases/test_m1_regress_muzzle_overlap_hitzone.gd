@@ -1,6 +1,6 @@
 extends TestCase
 ## REGRESSION (ENG-01): a HitZone that overlaps the hero's shoulder (e.g. a
-## Resident the hero walked into — no body blocking between them, or one that
+## Staffer the hero walked into — no body blocking between them, or one that
 ## lunged past while the hero was immune) is aimed at directly, horizontally.
 ## The muzzle-clamp ray must find it and register a hit/blocked outcome
 ## instead of letting the bolt's own sweep start beyond it.
@@ -26,7 +26,7 @@ func _probe(dx: float) -> void:
 	hero.use_aim_override = true
 	await physics_frames(3)
 
-	# Resident-sized whole-body HitZone (48x84, feet on floor) at hero.x+dx.
+	# Staffer-sized whole-body HitZone (48x84, feet on floor) at hero.x+dx.
 	var zone: HitZone = HitZoneScript.new()
 	var cs := CollisionShape2D.new()
 	var rect := RectangleShape2D.new()

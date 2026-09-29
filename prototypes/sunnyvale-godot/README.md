@@ -1,8 +1,22 @@
 # DEAD EDEN — Sunnyvale prototype
 
-A single-level (L01) Godot 4 prototype of DEAD EDEN's opening area. Design
-authority: `../../prototype-plans/level-01-sunnyvale/`. Implementation
-contracts (autoloads, IDs, node contracts, hard rules): `CONVENTIONS.md`.
+A single-level (L01) Godot 4 prototype of DEAD EDEN's opening area. Dave
+Harlan, a fired AI researcher, breaks into Arcadia Dynamics' Sunnyvale campus
+at night, takes the level's clearance keycard, plugs into one of the core
+nodes of Arcadia's sentient AI, Adam, to copy proof, and escapes through the
+lockdown. Design authority: `../../prototype-plans/level-01-sunnyvale/`.
+Implementation contracts (autoloads, IDs, node contracts, hard rules):
+`CONVENTIONS.md`.
+
+**Revamp (2026-09-29, C14–C24).** The prototype was rebuilt from the original
+zombie-suburb version to the new story and look: cyborg Staffers instead of
+zombie Residents, microchips instead of gems, the EF01 "Lockout Notice"
+evidence file instead of the Welcome Key artifact, Adam's core-node scene
+instead of the EDEN awakening, the L01-KC01 keycard that opens the exit, and a
+dark night-campus look. Gameplay, tuning, timings and counts are unchanged.
+Saves from a pre-revamp build are rejected as incompatible (the save schema
+is now version 2), so **Continue** stays disabled until you start a new run.
+The plan's README has the full old-to-new vocabulary table.
 
 ## Opening the project
 
@@ -36,12 +50,15 @@ Godot --headless --path . --export-release "macOS" exports/macos/Sunnyvale.zip
 `exports/` is gitignored — re-run the commands above to produce a build; see
 `reports/export-report.md` for exact commands, sizes, and verification
 evidence (macOS release export: boots to the title screen with no errors,
-verified this session; save/continue/complete outside the editor verified
+verified in the M7 pass; save/continue/complete outside the editor verified
 only on the macOS debug export of the same preset and source, since a
 release export cannot run the export-verification driver — the release
 build itself was not separately hand-played through save/continue/complete;
 Windows: exported and file-type-confirmed, launch itself pending an actual
-Windows PC — no Wine on the verifying Mac).
+Windows PC — no Wine on the verifying Mac). **Any export built before
+2026-09-29 contains the pre-revamp game** (the ones currently on disk date
+from 2026-09-27); rebuild with the commands above, and treat the export
+evidence as belonging to the pre-revamp build until it is re-run.
 
 - **macOS**: unzip `Sunnyvale.zip` and open `DEAD EDEN - Sunnyvale
   Prototype.app`. The build is unsigned (no Apple Developer ID on this
@@ -54,10 +71,10 @@ Windows PC — no Wine on the verifying Mac).
   reports `code has no resources but signature indicates they must be
   present` — a stricter Mac could instead say the app **"is damaged and
   can't be opened."** in that harder-to-recover case, delete the `.app` and
-  re-unzip a fresh copy from `Sunnyvale.zip` rather than trying to repair it in place). If a dialog
+  re-unzip a fresh copy from `Sunnyvale.zip` rather than trying to repair in place). If a dialog
   appears: right-click (or Control-click) the `.app` → **Open** → **Open** in
-  the confirmation dialog; this is a one-time step per Mac. (This session's
-  own verification launched the exact same build cleanly with no dialog at
+  the confirmation dialog; this is a one-time step per Mac. (The M7
+  verification launched the exact same build cleanly with no dialog at
   all, including with a quarantine flag added to simulate a downloaded copy
   — Gatekeeper strictness varies by Mac/OS version/settings, so treat the
   above as "if it complains," not a certainty.)
@@ -82,17 +99,26 @@ build.
 | Move | A/D or arrow keys |
 | Jump | Space / W / Up |
 | Fire | Left mouse button |
-| Interact | E |
+| Interact (plug in, pick up an evidence file, workbench, station) | E |
 | Pause / back out of a dialog / skip a scene | Escape |
 | Journal (also opens from the pause menu) | Tab |
 | Skip a noninteractive scene (e.g. SC01) | Enter |
+| Controls help (title screen, or in-game via the pause menu) | F1 |
 
-Pause (Escape) opens **Resume, Journal, Settings, Restart from checkpoint,
-Quit to title** — gameplay, enemies, timers, and active-play-time
+Pause (Escape) opens **Resume, Journal, Controls, Settings, Restart from
+checkpoint, Quit to title** — gameplay, enemies, timers, and active-play-time
 accumulation all stop while it's open (`get_tree().paused`). It only opens
 during normal gameplay; it never fights a scene/dialog that already treats
-Escape as its own skip/decline (SC01, the bench, the weapon-swap pad, the
+Escape as its own skip/decline (SC01, the workbench, the weapon-swap pad, the
 completion screen).
+
+**Controls help**: the title screen has its own "Controls (F1)" button, and
+F1 opens it directly from the title screen's main view or, during gameplay,
+opens the pause menu straight to its own Controls view (exactly like Tab
+opens the Journal). Either way it shows a read-only table of every action's
+CURRENT key/mouse binding — read live from Godot's `InputMap`, so it always
+matches whatever is actually bound — plus a few short gameplay tips. Escape
+or its own Back button returns to whichever screen opened it.
 
 ## Saves, settings, and playtest logs
 
@@ -104,8 +130,9 @@ Everything lives under the user data directory (Godot's `user://`):
 | Windows | `%APPDATA%\Godot\app_userdata\DEAD EDEN - Sunnyvale Prototype\sunnyvale\` |
 
 - `checkpoint.json` / `checkpoint.bak.json` — the save and its own backup
-  (`CheckpointService`). New Game (when replacing an existing run) and a
-  confirmed "Play again" both clear these.
+  (`CheckpointService`; schema version 2, which includes the clearance
+  keycard). New Game (when replacing an existing run) and a confirmed
+  "Play again" both clear these.
 - `settings.json` — subtitles/text size/reduced-motion/volume, written
   separately from the checkpoint by `Settings` (never rolled back, never
   cleared by New Game/Play again).
@@ -132,9 +159,10 @@ python3 tools/summarize_playtest.py "<path to a run_....jsonl>"
 ## Tests
 
 ```sh
-tools/test.sh              # full suite, 60fps fixed step (~30s)
+tools/test.sh              # full suite, 60fps fixed step (about 3 minutes)
 tools/test.sh m5           # only cases whose filename contains "m5"
 FPS=30 tools/test.sh       # repeat at a 30fps fixed step
+NOIMPORT=1 tools/test.sh   # skip the import step (when another process may be importing)
 ```
 
 Tests never touch a real save or a real playtest log — `tests/run_tests.gd`
@@ -149,25 +177,33 @@ doing so.
 ## Current milestone status
 
 See `../../prototype-plans/level-01-sunnyvale/09-progress-and-handoff.md`
-for the authoritative, evidence-backed milestone table. Summary: M0-M6
-verified, including a subsequent adversarial-review pass that found and
-fixed real bugs across M4/M5 (see 09's own "M4/M5 adversarial review fixes"
-session log entry) and an M6 integration/verification pass across the
-parallel audio, characters, environment, and fx/UI presentation work (see
-09's own "M6 presentation pass — integration and verification" session log
-entry, and `reports/asset-inventory.md` for the full per-asset provenance
-table and honest remaining production-art gaps). M7 (validation/export):
-functional matrix T01-T20 verified, T21 mechanically verified with its
-purely visual readability half only partially verified (M6 captures only —
-see `reports/functional-matrix.md`'s T21 note), and completion gates 1-5
-verified (`reports/functional-matrix.md`); export: the macOS release build
-boots to the title screen with no errors, and save/continue/complete is
-verified on the macOS debug export of the same preset/source (not
-separately hand-played on the release build); Windows built and
-file-type-confirmed but not launch-tested (no Wine on the verifying host;
-`reports/export-report.md`). **Playable, timing unverified — implemented,
-unverified (gate 6 and T22-Windows/gate 7 pending)**: gate 6 (three+
-first-time playtests) and gate 7's Windows launch (T22-Windows, no Wine on
-this host) are the two remaining pending items, by explicit decision — no
-testers were available this session, and nothing here substitutes an
+for the authoritative, evidence-backed milestone table. Summary of the
+pre-revamp build: M0-M6 verified, including a subsequent adversarial-review
+pass that found and fixed real bugs across M4/M5 (see 09's own "M4/M5
+adversarial review fixes" session log entry) and an M6 integration/verification
+pass across the parallel audio, characters, environment, and fx/UI
+presentation work (see 09's own "M6 presentation pass — integration and
+verification" session log entry, and `reports/asset-inventory.md` for the
+full per-asset provenance table and honest remaining production-art gaps).
+M7 (validation/export): functional matrix T01-T20 verified, T21 mechanically
+verified with its purely visual readability half only partially verified
+(M6 captures only — see `reports/functional-matrix.md`'s T21 note), and
+completion gates 1-5 verified (`reports/functional-matrix.md`); export: the
+macOS release build boots to the title screen with no errors, and
+save/continue/complete is verified on the macOS debug export of the same
+preset/source (not separately hand-played on the release build); Windows
+built and file-type-confirmed but not launch-tested (no Wine on the
+verifying host; `reports/export-report.md`). **Playable, timing unverified
+— implemented, unverified (gate 6 and T22-Windows/gate 7 pending)**: gate 6
+(three+ first-time playtests) and gate 7's Windows launch (T22-Windows, no
+Wine on the M7 host) are the two remaining pending items, by explicit
+decision — no testers were available, and nothing here substitutes an
 estimate for a measured result.
+
+**Revamp (R1, 2026-09-29):** the rebuild to the new story and look is
+described in the plan (`06-build-milestones.md` "R1") and its verification
+record is 09's latest session-log entry. The `reports/` documents use the
+revamp vocabulary, but their measurements (test counts, RouteBot traversal
+times, export sizes and driver output) were taken on the pre-revamp M7 build
+and are labelled as such; nothing in them was re-measured by the revamp
+unless it says so. The first-time-player timing gate is still pending.

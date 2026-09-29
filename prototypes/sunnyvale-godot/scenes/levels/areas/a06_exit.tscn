@@ -3,13 +3,13 @@
 [ext_resource type="Script" path="res://scripts/levels/area_root.gd" id="1_arearoot"]
 [ext_resource type="Script" path="res://scripts/world/block.gd" id="2_block"]
 [ext_resource type="PackedScene" path="res://scenes/objects/scenery.tscn" id="3_scenery"]
-[ext_resource type="PackedScene" path="res://scenes/objects/care_capsule.tscn" id="4_capsule"]
+[ext_resource type="PackedScene" path="res://scenes/objects/med_patch.tscn" id="4_capsule"]
 [ext_resource type="PackedScene" path="res://scenes/objects/pit_hazard.tscn" id="5_pit"]
 [ext_resource type="PackedScene" path="res://scenes/objects/exit_wicket.tscn" id="6_wicket"]
 [ext_resource type="PackedScene" path="res://scenes/objects/kill_plane.tscn" id="7_kill"]
 [ext_resource type="Script" path="res://scripts/combat/encounter_group.gd" id="8_group"]
 [ext_resource type="PackedScene" path="res://scenes/actors/clipper.tscn" id="9_clipper"]
-[ext_resource type="PackedScene" path="res://scenes/actors/resident.tscn" id="10_resident"]
+[ext_resource type="PackedScene" path="res://scenes/actors/staffer.tscn" id="10_staffer"]
 [ext_resource type="PackedScene" path="res://scenes/objects/beat_zone.tscn" id="11_beat"]
 [ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="12_routepoint"]
 [ext_resource type="Script" path="res://scripts/world/environment_state.gd" id="13_envstate"]
@@ -38,7 +38,6 @@ script = ExtResource("50_backdrop")
 mode = 1
 tile_width = 6200.0
 horizon_y = 0.0
-row_seed = 6
 
 [node name="Geometry" type="Node2D" parent="."]
 
@@ -114,7 +113,7 @@ kind = 0
 position = Vector2(70, 0)
 kind = 11
 size = Vector2(120, 70)
-text = "Quarantine Exit"
+text = "GARDEN PATH"
 
 [node name="Shrub1" parent="Scenery" instance=ExtResource("3_scenery")]
 position = Vector2(320, 0)
@@ -145,7 +144,7 @@ size = Vector2(160, 50)
 position = Vector2(5520, 0)
 kind = 11
 size = Vector2(120, 70)
-text = "Service Wicket"
+text = "SERVICE WICKET"
 
 [node name="Lamps" type="Node2D" parent="Scenery"]
 
@@ -164,12 +163,44 @@ position = Vector2(5750, 0)
 kind = 6
 size = Vector2(50, 150)
 
+[node name="PathLights" type="Node2D" parent="Scenery"]
+
+[node name="PathLight_E10" parent="Scenery/PathLights" instance=ExtResource("3_scenery")]
+position = Vector2(1350, 0)
+kind = 6
+size = Vector2(40, 150)
+
+[node name="PathLight_BackstopE10" parent="Scenery/PathLights" instance=ExtResource("3_scenery")]
+position = Vector2(2150, 0)
+kind = 6
+size = Vector2(40, 150)
+
+[node name="PathLight_PlatformB" parent="Scenery/PathLights" instance=ExtResource("3_scenery")]
+position = Vector2(3650, -64)
+kind = 6
+size = Vector2(40, 150)
+
+[node name="PathLight_E11" parent="Scenery/PathLights" instance=ExtResource("3_scenery")]
+position = Vector2(4200, 0)
+kind = 6
+size = Vector2(40, 150)
+
+[node name="PathLight_E11b" parent="Scenery/PathLights" instance=ExtResource("3_scenery")]
+position = Vector2(4900, 0)
+kind = 6
+size = Vector2(40, 150)
+
+[node name="PathLight_BackstopE11" parent="Scenery/PathLights" instance=ExtResource("3_scenery")]
+position = Vector2(5330, 0)
+kind = 6
+size = Vector2(40, 150)
+
 [node name="GardenVisuals" type="Node2D" parent="Scenery"]
 
 [node name="Fence1" parent="Scenery/GardenVisuals" instance=ExtResource("3_scenery")]
-position = Vector2(200, 0)
+position = Vector2(235, 0)
 kind = 1
-size = Vector2(200, 60)
+size = Vector2(210, 60)
 
 [node name="Fence2" parent="Scenery/GardenVisuals" instance=ExtResource("3_scenery")]
 position = Vector2(600, 0)
@@ -181,49 +212,54 @@ position = Vector2(2500, -64)
 kind = 1
 size = Vector2(190, 60)
 
-[node name="QuarantineVisuals" type="Node2D" parent="Scenery"]
+[node name="LockdownVisuals" type="Node2D" parent="Scenery"]
 
-[node name="Rail1" parent="Scenery/QuarantineVisuals" instance=ExtResource("3_scenery")]
-position = Vector2(200, 0)
+[node name="Rail1" parent="Scenery/LockdownVisuals" instance=ExtResource("3_scenery")]
+position = Vector2(235, 0)
 kind = 15
-size = Vector2(240, 90)
+size = Vector2(210, 90)
 
-[node name="CloudProjector1" parent="Scenery/QuarantineVisuals" instance=ExtResource("3_scenery")]
+[node name="CloudProjector1" parent="Scenery/LockdownVisuals" instance=ExtResource("3_scenery")]
 position = Vector2(450, -460)
 kind = 12
 size = Vector2(320, 90)
+text = "PLEASE REMAIN CALM"
 
-[node name="Panel1" parent="Scenery/QuarantineVisuals" instance=ExtResource("3_scenery")]
+[node name="Panel1" parent="Scenery/LockdownVisuals" instance=ExtResource("3_scenery")]
 position = Vector2(700, -380)
-kind = 16
+kind = 12
 size = Vector2(160, 55)
+text = "LOCKDOWN"
 
-[node name="Rail2" parent="Scenery/QuarantineVisuals" instance=ExtResource("3_scenery")]
+[node name="Rail2" parent="Scenery/LockdownVisuals" instance=ExtResource("3_scenery")]
 position = Vector2(600, 0)
 kind = 15
 size = Vector2(240, 90)
 
-[node name="Panel2Lane" parent="Scenery/QuarantineVisuals" instance=ExtResource("3_scenery")]
+[node name="Panel2Lane" parent="Scenery/LockdownVisuals" instance=ExtResource("3_scenery")]
 position = Vector2(1700, -380)
-kind = 16
+kind = 12
 size = Vector2(160, 55)
+text = "THIS WAY"
 
-[node name="Rail3Raised" parent="Scenery/QuarantineVisuals" instance=ExtResource("3_scenery")]
+[node name="Rail3Raised" parent="Scenery/LockdownVisuals" instance=ExtResource("3_scenery")]
 position = Vector2(2500, -64)
 kind = 15
 size = Vector2(220, 90)
 
-[node name="PanelOverRaised" parent="Scenery/QuarantineVisuals" instance=ExtResource("3_scenery")]
+[node name="PanelOverRaised" parent="Scenery/LockdownVisuals" instance=ExtResource("3_scenery")]
 position = Vector2(2650, -180)
-kind = 16
+kind = 12
 size = Vector2(150, 55)
+text = "THIS WAY"
 
-[node name="CloudProjector2" parent="Scenery/QuarantineVisuals" instance=ExtResource("3_scenery")]
+[node name="CloudProjector2" parent="Scenery/LockdownVisuals" instance=ExtResource("3_scenery")]
 position = Vector2(3900, -460)
 kind = 12
 size = Vector2(300, 90)
+text = "EXITS CLOSED FOR YOUR COMFORT"
 
-[node name="RailE11" parent="Scenery/QuarantineVisuals" instance=ExtResource("3_scenery")]
+[node name="RailE11" parent="Scenery/LockdownVisuals" instance=ExtResource("3_scenery")]
 position = Vector2(4950, 0)
 kind = 15
 size = Vector2(220, 90)
@@ -231,9 +267,12 @@ size = Vector2(220, 90)
 [node name="EnvironmentState" type="Node2D" parent="."]
 script = ExtResource("13_envstate")
 controls_background = true
-lamp_paths = [NodePath("../Scenery/Lamps/Lamp1"), NodePath("../Scenery/Lamps/LampPlatformB"), NodePath("../Scenery/Lamps/LampWicket")]
+lamp_paths = [NodePath("../Scenery/Lamps/Lamp1"), NodePath("../Scenery/Lamps/LampPlatformB"), NodePath("../Scenery/Lamps/LampWicket"), NodePath("../Scenery/PathLights/PathLight_E10"), NodePath("../Scenery/PathLights/PathLight_BackstopE10"), NodePath("../Scenery/PathLights/PathLight_PlatformB"), NodePath("../Scenery/PathLights/PathLight_E11"), NodePath("../Scenery/PathLights/PathLight_E11b"), NodePath("../Scenery/PathLights/PathLight_BackstopE11"), NodePath("../Scenery/Sign_Entry"), NodePath("../Scenery/Sign_Wicket")]
 garden_visuals_path = NodePath("../Scenery/GardenVisuals")
-quarantine_visuals_path = NodePath("../Scenery/QuarantineVisuals")
+lockdown_visuals_path = NodePath("../Scenery/LockdownVisuals")
+pre_color = Color(0.05490196, 0.09019608, 0.14901961, 1)
+post_color = Color(0.09019608, 0.043137256, 0.07058824, 1)
+backdrop_paths = [NodePath("../Background/Sky"), NodePath("../Background/Homes")]
 
 [node name="Entities" type="Node2D" parent="."]
 
@@ -245,7 +284,7 @@ size = Vector2(132, 40)
 [node name="Reset" parent="Entities/PitHazard_B03"]
 position = Vector2(-190, -44)
 
-[node name="CareCapsule_HS03" parent="Entities" instance=ExtResource("4_capsule")]
+[node name="MedPatch_HS03" parent="Entities" instance=ExtResource("4_capsule")]
 position = Vector2(3800, -20)
 entity_id = "L01-HS03"
 heal = 2
@@ -301,9 +340,9 @@ monitorable = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E11/ApproachZone"]
 shape = SubResource("RectangleShape2D_approach")
 
-[node name="Resident" parent="Encounters/EncounterGroup_E11" instance=ExtResource("10_resident")]
+[node name="Staffer" parent="Encounters/EncounterGroup_E11" instance=ExtResource("10_staffer")]
 position = Vector2(4300, 0)
-entity_id = "L01-E11-Z01-01"
+entity_id = "L01-E11-CY01-01"
 
 [node name="Clipper" parent="Encounters/EncounterGroup_E11" instance=ExtResource("9_clipper")]
 position = Vector2(4750, 0)
@@ -417,7 +456,7 @@ action = 1
 tolerance = 10.0
 hold_jump = 0.25
 
-[node name="RP10_PastResident" type="Marker2D" parent="Route"]
+[node name="RP10_PastStaffer" type="Marker2D" parent="Route"]
 position = Vector2(4560, 0)
 script = ExtResource("12_routepoint")
 action = 0

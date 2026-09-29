@@ -1,5 +1,15 @@
 # M7 export report
 
+**Revamp note (2026-09-29):** everything below (the exports, their sizes, the
+verification driver's output and the audit fixes) was produced and verified on
+the pre-revamp M7 build. As of this update the revamp has not rebuilt or
+re-verified the exports; the builds under `exports/` on disk date from 2026-09-27 and
+contain the old game, and the commands here rebuild the current one.
+Vocabulary is the current one: the driver's console excerpts below print
+`chips_found` and the current objective text, which the original M7 run
+printed as `gems_found` and `Find the maintenance depot.`; every number in
+them is unchanged from the run.
+
 ## Engine and templates
 
 Engine: **Godot 4.7.2.stable.official.ed1daf0bf**,
@@ -169,10 +179,10 @@ New Game run output:
 DEAD EDEN Sunnyvale prototype booted on Godot 4.7.2-stable (official)
 [M7DRIVER] starting phase=newgame
 [M7DRIVER] title screen found — clicking New Game
-[M7DRIVER] post-new-game checkpoint_id=CP00 objective=Find the maintenance depot. health=6 wallet=0 gems_found=0
+[M7DRIVER] post-new-game checkpoint_id=CP00 objective=Reach the server depot. health=6 wallet=0 chips_found=0
 [M7DRIVER] starting RouteBot toward the first checkpoint
 [M7DRIVER] checkpoint_committed id=CP01 — real save written
-[M7DRIVER] post-checkpoint checkpoint_id=CP01 objective=Find the maintenance depot. health=6 wallet=15 gems_found=15
+[M7DRIVER] post-checkpoint checkpoint_id=CP01 objective=Reach the server depot. health=6 wallet=15 chips_found=15
 ```
 (exit code 0; confirmed on disk: `~/Library/Application Support/Godot/
 app_userdata/DEAD EDEN - Sunnyvale Prototype/m7_final/run3/checkpoint.json`,
@@ -183,16 +193,16 @@ Continue run output:
 DEAD EDEN Sunnyvale prototype booted on Godot 4.7.2-stable (official)
 [M7DRIVER] starting phase=continue
 [M7DRIVER] title screen found — clicking Continue
-[M7DRIVER] post-continue checkpoint_id=CP01 objective=Find the maintenance depot. health=6 wallet=15 gems_found=15
+[M7DRIVER] post-continue checkpoint_id=CP01 objective=Reach the server depot. health=6 wallet=15 chips_found=15
 [M7DRIVER] resumed at CP01 (area index 1) — driving to the end
 [M7DRIVER] Session.level_completed fired
 [M7DRIVER] completion screen present=true
-[M7DRIVER] post-completion checkpoint_id=CP05 objective=Sunnyvale complete. health=6 wallet=45 gems_found=45
+[M7DRIVER] post-completion checkpoint_id=CP05 objective=Sunnyvale complete. health=6 wallet=45 chips_found=45
 [M7DRIVER] DONE ok
 ```
 (exit code 0 — proves (c) Continue restores the exported app's own save, and
 (d) the run completes to the real completion screen outside the editor,
-CP05 committed, wallet/gems_found=45 matching the main-route total.)
+CP05 committed, wallet/chips_found=45 matching the main-route total.)
 
 **Real save location untouched**: before/after every run above, `~/Library/
 Application Support/Godot/app_userdata/DEAD EDEN - Sunnyvale Prototype/
@@ -218,7 +228,7 @@ Sunnyvale prototype booted on Godot 4.7.2-stable (official)` — no `ERROR:`/
 full observation window, no crash report under `~/Library/Logs/
 DiagnosticReports`. (Note: without `stdbuf -o0`, this release binary's stdout
 is fully block-buffered when redirected to a file/pipe and nothing appears
-until a clean engine exit flushes it — a libc buffering artifact, not a
+until a clean engine exit flushes it — a libc buffering quirk, not a
 release-build defect; the debug template happens to flush per-line. Recorded
 here so a future run doesn't misread silence as a hang.)
 
@@ -325,7 +335,7 @@ bugs, none touching gameplay rules/tuning/IDs/collision:
    (confirmed unreachable by a player, but still shipped). Added
    `exclude_filter="tests/*,scenes/debug/*"` to both presets (kept
    `scripts/debug/*`, which the macOS debug export's own verification driver
-   loads `route_bot.gd` from). Re-exported all three artifacts; confirmed via
+   loads `route_bot.gd` from). Re-exported all three builds; confirmed via
    `strings` that the release `.pck`/embedded-PCK `.exe` now contain zero
    `res://tests/` or `res://scenes/debug/` paths while `res://scripts/debug/`
    is still present (54 matches).
@@ -335,6 +345,6 @@ suite 40/40 at both fixed-fps settings; the macOS release `.app` still boots
 cleanly to the title screen with no `ERROR:`/`WARNING:` lines; the macOS
 debug export's driver sequence (New Game -> real checkpoint save -> Continue
 -> real completion, `Session.level_completed` fired, CP05 committed,
-`gems_found=45`) still passes end to end with the real save dir confirmed
+`chips_found=45`) still passes end to end with the real save dir confirmed
 untouched throughout, using a fresh explicit throwaway dir
 (`user://m7_reverify/run1`, removed after verification).

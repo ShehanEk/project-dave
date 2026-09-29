@@ -34,12 +34,12 @@ func _test_continue_from_cp02() -> void:
 	add_child(level)
 	await physics_frames(3)
 
-	# Collect a gem and defeat an enemy in A03, then commit CP02 (the real
+	# Collect a chip and defeat an enemy in A03, then commit CP02 (the real
 	# A03 recovery station's own checkpoint id), exactly like reaching that
 	# station mid-run would.
-	check(Session.collect("L01-A03-G001", 1), "setup: collect a gem in A03")
-	var resident: Resident = level.areas[A03_INDEX].get_node("Encounters/EncounterGroup_E05/Resident_Z01_01")
-	Session.mark_defeated(resident.entity_id)
+	check(Session.collect("L01-A03-G001", 1), "setup: collect a chip in A03")
+	var staffer: Staffer = level.areas[A03_INDEX].get_node("Encounters/EncounterGroup_E05/Staffer_CY01_01")
+	Session.mark_defeated(staffer.entity_id)
 	var committed := Session.commit("CP02")
 	check(committed, "setup: CP02 commits successfully")
 
@@ -60,10 +60,10 @@ func _test_continue_from_cp02() -> void:
 	var respawn := level2.areas[A03_INDEX].get_marker("Respawn_CP02")
 	check(level2.hero.global_position.distance_to(respawn.global_position) < 12.0,
 			"Continue: hero rebuilds at CP02's own Respawn marker")
-	var gem := level2.areas[A03_INDEX].get_node_or_null("Entities/Gem_G001")
-	check(gem == null, "Continue: the already-collected gem is absent after rebuild")
-	var fresh_resident := level2.areas[A03_INDEX].get_node_or_null("Encounters/EncounterGroup_E05/Resident_Z01_01")
-	check(fresh_resident == null, "Continue: the already-defeated enemy is absent after rebuild")
+	var chip := level2.areas[A03_INDEX].get_node_or_null("Entities/Chip_G001")
+	check(chip == null, "Continue: the already-collected chip is absent after rebuild")
+	var fresh_staffer := level2.areas[A03_INDEX].get_node_or_null("Encounters/EncounterGroup_E05/Staffer_CY01_01")
+	check(fresh_staffer == null, "Continue: the already-defeated enemy is absent after rebuild")
 
 	level2.queue_free()
 	await physics_frames(2)

@@ -17,7 +17,7 @@ Raw active first-completion time:
 Pause/loading/extended reading:
 Deaths and retry overhead:
 Area times:
-Gems found / wallet / upgrade / artifact:
+Chips found / wallet / upgrade / evidence:
 Functional failures:
 Confusion or dull sections:
 Machine / resolution / observed performance:

@@ -5,13 +5,13 @@
 [ext_resource type="PackedScene" path="res://scenes/objects/moving_platform.tscn" id="3_movplat"]
 [ext_resource type="PackedScene" path="res://scenes/objects/service_walkway.tscn" id="4_walkway"]
 [ext_resource type="PackedScene" path="res://scenes/objects/emergency_hatch.tscn" id="5_hatch"]
-[ext_resource type="PackedScene" path="res://scenes/objects/gem.tscn" id="6_gem"]
-[ext_resource type="PackedScene" path="res://scenes/objects/gem_cache.tscn" id="7_cache"]
-[ext_resource type="PackedScene" path="res://scenes/objects/artifact_pickup.tscn" id="8_artifact"]
-[ext_resource type="PackedScene" path="res://scenes/objects/care_capsule.tscn" id="9_capsule"]
+[ext_resource type="PackedScene" path="res://scenes/objects/chip.tscn" id="6_chip"]
+[ext_resource type="PackedScene" path="res://scenes/objects/chip_cache.tscn" id="7_cache"]
+[ext_resource type="PackedScene" path="res://scenes/objects/evidence_pickup.tscn" id="8_evidence"]
+[ext_resource type="PackedScene" path="res://scenes/objects/med_patch.tscn" id="9_capsule"]
 [ext_resource type="PackedScene" path="res://scenes/objects/route_switch.tscn" id="10_switch"]
-[ext_resource type="PackedScene" path="res://scenes/objects/core_console.tscn" id="11_console"]
-[ext_resource type="PackedScene" path="res://scenes/objects/maintenance_bench.tscn" id="12_bench"]
+[ext_resource type="PackedScene" path="res://scenes/objects/core_node.tscn" id="11_console"]
+[ext_resource type="PackedScene" path="res://scenes/objects/workbench.tscn" id="12_workbench"]
 [ext_resource type="PackedScene" path="res://scenes/objects/weapon_pad.tscn" id="13_pad"]
 [ext_resource type="PackedScene" path="res://scenes/objects/recovery_station.tscn" id="14_station"]
 [ext_resource type="PackedScene" path="res://scenes/objects/exit_wicket.tscn" id="15_wicket"]
@@ -20,7 +20,7 @@
 [ext_resource type="PackedScene" path="res://scenes/objects/tutorial_prompt.tscn" id="18_tuto"]
 [ext_resource type="PackedScene" path="res://scenes/objects/scenery.tscn" id="19_scenery"]
 [ext_resource type="Script" path="res://scripts/combat/encounter_group.gd" id="20_group"]
-[ext_resource type="PackedScene" path="res://scenes/actors/resident.tscn" id="21_resident"]
+[ext_resource type="PackedScene" path="res://scenes/actors/staffer.tscn" id="21_staffer"]
 [ext_resource type="PackedScene" path="res://scenes/objects/beat_zone.tscn" id="22_beat"]
 [ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="23_routepoint"]
 
@@ -108,27 +108,27 @@ size = Vector2(160, 50)
 
 [node name="Entities" type="Node2D" parent="."]
 
-[node name="Gem_G001" parent="Entities" instance=ExtResource("6_gem")]
+[node name="Chip_G001" parent="Entities" instance=ExtResource("6_chip")]
 position = Vector2(150, -20)
 entity_id = "L01-TEST-G001"
 value = 1
 
-[node name="GemCache_CACHE01" parent="Entities" instance=ExtResource("7_cache")]
+[node name="ChipCache_CACHE01" parent="Entities" instance=ExtResource("7_cache")]
 position = Vector2(190, 0)
 entity_id = "L01-TEST-CACHE01"
 value = 20
 
-[node name="Artifact_A01" parent="Entities" instance=ExtResource("8_artifact")]
+[node name="Evidence_A01" parent="Entities" instance=ExtResource("8_evidence")]
 position = Vector2(230, -18)
 entity_id = "L01-TEST-A01"
-artifact_id = "A01"
+evidence_id = "EF01"
 
-[node name="CareCapsule_HS01" parent="Entities" instance=ExtResource("9_capsule")]
+[node name="MedPatch_HS01" parent="Entities" instance=ExtResource("9_capsule")]
 position = Vector2(420, -20)
 entity_id = "L01-TEST-HS01"
 heal = 2
 
-[node name="GemCluster_GC01" parent="Entities" instance=ExtResource("6_gem")]
+[node name="ChipCluster_GC01" parent="Entities" instance=ExtResource("6_chip")]
 position = Vector2(860, -20)
 entity_id = "L01-TEST-GC01"
 value = 5
@@ -137,10 +137,10 @@ value = 5
 position = Vector2(880, 0)
 switch_id = "L01-SW01"
 
-[node name="CoreConsole" parent="Entities" instance=ExtResource("11_console")]
+[node name="CoreNode" parent="Entities" instance=ExtResource("11_console")]
 position = Vector2(1030, 0)
 
-[node name="MaintenanceBench" parent="Entities" instance=ExtResource("12_bench")]
+[node name="Workbench" parent="Entities" instance=ExtResource("12_workbench")]
 position = Vector2(1180, 0)
 
 [node name="WeaponPad" parent="Entities" instance=ExtResource("13_pad")]
@@ -187,9 +187,9 @@ monitorable = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E_TEST/ApproachZone"]
 shape = SubResource("RectangleShape2D_approach")
 
-[node name="Resident" parent="Encounters/EncounterGroup_E_TEST" instance=ExtResource("21_resident")]
+[node name="Staffer" parent="Encounters/EncounterGroup_E_TEST" instance=ExtResource("21_staffer")]
 position = Vector2(300, 0)
-entity_id = "L01-TEST-Z01-01"
+entity_id = "L01-TEST-CY01-01"
 
 [node name="Beats" type="Node2D" parent="."]
 
@@ -213,7 +213,7 @@ position = Vector2(1340, 0)
 
 [node name="Route" type="Node2D" parent="."]
 
-[node name="M01_MoveToGem" type="Marker2D" parent="Route"]
+[node name="M01_MoveToChip" type="Marker2D" parent="Route"]
 position = Vector2(150, 0)
 script = ExtResource("23_routepoint")
 action = 0
@@ -226,7 +226,7 @@ action = 3
 branch = "OPT01"
 tolerance = 16.0
 
-[node name="B02_TakeArtifact" type="Marker2D" parent="Route"]
+[node name="B02_TakeEvidence" type="Marker2D" parent="Route"]
 position = Vector2(230, 0)
 script = ExtResource("23_routepoint")
 action = 3
@@ -274,7 +274,7 @@ action = 1
 tolerance = 10.0
 hold_jump = 0.1
 
-[node name="M08_PastGemCluster" type="Marker2D" parent="Route"]
+[node name="M08_PastChipCluster" type="Marker2D" parent="Route"]
 position = Vector2(860, 0)
 script = ExtResource("23_routepoint")
 action = 0

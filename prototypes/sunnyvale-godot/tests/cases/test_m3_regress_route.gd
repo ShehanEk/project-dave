@@ -5,7 +5,7 @@ extends TestCase
 ## distance to same-floor enemy starts, and the retreat floor behind the hero
 ## at each encounter activation. Design limits from 02-area-blueprints.md.
 ## Grew out of the M3 assembly review (LAY-03 Clipper windup on the landing,
-## LAY-08 Residents too close to a landing, LAY-09 backstops above the
+## LAY-08 Staffers too close to a landing, LAY-09 backstops above the
 ## ordinary-rise limit, LAY-16 E11 retreat floor); keep passing after any
 ## future geometry change.
 

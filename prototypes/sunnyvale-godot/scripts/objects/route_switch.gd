@@ -5,10 +5,15 @@ extends Interactable
 ## Draws the matching symbol that service_walkway also draws, so the player
 ## can tell which walkway a given lever controls.
 
-const OUTLINE := Color("#332a20")
-const POST := Color("#8a7f6a")
-const LEVER_OFF := Color("#c9663f")
-const LEVER_ON := Color("#87b45e")
+## Revamp (C24) night look: a steel post with a small control box and
+## indicator LED; the lever reads amber while off (waiting) and teal once
+## pulled, by position as well as color.
+const OUTLINE := Color("#05070B")
+const POST := Color("#2E3B4E")
+const BOX := Color("#1C2A3A")
+const RIM := Color(0.36, 0.45, 0.56, 0.55)
+const LEVER_OFF := Color("#FFB02E")
+const LEVER_ON := Color("#3FE0D0")
 
 @export var switch_id: String = "L01-SW01"
 
@@ -38,11 +43,22 @@ func _is_on() -> bool:
 
 
 func _draw() -> void:
-	draw_rect(Rect2(Vector2(-5.0, -46.0), Vector2(10.0, 46.0)), POST)
-	draw_rect(Rect2(Vector2(-5.0, -46.0), Vector2(10.0, 46.0)), OUTLINE, false, 2.0)
 	var on := _is_on()
-	var lever_end := Vector2(18.0, -60.0) if on else Vector2(-18.0, -60.0)
-	draw_line(Vector2(0.0, -46.0), lever_end, LEVER_ON if on else LEVER_OFF, 6.0)
-	draw_circle(lever_end, 5.0, OUTLINE)
+	var lever_col: Color = LEVER_ON if on else LEVER_OFF
+	draw_rect(Rect2(Vector2(-9.0, -5.0), Vector2(18.0, 5.0)), BOX)
+	draw_rect(Rect2(Vector2(-9.0, -5.0), Vector2(18.0, 5.0)), OUTLINE, false, 1.5)
+	draw_rect(Rect2(Vector2(-5.0, -46.0), Vector2(10.0, 41.0)), POST)
+	draw_line(Vector2(-3.5, -44.0), Vector2(-3.5, -6.0), RIM, 1.0)
+	draw_rect(Rect2(Vector2(-5.0, -46.0), Vector2(10.0, 41.0)), OUTLINE, false, 2.0)
+	var box := Rect2(Vector2(-9.0, -56.0), Vector2(18.0, 12.0))
+	draw_rect(box, BOX)
+	draw_circle(box.get_center() + Vector2(4.0, 0.0), 4.5, Color(lever_col, 0.2))
+	draw_circle(box.get_center() + Vector2(4.0, 0.0), 2.0, lever_col)
+	draw_rect(box, OUTLINE, false, 1.5)
+	var lever_end := Vector2(18.0, -66.0) if on else Vector2(-18.0, -66.0)
+	draw_line(Vector2(0.0, -52.0), lever_end, OUTLINE, 8.0)
+	draw_line(Vector2(0.0, -52.0), lever_end, lever_col, 5.0)
+	draw_circle(lever_end, 5.0, POST)
+	draw_circle(lever_end, 5.0, OUTLINE, false, 2.0)
 	# Matching symbol (a small triangle), shared with service_walkway.
-	SceneryDraw.draw_switch_symbol(self, Vector2(0.0, -78.0), on)
+	SceneryDraw.draw_switch_symbol(self, Vector2(0.0, -84.0), on)

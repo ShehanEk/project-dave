@@ -32,7 +32,7 @@ theme_override_constants/separation = 14
 
 [node name="TitleLabel" type="Label" parent="Panel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.212, 0.365, 0.384, 1)
+theme_override_colors/font_color = Color(0.247, 0.878, 0.816, 1)
 theme_override_font_sizes/font_size = 28
 text = "Sunnyvale complete."
 
@@ -42,25 +42,25 @@ theme_override_constants/separation = 12
 
 [node name="TimeLabel" type="Label" parent="Panel/VBox/StatsView"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.2, 0.165, 0.125, 1)
+theme_override_colors/font_color = Color(0.847, 0.886, 0.925, 1)
 theme_override_font_sizes/font_size = 22
 text = "Active play time: 0:00"
 
-[node name="GemsLabel" type="Label" parent="Panel/VBox/StatsView"]
+[node name="ChipsLabel" type="Label" parent="Panel/VBox/StatsView"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.702, 0.443, 0.129, 1)
+theme_override_colors/font_color = Color(1, 0.69, 0.18, 1)
 theme_override_font_sizes/font_size = 22
-text = "Gems found: 0 / 65"
+text = "Microchips found: 0 / 65"
 
 [node name="KeyLabel" type="Label" parent="Panel/VBox/StatsView"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.302, 0.243, 0.176, 1)
+theme_override_colors/font_color = Color(0.66, 0.73, 0.8, 1)
 theme_override_font_sizes/font_size = 22
-text = "Welcome Key: Not found"
+text = "Lockout Notice: Not found"
 
 [node name="QuickcycleLabel" type="Label" parent="Panel/VBox/StatsView"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.302, 0.243, 0.176, 1)
+theme_override_colors/font_color = Color(0.66, 0.73, 0.8, 1)
 theme_override_font_sizes/font_size = 22
 text = "Quickcycle: Not obtained"
 
@@ -85,7 +85,7 @@ theme_override_constants/separation = 14
 
 [node name="WarningLabel" type="Label" parent="Panel/VBox/ConfirmView"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.2, 0.165, 0.125, 1)
+theme_override_colors/font_color = Color(0.847, 0.886, 0.925, 1)
 theme_override_font_sizes/font_size = 22
 autowrap_mode = 2
 text = "Start a new run? Progress will be reset."

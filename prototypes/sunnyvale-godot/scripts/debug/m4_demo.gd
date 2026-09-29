@@ -3,14 +3,14 @@ extends Node2D
 ## (a05_depot.tscn) alone with a Hero/GameCamera exactly like the other
 ## debug demos, then drives a small bespoke autopilot (not RouteBot — it
 ## needs to operate real UI, which RouteBot deliberately never does) through
-## the console awakening, a full bench Quickcycle purchase (confirming the
-## real BenchPanel), and a full depot pad swap (confirming the real
+## the console awakening, a full workbench Quickcycle purchase (confirming the
+## real WorkbenchPanel), and a full depot pad swap (confirming the real
 ## SwapConfirm dialog), so a capture proves both M4 UI flows against the
 ## live scenes, not a scripted stand-in.
 ##
-## Demo-only bootstrap: grants the hero 60 gems directly on Session so the
+## Demo-only bootstrap: grants the hero 60 chips directly on Session so the
 ## purchase step has something to spend (an isolated depot scene has no
-## main-route gems of its own to collect first) — never a gameplay/test
+## main-route chips of its own to collect first) — never a gameplay/test
 ## exploit, just how this ONE debug scene sets its starting condition.
 
 const AREA_SCENE := "res://scenes/levels/areas/a05_depot.tscn"
@@ -19,7 +19,7 @@ const CAMERA_SCENE := "res://scenes/actors/game_camera.tscn"
 const HUD_SCENE := "res://scenes/ui/hud.tscn"
 
 const CONSOLE_X := 600.0
-const BENCH_X := 1450.0
+const WORKBENCH_X := 1450.0
 const PAD_X := 1780.0
 const TARGET_X := 2050.0
 
@@ -61,13 +61,13 @@ func _ready() -> void:
 
 
 func _run_sequence() -> void:
-	# 1) Console: awakens EDEN, unlocks the bench, commits CP04. M5 replaced
+	# 1) Console: awakens Adam, unlocks the workbench, commits CP04. M5 replaced
 	# the old M3 instant-flip stub with a real ~19s skippable SC01 scene
-	# (core_console.gd) that disables hero.input_enabled the whole time it
+	# (core_node.gd) that disables hero.input_enabled the whole time it
 	# plays, so this demo — like m5_demo.gd/m5b_demo.gd — presses `skip`
 	# right after interacting rather than just waiting a beat (m4-demo-stale-
 	# vs-sc01: without this the hero stays frozen at the console forever and
-	# never reaches the bench/pad below).
+	# never reaches the workbench/pad below).
 	await _move_to(CONSOLE_X)
 	await _tap_interact()
 	await _wait(0.3)
@@ -78,17 +78,17 @@ func _run_sequence() -> void:
 		await get_tree().physics_frame
 	await _wait(0.5)
 
-	# 2) Bench: open the real BenchPanel, watch it, confirm the Quickcycle
+	# 2) Workbench: open the real WorkbenchPanel, watch it, confirm the Quickcycle
 	# purchase, watch the result, then close it.
-	await _move_to(BENCH_X)
+	await _move_to(WORKBENCH_X)
 	await _tap_interact()
 	await _wait(0.7)
-	var bench: MaintenanceBench = area.get_node("Entities/MaintenanceBench")
-	if bench._panel:
+	var workbench: Workbench = area.get_node("Entities/Workbench")
+	if workbench._panel:
 		await _wait(0.5)
-		bench._panel._on_confirm_pressed()
+		workbench._panel._on_confirm_pressed()
 		await _wait(1.0)
-		bench._panel._on_decline_pressed()
+		workbench._panel._on_decline_pressed()
 	await _wait(0.4)
 
 	# 3) Pad: open the real SwapConfirm dialog, watch it, confirm the swap,

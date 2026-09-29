@@ -32,7 +32,7 @@ theme_override_constants/separation = 16
 
 [node name="TitleLabel" type="Label" parent="Panel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.212, 0.365, 0.384, 1)
+theme_override_colors/font_color = Color(0.247, 0.878, 0.816, 1)
 theme_override_font_sizes/font_size = 24
 autowrap_mode = 2
 text = "Swap held P01 for pad P02?"

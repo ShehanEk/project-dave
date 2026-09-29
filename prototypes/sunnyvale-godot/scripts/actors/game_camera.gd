@@ -17,6 +17,10 @@ var _look_ahead: float = 0.0
 
 
 func _ready() -> void:
+	# Follow on physics ticks (not per render frame) so, with physics
+	# interpolation on, the camera and the hero are smoothed identically and
+	# never drift against each other on high-refresh displays.
+	process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS
 	position_smoothing_enabled = true
 	position_smoothing_speed = 6.0
 	zoom = Vector2.ONE
@@ -45,12 +49,18 @@ func reset_position() -> void:
 	if target:
 		global_position = target.global_position
 	reset_smoothing()
+	reset_physics_interpolation()
 
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if target == null:
 		return
-	var facing: int = target.facing if "facing" in target else 1
-	_look_ahead = lerpf(_look_ahead, float(facing) * look_ahead_distance,
+	# Look ahead in the direction of travel (the hero may face its aim while
+	# backpedalling), falling back to facing when standing still, so hazards
+	# ahead of a moving hero are always previewed.
+	var dir: float = float(target.facing) if "facing" in target else 1.0
+	if "velocity" in target and absf(target.velocity.x) > 20.0:
+		dir = signf(target.velocity.x)
+	_look_ahead = lerpf(_look_ahead, dir * look_ahead_distance,
 			clampf(look_ahead_catchup * delta, 0.0, 1.0))
 	global_position = target.global_position + Vector2(_look_ahead, 0.0)

@@ -30,8 +30,23 @@ var _died_emitted: bool = false
 var _is_firing: bool = false
 var _jumped_this_frame: bool = false
 
+## M6.5 Kenney integration pass: seconds spent with `_was_on_floor` false,
+## used only to gate the landing-dust puff below to a "real fall" (a jump or
+## an off-ledge drop) rather than firing on a bare floor-state flicker (e.g.
+## the tick right after `respawn_at()` teleports the hero, which does not
+## reset `_was_on_floor` — ADV-note pattern elsewhere in this file). Purely
+## cosmetic; never read by movement/physics.
+var _air_time: float = 0.0
+const REAL_FALL_AIR_TIME := 0.12
+## No class_name on the puff script (see its own doc comment) — reached
+## through this plain preload + its static `spawn()`.
+const KenneyPuff := preload("res://scripts/effects/kenney/kenney_puff.gd")
+
 # --- presentation-only state (M6): read by Visual, never by physics/logic ---
 const LAND_SQUASH_TIME := 0.12
+## Horizontal distance (px) from the hero within which the aim no longer
+## flips the facing (cursor straight above/below).
+const FACING_DEADZONE := 8.0
 const HIT_POSE_TIME := 0.2
 const INTERACT_POSE_TIME := 0.35
 var _stride_phase: float = 0.0
@@ -81,6 +96,10 @@ func _exit_tree() -> void:
 
 func _physics_process(delta: float) -> void:
 	_jumped_this_frame = false
+	if not _was_on_floor:
+		_air_time += delta
+	else:
+		_air_time = 0.0
 	_is_firing = input_enabled and Input.is_action_pressed("fire")
 	if input_enabled:
 		_handle_jump_input()
@@ -100,6 +119,9 @@ func _physics_process(delta: float) -> void:
 	if landed_this_tick:
 		Audio.play_sfx(&"hero_land", global_position)
 		_land_squash_timer = LAND_SQUASH_TIME
+		if _air_time > REAL_FALL_AIR_TIME:
+			var host := get_tree().current_scene if get_tree().current_scene else get_tree().root
+			KenneyPuff.spawn(&"landing_dust", global_position, host)
 
 	if is_on_floor():
 		_coyote_timer = tuning.coyote_time
@@ -113,9 +135,11 @@ func _physics_process(delta: float) -> void:
 	_was_on_floor = is_on_floor()
 
 	_update_facing()
-	_update_aim_pivot()
 	_update_immunity(delta)
+	# Visual first: it picks this tick's sprite frame, and AimPivot then
+	# snaps to that frame's shoulder (no one-tick lag between arm and body).
 	_update_visual_pose(delta)
+	_update_aim_pivot()
 
 
 ## Presentation-only bookkeeping (M6): stride phase for the procedural walk
@@ -129,7 +153,9 @@ func _update_visual_pose(delta: float) -> void:
 
 	var moving := is_on_floor() and absf(velocity.x) > 4.0
 	if moving:
-		_stride_phase += absf(velocity.x) * delta * 0.045
+		# Signed: moving toward the facing side advances the run cycle,
+		# moving away from it (backpedalling toward the aim) runs it backward.
+		_stride_phase += velocity.x * float(facing) * delta * 0.045
 	if visual:
 		visual.update_pose(facing, moving, is_on_floor(), velocity.y, _stride_phase,
 				_is_firing, is_immune(), _died_emitted, _land_squash_timer,
@@ -201,13 +227,16 @@ func _apply_knockback_decay(delta: float) -> void:
 	_knockback = _knockback.move_toward(Vector2.ZERO, 900.0 * delta)
 
 
+## The body always faces the side the aim is on, so the gun arm never twists
+## back across the body; moving away from the aim backpedals (the run cycle
+## plays in reverse — see _update_visual_pose). Playtest change 2026-09-28:
+## G02 proposed "facing follows aim while firing and movement otherwise",
+## which left the arm pointing backwards whenever the mouse was behind a
+## moving hero. Within FACING_DEADZONE of straight up/down the facing holds.
 func _update_facing() -> void:
-	if _is_firing:
-		var aim := get_current_aim()
-		if not is_equal_approx(aim.x, global_position.x):
-			facing = 1 if aim.x >= global_position.x else -1
-	elif not is_zero_approx(velocity.x):
-		facing = 1 if velocity.x > 0.0 else -1
+	var dx := get_current_aim().x - global_position.x
+	if absf(dx) > FACING_DEADZONE:
+		facing = 1 if dx > 0.0 else -1
 
 
 ## World-space aim target: the overridable value in tests/demos, otherwise
@@ -229,6 +258,11 @@ func set_firing(firing: bool) -> void:
 func _update_aim_pivot() -> void:
 	if aim_pivot == null:
 		return
+	# The pivot is the near shoulder of the current sprite frame (the arm
+	# rotates around it and holds the Scrapjack), so it follows the pose —
+	# lower while running, crouching or kneeling.
+	if visual and visual.has_method("shoulder_offset"):
+		aim_pivot.position = visual.shoulder_offset()
 	var to_aim := get_current_aim() - aim_pivot.global_position
 	if to_aim.length() > 0.5:
 		aim_pivot.rotation = to_aim.angle()
@@ -284,6 +318,9 @@ func fall_to(safe_position: Vector2, damage: int) -> void:
 
 func respawn_at(position: Vector2) -> void:
 	global_position = position
+	# A teleport, not motion: don't let physics interpolation draw a slide
+	# from the old position (checkpoint respawns, pit resets).
+	reset_physics_interpolation()
 	velocity = Vector2.ZERO
 	_knockback = Vector2.ZERO
 	_coyote_timer = 0.0
@@ -301,7 +338,10 @@ func _on_health_changed(current: int, _maximum: int) -> void:
 		died.emit()
 
 
-const IMMUNE_TINT := Color(1.0, 0.55, 0.55)
+## Gentle warm tint while immune (was 1.0/0.55/0.55, sized for the old flat
+## blockout hero; on the detailed Rook sprite that read as sunburnt). The
+## hurt pose is the main cue; this only marks the ~1 s immunity window.
+const IMMUNE_TINT := Color(1.0, 0.86, 0.8)
 const NORMAL_TINT := Color(1.0, 1.0, 1.0)
 
 
@@ -339,7 +379,7 @@ func _update_interact_prompt() -> void:
 	# PromptLabel keeps its authored hero-relative offset (hero.tscn), clear
 	# above the hero's own head. It used to be re-placed 64 px above the
 	# interactable's origin, which for floor-level objects the hero stands
-	# beside (console, bench, pad) landed it on the hero's torso.
+	# beside (console, workbench, pad) landed it on the hero's torso.
 	if _highlighted and not _highlighted.is_showing_toast():
 		prompt_label.text = _highlighted.get_prompt()
 		prompt_label.visible = true

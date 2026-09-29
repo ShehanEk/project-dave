@@ -1,7 +1,7 @@
 extends TestCase
 ## M5 story/completion contracts (06-build-milestones.md M5 /
 ## 07-acceptance-and-playtesting.md T16-T18, T20). Every sub-test boots the
-## full `level_01.tscn` (LevelDirector) so CoreConsole, EnvironmentState, and
+## full `level_01.tscn` (LevelDirector) so CoreNode, EnvironmentState, and
 ## the real completion flow are exercised exactly as in normal play, not in
 ## isolation.
 
@@ -9,7 +9,7 @@ const LEVEL_01 := "res://scenes/levels/level_01.tscn"
 const DEPOT_AREA_INDEX := 4
 const EXIT_AREA_INDEX := 5
 
-## Comfortably longer than CoreConsole's own ~19s full watch-through
+## Comfortably longer than CoreNode's own ~19s full watch-through
 ## (T_WARNING+T_LOCKED+3 lines+T_CONTAINMENT), so a "normal" run reaches full
 ## completion (including hero.input_enabled returning) before this test
 ## checks anything.
@@ -32,7 +32,7 @@ func _test_t16_sc01_normal_vs_skip() -> void:
 	add_child(level_a)
 	await physics_frames(3)
 
-	var console_a: CoreConsole = level_a.areas[DEPOT_AREA_INDEX].get_node("Entities/CoreConsole")
+	var console_a: CoreNode = level_a.areas[DEPOT_AREA_INDEX].get_node("Entities/CoreNode")
 	level_a.hero.global_position = console_a.global_position
 	await physics_frames(2)
 	check(not Session.get_story("awakening_done"), "setup: awakening not yet done")
@@ -67,7 +67,7 @@ func _test_t16_sc01_normal_vs_skip() -> void:
 	add_child(level_b)
 	await physics_frames(3)
 
-	var console_b: CoreConsole = level_b.areas[DEPOT_AREA_INDEX].get_node("Entities/CoreConsole")
+	var console_b: CoreNode = level_b.areas[DEPOT_AREA_INDEX].get_node("Entities/CoreNode")
 	level_b.hero.global_position = console_b.global_position
 	await physics_frames(2)
 
@@ -112,7 +112,7 @@ func _test_t17_resume_after_awakening() -> void:
 	add_child(level)
 	await physics_frames(3)
 
-	var console: CoreConsole = level.areas[DEPOT_AREA_INDEX].get_node("Entities/CoreConsole")
+	var console: CoreNode = level.areas[DEPOT_AREA_INDEX].get_node("Entities/CoreNode")
 	level.hero.global_position = console.global_position
 	await physics_frames(2)
 	console.interact(level.hero)
@@ -121,9 +121,9 @@ func _test_t17_resume_after_awakening() -> void:
 	check(Session.state["checkpoint_id"] == "CP04", "setup: CP04 committed")
 	var health_before_death := Session.get_health()
 
-	var quarantine_a06 := level.areas[EXIT_AREA_INDEX].get_node("Scenery/QuarantineVisuals")
+	var lockdown_a06 := level.areas[EXIT_AREA_INDEX].get_node("Scenery/LockdownVisuals")
 	var garden_a06 := level.areas[EXIT_AREA_INDEX].get_node("Scenery/GardenVisuals")
-	check(quarantine_a06.visible, "A06's quarantine visuals are already settled off-screen after SC01")
+	check(lockdown_a06.visible, "A06's lockdown visuals are already settled off-screen after SC01")
 	check(not garden_a06.visible, "A06's pre-awakening garden visuals are hidden after SC01")
 
 	level.hero.take_damage(999, level.hero.global_position)
@@ -133,12 +133,12 @@ func _test_t17_resume_after_awakening() -> void:
 	check(Session.get_story("hatch_open"), "death after CP04 never relocks the hatch")
 	check(Session.get_health() == health_before_death, "respawn deals no extra damage (health unchanged)")
 
-	var fresh_console: CoreConsole = level.areas[DEPOT_AREA_INDEX].get_node("Entities/CoreConsole")
+	var fresh_console: CoreNode = level.areas[DEPOT_AREA_INDEX].get_node("Entities/CoreNode")
 	check(fresh_console._phase == "awake", "the rebuilt console shows the settled state directly, no replay")
-	var fresh_quarantine := level.areas[EXIT_AREA_INDEX].get_node("Scenery/QuarantineVisuals")
+	var fresh_lockdown := level.areas[EXIT_AREA_INDEX].get_node("Scenery/LockdownVisuals")
 	var fresh_garden := level.areas[EXIT_AREA_INDEX].get_node("Scenery/GardenVisuals")
-	check(fresh_quarantine.visible and fresh_quarantine.modulate.a == 1.0,
-			"a rebuilt A06 applies the settled quarantine look directly, with no fade-in artifact")
+	check(fresh_lockdown.visible and fresh_lockdown.modulate.a == 1.0,
+			"a rebuilt A06 applies the settled lockdown look directly, with no fade-in evidence")
 	check(not fresh_garden.visible, "a rebuilt A06 never shows the pre-awakening garden look once awake")
 
 	var respawn_marker := level.areas[DEPOT_AREA_INDEX].get_marker("Respawn_CP04")
@@ -154,17 +154,17 @@ func _test_t17_resume_after_awakening() -> void:
 	add_child(level2)
 	await physics_frames(3)
 
-	var console2: CoreConsole = level2.areas[DEPOT_AREA_INDEX].get_node("Entities/CoreConsole")
+	var console2: CoreNode = level2.areas[DEPOT_AREA_INDEX].get_node("Entities/CoreNode")
 	level2.hero.global_position = console2.global_position
 	await physics_frames(2)
 	console2.interact(level2.hero)
 	await hold(&"skip", 1.0 / 60.0)
 	await physics_frames(6)
-	check(Session.get_story("awakening_done"), "setup: awakened before visiting the bench")
+	check(Session.get_story("awakening_done"), "setup: awakened before visiting the workbench")
 
 	Session.state["wallet"] = 40
 	var purchase: Dictionary = Session.purchase_upgrade("W01", 1, 40)
-	check(purchase.get("ok", false), "setup: the bench purchase itself succeeds")
+	check(purchase.get("ok", false), "setup: the workbench purchase itself succeeds")
 	check(Session.state["checkpoint_id"] == "UPG01", "setup: the purchase commits UPG01")
 	var health_before_death2 := Session.get_health()
 
@@ -177,7 +177,7 @@ func _test_t17_resume_after_awakening() -> void:
 	var respawn_marker2 := level2.areas[DEPOT_AREA_INDEX].get_marker("Respawn_UPG01")
 	check(level2.hero.global_position.distance_to(respawn_marker2.global_position) < 12.0,
 			"respawn lands exactly at UPG01's own marker")
-	var fresh_console2: CoreConsole = level2.areas[DEPOT_AREA_INDEX].get_node("Entities/CoreConsole")
+	var fresh_console2: CoreNode = level2.areas[DEPOT_AREA_INDEX].get_node("Entities/CoreNode")
 	check(fresh_console2._phase == "awake", "the rebuilt console (post-purchase resume) is settled, no replay")
 
 	level2.queue_free()
@@ -209,8 +209,8 @@ func _test_t18_zero_upgrade_finish() -> void:
 	check(Session.state["checkpoint_id"] == "CP05", "completion commits CP05")
 	check(Session.get_objective() == Session.OBJECTIVE_COMPLETE, "completion sets the final objective")
 	check(Session.weapon_stage("W01") == 0, "zero-upgrade finish: Quickcycle was never purchased (stage 0)")
-	check(not Session.has_artifact("A01"), "zero-upgrade finish: no artifact collected (main route only)")
-	check(Session.gems_found() == 45, "zero-upgrade finish: only the main-route 45 gem value, no cache")
+	check(not Session.has_evidence("EF01"), "zero-upgrade finish: no evidence collected (main route only)")
+	check(Session.chips_found() == 45, "zero-upgrade finish: only the main-route 45 chip value, no cache")
 
 	level.queue_free()
 	bot.queue_free()
@@ -236,23 +236,23 @@ func _test_t20_completion_totals_and_replay() -> void:
 	add_child(level)
 	await physics_frames(3)
 
-	# One properly-whitelisted-shaped fake gem id worth the full main-route
+	# One properly-whitelisted-shaped fake chip id worth the full main-route
 	# total, so a real CheckpointService.save_snapshot() (called by the real
 	# purchase transaction below) still validates.
-	check(Session.collect("L01-A02-G001", 45), "setup: collect 45 gems worth of value")
+	check(Session.collect("L01-A02-G001", 45), "setup: collect 45 chips worth of value")
 	Session.set_story("awakening_done", true)
 
 	var spend: Dictionary = Session.purchase_upgrade("W01", 1, 40)
-	check(spend.get("ok", false), "setup: the 40-gem Quickcycle purchase succeeds")
+	check(spend.get("ok", false), "setup: the 40-chip Quickcycle purchase succeeds")
 	check(Session.get_wallet() == 5, "setup: wallet reflects the spend (45-40=5)")
-	check(Session.gems_found() == 45, "gems found stays 45 after spending 40 at the bench (wallet != gems found)")
+	check(Session.chips_found() == 45, "chips found stays 45 after spending 40 at the workbench (wallet != chips found)")
 
 	# Take some damage, defeat an enemy, flip the depot swap, so "Play again"
-	# has real progress across every field to reset, not just gems/wallet.
+	# has real progress across every field to reset, not just chips/wallet.
 	Session.apply_damage(2)
 	var a02: AreaRoot = level.areas[1]
-	var resident: Resident = a02.get_node("Encounters/EncounterGroup_E01/Resident")
-	Session.mark_defeated(resident.entity_id)
+	var staffer: Staffer = a02.get_node("Encounters/EncounterGroup_E01/Staffer")
+	Session.mark_defeated(staffer.entity_id)
 	Session.set_switch("L01-SW01", true)
 	var swap := Session.swap_weapon("L01-A05-PAD01")
 	check(swap.get("ok", false), "setup: the depot weapon swap succeeds")
@@ -260,11 +260,14 @@ func _test_t20_completion_totals_and_replay() -> void:
 	# Reach the real exit wicket and confirm "Play again" through the actual
 	# completion screen (not by calling Session.new_run() ourselves).
 	var wicket := level.areas[EXIT_AREA_INDEX].get_node("Entities/ExitWicket")
+	# Revamp (C24): the wicket needs the A04 clearance keycard, which a real
+	# run always picks up on the plaza porch (main route).
+	Session.take_keycard("L01-KC01", "L01-KC01-P")
 	level.hero.global_position = wicket.global_position
 	await physics_frames(3)
 	check(level.level_ended_flag, "setup: the exit wicket triggers completion")
 	check(is_instance_valid(level._completion_screen), "the completion screen opens")
-	check(Session.gems_found() == 45, "gems found is still 45 on the completion screen (independent of the earlier spend)")
+	check(Session.chips_found() == 45, "chips found is still 45 on the completion screen (independent of the earlier spend)")
 
 	level._completion_screen.play_again_confirmed.emit()
 	await physics_frames(4)
@@ -273,7 +276,7 @@ func _test_t20_completion_totals_and_replay() -> void:
 	check(Session.state["health"] == fresh["health"], "Play again resets health")
 	check(Session.state["wallet"] == fresh["wallet"], "Play again resets wallet")
 	check(Session.state["upgrades"] == fresh["upgrades"], "Play again resets upgrades")
-	check(Session.state["collected"].is_empty(), "Play again resets collected gems")
+	check(Session.state["collected"].is_empty(), "Play again resets collected chips")
 	check(Session.state["defeated"].is_empty(), "Play again resets defeated enemies")
 	check(Session.state["switches"] == fresh["switches"], "Play again resets switches")
 	check(Session.state["story"] == fresh["story"], "Play again resets story flags")

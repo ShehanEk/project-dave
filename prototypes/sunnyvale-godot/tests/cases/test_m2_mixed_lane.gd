@@ -1,5 +1,5 @@
 extends TestCase
-## M2 T06: one EncounterGroup with a Resident and a Clipper contesting the
+## M2 T06: one EncounterGroup with a Staffer and a Clipper contesting the
 ## same hero. Over >=20s of simulated combat, never more than one enemy is
 ## in windup/active-attack at once, and both enemies actually get a turn
 ## (the token isn't monopolized). Also covers EncounterGroup's
@@ -76,20 +76,20 @@ func _test_fairness_over_20_seconds() -> void:
 	group.lane_rect = Rect2(-500, -500, 2000, 1000)
 	add_child(group)
 
-	var resident: Resident = load("res://scenes/actors/resident.tscn").instantiate()
-	group.add_child(resident)
+	var staffer: Staffer = load("res://scenes/actors/staffer.tscn").instantiate()
+	group.add_child(staffer)
 	var clipper: Clipper = load("res://scenes/actors/clipper.tscn").instantiate()
 	group.add_child(clipper)
 	await physics_frames(1)
-	resident.global_position = Vector2(760, 560)
+	staffer.global_position = Vector2(760, 560)
 	clipper.global_position = Vector2(640, 560)
 
 	var hero := _make_hero(Vector2(700, 560))
 	await physics_frames(3)
 
-	var resident_attacks := 0
+	var staffer_attacks := 0
 	var clipper_attacks := 0
-	var resident_was_active := false
+	var staffer_was_active := false
 	var clipper_was_active := false
 	var max_concurrent := 0
 	var violation_frame := -1
@@ -97,14 +97,14 @@ func _test_fairness_over_20_seconds() -> void:
 	var ticks := int(20.5 * 60.0)  # a bit over 20 simulated seconds
 	for i in ticks:
 		await physics_frames(1)
-		var r_active: bool = is_instance_valid(resident) and resident.state in [Resident.State.WINDUP, Resident.State.LUNGE]
+		var r_active: bool = is_instance_valid(staffer) and staffer.state in [Staffer.State.WINDUP, Staffer.State.LUNGE]
 		var c_active: bool = is_instance_valid(clipper) and clipper.state in [Clipper.State.WINDUP, Clipper.State.CHARGE]
 
-		if r_active and not resident_was_active:
-			resident_attacks += 1
+		if r_active and not staffer_was_active:
+			staffer_attacks += 1
 		if c_active and not clipper_was_active:
 			clipper_attacks += 1
-		resident_was_active = r_active
+		staffer_was_active = r_active
 		clipper_was_active = c_active
 
 		var concurrent := int(r_active) + int(c_active)
@@ -115,12 +115,12 @@ func _test_fairness_over_20_seconds() -> void:
 	check(violation_frame < 0,
 			"never more than one enemy is windup/active-attacking at once (first violation at tick %d)" % violation_frame)
 	check(max_concurrent <= 1, "max concurrent windup/active attackers over 20s is <=1 (got %d)" % max_concurrent)
-	check(resident_attacks >= 1, "the Resident got at least one attack turn over 20s (got %d)" % resident_attacks)
+	check(staffer_attacks >= 1, "the Staffer got at least one attack turn over 20s (got %d)" % staffer_attacks)
 	check(clipper_attacks >= 1, "the Clipper got at least one attack turn over 20s (got %d)" % clipper_attacks)
 
 	hero.queue_free()
-	if is_instance_valid(resident):
-		resident.queue_free()
+	if is_instance_valid(staffer):
+		staffer.queue_free()
 	if is_instance_valid(clipper):
 		clipper.queue_free()
 	group.queue_free()

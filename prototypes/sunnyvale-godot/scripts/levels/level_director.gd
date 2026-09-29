@@ -16,8 +16,8 @@ extends Node2D
 ## recreated, so `died` is connected exactly once, in `_ready()`.
 ##
 ## Objectives/SC01/completion (04-godot-architecture.md's table assigns
-## "Area order, encounter activation, objectives, SC01, quarantine state,
-## completion" to LevelDirector): CoreConsole (L01-SC01) owns the SC01 scene
+## "Area order, encounter activation, objectives, SC01, lockdown state,
+## completion" to LevelDirector): CoreNode (L01-SC01) owns the SC01 scene
 ## itself and the awakening story flags; this script only bumps the
 ## objective the moment the hero first enters the depot (A05) pre-awakening,
 ## and owns the real exit-wicket ending — CP05, `Session.level_completed`,
@@ -48,12 +48,16 @@ const SUBTITLE_SCENE := "res://scenes/ui/subtitle_panel.tscn"
 const COMPLETION_SCENE := "res://scenes/ui/completion.tscn"
 const PAUSE_MENU_SCENE := "res://scenes/ui/pause.tscn"
 const DEPOT_AREA_ID := "L01-A05"
+## Revamp (C24): the night-look screen overlay (vignette, grain, lockdown
+## wash). Optional: instanced only if the scene exists, owned by the world-
+## visuals pass (scenes/world/night_overlay.tscn).
+const NIGHT_OVERLAY_SCENE := "res://scenes/world/night_overlay.tscn"
 
 ## Session `checkpoint_id` -> [index into `areas`, marker name under that
 ## area's Markers node]. CP00 is the initial spawn; CP01-CP03 are the
-## recovery stations; CP04 is the core console's own safe spot; UPG01 is the
-## bench purchase/service checkpoint (its own "Respawn" marker mirrored here
-## per CONVENTIONS.md IDs "checkpoints `CP00`...`CP05`" / "bench `L01-UPG01`");
+## recovery stations; CP04 is the core node's own safe spot; UPG01 is the
+## workbench purchase/service checkpoint (its own "Respawn" marker mirrored here
+## per CONVENTIONS.md IDs "checkpoints `CP00`...`CP05`" / "workbench `L01-UPG01`");
 ## CP05 is the exit wicket's safe landing (M5 wires the actual commit).
 const CHECKPOINT_MARKERS := {
 	"CP00": [0, "Spawn_CP00"],
@@ -115,6 +119,9 @@ func _ready() -> void:
 	if get_tree().get_first_node_in_group("subtitle_panel") == null:
 		add_child(load(SUBTITLE_SCENE).instantiate())
 
+	if ResourceLoader.exists(NIGHT_OVERLAY_SCENE):
+		add_child(load(NIGHT_OVERLAY_SCENE).instantiate())
+
 	_place_hero_at_checkpoint(String(Session.state.get("checkpoint_id", "CP00")))
 	var start_rect := _camera_target_rect_for_area(_area_for_x(hero.global_position.x))
 	_camera_top = start_rect.position.y
@@ -158,7 +165,7 @@ func _process(delta: float) -> void:
 
 ## Run-time bookkeeping only (never rolled back on death): the completion
 ## screen's "active play time" only counts time the hero could actually act,
-## which already excludes every modal (BenchPanel/SwapConfirm/SC01's
+## which already excludes every modal (WorkbenchPanel/SwapConfirm/SC01's
 ## cutscene/the completion screen itself, all of which disable
 ## `hero.input_enabled`) — see Session.tick_active_time()'s doc comment.
 func _physics_process(delta: float) -> void:
@@ -166,8 +173,8 @@ func _physics_process(delta: float) -> void:
 		Session.tick_active_time(delta)
 
 
-## Objectives (05-content-and-assets.md): "Find the maintenance depot." (the
-## new-run default) becomes "Inspect the mounted power core." the moment the
+## Objectives (05-content-and-assets.md): "Reach the server depot." (the
+## new-run default) becomes "Plug into Adam's core node." the moment the
 ## hero first steps into the depot (A05), before SC01. Guarded on the
 ## objective's own current value, so this only ever fires once per run (and
 ## never overwrites a later objective on a subsequent visit/death).
@@ -311,7 +318,7 @@ func _finish_death_rebuild() -> void:
 	# change a position already read from them).
 	_place_hero_at_checkpoint(String(Session.state.get("checkpoint_id", "CP00")))
 	# Let one real physics step land before creating any fresh Area2D entity
-	# (gems, capsules, ...). The hero's CharacterBody2D transform updates
+	# (chips, capsules, ...). The hero's CharacterBody2D transform updates
 	# immediately, but the physics server's own broadphase — what a brand
 	# new monitoring Area2D checks against the instant it enters the tree —
 	# only catches up on the NEXT physics step. Without this wait, a fresh
@@ -393,8 +400,8 @@ func _on_wicket_reached() -> void:
 	if telemetry:
 		telemetry.completion(
 				float(Session.run_meta.get("active_seconds", 0.0)),
-				Session.gems_found(),
-				Session.has_artifact("A01"),
+				Session.chips_found(),
+				Session.has_evidence("EF01"),
 				Session.weapon_stage("W01"))
 	_show_completion_screen()
 	level_ended.emit()

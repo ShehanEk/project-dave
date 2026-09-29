@@ -1,15 +1,15 @@
 extends TestCase
 ## M3 area: L01-A01 Perimeter gate (scenes/levels/areas/a01_gate.tscn).
 ## No enemies; proves the main route (arrival apron -> two low steps -> short
-## gap with a walkable catch floor -> inert practice target -> gem trail ->
+## gap with a walkable catch floor -> inert practice target -> chip trail ->
 ## open exit seam) is completable by the debug RouteBot, and that the exact
-## population from 02-area-blueprints.md is present: 5 small gems
-## (L01-A01-G001..G005), 0 Residents, 0 Clippers, 4 beats.
+## population from 02-area-blueprints.md is present: 5 small chips
+## (L01-A01-G001..G005), 0 Staffers, 0 Clippers, 4 beats.
 
 const AREA := "res://scenes/levels/areas/a01_gate.tscn"
 
 const EXPECTED_BEATS := ["L01-A01-B01", "L01-A01-B02", "L01-A01-B03", "L01-A01-B04"]
-const EXPECTED_GEMS := ["L01-A01-G001", "L01-A01-G002", "L01-A01-G003", "L01-A01-G004", "L01-A01-G005"]
+const EXPECTED_CHIPS := ["L01-A01-G001", "L01-A01-G002", "L01-A01-G003", "L01-A01-G004", "L01-A01-G005"]
 
 
 func run() -> void:
@@ -28,13 +28,13 @@ func _test_main_route_reaches_exit() -> void:
 			"A01 main route reaches the exit seam (failure=%s, pos=%s)"
 			% [result.failure, result.hero_final_position])
 
-	for id in EXPECTED_GEMS:
-		check(Session.is_collected(id), "main route collects gem %s" % id)
-	check(Session.gems_found() == EXPECTED_GEMS.size(),
-			"exactly %d gems are collected on the main route (got %d)"
-			% [EXPECTED_GEMS.size(), Session.gems_found()])
-	check(Session.get_wallet() == EXPECTED_GEMS.size(),
-			"5 small gems (value 1 each) add up to a wallet of 5 (got %d)" % Session.get_wallet())
+	for id in EXPECTED_CHIPS:
+		check(Session.is_collected(id), "main route collects chip %s" % id)
+	check(Session.chips_found() == EXPECTED_CHIPS.size(),
+			"exactly %d chips are collected on the main route (got %d)"
+			% [EXPECTED_CHIPS.size(), Session.chips_found()])
+	check(Session.get_wallet() == EXPECTED_CHIPS.size(),
+			"5 small chips (value 1 each) add up to a wallet of 5 (got %d)" % Session.get_wallet())
 
 	print("[test_m3_a01] main route seconds=%.2f" % result.seconds)
 	for beat_id in EXPECTED_BEATS:
@@ -72,14 +72,14 @@ func _test_static_population_matches_blueprint() -> void:
 				"beat %d is %s in route order (got %s)" % [i, EXPECTED_BEATS[i], beat_ids[i]])
 
 	var entity_ids: PackedStringArray = area.get_entity_ids()
-	check(entity_ids.size() == EXPECTED_GEMS.size(),
-			"exactly %d entities carry an entity_id — the 5 gems, no other tracked entity (got %d: %s)"
-			% [EXPECTED_GEMS.size(), entity_ids.size(), entity_ids])
-	for id in EXPECTED_GEMS:
-		check(entity_ids.has(id), "entity_ids includes gem %s" % id)
+	check(entity_ids.size() == EXPECTED_CHIPS.size(),
+			"exactly %d entities carry an entity_id — the 5 chips, no other tracked entity (got %d: %s)"
+			% [EXPECTED_CHIPS.size(), entity_ids.size(), entity_ids])
+	for id in EXPECTED_CHIPS:
+		check(entity_ids.has(id), "entity_ids includes chip %s" % id)
 
 	var enemy_ids: PackedStringArray = area.get_enemy_ids()
-	check(enemy_ids.is_empty(), "A01 has zero enemies (0 Residents, 0 Clippers) per 02-area-blueprints.md (got %s)" % [enemy_ids])
+	check(enemy_ids.is_empty(), "A01 has zero enemies (0 Staffers, 0 Clippers) per 02-area-blueprints.md (got %s)" % [enemy_ids])
 
 	var encounters := area.get_node_or_null("Encounters")
 	check(encounters == null or encounters.get_child_count() == 0,
@@ -90,7 +90,7 @@ func _test_static_population_matches_blueprint() -> void:
 
 	var route_points: Array = area.get_route_points([])
 	check(route_points.size() >= 6,
-			"the main route has enough points to cover apron, two steps, gap, and gem trail (got %d)"
+			"the main route has enough points to cover apron, two steps, gap, and chip trail (got %d)"
 			% route_points.size())
 	var jump_count := 0
 	for p in route_points:

@@ -3,8 +3,8 @@
 [ext_resource type="Script" path="res://scripts/levels/area_root.gd" id="1_arearoot"]
 [ext_resource type="Script" path="res://scripts/world/block.gd" id="2_block"]
 [ext_resource type="PackedScene" path="res://scenes/objects/emergency_hatch.tscn" id="3_hatch"]
-[ext_resource type="PackedScene" path="res://scenes/objects/core_console.tscn" id="4_console"]
-[ext_resource type="PackedScene" path="res://scenes/objects/maintenance_bench.tscn" id="5_bench"]
+[ext_resource type="PackedScene" path="res://scenes/objects/core_node.tscn" id="4_console"]
+[ext_resource type="PackedScene" path="res://scenes/objects/workbench.tscn" id="5_workbench"]
 [ext_resource type="PackedScene" path="res://scenes/objects/weapon_pad.tscn" id="6_pad"]
 [ext_resource type="PackedScene" path="res://scenes/objects/practice_target.tscn" id="7_target"]
 [ext_resource type="PackedScene" path="res://scenes/objects/kill_plane.tscn" id="8_kill"]
@@ -28,6 +28,7 @@ script = ExtResource("50_backdrop")
 mode = 2
 tile_width = 2700.0
 horizon_y = 0.0
+clear_zones = PackedVector2Array(520, 690, 1370, 1530, 2240, 2360)
 
 [node name="Geometry" type="Node2D" parent="."]
 
@@ -55,10 +56,10 @@ kind = 13
 size = Vector2(70, 150)
 
 [node name="EntrySign" parent="Scenery" instance=ExtResource("10_scenery")]
-position = Vector2(140, 0)
+position = Vector2(128, 0)
 kind = 11
 size = Vector2(140, 60)
-text = "MAINTENANCE DEPOT"
+text = "SERVER DEPOT"
 
 [node name="SparePartsBench" parent="Scenery" instance=ExtResource("10_scenery")]
 position = Vector2(270, 0)
@@ -101,6 +102,11 @@ position = Vector2(2450, -235)
 kind = 16
 size = Vector2(90, 130)
 
+[node name="UtilityLampC" parent="Scenery" instance=ExtResource("10_scenery")]
+position = Vector2(2500, 0)
+kind = 6
+size = Vector2(24, 180)
+
 [node name="AlarmVisuals" type="Node2D" parent="Scenery"]
 
 [node name="Beacon_Console" parent="Scenery/AlarmVisuals" instance=ExtResource("10_scenery")]
@@ -120,18 +126,19 @@ size = Vector2(36, 36)
 
 [node name="EnvironmentState" type="Node2D" parent="."]
 script = ExtResource("12_envstate")
-lamp_paths = [NodePath("../Scenery/UtilityLampA"), NodePath("../Scenery/UtilityLampB")]
+lamp_paths = [NodePath("../Scenery/UtilityLampA"), NodePath("../Scenery/UtilityLampB"), NodePath("../Scenery/UtilityLampC"), NodePath("../Scenery/PanelA"), NodePath("../Scenery/PanelB"), NodePath("../Scenery/PanelC")]
 backdrop_paths = [NodePath("../Background/Interior")]
-backdrop_pre_tint = Color(1.12, 1.03, 0.86, 1)
-backdrop_post_tint = Color(0.62, 1.02, 1.2, 1)
-quarantine_visuals_path = NodePath("../Scenery/AlarmVisuals")
+backdrop_pre_tint = Color(1, 1, 1, 1)
+backdrop_post_tint = Color(1.08, 0.86, 0.9, 1)
+lockdown_visuals_path = NodePath("../Scenery/AlarmVisuals")
+lamp_lockdown_color = Color(1, 0.23137255, 0.30588236, 1)
 
 [node name="Entities" type="Node2D" parent="."]
 
-[node name="CoreConsole" parent="Entities" instance=ExtResource("4_console")]
+[node name="CoreNode" parent="Entities" instance=ExtResource("4_console")]
 position = Vector2(600, 0)
 
-[node name="MaintenanceBench" parent="Entities" instance=ExtResource("5_bench")]
+[node name="Workbench" parent="Entities" instance=ExtResource("5_workbench")]
 position = Vector2(1450, 0)
 
 [node name="WeaponPad" parent="Entities" instance=ExtResource("6_pad")]

@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/actors/clipper.gd" id="1_clipper"]
 [ext_resource type="Resource" path="res://data/tuning/clipper.tres" id="2_tuning"]
@@ -23,16 +23,54 @@ size = Vector2(30, 40)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_attack"]
 size = Vector2(16, 40)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hint"]
+bg_color = Color(0.055, 0.09, 0.149, 0.92)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.69, 0.18, 0.8)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
+
 [node name="Clipper" type="CharacterBody2D"]
 z_index = 1
 script = ExtResource("1_clipper")
 tuning = ExtResource("2_tuning")
 
 [node name="Visual" type="Node2D" parent="."]
+show_behind_parent = true
 script = ExtResource("6_visual")
 
 [node name="Photo" type="Sprite2D" parent="Visual"]
+show_behind_parent = true
 texture = ExtResource("7_photo")
+
+[node name="StallSteam" type="CPUParticles2D" parent="Visual"]
+show_behind_parent = true
+emitting = false
+amount = 4
+lifetime = 0.7
+one_shot = false
+explosiveness = 0.0
+
+[node name="StallStars" type="CPUParticles2D" parent="Visual"]
+show_behind_parent = true
+emitting = false
+amount = 2
+lifetime = 1.2
+one_shot = false
+explosiveness = 0.0
+
+[node name="StallSteamStatic" type="Sprite2D" parent="Visual"]
+show_behind_parent = true
+visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -24)
@@ -65,16 +103,21 @@ script = ExtResource("5_attackbox")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackBox"]
 shape = SubResource("RectangleShape2D_attack")
 
-[node name="HintLabel" type="Label" parent="."]
-offset_left = -100.0
-offset_top = -108.0
-offset_right = 100.0
-offset_bottom = -80.0
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0.2, 0.165, 0.125, 1)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 16
+[node name="HintLayer" type="CanvasLayer" parent="."]
+layer = 16
+
+[node name="HintLabel" type="Label" parent="HintLayer"]
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -270.0
+offset_top = 128.0
+offset_right = 270.0
+offset_bottom = 228.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_hint")
+theme_override_colors/font_color = Color(0.847, 0.886, 0.925, 1)
+theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1
+vertical_alignment = 1
 autowrap_mode = 2
 text = "Its motor is exposed when it stalls."
 visible = false

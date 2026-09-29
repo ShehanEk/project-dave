@@ -108,7 +108,7 @@ func _probe_a03_street_bypass() -> void:
 	release_all()
 	var lp := _local(a3)
 	print("[probe_lay_recovery] A03 hold-right-only on street: reached_exit=%s in %.2fs, final local=(%.0f,%.0f), jumps=%d, beats hit? (B03/B04 zones cover y range)" % [reached, t / 60.0, lp.x, lp.y, jumps])
-	print("[probe_lay_recovery]   Session checkpoint after bypass=%s gems=%s" % [Session.state.get("checkpoint_id"), str(Session.state.get("wallet"))])
+	print("[probe_lay_recovery]   Session checkpoint after bypass=%s chips=%s" % [Session.state.get("checkpoint_id"), str(Session.state.get("wallet"))])
 	check(not reached, "A03 rooftop route (moving platform, E05, E06, CP02) cannot be bypassed by holding right on the street (reached exit in %.1fs)" % (t / 60.0))
 	await _unload()
 

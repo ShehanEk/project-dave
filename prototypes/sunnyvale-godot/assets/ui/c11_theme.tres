@@ -1,24 +1,24 @@
 [gd_resource type="Theme" load_steps=9 format=3]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-bg_color = Color(0.937, 0.878, 0.745, 0.97)
+bg_color = Color(0.055, 0.09, 0.149, 0.96)
 border_width_left = 4
 border_width_top = 4
 border_width_right = 4
 border_width_bottom = 4
-border_color = Color(0.2, 0.165, 0.125, 1)
+border_color = Color(0.247, 0.878, 0.816, 0.55)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
-bg_color = Color(0.875, 0.62, 0.502, 1)
+bg_color = Color(0.11, 0.165, 0.227, 1)
 border_width_left = 3
 border_width_top = 3
 border_width_right = 3
 border_width_bottom = 3
-border_color = Color(0.2, 0.165, 0.125, 1)
+border_color = Color(0.247, 0.878, 0.816, 0.55)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
@@ -29,12 +29,12 @@ content_margin_top = 8.0
 content_margin_bottom = 8.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_hover"]
-bg_color = Color(0.929, 0.784, 0.694, 1)
+bg_color = Color(0.18, 0.231, 0.306, 1)
 border_width_left = 3
 border_width_top = 3
 border_width_right = 3
 border_width_bottom = 3
-border_color = Color(0.2, 0.165, 0.125, 1)
+border_color = Color(0.247, 0.878, 0.816, 0.55)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
@@ -45,12 +45,12 @@ content_margin_top = 8.0
 content_margin_bottom = 8.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_pressed"]
-bg_color = Color(0.702, 0.443, 0.325, 1)
+bg_color = Color(0.106, 0.365, 0.345, 1)
 border_width_left = 3
 border_width_top = 3
 border_width_right = 3
 border_width_bottom = 3
-border_color = Color(0.2, 0.165, 0.125, 1)
+border_color = Color(0.247, 0.878, 0.816, 0.55)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
@@ -61,12 +61,12 @@ content_margin_top = 8.0
 content_margin_bottom = 8.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_disabled"]
-bg_color = Color(0.82, 0.79, 0.73, 0.55)
+bg_color = Color(0.11, 0.165, 0.227, 0.45)
 border_width_left = 3
 border_width_top = 3
 border_width_right = 3
 border_width_bottom = 3
-border_color = Color(0.2, 0.165, 0.125, 0.4)
+border_color = Color(0.18, 0.231, 0.306, 0.6)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
@@ -82,7 +82,7 @@ border_width_left = 3
 border_width_top = 3
 border_width_right = 3
 border_width_bottom = 3
-border_color = Color(0.212, 0.365, 0.384, 1)
+border_color = Color(1, 0.69, 0.18, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
@@ -93,12 +93,12 @@ expand_margin_right = 2.0
 expand_margin_bottom = 2.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slider_bg"]
-bg_color = Color(0.85, 0.8, 0.68, 1)
+bg_color = Color(0.11, 0.165, 0.227, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.2, 0.165, 0.125, 1)
+border_color = Color(0.247, 0.878, 0.816, 0.55)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
@@ -107,7 +107,7 @@ content_margin_top = 6.0
 content_margin_bottom = 6.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slider_fill"]
-bg_color = Color(0.529, 0.706, 0.369, 1)
+bg_color = Color(0.247, 0.878, 0.816, 1)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
@@ -117,7 +117,7 @@ content_margin_bottom = 6.0
 
 [resource]
 default_font_size = 22
-Label/colors/font_color = Color(0.2, 0.165, 0.125, 1)
+Label/colors/font_color = Color(0.847, 0.886, 0.925, 1)
 Label/font_sizes/font_size = 20
 Panel/styles/panel = SubResource("StyleBoxFlat_panel")
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_panel")
@@ -126,22 +126,22 @@ Button/styles/hover = SubResource("StyleBoxFlat_btn_hover")
 Button/styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
 Button/styles/disabled = SubResource("StyleBoxFlat_btn_disabled")
 Button/styles/focus = SubResource("StyleBoxFlat_btn_focus")
-Button/colors/font_color = Color(0.2, 0.165, 0.125, 1)
-Button/colors/font_hover_color = Color(0.2, 0.165, 0.125, 1)
-Button/colors/font_pressed_color = Color(0.968, 0.925, 0.831, 1)
-Button/colors/font_disabled_color = Color(0.45, 0.42, 0.38, 1)
-Button/colors/font_focus_color = Color(0.2, 0.165, 0.125, 1)
+Button/colors/font_color = Color(0.847, 0.886, 0.925, 1)
+Button/colors/font_hover_color = Color(1, 1, 1, 1)
+Button/colors/font_pressed_color = Color(1, 1, 1, 1)
+Button/colors/font_disabled_color = Color(0.45, 0.5, 0.56, 1)
+Button/colors/font_focus_color = Color(1, 1, 1, 1)
 Button/font_sizes/font_size = 22
 OptionButton/styles/normal = SubResource("StyleBoxFlat_btn_normal")
 OptionButton/styles/hover = SubResource("StyleBoxFlat_btn_hover")
 OptionButton/styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
 OptionButton/styles/disabled = SubResource("StyleBoxFlat_btn_disabled")
 OptionButton/styles/focus = SubResource("StyleBoxFlat_btn_focus")
-OptionButton/colors/font_color = Color(0.2, 0.165, 0.125, 1)
-OptionButton/colors/font_hover_color = Color(0.2, 0.165, 0.125, 1)
+OptionButton/colors/font_color = Color(0.847, 0.886, 0.925, 1)
+OptionButton/colors/font_hover_color = Color(1, 1, 1, 1)
 OptionButton/font_sizes/font_size = 20
 CheckButton/styles/focus = SubResource("StyleBoxFlat_btn_focus")
-CheckButton/colors/font_color = Color(0.2, 0.165, 0.125, 1)
+CheckButton/colors/font_color = Color(0.847, 0.886, 0.925, 1)
 CheckButton/font_sizes/font_size = 20
 HSlider/styles/slider = SubResource("StyleBoxFlat_slider_bg")
 HSlider/styles/grabber_area = SubResource("StyleBoxFlat_slider_fill")

@@ -14,16 +14,16 @@ const EXPECTED_BEATS := [
 ]
 const EXPECTED_GROUP_IDS := ["L01-E07", "L01-E08", "L01-E09"]
 const EXPECTED_ENEMY_IDS := [
-	"L01-E07-Z01-01", "L01-E07-R01-01",
-	"L01-E08-Z01-01", "L01-E08-Z01-02",
-	"L01-E09-Z01-01", "L01-E09-R01-01",
+	"L01-E07-CY01-01", "L01-E07-R01-01",
+	"L01-E08-CY01-01", "L01-E08-CY01-02",
+	"L01-E09-CY01-01", "L01-E09-R01-01",
 ]
-const EXPECTED_GEM_IDS := [
+const EXPECTED_CHIP_IDS := [
 	"L01-A04-G001", "L01-A04-G002", "L01-A04-G003", "L01-A04-G004",
 	"L01-A04-G005", "L01-A04-G006", "L01-A04-G007", "L01-A04-G008",
 	"L01-A04-GC01", "L01-A04-G009", "L01-A04-G010", "L01-A04-GC02",
 ]
-const EXPECTED_GEM_TOTAL_VALUE := 20  # 10 small (1 each) + 2 clusters (5 each)
+const EXPECTED_CHIP_TOTAL_VALUE := 20  # 10 small (1 each) + 2 clusters (5 each)
 
 
 func run() -> void:
@@ -53,14 +53,14 @@ func _test_main_route_reaches_exit_and_ids_match() -> void:
 			"A04 has exactly %d enemies (got %d: %s)" % [EXPECTED_ENEMY_IDS.size(), enemy_ids.size(), enemy_ids])
 	for id in EXPECTED_ENEMY_IDS:
 		check(enemy_ids.has(id), "enemy id %s present" % id)
-	var resident_count := 0
+	var staffer_count := 0
 	var clipper_count := 0
 	for id in enemy_ids:
-		if id.contains("-Z01-"):
-			resident_count += 1
+		if id.contains("-CY01-"):
+			staffer_count += 1
 		elif id.contains("-R01-"):
 			clipper_count += 1
-	check(resident_count == 4, "A04 population: 4 Residents (got %d)" % resident_count)
+	check(staffer_count == 4, "A04 population: 4 Staffers (got %d)" % staffer_count)
 	check(clipper_count == 2, "A04 population: 2 Clippers (got %d)" % clipper_count)
 
 	var group_ids: Array = []
@@ -73,9 +73,9 @@ func _test_main_route_reaches_exit_and_ids_match() -> void:
 			"encounter groups are exactly L01-E07/E08/E09 (got %s)" % [group_ids])
 
 	var entity_ids := probe.get_entity_ids()
-	for id in EXPECTED_GEM_IDS:
-		check(entity_ids.has(id), "gem/cluster id %s present" % id)
-	check(entity_ids.has("L01-HS02"), "care capsule L01-HS02 present")
+	for id in EXPECTED_CHIP_IDS:
+		check(entity_ids.has(id), "chip/cluster id %s present" % id)
+	check(entity_ids.has("L01-HS02"), "med-patch L01-HS02 present")
 
 	check(probe.has_floor_at(50.0), "seam contract: solid floor near local x=50 (entry seam)")
 	check(probe.has_floor_at(probe.width - 50.0), "seam contract: solid floor near local x=width-50 (exit seam)")
@@ -86,10 +86,10 @@ func _test_main_route_reaches_exit_and_ids_match() -> void:
 	var result: Dictionary = await harness.run_area(self, AREA, [], 90.0)
 	check(result.reached_exit, "A04 main route reaches the exit seam (failure=%s, pos=%s)" % [result.failure, result.hero_final_position])
 
-	for id in EXPECTED_GEM_IDS:
+	for id in EXPECTED_CHIP_IDS:
 		check(Session.is_collected(id), "main route collects %s" % id)
-	check(Session.get_wallet() == EXPECTED_GEM_TOTAL_VALUE,
-			"main route collects exactly %d gem value (got %d)" % [EXPECTED_GEM_TOTAL_VALUE, Session.get_wallet()])
+	check(Session.get_wallet() == EXPECTED_CHIP_TOTAL_VALUE,
+			"main route collects exactly %d chip value (got %d)" % [EXPECTED_CHIP_TOTAL_VALUE, Session.get_wallet()])
 	check(Session.get_switch("L01-SW01"), "main route pulls SW01 and extends the service walkway")
 	check(Session.state.get("checkpoint_id", "") == "CP03", "main route commits CP03 at the recovery station")
 

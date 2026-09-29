@@ -11,21 +11,21 @@ const EXPECTED_AREA_IDS: Array[String] = [
 ]
 const BEATS_PER_AREA: Array[int] = [4, 6, 5, 7, 5, 5]  # -> 32 total
 const EXPECTED_ENCOUNTERS := {
-	"L01-E01": {"residents": 1, "clippers": 0},
-	"L01-E02": {"residents": 0, "clippers": 1},
-	"L01-E03": {"residents": 1, "clippers": 0},
-	"L01-E04": {"residents": 0, "clippers": 1},
-	"L01-E05": {"residents": 1, "clippers": 0},
-	"L01-E06": {"residents": 1, "clippers": 0},
-	"L01-E07": {"residents": 1, "clippers": 1},
-	"L01-E08": {"residents": 2, "clippers": 0},
-	"L01-E09": {"residents": 1, "clippers": 1},
-	"L01-E10": {"residents": 0, "clippers": 1},
-	"L01-E11": {"residents": 1, "clippers": 1},
+	"L01-E01": {"staffers": 1, "clippers": 0},
+	"L01-E02": {"staffers": 0, "clippers": 1},
+	"L01-E03": {"staffers": 1, "clippers": 0},
+	"L01-E04": {"staffers": 0, "clippers": 1},
+	"L01-E05": {"staffers": 1, "clippers": 0},
+	"L01-E06": {"staffers": 1, "clippers": 0},
+	"L01-E07": {"staffers": 1, "clippers": 1},
+	"L01-E08": {"staffers": 2, "clippers": 0},
+	"L01-E09": {"staffers": 1, "clippers": 1},
+	"L01-E10": {"staffers": 0, "clippers": 1},
+	"L01-E11": {"staffers": 1, "clippers": 1},
 }
-const EXPECTED_RESIDENTS_TOTAL := 9
+const EXPECTED_STAFFERS_TOTAL := 9
 const EXPECTED_CLIPPERS_TOTAL := 6
-const EXPECTED_MAIN_GEM_VALUE := 45
+const EXPECTED_MAIN_CHIP_VALUE := 45
 const EXPECTED_CACHE_VALUE := 20
 ## Spawn/respawn markers commonly sit a few px above their floor by design
 ## (e.g. A01's Spawn_CP00 is 4px above the floor); a few physics ticks of
@@ -105,38 +105,38 @@ func _test_population_counts() -> void:
 	check(actual_beats == expected_beats,
 			"beat ids match exactly, in area/route order\n  got:  %s\n  want: %s" % [actual_beats, expected_beats])
 
-	# 11 EncounterGroups with exact Resident/Clipper counts.
+	# 11 EncounterGroups with exact Staffer/Clipper counts.
 	var groups := {}
 	for area in level.areas:
 		_collect_encounter_groups(area.get_node_or_null("Encounters"), groups)
 	check(groups.size() == 11, "level has exactly 11 EncounterGroups (got %d: %s)" % [groups.size(), groups.keys()])
-	var residents_total := 0
+	var staffers_total := 0
 	var clippers_total := 0
 	for group_id in EXPECTED_ENCOUNTERS:
 		check(groups.has(group_id), "encounter %s is present" % group_id)
 		if groups.has(group_id):
 			var got: Dictionary = groups[group_id]
 			var want: Dictionary = EXPECTED_ENCOUNTERS[group_id]
-			check(got.residents == want.residents and got.clippers == want.clippers,
-					"%s has %d resident(s)/%d clipper(s) (got %d/%d)"
-					% [group_id, want.residents, want.clippers, got.residents, got.clippers])
-			residents_total += got.residents
+			check(got.staffers == want.staffers and got.clippers == want.clippers,
+					"%s has %d staffer(s)/%d clipper(s) (got %d/%d)"
+					% [group_id, want.staffers, want.clippers, got.staffers, got.clippers])
+			staffers_total += got.staffers
 			clippers_total += got.clippers
-	check(residents_total == EXPECTED_RESIDENTS_TOTAL,
-			"total Residents across the level is %d (got %d)" % [EXPECTED_RESIDENTS_TOTAL, residents_total])
+	check(staffers_total == EXPECTED_STAFFERS_TOTAL,
+			"total Staffers across the level is %d (got %d)" % [EXPECTED_STAFFERS_TOTAL, staffers_total])
 	check(clippers_total == EXPECTED_CLIPPERS_TOTAL,
 			"total Clippers across the level is %d (got %d)" % [EXPECTED_CLIPPERS_TOTAL, clippers_total])
 
-	# Gem economy: 45 main-route + 20 cache = 65.
+	# Chip economy: 45 main-route + 20 cache = 65.
 	var values := {"main": 0, "cache": 0}
 	for area in level.areas:
-		_collect_gem_values(area.get_node_or_null("Entities"), values)
-	check(int(values["main"]) == EXPECTED_MAIN_GEM_VALUE,
-			"main-route gem value totals %d (got %d)" % [EXPECTED_MAIN_GEM_VALUE, int(values["main"])])
+		_collect_chip_values(area.get_node_or_null("Entities"), values)
+	check(int(values["main"]) == EXPECTED_MAIN_CHIP_VALUE,
+			"main-route chip value totals %d (got %d)" % [EXPECTED_MAIN_CHIP_VALUE, int(values["main"])])
 	check(int(values["cache"]) == EXPECTED_CACHE_VALUE,
 			"optional cache value totals %d (got %d)" % [EXPECTED_CACHE_VALUE, int(values["cache"])])
 	check(int(values["main"]) + int(values["cache"]) == 65,
-			"total gem value across the level is 65 (got %d)" % [int(values["main"]) + int(values["cache"])])
+			"total chip value across the level is 65 (got %d)" % [int(values["main"]) + int(values["cache"])])
 
 	# Entity ids: no duplicates anywhere, and every named singleton is present.
 	var all_ids: PackedStringArray = []
@@ -163,11 +163,11 @@ func _test_population_counts() -> void:
 			enemy_dupes.append(id)
 		enemy_seen[id] = true
 	check(enemy_dupes.is_empty(), "no duplicate enemy ids anywhere in the level (dupes: %s)" % [enemy_dupes])
-	check(all_enemy_ids.size() == EXPECTED_RESIDENTS_TOTAL + EXPECTED_CLIPPERS_TOTAL,
-			"enemy id count matches Resident+Clipper total (got %d, want %d)"
-			% [all_enemy_ids.size(), EXPECTED_RESIDENTS_TOTAL + EXPECTED_CLIPPERS_TOTAL])
+	check(all_enemy_ids.size() == EXPECTED_STAFFERS_TOTAL + EXPECTED_CLIPPERS_TOTAL,
+			"enemy id count matches Staffer+Clipper total (got %d, want %d)"
+			% [all_enemy_ids.size(), EXPECTED_STAFFERS_TOTAL + EXPECTED_CLIPPERS_TOTAL])
 
-	# Stations / console / bench / pad / switch+walkway / wicket (by node
+	# Stations / console / workbench / pad / switch+walkway / wicket (by node
 	# type, since several of these deliberately leave entity_id empty).
 	var stations := {}
 	var pads := {}
@@ -196,18 +196,18 @@ func _collect_encounter_groups(node: Node, groups: Dictionary) -> void:
 	for child in node.get_children():
 		if child is EncounterGroup:
 			var group := child as EncounterGroup
-			var residents := 0
+			var staffers := 0
 			var clippers := 0
 			for enemy in group.get_children():
-				if enemy is Resident:
-					residents += 1
+				if enemy is Staffer:
+					staffers += 1
 				elif enemy is Clipper:
 					clippers += 1
-			groups[group.group_id] = {"residents": residents, "clippers": clippers}
+			groups[group.group_id] = {"staffers": staffers, "clippers": clippers}
 		_collect_encounter_groups(child, groups)
 
 
-func _collect_gem_values(node: Node, values: Dictionary) -> void:
+func _collect_chip_values(node: Node, values: Dictionary) -> void:
 	if node == null:
 		return
 	for child in node.get_children():
@@ -216,7 +216,7 @@ func _collect_gem_values(node: Node, values: Dictionary) -> void:
 			var id := String(child.get("entity_id"))
 			var key := "cache" if id.begins_with("L01-OPT") else "main"
 			values[key] = int(values.get(key, 0)) + v
-		_collect_gem_values(child, values)
+		_collect_chip_values(child, values)
 
 
 func _collect_typed(node: Node, stations: Dictionary, pads: Dictionary, switches: Dictionary, walkways: Dictionary) -> void:
@@ -333,26 +333,26 @@ func _test_death_rebuild() -> void:
 	await physics_frames(3)
 
 	var a02 := level.areas[1]
-	var gem: Gem = a02.get_node("Entities/Gem_G001")
-	var gem_id: String = gem.entity_id
-	level.hero.global_position = gem.global_position
+	var chip: Chip = a02.get_node("Entities/Chip_G001")
+	var chip_id: String = chip.entity_id
+	level.hero.global_position = chip.global_position
 	await physics_frames(3)
-	check(Session.is_collected(gem_id),
-			"setup: hero walked onto a post-CP00 gem in A02 and collected it")
+	check(Session.is_collected(chip_id),
+			"setup: hero walked onto a post-CP00 chip in A02 and collected it")
 
 	level.hero.take_damage(999, level.hero.global_position)
 	await physics_frames(4)
 
 	check(Session.state["checkpoint_id"] == "CP00",
 			"death before any station restores checkpoint_id to CP00 (got %s)" % Session.state["checkpoint_id"])
-	check(not Session.is_collected(gem_id),
-			"death before any station rolls back the post-CP00 gem pickup")
+	check(not Session.is_collected(chip_id),
+			"death before any station rolls back the post-CP00 chip pickup")
 	var spawn00 := level.areas[0].get_marker("Spawn_CP00")
 	check(level.hero.global_position.distance_to(spawn00.global_position) < SPAWN_POSITION_TOLERANCE_PX,
 			"hero respawns at A01's Spawn_CP00 (got %s want %s)" % [level.hero.global_position, spawn00.global_position])
 	check(level.hero.input_enabled, "hero input is re-enabled after the rebuild")
-	check(is_instance_valid(level.areas[1].get_node("Entities/Gem_G001")),
-			"the rebuilt A02 has a fresh, uncollected Gem_G001 (world state actually rebuilt, not just Session)")
+	check(is_instance_valid(level.areas[1].get_node("Entities/Chip_G001")),
+			"the rebuilt A02 has a fresh, uncollected Chip_G001 (world state actually rebuilt, not just Session)")
 
 	# Use CP01, then die again: should now return to CP01's Respawn. Wait out
 	# the first hit's damage-immunity window first, or this second

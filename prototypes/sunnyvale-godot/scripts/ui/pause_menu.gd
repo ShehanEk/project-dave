@@ -15,28 +15,32 @@ extends CanvasLayer
 ## Opens only from actual gameplay (`hero.input_enabled == true` and the tree
 ## not already paused) — this is what keeps `pause` from fighting every OTHER
 ## thing that already treats `pause` as its own dismiss/skip action
-## (BenchPanel/SwapConfirm/CompletionScreen's confirm-cancel, CoreConsole's
+## (WorkbenchPanel/SwapConfirm/CompletionScreen's confirm-cancel, CoreNode's
 ## SC01 skip): all of those already disable `hero.input_enabled` while open,
 ## so this menu simply never tries to open over them, and "pause IS available
 ## during SC01" already holds true unmodified (SC01's own skip-on-pause).
-## `journal` (Tab) opens straight to the Journal view the same way.
+## `journal` (Tab) opens straight to the Journal view the same way; `help`
+## (F1) opens straight to the Controls view (a read-only, always-current
+## bindings table + a few short tips — scenes/ui/controls_panel.tscn), also
+## reachable from the main view's own "Controls" button, subject to the same
+## `_can_open()` gating.
 
 signal restart_from_checkpoint_confirmed
 signal quit_to_title_confirmed
 
-enum View { CLOSED, MAIN, JOURNAL, RESTART_CONFIRM, QUIT_CONFIRM, SETTINGS }
+enum View { CLOSED, MAIN, JOURNAL, RESTART_CONFIRM, QUIT_CONFIRM, SETTINGS, CONTROLS }
 
-## story-scenes.md/artifact-catalog.md A01 — a short (~45 word) journal entry
+## story-scenes.md/evidence-catalog.md A01 — a short (~45 word) journal entry
 ## written from the catalog's own description/location/meaning fields; no
 ## final written journal exists yet (catalog: "not yet the final written
 ## journal"), so this is this prototype's own first pass, kept in plain
 ## factual journal voice (dialogue-and-writing.md "essential information...
-## plain factual language") rather than an invented Rook quip.
-const A01_JOURNAL_TEXT := "Welcome Key — a palm-size cream ceramic house key, its head shaped like a smiling sun, teeth worn brass-bright from years of use. Found in a porch loft above Sunnyvale's front gardens: a resident's ordinary first day here. A keepsake, not the maintenance depot's own access credential."
+## plain factual language") rather than an invented quip.
+const A01_JOURNAL_TEXT := "EF01 Lockout Notice — a one-page memo in a clear sleeve, with a paper clip and a black REVOKED band. Arcadia Dynamics HR, dated the morning after Dave filed the safety report: employee D. Harlan terminated, badge and building access revoked, security to escort on sight. Found at the guard post by the front gardens."
 
 ## Minimum consecutive physics frames `hero.input_enabled` must have already
 ## been true before this menu will open. Without this, a same-tick modal
-## close (BenchPanel/SwapConfirm's own "pause" poll re-enabling input the
+## close (WorkbenchPanel/SwapConfirm's own "pause" poll re-enabling input the
 ## SAME frame RouteBot's dismiss_modal state presses "pause" to back out of
 ## them) can race this node's own "pause" edge detection into opening right
 ## on top of it — RouteBot then freezes forever (it stops processing while
@@ -50,25 +54,29 @@ var _view: View = View.CLOSED
 var _hero: Node = null
 var _pause_was_pressed: bool = false
 var _journal_was_pressed: bool = false
+var _help_was_pressed: bool = false
 var _input_enabled_streak: int = 0
 var _text_size_bases: Dictionary = {}  # Control -> base font size (M6 text-size setting)
 
 @onready var _dim: ColorRect = $Dim
 @onready var _panel: Panel = $Panel
+@onready var _title_label: Label = $Panel/VBox/TitleLabel
 @onready var _main_view: VBoxContainer = $Panel/VBox/MainView
 @onready var _journal_view: VBoxContainer = $Panel/VBox/JournalView
 @onready var _restart_view: VBoxContainer = $Panel/VBox/RestartConfirmView
 @onready var _quit_view: VBoxContainer = $Panel/VBox/QuitConfirmView
 @onready var _settings_view: VBoxContainer = $Panel/VBox/SettingsView
+@onready var _controls_view: ControlsPanel = $Panel/VBox/ControlsView
 
 @onready var _resume_button: Button = $Panel/VBox/MainView/ResumeButton
 @onready var _journal_button: Button = $Panel/VBox/MainView/JournalButton
+@onready var _controls_button: Button = $Panel/VBox/MainView/ControlsButton
 @onready var _settings_button: Button = $Panel/VBox/MainView/SettingsButton
 @onready var _restart_button: Button = $Panel/VBox/MainView/RestartButton
 @onready var _quit_button: Button = $Panel/VBox/MainView/QuitButton
 
 @onready var _objective_label: Label = $Panel/VBox/JournalView/ObjectiveLabel
-@onready var _artifact_label: Label = $Panel/VBox/JournalView/ArtifactLabel
+@onready var _evidence_label: Label = $Panel/VBox/JournalView/EvidenceLabel
 @onready var _journal_back_button: Button = $Panel/VBox/JournalView/BackButton
 
 @onready var _restart_label: Label = $Panel/VBox/RestartConfirmView/WarningLabel
@@ -97,11 +105,13 @@ func _ready() -> void:
 
 	_resume_button.pressed.connect(_on_resume_pressed)
 	_journal_button.pressed.connect(_on_journal_pressed)
+	_controls_button.pressed.connect(_on_controls_pressed)
 	_settings_button.pressed.connect(_on_settings_pressed)
 	_restart_button.pressed.connect(_on_restart_pressed)
 	_quit_button.pressed.connect(_on_quit_pressed)
 
 	_journal_back_button.pressed.connect(_back_to_main)
+	_controls_view.back_pressed.connect(_back_to_main)
 	_restart_confirm_button.pressed.connect(_on_restart_confirm)
 	_restart_cancel_button.pressed.connect(_back_to_main)
 	_quit_confirm_button.pressed.connect(_on_quit_confirm)
@@ -137,6 +147,8 @@ func _exit_tree() -> void:
 ## without hardcoding each node's base size a second time here.
 func _collect_text_size_bases(root: Node) -> void:
 	for child in root.get_children():
+		if child is ControlsPanel:
+			continue  # manages its own text-size bases/listener (see its own doc comment)
 		if child is Label or child is Button or child is OptionButton:
 			_text_size_bases[child] = child.get_theme_font_size("font_size")
 		_collect_text_size_bases(child)
@@ -157,7 +169,7 @@ func _play_sfx(cue: StringName) -> void:
 		audio.play_sfx(cue)
 
 
-## Polled by hand (see BenchPanel/SwapConfirm's identical comment): `Input.
+## Polled by hand (see WorkbenchPanel/SwapConfirm's identical comment): `Input.
 ## action_press()` (RouteBot/tests) never dispatches a real input event, and
 ## idle `_process` can miss a same-tick press+release under a fixed-fps test
 ## run — and this node must keep polling while `get_tree().paused` is true,
@@ -176,11 +188,17 @@ func _physics_process(_delta: float) -> void:
 	var journal_edge := journal_pressed and not _journal_was_pressed
 	_journal_was_pressed = journal_pressed
 
+	var help_pressed := Input.is_action_pressed("help")
+	var help_edge := help_pressed and not _help_was_pressed
+	_help_was_pressed = help_pressed
+
 	if _view == View.CLOSED:
 		if pause_edge and _can_open():
 			_open(View.MAIN)
 		elif journal_edge and _can_open():
 			_open(View.JOURNAL)
+		elif help_edge and _can_open():
+			_open(View.CONTROLS)
 		return
 
 	if pause_edge:
@@ -212,6 +230,7 @@ func _open(view: View) -> void:
 	_view = view
 	_refresh_journal()
 	_refresh_settings_controls()
+	_controls_view.refresh()
 	_apply_view()
 	_play_sfx(&"ui_move")
 	var telemetry := get_node_or_null("/root/Telemetry")
@@ -242,6 +261,11 @@ func _apply_view() -> void:
 	_restart_view.visible = _view == View.RESTART_CONFIRM
 	_quit_view.visible = _view == View.QUIT_CONFIRM
 	_settings_view.visible = _view == View.SETTINGS
+	_controls_view.visible = _view == View.CONTROLS
+	# Reclaim the "Paused" heading's vertical space for the Controls table
+	# only (every OTHER sub-view already fits under it) — same reasoning as
+	# TitleScreen's own TitleLabel/MessageLabel hide for its Controls view.
+	_title_label.visible = _view != View.CONTROLS
 	match _view:
 		View.MAIN:
 			_resume_button.grab_focus()
@@ -253,6 +277,8 @@ func _apply_view() -> void:
 			_quit_cancel_button.grab_focus()
 		View.SETTINGS:
 			_settings_back_button.grab_focus()
+		View.CONTROLS:
+			_controls_view.grab_back_focus()
 
 
 # --- main view ---------------------------------------------------------------
@@ -264,6 +290,13 @@ func _on_resume_pressed() -> void:
 func _on_journal_pressed() -> void:
 	_refresh_journal()
 	_view = View.JOURNAL
+	_apply_view()
+	_play_sfx(&"ui_move")
+
+
+func _on_controls_pressed() -> void:
+	_controls_view.refresh()
+	_view = View.CONTROLS
 	_apply_view()
 	_play_sfx(&"ui_move")
 
@@ -296,10 +329,10 @@ func _refresh_journal() -> void:
 	if Session == null:
 		return
 	_objective_label.text = "Objective: %s" % Session.get_objective()
-	if Session.has_artifact("A01"):
-		_artifact_label.text = A01_JOURNAL_TEXT
+	if Session.has_evidence("EF01"):
+		_evidence_label.text = A01_JOURNAL_TEXT
 	else:
-		_artifact_label.text = "Artifacts: 1 undiscovered."
+		_evidence_label.text = "Evidence: 1 undiscovered."
 
 
 # --- restart / quit confirms ---------------------------------------------------

@@ -1,20 +1,21 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/area_root.gd" id="1_arearoot"]
 [ext_resource type="Script" path="res://scripts/world/block.gd" id="2_block"]
 [ext_resource type="PackedScene" path="res://scenes/objects/service_walkway.tscn" id="3_walkway"]
-[ext_resource type="PackedScene" path="res://scenes/objects/gem.tscn" id="4_gem"]
-[ext_resource type="PackedScene" path="res://scenes/objects/care_capsule.tscn" id="5_capsule"]
+[ext_resource type="PackedScene" path="res://scenes/objects/chip.tscn" id="4_chip"]
+[ext_resource type="PackedScene" path="res://scenes/objects/med_patch.tscn" id="5_capsule"]
 [ext_resource type="PackedScene" path="res://scenes/objects/route_switch.tscn" id="6_switch"]
 [ext_resource type="PackedScene" path="res://scenes/objects/recovery_station.tscn" id="7_station"]
 [ext_resource type="PackedScene" path="res://scenes/objects/scenery.tscn" id="9_scenery"]
 [ext_resource type="Script" path="res://scripts/combat/encounter_group.gd" id="10_group"]
-[ext_resource type="PackedScene" path="res://scenes/actors/resident.tscn" id="11_resident"]
+[ext_resource type="PackedScene" path="res://scenes/actors/staffer.tscn" id="11_staffer"]
 [ext_resource type="PackedScene" path="res://scenes/actors/clipper.tscn" id="12_clipper"]
 [ext_resource type="PackedScene" path="res://scenes/objects/beat_zone.tscn" id="13_beat"]
 [ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="14_routepoint"]
 [ext_resource type="PackedScene" path="res://scenes/objects/kill_plane.tscn" id="15_killplane"]
 [ext_resource type="Script" path="res://scripts/world/visuals/area_backdrop.gd" id="50_backdrop"]
+[ext_resource type="PackedScene" path="res://scenes/objects/keycard.tscn" id="51_keycard"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_approach"]
 size = Vector2(100, 900)
@@ -35,14 +36,13 @@ camera_bottom = 460.0
 script = ExtResource("50_backdrop")
 mode = 0
 tile_width = 7800.0
-horizon_y = 96.0
+horizon_y = 0.0
 
 [node name="Homes" type="Parallax2D" parent="Background"]
 script = ExtResource("50_backdrop")
 mode = 1
 tile_width = 7800.0
-horizon_y = 96.0
-row_seed = 4
+horizon_y = 0.0
 
 [node name="Geometry" type="Node2D" parent="."]
 
@@ -265,69 +265,139 @@ position = Vector2(7700, -190)
 kind = 4
 size = Vector2(140, 140)
 
+[node name="LandingLamp_Entry" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(440, 0)
+kind = 6
+size = Vector2(30, 150)
+
+[node name="LandingLamp_CentralStep" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(1370, 96)
+kind = 6
+size = Vector2(30, 150)
+
+[node name="LandingLamp_ClipperLane" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(1700, 96)
+kind = 6
+size = Vector2(30, 160)
+
+[node name="LandingLamp_FB1" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(2185, 20)
+kind = 6
+size = Vector2(30, 130)
+
+[node name="LandingLamp_FB2" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(2640, 96)
+kind = 6
+size = Vector2(30, 140)
+
+[node name="LandingLamp_FB3" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(2960, 40)
+kind = 6
+size = Vector2(30, 130)
+
+[node name="LandingLamp_Switch" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(4060, 96)
+kind = 6
+size = Vector2(30, 150)
+
+[node name="LandingLamp_Channel" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(4410, 300)
+kind = 6
+size = Vector2(30, 170)
+
+[node name="LandingLamp_WalkwayExit" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(4760, 96)
+kind = 6
+size = Vector2(30, 150)
+
+[node name="LandingLamp_E09" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(5250, 96)
+kind = 6
+size = Vector2(30, 150)
+
+[node name="LandingLamp_E09Clipper" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(5850, 96)
+kind = 6
+size = Vector2(30, 150)
+
+[node name="LandingLamp_Ascent" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(6560, 48)
+kind = 6
+size = Vector2(30, 130)
+
+[node name="LandingLamp_GuardTray" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(7300, 0)
+kind = 6
+size = Vector2(30, 170)
+
+[node name="LandingLamp_DepotApproach" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(7560, 0)
+kind = 6
+size = Vector2(30, 150)
+
 [node name="Entities" type="Node2D" parent="."]
 
-[node name="Gem_G001" parent="Entities" instance=ExtResource("4_gem")]
+[node name="Chip_G001" parent="Entities" instance=ExtResource("4_chip")]
 position = Vector2(150, -20)
 entity_id = "L01-A04-G001"
 value = 1
 
-[node name="Gem_G002" parent="Entities" instance=ExtResource("4_gem")]
+[node name="Chip_G002" parent="Entities" instance=ExtResource("4_chip")]
 position = Vector2(350, -20)
 entity_id = "L01-A04-G002"
 value = 1
 
-[node name="Gem_G003" parent="Entities" instance=ExtResource("4_gem")]
+[node name="Chip_G003" parent="Entities" instance=ExtResource("4_chip")]
 position = Vector2(700, 76)
 entity_id = "L01-A04-G003"
 value = 1
 
-[node name="Gem_G004" parent="Entities" instance=ExtResource("4_gem")]
+[node name="Chip_G004" parent="Entities" instance=ExtResource("4_chip")]
 position = Vector2(1470, 76)
 entity_id = "L01-A04-G004"
 value = 1
 
-[node name="Gem_G005" parent="Entities" instance=ExtResource("4_gem")]
+[node name="Chip_G005" parent="Entities" instance=ExtResource("4_chip")]
 position = Vector2(2250, 0)
 entity_id = "L01-A04-G005"
 value = 1
 
-[node name="Gem_G006" parent="Entities" instance=ExtResource("4_gem")]
+[node name="Chip_G006" parent="Entities" instance=ExtResource("4_chip")]
 position = Vector2(2580, 76)
 entity_id = "L01-A04-G006"
 value = 1
 
-[node name="Gem_G007" parent="Entities" instance=ExtResource("4_gem")]
+[node name="Chip_G007" parent="Entities" instance=ExtResource("4_chip")]
 position = Vector2(2900, 20)
 entity_id = "L01-A04-G007"
 value = 1
 
-[node name="Gem_G008" parent="Entities" instance=ExtResource("4_gem")]
+[node name="Chip_G008" parent="Entities" instance=ExtResource("4_chip")]
 position = Vector2(3500, 76)
 entity_id = "L01-A04-G008"
 value = 1
 
-[node name="GemCluster_GC01" parent="Entities" instance=ExtResource("4_gem")]
+[node name="ChipCluster_GC01" parent="Entities" instance=ExtResource("4_chip")]
 position = Vector2(3900, 76)
 entity_id = "L01-A04-GC01"
 value = 5
 
-[node name="Gem_G009" parent="Entities" instance=ExtResource("4_gem")]
+[node name="Chip_G009" parent="Entities" instance=ExtResource("4_chip")]
 position = Vector2(4450, 76)
 entity_id = "L01-A04-G009"
 value = 1
 
-[node name="CareCapsule_HS02" parent="Entities" instance=ExtResource("5_capsule")]
+[node name="MedPatch_HS02" parent="Entities" instance=ExtResource("5_capsule")]
 position = Vector2(4750, 76)
 entity_id = "L01-HS02"
 heal = 2
 
-[node name="Gem_G010" parent="Entities" instance=ExtResource("4_gem")]
+[node name="Chip_G010" parent="Entities" instance=ExtResource("4_chip")]
 position = Vector2(5300, 76)
 entity_id = "L01-A04-G010"
 value = 1
 
-[node name="GemCluster_GC02" parent="Entities" instance=ExtResource("4_gem")]
+[node name="ChipCluster_GC02" parent="Entities" instance=ExtResource("4_chip")]
 position = Vector2(5900, 76)
 entity_id = "L01-A04-GC02"
 value = 5
@@ -339,6 +409,11 @@ switch_id = "L01-SW01"
 [node name="RecoveryStation_CP03" parent="Entities" instance=ExtResource("7_station")]
 position = Vector2(7000, 0)
 checkpoint_id = "CP03"
+
+[node name="Keycard_KC01" parent="Entities" instance=ExtResource("51_keycard")]
+position = Vector2(7320, -34)
+entity_id = "L01-KC01-P"
+keycard_id = "L01-KC01"
 
 [node name="KillPlane" parent="Entities" instance=ExtResource("15_killplane")]
 position = Vector2(3900, 1400)
@@ -367,9 +442,9 @@ monitorable = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E07/ApproachZone"]
 shape = SubResource("RectangleShape2D_approach")
 
-[node name="Resident_Z01_01" parent="Encounters/EncounterGroup_E07" instance=ExtResource("11_resident")]
+[node name="Staffer_CY01_01" parent="Encounters/EncounterGroup_E07" instance=ExtResource("11_staffer")]
 position = Vector2(350, 96)
-entity_id = "L01-E07-Z01-01"
+entity_id = "L01-E07-CY01-01"
 
 [node name="Clipper_R01_01" parent="Encounters/EncounterGroup_E07" instance=ExtResource("12_clipper")]
 position = Vector2(1450, 96)
@@ -394,13 +469,13 @@ monitorable = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E08/ApproachZone"]
 shape = SubResource("RectangleShape2D_approach")
 
-[node name="Resident_Z01_01" parent="Encounters/EncounterGroup_E08" instance=ExtResource("11_resident")]
+[node name="Staffer_CY01_01" parent="Encounters/EncounterGroup_E08" instance=ExtResource("11_staffer")]
 position = Vector2(400, 96)
-entity_id = "L01-E08-Z01-01"
+entity_id = "L01-E08-CY01-01"
 
-[node name="Resident_Z01_02" parent="Encounters/EncounterGroup_E08" instance=ExtResource("11_resident")]
+[node name="Staffer_CY01_02" parent="Encounters/EncounterGroup_E08" instance=ExtResource("11_staffer")]
 position = Vector2(650, 96)
-entity_id = "L01-E08-Z01-02"
+entity_id = "L01-E08-CY01-02"
 
 [node name="EncounterGroup_E09" type="Node2D" parent="Encounters"]
 position = Vector2(4680, 0)
@@ -419,9 +494,9 @@ monitorable = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E09/ApproachZone"]
 shape = SubResource("RectangleShape2D_approach")
 
-[node name="Resident_Z01_01" parent="Encounters/EncounterGroup_E09" instance=ExtResource("11_resident")]
+[node name="Staffer_CY01_01" parent="Encounters/EncounterGroup_E09" instance=ExtResource("11_staffer")]
 position = Vector2(400, 96)
-entity_id = "L01-E09-Z01-01"
+entity_id = "L01-E09-CY01-01"
 
 [node name="Clipper_R01_01" parent="Encounters/EncounterGroup_E09" instance=ExtResource("12_clipper")]
 position = Vector2(1070, 96)
@@ -482,7 +557,7 @@ script = ExtResource("14_routepoint")
 action = 0
 tolerance = 16.0
 
-[node name="RP02_PastResident" type="Marker2D" parent="Route"]
+[node name="RP02_PastStaffer" type="Marker2D" parent="Route"]
 position = Vector2(1050, 0)
 script = ExtResource("14_routepoint")
 action = 0
@@ -566,13 +641,13 @@ action = 1
 tolerance = 12.0
 hold_jump = 0.15
 
-[node name="RP15_PastResident1" type="Marker2D" parent="Route"]
+[node name="RP15_PastStaffer1" type="Marker2D" parent="Route"]
 position = Vector2(3450, 0)
 script = ExtResource("14_routepoint")
 action = 0
 tolerance = 16.0
 
-[node name="RP16_PastResident2" type="Marker2D" parent="Route"]
+[node name="RP16_PastStaffer2" type="Marker2D" parent="Route"]
 position = Vector2(3900, 0)
 script = ExtResource("14_routepoint")
 action = 0
@@ -602,7 +677,7 @@ script = ExtResource("14_routepoint")
 action = 0
 tolerance = 16.0
 
-[node name="RP21_PastE09Resident" type="Marker2D" parent="Route"]
+[node name="RP21_PastE09Staffer" type="Marker2D" parent="Route"]
 position = Vector2(5250, 0)
 script = ExtResource("14_routepoint")
 action = 0

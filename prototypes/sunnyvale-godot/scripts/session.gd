@@ -18,7 +18,9 @@ signal health_changed(current: int, maximum: int)
 signal wallet_changed(wallet: int)
 signal enemy_defeated(entity_id: String)
 signal pickup_collected(entity_id: String)
-signal artifact_recorded(artifact_id: String)
+signal evidence_recorded(evidence_id: String)
+## Revamp (C24): a level exit door needs that level's clearance keycard.
+signal keycard_taken(keycard_id: String)
 signal weapon_swapped(old_id: String, new_id: String)
 signal upgrade_purchased(weapon_type: String, stage: int)
 signal checkpoint_committed(checkpoint_id: String)
@@ -41,16 +43,16 @@ signal run_reset
 ## kept in memory only" message from this.
 signal save_failed(reason: String, attempted_checkpoint_id: String)
 
-const SCHEMA_VERSION := 1
-const BUILD := "sunnyvale-proto-m5"
+const SCHEMA_VERSION := 2
+const BUILD := "sunnyvale-proto-revamp"
 const LEVEL := "L01"
 const MAX_HEALTH := 6
 const STARTING_WEAPON := "L01-W01-P01"
 ## Objective progression (05-content-and-assets.md / 03-gameplay-systems.md
 ## "Story states and UI"). Exactly one of these is ever `state["objective"]`.
-const OBJECTIVE_START := "Find the maintenance depot."
-const OBJECTIVE_DEPOT := "Inspect the mounted power core."
-const OBJECTIVE_POST_SC01 := "Reach the garden wicket."
+const OBJECTIVE_START := "Reach the server depot."
+const OBJECTIVE_DEPOT := "Plug into Adam's core node."
+const OBJECTIVE_POST_SC01 := "Escape through the service wicket."
 const OBJECTIVE_COMPLETE := "Sunnyvale complete."
 
 ## Live run state. Read freely; mutate only through methods.
@@ -60,17 +62,34 @@ var committed: Dictionary = {}
 ## Run bookkeeping that is deliberately NOT rolled back (timers, death count).
 var run_meta: Dictionary = {}
 ## True while a noninteractive story scene (currently only SC01) is playing.
-## Live-only, never persisted/rolled back — CoreConsole sets this around its
+## Live-only, never persisted/rolled back — CoreNode sets this around its
 ## own `_run_sc01()` coroutine. PauseMenu reads it so `pause` can still open
 ## the menu and suspend a cutscene's own playback even though the cutscene
 ## has `hero.input_enabled` false the whole time it runs (ADV-01:
 ## story-scenes.md "Pause suspends scene playback" is distinct from `skip`,
 ## which is the ONLY action that ends a noninteractive scene early).
 var cutscene_active: bool = false
+## Live-only, never-persisted one-shot UI flags (e.g. "has this run already
+## shown the E02 first-Clipper tutorial prompt"), same idiom as
+## `cutscene_active` above: a death/respawn rebuild mid-run must not re-show
+## something already shown this run, but it must show again on a genuinely
+## new run/Continue. Reset only by `new_run()`/`load_from_snapshot()`.
+var runtime_flags: Dictionary = {}
 
 
 func _ready() -> void:
 	new_run()
+
+
+func get_runtime_flag(key: String) -> bool:
+	return bool(runtime_flags.get(key, false))
+
+
+## Idempotent: marks `key` shown. Callers that must show something exactly
+## once per run call this the moment they show it (not before), so a failed/
+## aborted show can still be retried.
+func set_runtime_flag(key: String) -> void:
+	runtime_flags[key] = true
 
 
 static func default_state() -> Dictionary:
@@ -81,9 +100,11 @@ static func default_state() -> Dictionary:
 		"checkpoint_id": "CP00",
 		"health": MAX_HEALTH,
 		"wallet": 0,
-		# entity_id -> gem value (0 for artifacts / care capsules / caches' shells)
+		# entity_id -> chip value (0 for evidence / med-patchs / caches' shells)
 		"collected": {},
-		"artifacts": [],
+		"evidence": [],
+		# Clearance keycards taken this run (exit locks, never inventory items).
+		"keycards": [],
 		# weapon type -> earned type-wide stage
 		"upgrades": {"W01": 0},
 		"equipped_weapon": STARTING_WEAPON,
@@ -114,6 +135,7 @@ func new_run() -> void:
 	committed = state.duplicate(true)
 	run_meta = {"active_seconds": 0.0, "deaths": 0}
 	cutscene_active = false
+	runtime_flags = {}
 	_emit_all()
 	run_reset.emit()
 
@@ -124,7 +146,7 @@ func new_run() -> void:
 ## reset only by `new_run()`/`load_from_snapshot()`. The CALLER decides what
 ## counts as "active" — LevelDirector only calls this while
 ## `hero.input_enabled` is true, which already excludes every modal
-## (BenchPanel, SwapConfirm, SC01's cutscene, the completion screen itself);
+## (WorkbenchPanel, SwapConfirm, SC01's cutscene, the completion screen itself);
 ## a future pause menu (M5 part 2) should either also gate on
 ## `hero.input_enabled` or stop calling this while it is open.
 func tick_active_time(delta: float) -> void:
@@ -187,12 +209,13 @@ func load_from_snapshot(snapshot: Dictionary) -> void:
 	if bool(story.get("level_complete", false)):
 		carried_seconds = float(state.get("active_seconds", 0.0))
 	run_meta = {"active_seconds": carried_seconds, "deaths": 0}
+	runtime_flags = {}
 	_emit_all()
 
 
 ## JSON round-trips every number as a float (Godot's JSON parser cannot
 ## always tell "1" was meant as an int), so a snapshot freshly loaded from
-## CheckpointService can carry e.g. `health` or a gem value as `4.0` rather
+## CheckpointService can carry e.g. `health` or a chip value as `4.0` rather
 ## than `4`. Coerce every numeric field back to the int type the rest of
 ## Session assumes (`maxi()`/`mini()` and friends are typed for int) before
 ## adopting it as live state.
@@ -210,6 +233,7 @@ func _normalize_snapshot(raw: Dictionary) -> Dictionary:
 		upgrades[k] = int(upgrades[k])
 	out["upgrades"] = upgrades
 	out["active_seconds"] = float(out.get("active_seconds", 0.0))
+	out["keycards"] = out.get("keycards", [])
 	return out
 
 
@@ -267,13 +291,13 @@ func is_collected(entity_id: String) -> bool:
 
 
 ## Records a one-time pickup. Returns false (and changes nothing) on repeats.
-func collect(entity_id: String, gem_value: int = 0) -> bool:
+func collect(entity_id: String, chip_value: int = 0) -> bool:
 	if is_collected(entity_id):
 		return false
-	state["collected"][entity_id] = gem_value
+	state["collected"][entity_id] = chip_value
 	pickup_collected.emit(entity_id)
-	if gem_value != 0:
-		state["wallet"] += gem_value
+	if chip_value != 0:
+		state["wallet"] += chip_value
 		wallet_changed.emit(state["wallet"])
 	return true
 
@@ -282,24 +306,43 @@ func get_wallet() -> int:
 	return state["wallet"]
 
 
-## Unique gems found this run (independent of spending).
-func gems_found() -> int:
+## Unique chips found this run (independent of spending).
+func chips_found() -> int:
 	var total := 0
 	for v in state["collected"].values():
 		total += int(v)
 	return total
 
 
-func has_artifact(artifact_id: String) -> bool:
-	return artifact_id in state["artifacts"]
+func has_evidence(evidence_id: String) -> bool:
+	return evidence_id in state["evidence"]
 
 
-func record_artifact(artifact_id: String, pickup_entity_id: String) -> bool:
-	if has_artifact(artifact_id):
+func record_evidence(evidence_id: String, pickup_entity_id: String) -> bool:
+	if has_evidence(evidence_id):
 		return false
 	collect(pickup_entity_id, 0)
-	state["artifacts"].append(artifact_id)
-	artifact_recorded.emit(artifact_id)
+	state["evidence"].append(evidence_id)
+	evidence_recorded.emit(evidence_id)
+	return true
+
+
+# --- keycards (revamp C24; level-design L01 "keycard") -------------------------
+
+func has_keycard(keycard_id: String) -> bool:
+	return keycard_id in state.get("keycards", [])
+
+
+## Records the level's clearance card (and its pickup entity as collected,
+## worth 0 chips). Returns false on repeats.
+func take_keycard(keycard_id: String, pickup_entity_id: String) -> bool:
+	if has_keycard(keycard_id):
+		return false
+	collect(pickup_entity_id, 0)
+	if not state.has("keycards"):
+		state["keycards"] = []
+	state["keycards"].append(keycard_id)
+	keycard_taken.emit(keycard_id)
 	return true
 
 
@@ -399,12 +442,12 @@ func swap_weapon(pad_id: String) -> Dictionary:
 	return {"ok": true, "reason": "", "old_id": held_id, "new_id": resting_id}
 
 
-## Bench purchase transaction (upgrades-and-ownership.md "Transaction flow",
-## 03-gameplay-systems.md "Bench flow"). Preconditions checked against the
+## Workbench purchase transaction (upgrades-and-ownership.md "Transaction flow",
+## 03-gameplay-systems.md "Workbench flow"). Preconditions checked against the
 ## LIVE state; on any refusal `state` is untouched and `{ok:false, reason}`
 ## explains why (`"locked"`, `"insufficient_funds"`, `"already_owned"`,
 ## `"invalid_stage"`). On success this ALSO commits a complete snapshot
-## (checkpoint id `"UPG01"`, respawn at the bench) through the same
+## (checkpoint id `"UPG01"`, respawn at the workbench) through the same
 ## persist-then-adopt path as `commit()` — everything paid for, fitted, and
 ## saved together, or (on a save failure) none of it: `state` is only ever
 ## mutated after `CheckpointService.save_snapshot()` returns true, so a

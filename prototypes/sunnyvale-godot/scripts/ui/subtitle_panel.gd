@@ -2,16 +2,23 @@ class_name SubtitlePanel
 extends CanvasLayer
 ## Shared, always-in-tree noninteractive-scene subtitle overlay (03-gameplay-
 ## systems.md "UI minimum: ... subtitle panel"). Added once by LevelDirector,
-## alongside the HUD; found by whoever needs it (CoreConsole's SC01 today)
+## alongside the HUD; found by whoever needs it (CoreNode's SC01 today)
 ## via group "subtitle_panel" rather than a direct reference, so isolated
 ## area/object tests that never instance LevelDirector simply find none and
 ## skip dialogue — timing/state are unaffected either way (see
-## core_console.gd). Pure display: it never polls input or decides when a
+## core_node.gd). Pure display: it never polls input or decides when a
 ## scene skips; the caller owns that.
 
 const BASE_TEXT_SIZE := 22
 const BASE_SPEAKER_SIZE := 20
 const BASE_HINT_SIZE := 18
+## Revamp (C24): each voice has its own speaker-tag color so the two sides
+## of a line read at a glance, even with subtitles only (N02 voices).
+const SPEAKER_COLORS := {
+	"Adam": Color("#3FE0D0"),
+	"Dave": Color("#E07A3F"),
+}
+const SPEAKER_DEFAULT := Color("#FFB02E")
 
 @onready var _panel: PanelContainer = $Panel
 @onready var _speaker_label: Label = $Panel/VBox/SpeakerLabel
@@ -67,6 +74,7 @@ func say(speaker: String, text: String) -> void:
 	_panel.visible = true
 	_speaker_label.visible = speaker != ""
 	_speaker_label.text = speaker
+	_speaker_label.add_theme_color_override("font_color", SPEAKER_COLORS.get(speaker, SPEAKER_DEFAULT))
 	_text_label.text = text
 
 

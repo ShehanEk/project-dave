@@ -27,6 +27,7 @@ func _init() -> void:
 	_action("pause", [_key(KEY_ESCAPE)])
 	_action("journal", [_key(KEY_TAB)])
 	_action("skip", [_key(KEY_ENTER), _key(KEY_KP_ENTER)])
+	_action("help", [_key(KEY_F1)])
 
 	ProjectSettings.set_setting("display/window/size/viewport_width", 1280)
 	ProjectSettings.set_setting("display/window/size/viewport_height", 720)
@@ -35,7 +36,7 @@ func _init() -> void:
 	ProjectSettings.set_setting("display/window/stretch/aspect", "expand")
 	ProjectSettings.set_setting("rendering/renderer/rendering_method", "gl_compatibility")
 	ProjectSettings.set_setting("rendering/renderer/rendering_method.mobile", "gl_compatibility")
-	ProjectSettings.set_setting("rendering/environment/defaults/default_clear_color", Color("#9fd8e8"))
+	ProjectSettings.set_setting("rendering/environment/defaults/default_clear_color", Color("#0e1726"))
 	ProjectSettings.set_setting("physics/common/physics_ticks_per_second", 60)
 	ProjectSettings.set_setting("physics/2d/default_gravity", 0.0)
 

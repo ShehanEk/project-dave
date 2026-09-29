@@ -12,7 +12,7 @@ func run() -> void:
 	check_eq(s.weapon_stage("W01"), 0, "new run W01 stage")
 	check_eq(s.equipped_weapon(), "L01-W01-P01", "starting weapon instance")
 	check_eq(s.get_story("core_installed"), true, "core installed")
-	check_eq(s.get_story("awakening_done"), false, "EDEN asleep")
+	check_eq(s.get_story("awakening_done"), false, "Adam asleep")
 	check_eq(s.state["checkpoint_id"], "CP00", "checkpoint CP00")
 	s.collect("L01-A01-G001", 1)
 	s.apply_damage(2)

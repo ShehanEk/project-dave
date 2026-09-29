@@ -18,7 +18,7 @@ extends Resource
 @export var missed_charge_recovery_time: float = 0.6  ## brake -> recovery, no stall
 @export var gravity: float = 1800.0
 ## Frontal (blocked) hits before the one-time motor hint is shown.
-@export var frontal_hint_threshold: int = 4
+@export var frontal_hint_threshold: int = 2
 
 const H := 96.0
 

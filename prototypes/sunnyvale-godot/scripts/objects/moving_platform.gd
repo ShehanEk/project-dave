@@ -14,10 +14,17 @@ extends AnimatableBody2D
 @export var width: float = 160.0
 @export var thickness: float = 20.0
 
-const OUTLINE := Color("#332a20")
-const FILL := Color("#8a7f6a")
-const TOP_EDGE := Color("#e9dfc9")
-const TRACK := Color("#5b5548")
+## Revamp (C24) night look: a steel maintenance platform with the same
+## cold-white lit top edge as every walkable Block, teal running lights on
+## its face, and a dim track line with end stops so the route it travels
+## reads before the player commits.
+const OUTLINE := Color("#05070B")
+const FILL := Color("#26364B")
+const FACE := Color("#1A2636")
+const TOP_EDGE := Color("#D8E6F0")
+const TOP_BEVEL := Color("#5A718C")
+const TRACK := Color(0.36, 0.45, 0.56, 0.55)
+const RUNNING_LIGHT := Color("#3FE0D0")
 
 var _progress: float = 0.0  # 0 at point_a, 1 at point_b
 var _dir: int = 1
@@ -97,14 +104,27 @@ func _is_blocked_ahead() -> bool:
 func _draw() -> void:
 	var local_a := point_a - position
 	var local_b := point_b - position
-	draw_line(local_a, local_b, TRACK, 4.0)
-	draw_circle(local_a, 5.0, TRACK)
-	draw_circle(local_b, 5.0, TRACK)
+	draw_line(local_a, local_b, TRACK, 2.0)
+	for p in [local_a, local_b]:
+		draw_rect(Rect2(p - Vector2(4.0, 4.0), Vector2(8.0, 8.0)), FACE)
+		draw_rect(Rect2(p - Vector2(4.0, 4.0), Vector2(8.0, 8.0)), TRACK, false, 1.5)
 
-	var rect := Rect2(Vector2(-width * 0.5, -thickness * 0.5), Vector2(width, thickness))
-	draw_rect(rect, FILL)
-	draw_rect(Rect2(rect.position, Vector2(width, minf(5.0, thickness))), TOP_EDGE)
-	draw_rect(rect, OUTLINE, false, 3.0)
-	# support struts hint the platform is a solid deck, not floating debris.
+	# support struts and a small drive housing under the deck: a solid,
+	# driven platform, not floating debris.
 	draw_line(Vector2(-width * 0.28, thickness * 0.5), Vector2(-width * 0.28, thickness * 0.5 + 14.0), OUTLINE, 4.0)
 	draw_line(Vector2(width * 0.28, thickness * 0.5), Vector2(width * 0.28, thickness * 0.5 + 14.0), OUTLINE, 4.0)
+	draw_rect(Rect2(Vector2(-14.0, thickness * 0.5), Vector2(28.0, 8.0)), FACE)
+	draw_rect(Rect2(Vector2(-14.0, thickness * 0.5), Vector2(28.0, 8.0)), OUTLINE, false, 1.5)
+	var rect := Rect2(Vector2(-width * 0.5, -thickness * 0.5), Vector2(width, thickness))
+	draw_rect(rect, FACE)
+	draw_rect(Rect2(rect.position, Vector2(width, minf(8.0, thickness))), FILL)
+	var n := maxi(2, int(width / 40.0))
+	for i in n:
+		var x: float = rect.position.x + width * (float(i) + 0.5) / float(n)
+		var y: float = rect.position.y + thickness * 0.68
+		draw_rect(Rect2(Vector2(x - 4.0, y - 1.5), Vector2(8.0, 3.0)), RUNNING_LIGHT)
+		draw_rect(Rect2(Vector2(x - 7.0, y - 3.5), Vector2(14.0, 7.0)), Color(RUNNING_LIGHT, 0.15))
+	draw_rect(rect, OUTLINE, false, 3.0)
+	# the walkable edge goes on last, over the outline's inner half.
+	draw_rect(Rect2(rect.position + Vector2(0.0, 2.0), Vector2(width, minf(3.0, thickness - 2.0))), TOP_BEVEL)
+	draw_rect(Rect2(rect.position, Vector2(width, minf(2.0, thickness))), TOP_EDGE)

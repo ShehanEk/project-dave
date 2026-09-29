@@ -1,7 +1,8 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/title_screen.gd" id="1_title"]
 [ext_resource type="Theme" path="res://assets/ui/c11_theme.tres" id="2_theme"]
+[ext_resource type="PackedScene" path="res://scenes/ui/controls_panel.tscn" id="3_controls"]
 
 [node name="TitleScreen" type="Control"]
 layout_mode = 3
@@ -15,7 +16,23 @@ script = ExtResource("1_title")
 [node name="Background" type="ColorRect" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.663, 0.839, 0.867, 1)
+color = Color(0.027, 0.035, 0.059, 1)
+
+[node name="Tagline" type="Label" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -420.0
+offset_top = -62.0
+offset_right = 420.0
+offset_bottom = -30.0
+theme_override_colors/font_color = Color(0.247, 0.878, 0.816, 0.8)
+theme_override_colors/font_outline_color = Color(0.027, 0.035, 0.059, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+text = "Level 1 — Welcome to Sunnyvale. Arcadia Dynamics campus, 02:14 AM."
 
 [node name="Panel" type="Panel" parent="."]
 theme = ExtResource("2_theme")
@@ -23,27 +40,27 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -260.0
-offset_top = -180.0
-offset_right = 260.0
-offset_bottom = 180.0
+offset_left = -320.0
+offset_top = -250.0
+offset_right = 320.0
+offset_bottom = 250.0
 
 [node name="VBox" type="VBoxContainer" parent="Panel"]
 offset_left = 24.0
 offset_top = 20.0
-offset_right = 496.0
-offset_bottom = 340.0
+offset_right = 616.0
+offset_bottom = 480.0
 theme_override_constants/separation = 16
 
 [node name="TitleLabel" type="Label" parent="Panel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.212, 0.365, 0.384, 1)
+theme_override_colors/font_color = Color(0.247, 0.878, 0.816, 1)
 theme_override_font_sizes/font_size = 28
-text = "DEAD EDEN — Sunnyvale"
+text = "DEAD EDEN"
 
 [node name="MessageLabel" type="Label" parent="Panel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.545, 0.243, 0.145, 1)
+theme_override_colors/font_color = Color(1, 0.69, 0.18, 1)
 theme_override_font_sizes/font_size = 20
 autowrap_mode = 2
 text = ""
@@ -66,6 +83,11 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Continue"
 
+[node name="ControlsButton" type="Button" parent="Panel/VBox/MainView/ButtonRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Controls (F1)"
+
 [node name="QuitButton" type="Button" parent="Panel/VBox/MainView/ButtonRow"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
@@ -78,7 +100,7 @@ theme_override_constants/separation = 14
 
 [node name="WarningLabel" type="Label" parent="Panel/VBox/ConfirmView"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.2, 0.165, 0.125, 1)
+theme_override_colors/font_color = Color(0.847, 0.886, 0.925, 1)
 theme_override_font_sizes/font_size = 22
 autowrap_mode = 2
 text = "Start a New Game? Your saved run will be deleted."
@@ -96,3 +118,7 @@ text = "Confirm"
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Cancel"
+
+[node name="ControlsView" parent="Panel/VBox" instance=ExtResource("3_controls")]
+visible = false
+layout_mode = 2

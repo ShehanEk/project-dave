@@ -108,7 +108,7 @@ func _static_checks() -> void:
 				check(res[-1] != "NONE" or res[1] != "NONE", "Clipper %s has a backstop within one charge (4H) of its start" % e.entity_id)
 	# depot interactables
 	var a5: AreaRoot = level.areas[4]
-	var names := ["CoreConsole", "MaintenanceBench", "WeaponPad"]
+	var names := ["CoreNode", "Workbench", "WeaponPad"]
 	var rects := {}
 	for n in names:
 		var node: Area2D = a5.get_node("Entities/" + n)
@@ -140,7 +140,7 @@ func _static_checks() -> void:
 			var k: String = e.get_script().get_global_name()
 			kinds[k] = kinds.get(k, 0) + 1
 	print("[probe_lay_enc] enemy kinds in level: %s" % str(kinds))
-	check(kinds.keys().size() == 2 and kinds.get("Resident", 0) == 9 and kinds.get("Clipper", 0) == 6, "only Resident x9 + Clipper x6")
+	check(kinds.keys().size() == 2 and kinds.get("Staffer", 0) == 9 and kinds.get("Clipper", 0) == 6, "only Staffer x9 + Clipper x6")
 	await _unload()
 
 
@@ -187,9 +187,9 @@ func _depot_exit() -> void:
 	# identical to a full watch-through by test_m5_story.gd's own T16).
 	await hold(&"skip", 1.0 / 60.0)
 	await physics_frames(6)
-	print("[probe_lay_enc] A05 after console only (wallet=%s, artifacts=%s, defeated=%s): hatch open=%s" % [
-			str(Session.state.get("wallet")), str(Session.state.get("artifacts")), str(Session.state.get("defeated")), hatch.is_open()])
-	check(hatch.is_open(), "depot hatch opens from the console alone (no kills/gems/artifact)")
+	print("[probe_lay_enc] A05 after console only (wallet=%s, evidence=%s, defeated=%s): hatch open=%s" % [
+			str(Session.state.get("wallet")), str(Session.state.get("evidence")), str(Session.state.get("defeated")), hatch.is_open()])
+	check(hatch.is_open(), "depot hatch opens from the console alone (no kills/chips/evidence)")
 	press("move_right")
 	await seconds(6.0)
 	release_all()
@@ -263,13 +263,13 @@ func _combat_run() -> void:
 func _is_windup(e: Node) -> bool:
 	if e is Clipper:
 		return e.state == Clipper.State.WINDUP
-	return e.state == Resident.State.WINDUP
+	return e.state == Staffer.State.WINDUP
 
 
 func _attacking(e: Node) -> bool:
 	if e is Clipper:
 		return e.state == Clipper.State.WINDUP or e.state == Clipper.State.CHARGE
-	return e.state == Resident.State.WINDUP or e.state == Resident.State.LUNGE
+	return e.state == Staffer.State.WINDUP or e.state == Staffer.State.LUNGE
 
 
 ## Hero idles at a CP/switch interaction spot while the neighbouring group is
@@ -303,9 +303,9 @@ func _exposure(area_idx: int, group_path: String, enemy_name: String, enemy_loca
 
 func _station_and_switch_exposure() -> void:
 	# LAY-13 fix: E06's lane_rect was shrunk to end at local 5100 (was 5310)
-	# so its Resident can never reach anywhere near CP02 (station at local
-	# 5420). Worst case is the Resident sitting right at that new lane edge.
-	await _exposure(2, "Encounters/EncounterGroup_E06", "Resident_Z01_01", 5100.0, Vector2(5360, -540), "A03 CP02 station vs E06")
+	# so its Staffer can never reach anywhere near CP02 (station at local
+	# 5420). Worst case is the Staffer sitting right at that new lane edge.
+	await _exposure(2, "Encounters/EncounterGroup_E06", "Staffer_CY01_01", 5100.0, Vector2(5360, -540), "A03 CP02 station vs E06")
 	# LAY-14 fix: E08's lane_rect ends at local 3900 (SW01 lever at 4130,
-	# outside it). Worst case is the Resident at that lane edge.
-	await _exposure(3, "Encounters/EncounterGroup_E08", "Resident_Z01_02", 3900.0, Vector2(4130, 96), "A04 SW01 lever vs E08")
+	# outside it). Worst case is the Staffer at that lane edge.
+	await _exposure(3, "Encounters/EncounterGroup_E08", "Staffer_CY01_02", 3900.0, Vector2(4130, 96), "A04 SW01 lever vs E08")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/actors/hero.gd" id="1_hero"]
 [ext_resource type="Resource" path="res://data/tuning/hero.tres" id="2_tuning"]
@@ -13,6 +13,19 @@ size = Vector2(40, 96)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_interact"]
 radius = 72.0
+
+[sub_resource type="Gradient" id="Gradient_wrist"]
+interpolation_mode = 1
+offsets = PackedFloat32Array(0, 0.44, 0.72, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.62, 1, 1, 1, 0.3, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_wrist"]
+gradient = SubResource("Gradient_wrist")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
 
 [node name="Hero" type="CharacterBody2D"]
 script = ExtResource("1_hero")
@@ -57,6 +70,15 @@ horizontal_alignment = 1
 text = "Interact"
 
 [node name="AimPivot" type="Node2D" parent="."]
-position = Vector2(0, -35)
+position = Vector2(-6.3, -75.4)
 
 [node name="Scrapjack" parent="AimPivot" instance=ExtResource("3_gun")]
+position = Vector2(35.8, 0.2)
+scale = Vector2(0.65, 0.65)
+
+[node name="WristLight" type="PointLight2D" parent="AimPivot"]
+position = Vector2(22, 4)
+color = Color(0.85, 0.9, 0.95, 1)
+energy = 0.5
+texture = SubResource("GradientTexture2D_wrist")
+texture_scale = 0.9

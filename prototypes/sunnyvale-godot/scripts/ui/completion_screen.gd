@@ -3,7 +3,7 @@ extends CanvasLayer
 ## `scenes/ui/completion.tscn` — shown once by LevelDirector when the exit
 ## wicket is reached and CP05 is committed (03-gameplay-systems.md
 ## "Completion totals derive from unique collected IDs, so spending does not
-## lower 'gems found.'"). Reads Session only; never mutates it directly
+## lower 'chips found.'"). Reads Session only; never mutates it directly
 ## except through `Session.new_run()` on a confirmed "Play again" (mirrors
 ## every other modal's "opener owns hero.input_enabled, this node owns its
 ## own buttons" split — LevelDirector disables input before this opens and
@@ -15,7 +15,7 @@ signal quit_requested
 @onready var _stats_view: VBoxContainer = $Panel/VBox/StatsView
 @onready var _confirm_view: VBoxContainer = $Panel/VBox/ConfirmView
 @onready var _time_label: Label = $Panel/VBox/StatsView/TimeLabel
-@onready var _gems_label: Label = $Panel/VBox/StatsView/GemsLabel
+@onready var _chips_label: Label = $Panel/VBox/StatsView/ChipsLabel
 @onready var _key_label: Label = $Panel/VBox/StatsView/KeyLabel
 @onready var _quickcycle_label: Label = $Panel/VBox/StatsView/QuickcycleLabel
 @onready var _play_again_button: Button = $Panel/VBox/StatsView/ButtonRow/PlayAgainButton
@@ -37,7 +37,7 @@ func _ready() -> void:
 	_play_again_button.grab_focus()
 
 
-## Polled by hand (see BenchPanel/SwapConfirm's identical comment): only
+## Polled by hand (see WorkbenchPanel/SwapConfirm's identical comment): only
 ## meaningful while the confirm sub-view is showing, where `pause` cancels
 ## back to the stats view exactly like a Decline button.
 func _physics_process(_delta: float) -> void:
@@ -52,8 +52,8 @@ func _refresh_stats() -> void:
 		return
 	var seconds := float(Session.run_meta.get("active_seconds", 0.0))
 	_time_label.text = "Active play time: %s" % _format_time(seconds)
-	_gems_label.text = "Gems found: %d / 65" % Session.gems_found()
-	_key_label.text = "Welcome Key: %s" % ("Found" if Session.has_artifact("A01") else "Not found")
+	_chips_label.text = "Microchips found: %d / 65" % Session.chips_found()
+	_key_label.text = "Lockout Notice: %s" % ("Found" if Session.has_evidence("EF01") else "Not found")
 	_quickcycle_label.text = "Quickcycle: %s" % ("Obtained" if Session.weapon_stage("W01") >= 1 else "Not obtained")
 
 

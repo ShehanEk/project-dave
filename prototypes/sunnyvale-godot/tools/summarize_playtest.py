@@ -118,7 +118,7 @@ def raw_active_first_completion(events):
 
 ## Main-route successful-progress time: sum the active-time between
 ## consecutive successful checkpoint_commit events (main-route only, i.e.
-## checkpoint ids other than "UPG01" which is a bench detour, not route
+## checkpoint ids other than "UPG01" which is a workbench detour, not route
 ## progress), MINUS any optional-branch time, treating `run_start` (ADV-02:
 ## the real game never emits a "CP00" checkpoint_commit, so without this the
 ## very first main-route interval — run start to CP01 — was silently dropped
@@ -160,17 +160,17 @@ def main_route_progress_time(events):
     return max(0.0, total - branch_total)
 
 
-def gems_upgrade_artifact(events):
+def chips_upgrade_evidence(events):
     upgrades = [e for e in events if e.get("event") == "upgrade_purchase"]
     for e in reversed(events):
         if e.get("event") == "completion":
             return {
-                "gems_found": e.get("gems_found"),
-                "artifact_found": e.get("artifact_found"),
+                "chips_found": e.get("chips_found"),
+                "evidence_found": e.get("evidence_found"),
                 "upgrade_stage": e.get("upgrade_stage"),
                 "upgrade_purchases": len(upgrades),
             }
-    return {"gems_found": None, "artifact_found": None, "upgrade_stage": None,
+    return {"chips_found": None, "evidence_found": None, "upgrade_stage": None,
             "upgrade_purchases": len(upgrades)}
 
 
@@ -191,7 +191,7 @@ def main():
     deaths, restarts = deaths_and_restarts(events)
     raw_active = raw_active_first_completion(events)
     main_route = main_route_progress_time(events)
-    stats = gems_upgrade_artifact(events)
+    stats = chips_upgrade_evidence(events)
 
     print("Build / date / engine: %s / %s" % (run_start.get("build", "?"), run_start.get("engine", "?")))
     print("Tester familiarity: (fill in manually)")
@@ -204,8 +204,8 @@ def main():
     print("Area times:")
     for area_id in sorted(areas):
         print("  %s: %.1fs" % (area_id, areas[area_id]))
-    print("Gems found / wallet / upgrade / artifact: gems_found=%s upgrade_stage=%s artifact_found=%s (%d purchase(s))" %
-          (stats["gems_found"], stats["upgrade_stage"], stats["artifact_found"], stats["upgrade_purchases"]))
+    print("Chips found / wallet / upgrade / evidence: chips_found=%s upgrade_stage=%s evidence_found=%s (%d purchase(s))" %
+          (stats["chips_found"], stats["upgrade_stage"], stats["evidence_found"], stats["upgrade_purchases"]))
     print("Functional failures: (fill in manually)")
     print("Confusion or dull sections: (fill in manually)")
     print("Machine / resolution / observed performance: (fill in manually)")

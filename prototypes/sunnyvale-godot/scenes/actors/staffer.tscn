@@ -1,0 +1,43 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/staffer.gd" id="1_staffer"]
+[ext_resource type="Resource" path="res://data/tuning/staffer.tres" id="2_tuning"]
+[ext_resource type="Script" path="res://scripts/combat/hit_zone.gd" id="3_hitzone"]
+[ext_resource type="Script" path="res://scripts/combat/attack_box.gd" id="4_attackbox"]
+[ext_resource type="Script" path="res://scripts/actors/visuals/staffer_visual.gd" id="5_visual"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(48, 84)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hitzone"]
+size = Vector2(48, 84)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_attack"]
+size = Vector2(56, 60)
+
+[node name="Staffer" type="CharacterBody2D"]
+z_index = 1
+script = ExtResource("1_staffer")
+tuning = ExtResource("2_tuning")
+
+[node name="Visual" type="Node2D" parent="."]
+script = ExtResource("5_visual")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -42)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="HitZone" type="Area2D" parent="."]
+script = ExtResource("3_hitzone")
+blocks = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitZone"]
+position = Vector2(0, -42)
+shape = SubResource("RectangleShape2D_hitzone")
+
+[node name="AttackBox" type="Area2D" parent="."]
+script = ExtResource("4_attackbox")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackBox"]
+position = Vector2(0, -46)
+shape = SubResource("RectangleShape2D_attack")
