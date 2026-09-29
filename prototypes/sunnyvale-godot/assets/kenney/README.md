@@ -8,24 +8,24 @@ prototype were copied in — never a whole pack.
 
 Every file below has been copied into the project, imported once, and
 verified to load. Audio call sites, `ControlsPanel`/`TutorialPrompt` icons,
-the mouse cursor, and every particle/light node (including the Clipper's own
-frontal-clang/STALL/defeat effects, M7 Kenney part B) are now wired into game
-code — see the notes at the end of each section, and
+the mouse cursor, and every particle/light node (including the Patrol Rover's
+armor-spark, stall and wreck effects) are now wired into game code, except
+the unused files noted below — see the notes at the end of each section, and
 `reports/asset-inventory.md` section 7 for the current, authoritative
 per-file breakdown. `Audio.play_sfx()` cue **names** are unchanged; only the
 underlying `.ogg` files each cue now loads changed.
 
 | Pack | Source | Files used |
 | --- | --- | --- |
-| Interface Sounds | https://kenney.nl/assets/interface-sounds | 10 (7 unused files removed 2026-09-30) |
-| Impact Sounds | https://kenney.nl/assets/impact-sounds | 12 |
+| Interface Sounds | https://kenney.nl/assets/interface-sounds | 8 (7 unused files removed 2026-09-30, `scratch_004` removed with the Clipper, C33) |
+| Impact Sounds | https://kenney.nl/assets/impact-sounds | 11 (`impactMining_000` removed with the Clipper, C33) |
 | UI Audio | https://kenney.nl/assets/ui-audio | 6 |
-| Sci-fi Sounds | https://kenney.nl/assets/sci-fi-sounds | 10 |
+| Sci-fi Sounds | https://kenney.nl/assets/sci-fi-sounds | 7 (`forceField_000`, `forceField_001` and `impactMetal_002` removed with the Clipper, C33) |
 | Input Prompts | https://kenney.nl/assets/input-prompts | 14 |
 | Crosshair Pack | https://kenney.nl/assets/crosshair-pack | 2 |
 | Light Masks | https://kenney.nl/assets/light-masks | 6 |
-| Particle Pack | https://kenney.nl/assets/particle-pack | 8 (6 wired here + 2 staged for the later Clipper pass) |
-| Smoke Particles | https://kenney.nl/assets/smoke-particles | 1 |
+| Particle Pack | https://kenney.nl/assets/particle-pack | 6 (5 in `particle-pack/`, 1 in `particles/machines/`) |
+| Smoke Particles | https://kenney.nl/assets/smoke-particles | 1 (in `particles/machines/`) |
 
 All licensed **CC0 1.0** — see each pack folder's own `LICENSE.txt`.
 
@@ -46,19 +46,19 @@ just applied to source files too).
 | --- | --- | --- | --- | --- | --- |
 | `pistol_fire` | 0.06s | `laserRetro_000/001/002.ogg` (pool) | sci-fi-sounds | 0.24–0.26s | Short, punchy, lo-fi "retro" laser — fits the Scrapjack's scrappy improvised-weapon character better than a clean modern laser; not a long sustained beam. |
 | `pistol_fire_quick` | 0.04s | `laserSmall_000/001.ogg` (pool) | sci-fi-sounds | 0.24s | Lighter/brighter "small" family, distinct timbre from the base fire pool, for the Quickcycle rapid-fire stage. |
-| `bolt_hit` | 0.12s | `impactGeneric_light_000/001/002.ogg` (pool) | impact-sounds | 0.12–0.14s | Soft momentary bump — a body hit, not a deflect. |
+| `bolt_hit` | 0.12s | `impactGeneric_light_000/001/002.ogg` (pool) | impact-sounds | 0.12–0.14s | Soft momentary bump — a hit on something that does not bleed, not a deflect. A hit on a person plays the synthesized `hit_flesh` instead (the shot skips `bolt_hit` there). |
 | `bolt_blocked` | 0.20s | `impactMetal_medium_000/001/002.ogg` (pool) | impact-sounds | 0.12–0.27s | Clearly metallic clang, unambiguously distinct in timbre from `bolt_hit`'s soft generic impact. |
 | `hero_hurt` | 0.22s | `impactPunch_medium_001.ogg` | impact-sounds | 0.41s | Solid body-punch impact for taking damage. |
 | `hero_jump` | 0.12s | `pluck_001.ogg` | interface-sounds | 0.10s | Light plucky "boing" reads as a spring-loaded take-off. |
 | `hero_land` | 0.14s | `footstep_concrete_000/001/002.ogg` (pool) | impact-sounds | 0.11–0.11s | Footfall thud on hard flooring, closest-length match to the original cue. |
-| `staffer_windup` | 0.42s | **kept synthesized** | — | — | Organic wind-up groan; none of these four packs (interface/impact/UI/sci-fi) contain organic vocal/creature sounds — everything on offer is mechanical, UI, or object-impact. A robotic sound on a zombie-like Staffer would read wrong. |
-| `staffer_lunge` | 0.21s | **kept synthesized** | — | — | Same reason. |
-| `staffer_defeat` | 0.55s | **kept synthesized** | — | — | Same reason. |
-| `clipper_scrape` | 0.50s | `scratch_004.ogg` | interface-sounds | 0.33s | Literal scrape texture for the idle-roll scraping sound. |
-| `clipper_windup` | 0.27s | `forceField_000.ogg` | sci-fi-sounds | 0.95s | Rising energy/motor hum telegraphs the charge; longer than the original but that reads as a clearer attack-warning tell, not a regression (style guide requires warnings stay legible). |
-| `clipper_charge` | 0.50s | `impactMetal_002.ogg` | sci-fi-sounds | 0.47s | Metallic revving/impact texture, closest-length match. |
-| `clipper_stall` | 0.50s | `forceField_001.ogg` | sci-fi-sounds | 0.95s | Distinct force-field instance from windup — an energy-failure warble for the dazed/stalled state (stall is a multi-second state, so the longer length isn't time-critical). |
-| `clipper_defeat` | 0.75s | `impactMining_000.ogg` | impact-sounds | 0.94s | Heavy grinding mechanical destruction impact for the final blow. |
+| `staffer_windup` | 0.42s | **kept synthesized** | — | — | Revoiced in C33 as the implant chirp that tells a grab is coming. None of these four packs (interface/impact/UI/sci-fi) has an implant chirp — everything on offer is mechanical, UI, or object-impact. |
+| `staffer_lunge` | 0.21s | **kept synthesized** | — | — | Revoiced in C33 as a grab whoosh. Same reason. |
+| `staffer_defeat` | 0.55s | **kept synthesized** | — | — | Revoiced in C33 as a collapse plus an implant fizzle. Same reason. |
+| `clipper_scrape` | 0.50s | **removed (C33)** | — | — | The Clipper is gone (the Patrol Rover replaced it); the cue, its fallback wav and `scratch_004.ogg` were removed. The Rover's idle roll is the synthesized `rover_patrol`. |
+| `clipper_windup` | 0.27s | **removed (C33)** | — | — | Same: the cue, its wav and `forceField_000.ogg` were removed. The Rover's tell is the synthesized `rover_windup`. |
+| `clipper_charge` | 0.50s | **removed (C33)** | — | — | Same: the cue, its wav and `impactMetal_002.ogg` were removed. The Rover's ram is the synthesized `rover_charge`. |
+| `clipper_stall` | 0.50s | **removed (C33)** | — | — | Same: the cue, its wav and `forceField_001.ogg` were removed. The Rover's wall stall is the synthesized `rover_stall`. |
+| `clipper_defeat` | 0.75s | **removed (C33)** | — | — | Same: the cue, its wav and `impactMining_000.ogg` were removed. The Rover's wreck is the synthesized `rover_destroyed`. |
 | `chip` | 0.09s | **synthesized in the revamp** | — | — | The revamp (C24) replaced the Kenney pool with `tools/gen_audio.py`'s `chip.wav`; the unused Kenney files were removed. |
 | `chip_cluster` | 0.21s | **synthesized in the revamp** | — | — | Now `chip_cluster.wav` from `tools/gen_audio.py`; the Kenney file was removed. |
 | `cache_open` | 0.42s | `open_001.ogg` | interface-sounds | 0.15s | Panel/lid opening sound. |
@@ -78,6 +78,8 @@ just applied to source files too).
 | `ui_confirm` | 0.10s | `click1.ogg`, `click2.ogg` (pool) | ui-audio | 0.06–0.09s | Menu confirm click. |
 | `ui_back` | 0.10s | `back_001.ogg`, `back_002.ogg` (pool) | interface-sounds | 0.06–0.07s | Direct "back" name match. |
 | `save_failed` | 0.40s | `error_001.ogg` | interface-sounds | 0.17s | Shorter error tone, kept distinct from `alarm`'s longer one. |
+
+The 11 roster cues added by the C33 rebuild (`guard_windup`, `guard_swing`, `hit_flesh`, `body_fall`, `rover_patrol`, `rover_windup`, `rover_charge`, `rover_stall`, `rover_armor`, `rover_destroyed` and `debris_clatter`) are all synthesized by `tools/gen_audio.py`; no Kenney file is used for them. That leaves 19 of the 46 cues on Kenney files.
 
 Music (`campus_loop`, `lockdown_loop`) is unaffected — no music pack was
 part of this request, and both stay synthesized/looping as before.
@@ -173,7 +175,7 @@ composites them as soft `Sprite2D`/glow children on the depot utility lamps,
 the lockdown examination lamps, and the alarm beacon, tinted/retinted live
 by `EnvironmentState`/`AlarmVisuals` per the style guide.
 
-## 5. Particles (non-Clipper)
+## 5. Particles (`particle-pack/`)
 
 `particle-pack`, **Transparent** variant.
 
@@ -183,7 +185,6 @@ by `EnvironmentState`/`AlarmVisuals` per the style guide.
 | `dirt_01.png` | Hero landing dust puff |
 | `star_04.png` | Gem pickup sparkle |
 | `star_05.png` | Checkpoint-save sparkle (soft glow, distinct from chip's sharp sparkle) |
-| `smoke_02.png` | Staffer defeat puff |
 | `dirt_03.png` | Pit-fall dust (larger debris burst than the landing puff) |
 
 **Wiring status: done.** `scripts/effects/kenney/kenney_puff.gd` is a single
@@ -191,29 +192,31 @@ reusable one-shot `CPUParticles2D` wrapper (a `kind` -> config table, see its
 own doc comment) that every call site reaches through a plain `preload()` +
 its static `spawn()` function: muzzle flash at `scrapjack.gd`'s muzzle point,
 landing/pit dust at `hero.gd`/`pit_hazard.gd`, chip/cache sparkle at
-`chip.gd`/`chip_cache.gd`, checkpoint sparkle at `recovery_station.gd`, and the
-defeat puff at `staffer.gd::_defeat()`. All respect
+`chip.gd`/`chip_cache.gd`, and checkpoint sparkle at `recovery_station.gd`. All respect
 `Settings.reduced_motion` (fewer particles, less travel, never fully hidden)
-and are tinted to the Sunnyvale palette per the style guide.
+and are tinted to the Sunnyvale palette per the style guide. The C33 rebuild
+removed the `defeat_puff` kind and its `smoke_02.png`: the old Staffer's
+`_defeat()` was its only caller, and people now die into ragdolls and blood
+instead of a smoke puff.
 
-### Clipper particles (`assets/kenney/particles/clipper_later/`)
+### Machine particles (`assets/kenney/particles/machines/`)
 
-Staged by the earlier Kenney pass as candidates only; **now wired** by M7
-Kenney part B (the Clipper readability/effects pass):
+The earlier Kenney pass staged three files as Clipper candidates in
+`particles/clipper_later/`, and M7 Kenney part B wired them to the Clipper. The
+C33 rebuild moved the two the Patrol Rover uses to `particles/machines/` and
+removed the third, `star_02_dazed_star.png` (the Clipper's orbiting "dazed"
+stars, drawn by the deleted `clipper_visual.gd`):
 
 | File | Used for |
 | --- | --- |
-| `star_01_metal_spark.png` (from `particle-pack/star_01.png`) | Metallic spark burst at the exact impact point of a blocked frontal hit (`kenney_puff.gd` kind `clipper_spark`, capped at 3 concurrent so rapid fire never floods the screen) and the Clipper's defeat spark bits (`clipper_defeat_spark`) — both fired from `clipper.gd`, ADDITIVE to its own hand-drawn shape cues (chevron/shield flash), never a replacement for them |
-| `star_02_dazed_star.png` (from `particle-pack/star_02.png`) | Small orbiting "dazed" stars above the exposed rear motor while STALLed (`clipper_visual.gd`'s `_stall_stars` `CPUParticles2D`), alternate shape from the chip's `star_04` |
-| `whitePuff00_stall_steam.png` (from `smoke-particles/PNG/White puff/whitePuff00.png`) | Looping steam/smoke venting from the exposed rear motor while STALLed (`clipper_visual.gd`'s `_stall_steam`), a single static puff sprite instead under `Settings.reduced_motion` (`_stall_steam_static`), and the Clipper's one-shot defeat smoke puff (`kenney_puff.gd` kind `clipper_defeat_smoke`) |
+| `star_01_metal_spark.png` (from `particle-pack/star_01.png`) | Metallic spark burst at the exact impact point of a blocked hit on the Patrol Rover's armor (`kenney_puff.gd` kind `armor_spark`, capped at 3 concurrent so rapid fire never floods the screen), the same spark on a hit to its exposed battery, and the spark spray of its wreck (`machine_spark`) — all fired from `patrol_rover.gd`, ADDITIVE to its own hand-drawn shape cue, never a replacement for it |
+| `whitePuff00_stall_steam.png` (from `smoke-particles/PNG/White puff/whitePuff00.png`) | One-shot smoke puffs (`machine_smoke`): one when the rover's stall starts (`_enter_stall()`) and one at its wreck (`_defeat()`). The Clipper's looping stall steam and its reduced-motion static puff went with `clipper_visual.gd` |
 
-All three respect `Settings.reduced_motion` (the STALL loop swaps for one
-static puff; `kenney_puff.gd`'s own reduced-motion handling covers the
-one-shot spark/smoke kinds) and are tinted to the Sunnyvale C11 palette
-(warm white/amber sparks, cream steam, peach dazed stars) — see
-`scripts/effects/kenney/kenney_puff.gd` and
-`scripts/actors/visuals/clipper_visual.gd` for the exact configs, and
-`tests/cases/test_kenney_part_b.gd` for the covering tests.
+Both wired kinds respect `Settings.reduced_motion` through `kenney_puff.gd`'s
+own handling of one-shot kinds and are tinted to the Sunnyvale palette (warm
+white/amber sparks, cream smoke) — see `scripts/effects/kenney/kenney_puff.gd`
+for the exact configs, and `tests/cases/test_kenney_part_b.gd` for the covering
+tests.
 
 ---
 
@@ -233,10 +236,16 @@ one-shot spark/smoke kinds) and are tinted to the Sunnyvale C11 palette
   suite both still pass — nothing in this pass touched gameplay, tuning,
   collision, IDs, save format, or any existing script/scene.
 
+These counts are those of that pass (75 files). Later passes removed files:
+the revamp's audio pass stopped using seven interface sounds (removed in the
+2026-09-30 cleanup) and C33 removed five sounds with the Clipper. The table at
+the top has the current per-pack counts.
+
 **M7 Kenney part B addendum:** wired the three `clipper_later` files staged
-above (no new files copied in — see "Clipper particles" section) plus the
-existing Input Prompt icons into `tutorial_prompt.gd`/`clipper.gd`'s hint
-label via the shared `scripts/ui/input_icon_map.gd` mapping. Full
+above (no new files copied in; they now live in `particles/machines/`, see
+"Machine particles") plus the existing Input Prompt icons into
+`tutorial_prompt.gd` and the Clipper's hint label (now the Patrol Rover's) via
+the shared `scripts/ui/input_icon_map.gd` mapping. Full
 `tools/test.sh` (60 fps and `FPS=30`) both pass, 50/50 cases including the
 new `tests/cases/test_kenney_part_b.gd` (36 checks). See
 `reports/asset-inventory.md` §7 and

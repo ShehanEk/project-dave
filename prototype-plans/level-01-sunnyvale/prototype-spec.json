@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "kind": "prototype_execution_plan_not_runtime_level_data",
   "project": "DEAD EDEN",
   "level": "L01",
@@ -24,6 +24,21 @@
       "optional_gems": "optional_chips",
       "total_gems": "total_chips"
     }
+  },
+  "rebuild": {
+    "date": "2026-09-30",
+    "decisions": "C25-C35",
+    "milestone": "R2",
+    "summary": "Level 1 rebuilt from the ground up around the approved roster: Night Guard SE01, Patrol Rover M01 (replaces the Clipper) and Linked Staffer LK01, drawn as lit cutout rigs with ragdoll deaths and visible blood. Encounter group IDs and area layouts are unchanged; every enemy entity ID changed, so the save schema is 3. A06 keeps its two rovers and gains a second Staffer (the plan had two Staffers and no rovers there). A Security PA line plays at the exit before the completion screen.",
+    "record": "09-progress-and-handoff.md (latest entry)",
+    "renamed_keys_in_schema_3": {
+      "clippers": "rovers",
+      "clipper_exposed_motor_health": "rover_battery_health"
+    },
+    "added_keys_in_schema_3": [
+      "night_guards",
+      "night_guard_health"
+    ]
   },
   "engine": {
     "family": "Godot",
@@ -55,8 +70,9 @@
       "W01"
     ],
     "enemy_types": [
-      "CY01",
-      "R01"
+      "SE01",
+      "M01",
+      "LK01"
     ],
     "boss_count": 0,
     "heirs_present": false,
@@ -66,7 +82,7 @@
   },
   "prototype_only_elaborations": [
     "Extended beats within the six existing areas",
-    "Extra authored Staffer and Clipper encounters",
+    "Extra authored Night Guard, Patrol Rover and Staffer encounters",
     "Recovery stations CP01 and CP02",
     "One optional same-type pistol swap at depot",
     "One service-walkway switch in A04"
@@ -104,16 +120,18 @@
     "pistol_damage": 1,
     "pistol_base_interval_s": 0.32,
     "pistol_quickcycle_interval_s": 0.24,
-    "staffer_health": 3,
-    "clipper_exposed_motor_health": 3
+    "night_guard_health": 3,
+    "staffer_health": 2,
+    "rover_battery_health": 3
   },
   "areas": [
     {
       "id": "L01-A01",
       "name": "Perimeter gate",
       "seconds": 75,
+      "night_guards": 0,
+      "rovers": 0,
       "staffers": 0,
-      "clippers": 0,
       "chips": 5,
       "small": 5,
       "clusters": 0,
@@ -145,8 +163,9 @@
       "id": "L01-A02",
       "name": "Front gardens",
       "seconds": 150,
-      "staffers": 2,
-      "clippers": 2,
+      "night_guards": 2,
+      "rovers": 2,
+      "staffers": 0,
       "chips": 10,
       "small": 5,
       "clusters": 1,
@@ -154,12 +173,12 @@
       "beats": [
         {
           "id": "L01-A02-B01",
-          "name": "First Staffer in isolation",
+          "name": "First Night Guard in isolation",
           "target_seconds": 30
         },
         {
           "id": "L01-A02-B02",
-          "name": "First Clipper beside stone planter",
+          "name": "First Patrol Rover beside stone planter",
           "target_seconds": 30
         },
         {
@@ -169,12 +188,12 @@
         },
         {
           "id": "L01-A02-B04",
-          "name": "Staffer in the next court",
+          "name": "Night Guard in the next court",
           "target_seconds": 25
         },
         {
           "id": "L01-A02-B05",
-          "name": "Second Clipper practice lane",
+          "name": "Second Patrol Rover practice lane",
           "target_seconds": 25
         },
         {
@@ -188,8 +207,9 @@
       "id": "L01-A03",
       "name": "Rooftop walk",
       "seconds": 135,
-      "staffers": 2,
-      "clippers": 0,
+      "night_guards": 2,
+      "rovers": 0,
+      "staffers": 0,
       "chips": 10,
       "small": 5,
       "clusters": 1,
@@ -207,12 +227,12 @@
         },
         {
           "id": "L01-A03-B03",
-          "name": "Staffer on broad far terrace",
+          "name": "Night Guard on broad far terrace",
           "target_seconds": 25
         },
         {
           "id": "L01-A03-B04",
-          "name": "Roof-height sequence and second Staffer",
+          "name": "Roof-height sequence and second Night Guard",
           "target_seconds": 30
         },
         {
@@ -226,8 +246,9 @@
       "id": "L01-A04",
       "name": "Campus plaza",
       "seconds": 165,
-      "staffers": 4,
-      "clippers": 2,
+      "night_guards": 4,
+      "rovers": 2,
+      "staffers": 0,
       "chips": 20,
       "small": 10,
       "clusters": 2,
@@ -250,7 +271,7 @@
         },
         {
           "id": "L01-A04-B04",
-          "name": "Two staggered Staffers",
+          "name": "Two staggered Night Guards",
           "target_seconds": 25
         },
         {
@@ -275,8 +296,9 @@
       "id": "L01-A05",
       "name": "Server depot",
       "seconds": 90,
+      "night_guards": 0,
+      "rovers": 0,
       "staffers": 0,
-      "clippers": 0,
       "chips": 0,
       "small": 0,
       "clusters": 0,
@@ -313,8 +335,9 @@
       "id": "L01-A06",
       "name": "Alarm exit",
       "seconds": 135,
-      "staffers": 1,
-      "clippers": 2,
+      "night_guards": 0,
+      "rovers": 2,
+      "staffers": 2,
       "chips": 0,
       "small": 0,
       "clusters": 0,
@@ -327,7 +350,7 @@
         },
         {
           "id": "L01-A06-B02",
-          "name": "Familiar Clipper lane",
+          "name": "Familiar Patrol Rover lane and the first Staffer",
           "target_seconds": 25
         },
         {
@@ -337,7 +360,7 @@
         },
         {
           "id": "L01-A06-B04",
-          "name": "Final Staffer and Clipper encounter",
+          "name": "Final Staffer and Patrol Rover encounter",
           "target_seconds": 35
         },
         {
@@ -353,88 +376,99 @@
     {
       "id": "L01-E01",
       "beat_id": "L01-A02-B01",
-      "staffers": 1,
-      "clippers": 0,
+      "night_guards": 1,
+      "rovers": 0,
+      "staffers": 0,
       "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E02",
       "beat_id": "L01-A02-B02",
+      "night_guards": 0,
+      "rovers": 1,
       "staffers": 0,
-      "clippers": 1,
       "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E03",
       "beat_id": "L01-A02-B04",
-      "staffers": 1,
-      "clippers": 0,
+      "night_guards": 1,
+      "rovers": 0,
+      "staffers": 0,
       "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E04",
       "beat_id": "L01-A02-B05",
+      "night_guards": 0,
+      "rovers": 1,
       "staffers": 0,
-      "clippers": 1,
       "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E05",
       "beat_id": "L01-A03-B03",
-      "staffers": 1,
-      "clippers": 0,
+      "night_guards": 1,
+      "rovers": 0,
+      "staffers": 0,
       "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E06",
       "beat_id": "L01-A03-B04",
-      "staffers": 1,
-      "clippers": 0,
+      "night_guards": 1,
+      "rovers": 0,
+      "staffers": 0,
       "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E07",
       "beat_id": "L01-A04-B02",
-      "staffers": 1,
-      "clippers": 1,
+      "night_guards": 1,
+      "rovers": 1,
+      "staffers": 0,
       "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E08",
       "beat_id": "L01-A04-B04",
-      "staffers": 2,
-      "clippers": 0,
+      "night_guards": 2,
+      "rovers": 0,
+      "staffers": 0,
       "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E09",
       "beat_id": "L01-A04-B06",
-      "staffers": 1,
-      "clippers": 1,
+      "night_guards": 1,
+      "rovers": 1,
+      "staffers": 0,
       "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E10",
       "beat_id": "L01-A06-B02",
-      "staffers": 0,
-      "clippers": 1,
+      "night_guards": 0,
+      "rovers": 1,
+      "staffers": 1,
       "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E11",
       "beat_id": "L01-A06-B04",
+      "night_guards": 0,
+      "rovers": 1,
       "staffers": 1,
-      "clippers": 1,
       "chip_drops": 0,
       "max_simultaneous_attackers": 1
     }

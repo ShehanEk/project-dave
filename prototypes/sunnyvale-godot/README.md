@@ -13,10 +13,22 @@ zombie-suburb version to the new story and look: cyborg Staffers instead of
 zombie Residents, microchips instead of gems, the EF01 "Lockout Notice"
 evidence file instead of the Welcome Key artifact, Adam's core-node scene
 instead of the EDEN awakening, the L01-KC01 keycard that opens the exit, and a
-dark night-campus look. Gameplay, tuning, timings and counts are unchanged.
+dark night-campus look. Gameplay, tuning, timings and counts were unchanged.
 Saves from a pre-revamp build are rejected as incompatible (the save schema
-is now version 2), so **Continue** stays disabled until you start a new run.
-The plan's README has the full old-to-new vocabulary table.
+went to version 2 then), so **Continue** stays disabled until you start a new
+run. The plan's README has the full old-to-new vocabulary table.
+
+**Level 1 rebuild (2026-09-30, C33).** Level 1 was rebuilt from the ground up
+around the approved enemy roster, after the lit-cutout test (C35). The C24
+build's Staffers and the Clipper are gone. The level now has the SE01 Night
+Guard (a guard with a stun baton), the M01 Patrol Rover (an armored charger:
+let it crash into stone, then shoot the battery on its back) and, at the alarm
+exit, the LK01 Staffer (a Linked night-shift worker). All are lit cutouts that
+die and bleed, and there are 16 of them in the same 11 encounter groups. Every
+enemy entity ID changed, so the save schema is now version 3 and **Continue**
+stays disabled for an older save until you start a new run. At the exit wicket
+a Security PA line plays before the completion screen opens. See
+[Enemy lab](#enemy-lab) for a test strip with all three enemies.
 
 ## Opening the project
 
@@ -56,9 +68,10 @@ release export cannot run the export-verification driver — the release
 build itself was not separately hand-played through save/continue/complete;
 Windows: exported and file-type-confirmed, launch itself pending an actual
 Windows PC — no Wine on the verifying Mac). **Any export built before
-2026-09-29 contains the pre-revamp game** (the ones currently on disk date
-from 2026-09-27); rebuild with the commands above, and treat the export
-evidence as belonging to the pre-revamp build until it is re-run.
+2026-09-30 predates the C33 rebuild, and one built before 2026-09-29 also
+predates the revamp.** The old exports were deleted in the 2026-09-30
+cleanup, so rebuild with the commands above, and treat the export evidence as
+belonging to the pre-revamp build until it is re-run.
 
 - **macOS**: unzip `Sunnyvale.zip` and open `DEAD EDEN - Sunnyvale
   Prototype.app`. The build is unsigned (no Apple Developer ID on this
@@ -130,9 +143,10 @@ Everything lives under the user data directory (Godot's `user://`):
 | Windows | `%APPDATA%\Godot\app_userdata\DEAD EDEN - Sunnyvale Prototype\sunnyvale\` |
 
 - `checkpoint.json` / `checkpoint.bak.json` — the save and its own backup
-  (`CheckpointService`; schema version 2, which includes the clearance
-  keycard). New Game (when replacing an existing run) and a confirmed
-  "Play again" both clear these.
+  (`CheckpointService`; schema version 3: version 2 added the clearance
+  keycard, and version 3 followed the C33 change of every enemy ID, so an
+  older save is rejected). New Game (when replacing an existing run) and a
+  confirmed "Play again" both clear these.
 - `settings.json` — subtitles/text size/reduced-motion/volume, written
   separately from the checkpoint by `Settings` (never rolled back, never
   cleared by New Game/Play again).
@@ -174,6 +188,37 @@ actually starts a real run (`run_start()`) redirects `Telemetry.
 set_playtest_dir()` to its own throwaway folder itself, same pattern, before
 doing so.
 
+## Enemy lab
+
+`scenes/debug/enemy_lab.tscn` is a lit test strip of the night campus with all
+three enemies, lamps, a stone backstop and an annex door. Use it to judge the
+art, the tells, the ragdolls and the blood without playing the level. It uses
+the real enemy scenes and never touches a real save: saves and play logs go to
+`user://enemy_lab_throwaway`.
+
+```sh
+/Applications/Godot.app/Contents/MacOS/Godot --path . res://scenes/debug/enemy_lab.tscn
+/Applications/Godot.app/Contents/MacOS/Godot --path . res://scenes/debug/enemy_lab.tscn -- --autoplay
+```
+
+The second command plays a scripted tour of all three enemies (used for
+captures). Otherwise move and shoot as in the game (A/D, Space, mouse aim, left
+click), plus these keys:
+
+| Key | Action |
+| --- | --- |
+| 1 / 2 / 3 | Spawn a Night Guard / Staffer (it wakes when Dave comes near) / Patrol Rover |
+| K | Kill every enemy |
+| C | Clear bodies and blood |
+| N | Normal maps on/off |
+| M | Moonlight on/off |
+| B | Blood on/off |
+| Z | Zoom |
+| T | Slow motion |
+| I | Dave invulnerable |
+| F1 | Show or hide the help text |
+| Esc | Quit |
+
 ## Current milestone status
 
 See `../../prototype-plans/level-01-sunnyvale/09-progress-and-handoff.md`
@@ -202,8 +247,17 @@ estimate for a measured result.
 
 **Revamp (R1, 2026-09-29):** the rebuild to the new story and look is
 described in the plan (`06-build-milestones.md` "R1") and its verification
-record is 09's latest session-log entry. The `reports/` documents use the
+record is 09's 2026-09-29 session-log entry (REVAMP REBUILD). The `reports/` documents use the
 revamp vocabulary, but their measurements (test counts, RouteBot traversal
 times, export sizes and driver output) were taken on the pre-revamp M7 build
 and are labelled as such; nothing in them was re-measured by the revamp
 unless it says so. The first-time-player timing gate is still pending.
+
+**Level 1 rebuild (R2, 2026-09-30, C33):** built and tested. The plan's
+`06-build-milestones.md` ("R2") describes it and its record is 09's latest
+session-log entry. `tools/test.sh` passes 56/56 cases (56 files in
+`tests/cases/`). The `reports/` documents now name the Patrol Rover and the
+rebuilt placements, but their measurements (M7 test counts, RouteBot traversal
+times, export sizes and driver output) are still those of the pre-revamp M7
+build and are labelled as such. Not done: first-time playtests (gate 6), the
+Windows launch, final painted enemy art and real Mixamo clips.

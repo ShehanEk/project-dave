@@ -15,6 +15,15 @@ close, but they were not re-recorded for this update; refresh them with
 `cd prototypes/sunnyvale-godot && NOIMPORT=1 tools/test.sh m3_level`. The
 area names and vocabulary here are the current ones.
 
+**Rebuild note (2026-09-30, C33):** the figures below are still those of the
+pre-revamp M7 build. The Level 1 rebuild replaced the enemies (8 Night Guards,
+6 Patrol Rovers and 2 Staffers instead of 9 Staffers and 6 Clippers) and edited
+the A02, A03, A04 and A06 scenes (their enemy instances, renamed route
+markers, and in A06 a second Staffer and the annex doors), so the bot times may
+have moved. They were not re-recorded for this update; refresh them with the
+command above. The enemy names, counts and areas in the reasoning below are
+the current ones.
+
 ## Status: the gate is UNVERIFIED
 
 No first-time player has completed a timed run of this build. **This
@@ -97,8 +106,8 @@ This section is **reasoning from design content and the traversal-floor
 data above**, not a prediction of measured times. Ranked by exposure:
 
 1. **L01-A05 Server depot (highest concern).** Zero enemies, zero
-   main-route chips (`02-area-blueprints.md`: "Population: 0 Staffers, 0
-   Clippers. Main-route treasure: 0 chips"), and the lowest bot/budget ratio
+   main-route chips (`02-area-blueprints.md`: "Population: no enemies.
+   Main-route treasure: 0 chips"), and the lowest bot/budget ratio
    (~9–10%) of any area. Its entire 90s budget depends on the player
    actually stopping to read Adam's answer at the core node and consider the
    workbench/upgrade choice (01: "Discovery; Adam answers, then a safe upgrade
@@ -107,8 +116,8 @@ data above**, not a prediction of measured times. Ranked by exposure:
    well under half its budget with nothing else to fill the gap — it has no
    combat or platforming fallback to absorb that.
 2. **L01-A03 Rooftop walk.** Highest bot/budget ratio (~15–16%) among the
-   combat-bearing areas, and its "population" is light (2 Staffers, 0
-   Clippers — `02`). It is explicitly a movement-focused area ("Confidence;
+   combat-bearing areas, and its "population" is light (2 Night Guards, 0
+   Patrol Rovers — `02`). It is explicitly a movement-focused area ("Confidence;
    movement with visible recovery" — 01), so a player who is comfortable
    with the platforming (which most players become by A03, having already
    done A01's tutorial jumps) may cross it close to the bot's own pace with
@@ -122,11 +131,11 @@ data above**, not a prediction of measured times. Ranked by exposure:
    (75s, smallest of the six) already assumes minimal content. Listed for
    completeness, not flagged as high-risk.
 4. **L01-A02 / L01-A04 / L01-A06 (lower concern).** These carry the bulk of
-   the enemy population (2+2, 4+2, 1+2 Staffers/Clippers respectively —
-   `02`) and the largest chip hauls, giving first-time combat (aiming,
-   learning warning tells, retreating) the most room to naturally expand
-   time beyond the bot's floor. Their bot/budget ratios (~12–13%) are also
-   the most "average" of the six.
+   the enemy population (2 Night Guards + 2 Patrol Rovers, 4 + 2, and 2
+   Staffers + 2 Patrol Rovers respectively — `02`) and the largest chip
+   hauls, giving first-time combat (aiming, learning warning tells,
+   retreating) the most room to naturally expand time beyond the bot's floor.
+   Their bot/budget ratios (~12–13%) are also the most "average" of the six.
 
 None of this predicts pass or fail against the 600–900s gate — a first-time
 player could easily read every journal entry and explore every optional

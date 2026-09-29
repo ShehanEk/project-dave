@@ -1,8 +1,8 @@
 # 06 — Build milestones and exit checks
 
-**Visual direction (C11, C15):** [hand-drawn 2D in a dark night-campus palette](../../art-design/style-guide.md). Revamped 2026-09-29 (C14–C24); there are no selected scene images for the new look.
+**Visual direction (C11, C15, C35):** [hand-drawn 2D in a dark night-campus palette, painted flat and lit in the engine](../../art-design/style-guide.md). Revamped 2026-09-29 (C14–C24) and rebuilt 2026-09-30 (C33); there are no selected scene images for the new look.
 
-Follow M0 → M1 → M2 → M3 → M4 → M5 → M6 → M7. Each stage has a playable or inspectable result and a handoff entry. A later full-build request authorizes proceeding through the sequence without repeated approvals; stop for a real missing prerequisite or user decision, not at every file. M0–M7 were completed before the revamp and are kept as history (their exit evidence is in [09](09-progress-and-handoff.md)); the vocabulary below is the current one, so read a pre-revamp record through the table in the [README's revamp note](README.md#revamp-2026-09-29). The post-M7 revamp pass (R1) follows the table.
+Follow M0 → M1 → M2 → M3 → M4 → M5 → M6 → M7. Each stage has a playable or inspectable result and a handoff entry. A later full-build request authorizes proceeding through the sequence without repeated approvals; stop for a real missing prerequisite or user decision, not at every file. M0–M7 were completed before the revamp and are kept as history (their exit evidence is in [09](09-progress-and-handoff.md)); the vocabulary below is the current one, so read a pre-revamp record through the table in the [README's revamp note](README.md#revamp-2026-09-29). The post-M7 revamp pass (R1) and the Level 1 rebuild (R2) follow the table.
 
 Do not implement later campaign systems as preparation. Do not mark a milestone complete on code presence alone. If checks cannot run, mark it **implemented, unverified** and record why.
 
@@ -10,13 +10,14 @@ Do not implement later campaign systems as preparation. Do not mark a milestone 
 | --- | --- | --- |
 | M0 | Godot setup and constraints | Pinned stable version; empty project launches; named inputs; known display/renderer; documented source-control baseline |
 | M1 | Hero, camera, pistol | Playable movement course; base shots hit/block correctly; safe moving-platform carry; jump range measured |
-| M2 | Staffer and Clipper | Isolated attack/recovery examples plus a two-enemy lane; stage-0 pistol can beat both fairly |
+| M2 | Enemies (built as the Staffer and the Clipper; now the Night Guard, Patrol Rover and Staffer) | Isolated attack/recovery examples plus a two-enemy lane; stage-0 pistol can beat each fairly |
 | M3 | Entire graybox route | All six areas and 32 beats connected; 11 encounter placements; both optional branches; exit reachable |
 | M4 | Treasure, upgrade, persistence | Exact microchip allocation; evidence file; swap; health; complete checkpoint and purchase transactions |
 | M5 | Core-node event and level flow | SC01 once, skip/resume parity, settled lockdown state, completion and replay |
 | M6 | Visual/audio/readability pass | Selected style represented; warnings clear; placeholder status honest; HUD/settings readable |
 | M7 | Verification and test build | Functional matrix passed, measured playtest report, local Windows export and known limitations |
 | R1 | Revamp to the new game (C24, post-M7) | Story, names, look and collectibles match C14–C24; keycard exit added; gameplay, tuning and timings unchanged; full suite passes; night-look captures reviewed against the readability rules |
+| R2 | Level 1 rebuild around the C31 roster (C33, post-R1) | Night Guard, Patrol Rover and Staffer as lit cutouts that die and bleed; the 11 groups repopulated (16 enemies); new enemy IDs and save schema 3; the Security PA beat at the wicket; the enemy lab; full suite passes; captures reviewed against the readability rules |
 
 ## M0 — Project foundation
 
@@ -32,13 +33,13 @@ Build hero/camera/pistol in a disposable test course inside the prototype projec
 
 ## M2 — Enemy rules
 
-Build two state machines, grounded lane bounds, real attack windows, rear motor hit zone, and attack-token coordination. Use temporary art if needed. First test each alone, then one mixed pair.
+Build the enemy state machines (today the `Brawler` for the Night Guard and the Staffer and the `Charger` for the Patrol Rover; first built as the Staffer and the Clipper), grounded lane bounds, real attack windows, the rover's rear battery hit zone, and attack-token coordination. Use temporary art if needed. First test each alone, then one mixed pair.
 
-**Proof:** a base-pistol, six-health hero can beat either enemy without unavoidable damage. Warnings precede every damaging attack. Clipper reliably hits its backstop and exposes the motor. No stealth or detection, no unlisted ability.
+**Proof:** a base-pistol, six-health hero can beat any enemy without unavoidable damage. Warnings precede every damaging attack. The Patrol Rover reliably hits its backstop and exposes the battery. No stealth or detection, no unlisted ability.
 
 ## M3 — Full playable blockout
 
-Assemble six area scenes and every beat in 02. Add all 15 enemies by stable ID, static/moving platforms, SW01, safe return paths, and both optional branches. Place temporary treasure/workbench/checkpoint markers for later systems. Provide a temporary explicit end marker until M5; it is not a boss.
+Assemble six area scenes and every beat in 02. Add all 16 enemies (15 before the C33 rebuild) by stable ID, static/moving platforms, SW01, safe return paths, and both optional branches. Place temporary treasure/workbench/checkpoint markers for later systems. Provide a temporary explicit end marker until M5; it is not a boss.
 
 **Proof:** one start-to-finish traversal, branch reachability, safe moving-platform failure, no ladder requirement, all 11 encounter groups counted. Collect a rough area-time run to find empty stretches early. Do not certify 10–15 minutes from the builder's familiar run.
 
@@ -80,3 +81,19 @@ Scope:
 Do not change collision, tuning, timings, tells or counts; placed-entity IDs change only through the rename (Z01 to CY01 in enemy IDs). There is no stealth or detection (C16). Honor reduced motion, keep alarms and strobes slow (no more than three flashes per second, no full-screen flashes), and never let darkness hide a tell, a ledge or a pickup.
 
 **Proof:** the full automated suite passes with the revamp's tests updated (including the new `tests/cases/test_revamp_keycard.gd` for the keycard exit); captures of the area demo scenes and the enemy demo scenes are viewed against the readability rules; leftover greps for the retired vocabulary come back clean apart from deliberate history notes. Record the commands and results in 09 (its latest entry); do not claim any playtest-based result the revamp did not produce, and the first-time-player timing gate remains pending.
+
+## R2 — Level 1 rebuild around the C31 roster (C33, post-R1)
+
+Rebuild Level 1's enemies from the ground up around the approved roster, drawn as lit cutouts (C35), without changing the level's areas, beats or economy. Read the [decision register](../../design/decisions.md) (C25–C35), the [level brief](../../level-design/l01-welcome-to-sunnyvale.md), the [style guide](../../art-design/style-guide.md) and the three enemy briefs ([Night Guard](../../art-design/security/se01-night-guard.md), [Patrol Rover](../../art-design/machines/m01-patrol-rover.md), [Staffer](../../art-design/linked/lk01-staffer.md)) first.
+
+Scope:
+- Replace the Staffer (CY01) and the Clipper (R01) with the SE01 Night Guard, the M01 Patrol Rover and the LK01 Staffer, on two shared templates: the `Brawler` (guard and Staffer) and the `Charger` (the `PatrolRover`, which keeps the Clipper's rules). Remove the Clipper entirely: enemy, art, sounds and tests.
+- Repopulate the 11 encounter groups (8 Night Guards, 6 Patrol Rovers, 2 Staffers) under new enemy IDs, so the save schema becomes 3. Record A06's two Staffers and two rovers as a deviation from the level brief.
+- Draw every enemy as a lit cutout rig (painted parts with normal maps, `lit_part.gdshader`), light the world with smooth engine lights and a muzzle light for each shot, and light Dave through normal maps. Deaths are ragdolls (people) or debris (the rover), with visible blood and an oil pool.
+- Add 11 audio cues, revoice the Staffer's three, and remove the Clipper's five.
+- Add the Security PA line at the wicket, before the completion screen.
+- Add the enemy lab (`scenes/debug/enemy_lab.tscn`) and delete the lit-cutout test's `spike/` folders.
+
+Do not change the areas, beats, economy, checkpoints, keycard exit or Adam's scene. There is no stealth or detection (C16). Honor reduced motion, keep alarms and strobes slow (no more than three flashes per second, no full-screen flashes), and never let darkness or blood hide a tell, a ledge or a pickup.
+
+**Proof:** the full automated suite passes with the rebuilt roster's tests (including the new `tests/cases/test_lit_enemies.gd` and `test_enemy_tells.gd`); captures of the enemy lab and the areas are viewed against the readability rules; leftover greps for the retired names (Clipper, CY01, R01) come back clean apart from deliberate history notes. Record the commands and results in 09 (its latest entry); do not claim any playtest-based result, and the first-time-player timing gate remains pending.

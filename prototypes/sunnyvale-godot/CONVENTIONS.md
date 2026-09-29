@@ -13,6 +13,16 @@ test or export output name the same things Resident (Z01), gem, artifact
 (A01), bench, core console, care capsule, EDEN, quarantine and suburb; the
 plan README's revamp note has the full map.
 
+Level 1 rebuild (2026-09-30, C33): Level 1 was rebuilt from the ground up
+around the approved enemy roster, and the enemies are lit cutouts (C35). The
+C24 build's Staffer (CY01) and Clipper (R01) are gone. The enemies are now the
+SE01 Night Guard and the LK01 Staffer (both a `Brawler`, told apart by their
+`BrawlerTuning` and scene) and the M01 Patrol Rover (a `PatrolRover`, tuned by
+`ChargerTuning`); the level places 16 of them (8 guards, 6 rovers, 2
+Staffers). Every enemy ID changed, so the save schema is 3. This file uses the
+current names throughout; older logs and pre-rebuild test or report output say
+Staffer (CY01) and Clipper (R01) for the previous enemies.
+
 `scripts/main.gd` (`scenes/main.tscn`, the project's `run/main_scene`) is the
 whole game-flow shell (M5 part 2): it owns the Title screen <-> level
 transition and nothing else. It adopts `Session` state (`new_run()` or
@@ -31,6 +41,8 @@ screen.
   faster than real time (full suite ≈ 3 minutes). Run it after every change.
   `FPS=30 tools/test.sh` repeats at a 30 fps fixed step. `NOIMPORT=1` skips import (use when
   another process may be importing; run with import after adding new resource files).
+  A case that fails to compile is reported as FAIL (`tests/run_tests.gd`), not a
+  hang; 56 files are in `tests/cases/` since the C33 rebuild.
 - `tools/capture.sh res://scenes/... OUT_DIR [frames] [fps]` — windowed Movie
   Maker capture to PNG frames for visual evidence. Put output in the session
   scratchpad, never in the repo.
@@ -42,6 +54,15 @@ screen.
   capture demo on its own — without this line a demo that calls
   `Session.commit()`/`Session.new_run()` + `CheckpointService.clear()` (New
   Game) writes straight into the real player's default save dir.
+  `scripts/debug/enemy_lab.gd` (the enemy lab, below) does the same for
+  `CheckpointService` and `Telemetry` in `_enter_tree()`, pointing both at
+  `user://enemy_lab_throwaway`.
+- `scenes/debug/enemy_lab.tscn` (`scripts/debug/enemy_lab.gd`) is a lit test strip
+  with all three enemies, lamps, a stone backstop and an annex door, on the real
+  scenes, for judging the art, tells, ragdolls and blood. Run it with
+  `Godot --path . res://scenes/debug/enemy_lab.tscn` (README, "Enemy lab", has
+  the keys); `-- --autoplay` plays a scripted tour for captures. It replaces
+  the deleted `spike/` test folder and `tools/spike/`.
 - After adding/renaming a script with `class_name`, the import step must run
   before `-s` scripts can resolve it (test.sh does this). New visual scripts
   stay free of `class_name` unless the file already has one (import-cache
@@ -65,7 +86,7 @@ top-left. Floors' top surface is their `position.y`. Tuning seeds live in
 | 2 | hero_body (2) | Hero CharacterBody2D | pickups (Area2D, mask 2), hazards (mask 2), triggers |
 | 3 | enemy_body (4) | Enemy CharacterBody2D | nothing by default (hero/enemies never body-block each other) |
 | 4 | hero_hurtbox (8) | Hero `Hurtbox` Area2D | enemy AttackBox |
-| 5 | hittable (16) | HitZone areas: enemy bodies, Clipper shell (blocks) & rear motor, targets | bolts (ray/shape query, mask 1\|16) |
+| 5 | hittable (16) | HitZone areas: enemy bodies (a person's zone `bleeds`), the Patrol Rover's armor (blocks) & rear battery, targets | bolts (ray/shape query, mask 1\|16) |
 | 6 | interactable (32) | Interactable areas | hero `InteractSensor` |
 | 7 | pickup (64) | chips, med-patches, the keycard (contact pickups) | — (they mask 2) |
 | 8 | hazard (128) | pit/fall-reset areas | — (they mask 2) |
@@ -88,8 +109,8 @@ its weapon tag/Quickcycle pip on "Play again"). Health lives in Session (hero
 owns immunity/knockback only). Connect once; disconnect in `_exit_tree` if the
 node can be rebuilt.
 
-`state` (`Session.default_state()`) holds: `schema_version` (2 since the
-revamp), `build`, `level`, `checkpoint_id`, `health`, `wallet` (microchips),
+`state` (`Session.default_state()`) holds: `schema_version` (3 since the C33
+rebuild, which changed every enemy ID; 2 since the revamp), `build`, `level`, `checkpoint_id`, `health`, `wallet` (microchips),
 `collected` (entity id -> chip value, 0 for evidence files, med-patches and
 the keycard), `evidence` (evidence-file ids such as
 `"EF01"`), `keycards` (clearance keycard ids such as `"L01-KC01"`),
@@ -198,8 +219,8 @@ snapshot, source, error}` tries the primary, falls back to the backup on ANY
 problem (missing, malformed JSON, failed validation), and never returns a
 half-loaded snapshot. `validate_snapshot(data) -> {ok, error}` rejects
 anything that isn't the complete, correctly-typed, whitelisted-ID shape
-`Session.default_state()` produces: wrong `schema_version` (2; a save from
-the pre-revamp build, schema 1, is rejected here) or `level`, an out-of-range
+`Session.default_state()` produces: wrong `schema_version` (3; a save from
+the C24 build, schema 2, or the pre-revamp build, schema 1, is rejected here) or `level`, an out-of-range
 value (health outside 1..MAX_HEALTH, wallet outside 0..MAX_WALLET=65, an
 upgrade stage above `MAX_WEAPON_STAGE`=1), a non-whitelisted id string (this
 is what stops a scene path or stray node-ref-shaped string from a tampered
@@ -307,7 +328,8 @@ alongside their existing `OPT01`/`OPT02` route points, nothing else).
 
 ## Autoload `Audio` (scripts/audio/audio_director.gd)
 
-M6 presentation pass, extended by the revamp's audio pass. Every sound in the
+M6 presentation pass, extended by the revamp's audio pass and the C33 rebuild's
+roster cues. Every sound in the
 project goes through this autoload — nothing else creates an
 `AudioStreamPlayer[2D]` of its own. Registered after `Session`/`Settings`
 (whose `_apply_bus_volume`/`_apply_audio` already own the Master/Music/SFX
@@ -352,8 +374,11 @@ per cue:
   oscillators, filtered noise bursts and envelopes. Original to this project.
   Re-run it (`python3 tools/gen_audio.py [names]`) after editing it to
   regenerate byte-identical output; nothing else in this repo hand-edits a `.wav`. Every
-  cue has a `.wav` here, but only some play it by default: the 16 cues that
-  define the night-campus identity (the three Staffer cues, `chip`,
+  cue has a `.wav` here, but only some play it by default: the 27 cues that
+  define the night-campus identity and the Level 1 roster (the three Staffer
+  cues, the 11 roster cues `guard_windup`, `guard_swing`, `hit_flesh`,
+  `body_fall`, `rover_patrol`, `rover_windup`, `rover_charge`, `rover_stall`,
+  `rover_armor`, `rover_destroyed` and `debris_clatter`, `chip`,
   `chip_cluster`, `evidence`, `med_patch`, `adam_chime`, `alarm`, `lockdown`,
   `exit`, `keycard`, `keycard_denied`, `door_unlock`, `uplink` and
   `link_chirp`) plus both music loops. For a Kenney-sourced cue its `.wav` is
@@ -361,21 +386,21 @@ per cue:
 - **Kenney (CC0)** — one or more `.ogg` files copied into
   `assets/kenney/<pack>/` from Kenney's Interface Sounds, Impact Sounds, UI
   Audio and Sci-fi Sounds packs (each pack folder keeps its own
-  `LICENSE.txt`). Used for the other 24 cues: the hero, pistol, Clipper and
-  generic UI/world cues. A cue with more than one file is a variety pool —
+  `LICENSE.txt`). Used for the other 19 cues: the hero, pistol and generic
+  UI/world cues. A cue with more than one file is a variety pool —
   `play_sfx()` picks one at random each call, the same round-robin spirit as
   `Audio`'s player pools, just applied to source material.
   `Audio.SFX_SOURCES[cue]` also carries a `volume_db` mix trim (re-set by the
   revamp's audio pass from a measured loudness pass, per the comment above
   `SFX_SOURCES`; UI cues sit well below gunfire and impacts per the style
-  guide), an optional base `pitch` (the hero, pistol and Clipper cues use
+  guide), an optional base `pitch` (the hero and pistol cues use
   `Audio.DARKEN` = 0.94, about a semitone down, so the night mix is not
   bright; it multiplies with any variance) and a `pitch_variance` (`±4%`,
   `Audio.PITCH_VARIANCE_FREQUENT`) applied only to cues heard often enough
   that exact repetition would be noticeable — never to attack telegraphs or
   one-off story/UI beats, which stay at a fixed, repeatable pitch.
 
-The 40 SFX cues (`Audio.SFX_NAMES`) and 2 music loops (`Audio.MUSIC_FILES`),
+The 46 SFX cues (`Audio.SFX_NAMES`) and 2 music loops (`Audio.MUSIC_FILES`),
 per 05-content-and-assets.md / audio-direction.md. "Wired" cues already play
 themselves, driven off existing `Session` signals from inside
 `audio_director.gd` itself (or, for music, `scripts/main.gd` — see below) —
@@ -402,19 +427,25 @@ Session-signal wiring.
 | `exit` | wired | `Session.level_completed` | Synthesized — no finale/musical sting in any curated pack |
 | music `campus`/`lockdown`/`none` | wired | `scripts/main.gd` (`_show_title()` -> none; `_start_level()` checks `Session.get_story("awakening_done")` -> campus/lockdown, covering New Game, Continue, AND "immediately on Continue after Adam's answer" since `load_from_snapshot()` never re-emits `story_state_changed`) + `Audio`'s own `story_state_changed` listener (live lockdown mid-run) | Synthesized |
 | `pistol_fire` / `pistol_fire_quick` | wired | `scripts/weapons/scrapjack.gd` `_try_fire()` — quick variant when `_current_stage() >= 1`; also the muzzle-clamp instant-resolve path plays `bolt_hit`/`bolt_blocked` itself (mutually exclusive with `scrap_bolt.gd`'s own resolve — the clamp `return`s before a bolt is ever spawned, so the two never double-play the same shot) | Kenney — `sci-fi-sounds/laserRetro_000\|001\|002.ogg` (pool) / `laserSmall_000\|001.ogg` (pool), both pitch varied |
-| `bolt_hit` / `bolt_blocked` | wired | `scripts/weapons/scrap_bolt.gd` `_resolve(outcome, at)` — `at` as the position (see muzzle-clamp note above for the other, non-overlapping call site) | Kenney — `impact-sounds/impactGeneric_light_000\|001\|002.ogg` (pool) / `impactMetal_medium_000\|001\|002.ogg` (pool, the Clipper's frontal-shield clang), both pitch varied |
+| `bolt_hit` / `bolt_blocked` | wired | `scripts/weapons/scrap_bolt.gd` `_resolve(outcome, at)` — `at` as the position; a hit on a target that bleeds skips `bolt_hit` (the target plays `hit_flesh`); see the muzzle-clamp note above for the other, non-overlapping call site | Kenney — `impact-sounds/impactGeneric_light_000\|001\|002.ogg` (pool) / `impactMetal_medium_000\|001\|002.ogg` (pool, the clang of a shot turned away by armor), both pitch varied |
 | `hero_hurt` | wired | `scripts/actors/hero.gd` `take_damage()`, only on the `return true` path | Kenney — `impact-sounds/impactPunch_medium_001.ogg` (pitch varied) |
 | `hero_jump` | wired | `scripts/actors/hero.gd` `_handle_jump_takeoff()`, where `_jumped_this_frame` is set | Kenney — `interface-sounds/pluck_001.ogg` (pitch varied) |
 | `hero_land` | wired | `scripts/actors/hero.gd` `_physics_process()`, on the `is_on_floor()` edge (`_was_on_floor` false -> true) | Kenney — `impact-sounds/footstep_concrete_000\|001\|002.ogg` (pool, pitch varied) |
-| `staffer_windup` | wired | `scripts/actors/staffer.gd` `_enter_windup()` | Synthesized — the cyborg's implant sound; no such sound in any curated pack |
-| `staffer_lunge` | wired | `scripts/actors/staffer.gd` `_enter_lunge()` | Synthesized — same reason |
-| `staffer_defeat` | wired | `scripts/actors/staffer.gd` `_defeat()` | Synthesized — same reason |
-| `link_chirp` | wired (revamp) | `scripts/actors/visuals/staffer_visual.gd` `_chirp()`, once as a Staffer's Link light turns from teal to amber (Adam takes the body over); presentation only | Synthesized (revamp audio pass, pitch varied) |
-| `clipper_scrape` | wired | `scripts/actors/clipper.gd` `_tick_patrol()` (idle roll) | Kenney — `interface-sounds/scratch_004.ogg` (pitch varied) |
-| `clipper_windup` | wired | `scripts/actors/clipper.gd` `_enter_windup()` | Kenney — `sci-fi-sounds/forceField_000.ogg` (fixed pitch — attack telegraph) |
-| `clipper_charge` | wired | `scripts/actors/clipper.gd` `_enter_charge()` | Kenney — `sci-fi-sounds/impactMetal_002.ogg` (fixed pitch) |
-| `clipper_stall` | wired | `scripts/actors/clipper.gd` `_enter_stall()` | Kenney — `sci-fi-sounds/forceField_001.ogg` (distinct instance from windup; fixed pitch) |
-| `clipper_defeat` | wired | `scripts/actors/clipper.gd` `_defeat()` | Kenney — `impact-sounds/impactMining_000.ogg` (fixed pitch) |
+| `staffer_windup` | wired | `scripts/actors/brawler.gd` `_enter()`, on WINDUP, through the Staffer's `BrawlerTuning.sfx_windup` | Synthesized — the Linked worker's implant chirp, the tell; no such sound in any curated pack (fixed pitch) |
+| `staffer_lunge` | wired | `brawler.gd` `_enter()`, on STRIKE, through `sfx_strike` | Synthesized — a grab whoosh, same reason (fixed pitch) |
+| `staffer_defeat` | wired | `brawler.gd` `_defeat()`, through `sfx_defeat` | Synthesized — the collapse plus an implant fizzle, same reason |
+| `link_chirp` | wired | `brawler.gd` `_enter()`, once when a dormant Staffer wakes and its Link light steadies (Adam takes the body over); presentation only | Synthesized (revamp audio pass, pitch varied) |
+| `guard_windup` | wired (C33) | `scripts/actors/brawler.gd` `_enter()`, on WINDUP, through the Night Guard's `BrawlerTuning.sfx_windup` | Synthesized — the stun baton charging, the tell (fixed pitch) |
+| `guard_swing` | wired (C33) | `brawler.gd` `_enter()`, on STRIKE, through `sfx_strike` | Synthesized (fixed pitch) |
+| `hit_flesh` | wired (C33) | `brawler.gd` `_on_hit()`, on every accepted hit on a person (the shot itself plays no hit spark or cue for a target that bleeds) | Synthesized — restrained and low, never a splatter (pitch varied) |
+| `body_fall` | wired (C33) | `brawler.gd` `_defeat()`, 0.45 s after a defeat whose tuning has no `sfx_defeat` of its own (the Night Guard; the Staffer's defeat cue already ends in the landing) | Synthesized (pitch varied) |
+| `rover_patrol` | wired (C33) | `scripts/actors/patrol_rover.gd` `_tick_patrol()`, each time the rover turns at the end of its beat | Synthesized — a quiet electric roll (pitch varied) |
+| `rover_windup` | wired (C33) | `patrol_rover.gd` `_enter_windup()` | Synthesized — a siren whoop with wheel-spin revs, the tell (fixed pitch) |
+| `rover_charge` | wired (C33) | `patrol_rover.gd` `_enter_charge()` | Synthesized — the motor surge (fixed pitch) |
+| `rover_stall` | wired (C33) | `patrol_rover.gd` `_enter_stall()` | Synthesized — the wall crash and an electrical fizz (fixed pitch) |
+| `rover_armor` | wired (C33) | `patrol_rover.gd` `_on_front_blocked_hit()` | Synthesized — the clang of its armored front turning a shot (pitch varied) |
+| `rover_destroyed` | wired (C33) | `patrol_rover.gd` `_defeat()` | Synthesized — the burst and clatter of the wreck (fixed pitch) |
+| `debris_clatter` | wired (C33) | `patrol_rover.gd` `_on_wreck_settled()`, when the wreck's parts settle | Synthesized — a few metal parts landing (pitch varied) |
 | `interact` | wired (M6 integration) | `scripts/actors/hero.gd`, where `_highlighted.interact(self)` is called (the one place every `Interactable` subclass's interact fires) | Kenney — `interface-sounds/select_001.ogg` (pitch varied) |
 | `latch` | wired | `scripts/objects/route_switch.gd` `interact()` | Kenney — `sci-fi-sounds/doorClose_000.ogg` |
 | `uplink` | wired (revamp) | `scripts/objects/core_node.gd` `_hold_copy()`, a short data-transfer tick repeated while the SC01 copy bar fills | Synthesized (revamp audio pass, pitch varied) |
@@ -429,21 +460,24 @@ Every cue has at least one call site. The M6 integration pass closed the
 original gaps: `interact` in `hero.gd`, and the SC01 cues in `core_node.gd`,
 which no single parallel art agent owned.
 
-**Kenney integration (M7 Kenney pass, then the revamp's audio pass):** the M7
-Kenney pass moved most of the original 34 SFX cues to curated Kenney CC0
+**Kenney integration (M7 Kenney pass, the revamp's audio pass, then C33):** the
+M7 Kenney pass moved most of the original 34 SFX cues to curated Kenney CC0
 `.ogg` files instead of the original synthesized `.wav`; the revamp's audio
 pass kept 24 of the 40 cues on Kenney and moved the identity cues (chips,
 evidence, med-patch, alarm, Staffer, Adam, keycard, lockdown, exit) to
-synthesized sounds. Cue **names**, `Audio.play_sfx(...)`/`Audio.set_music(...)`
-call sites, and every gameplay/tuning/save-format behavior were unchanged by
-either pass. See `assets/kenney/README.md` (which still describes the M7
-picks) and `Audio.SFX_SOURCES` (`scripts/audio/audio_director.gd`) for the
-exact file pools, mix trims and pitch settings. `tools/gen_audio.py` still
-generates a `.wav` for every synthesized cue (including ones no longer played
-by default), so a cue can be switched back to its synthesized original by
-editing its `SFX_SOURCES` entry alone.
+synthesized sounds. The C33 rebuild then removed the five Clipper cues (with
+their Kenney files) and added the 11 synthesized roster cues, so 19 of the 46
+cues are Kenney and 27 are synthesized. Cue **names**,
+`Audio.play_sfx(...)`/`Audio.set_music(...)` call sites, and every
+gameplay/tuning/save-format behavior were unchanged by the first two passes.
+See `assets/kenney/README.md` (which still describes the M7 picks) and
+`Audio.SFX_SOURCES` (`scripts/audio/audio_director.gd`) for the exact file
+pools, mix trims and pitch settings. `tools/gen_audio.py` still generates a
+`.wav` for every synthesized cue (including ones no longer played by default),
+so a cue can be switched back to its synthesized original by editing its
+`SFX_SOURCES` entry alone.
 
-## Night look (revamp, C15)
+## Night look (revamp, C15; lit by C35)
 
 The game is a dark night campus, not the old cheerful daytime look. Every
 visual script draws in the style guide's palette (`../../art-design/
@@ -457,14 +491,18 @@ burnt orange so the hero reads against the cool darks.
 - **Reserved meanings:** red = attack now or alarm; amber = warning, locked or
   Adam's attention; teal = Arcadia/Adam at rest, or unlocked; gold =
   pickups; green = exit signs and status LEDs. Do not use them decoratively.
-- **Rendering stays hand-drawn** (C11): dark outlines, flat colors, crisp cel
-  shadows. Light stays graphic rather than simulated: flat, hard-edged
-  pools (world lamps, beacons, the fountain and the depot's ceiling lights are
-  additive `PointLight2D`s using the stepped three-band textures from
-  `SceneryDraw.light_cone_texture()`/`light_disc_texture()`, shadows off,
-  world layer only), rim light on characters and platform tops, flat glow
-  shapes, and additive glow sprites (the Kenney light masks live in
-  `assets/kenney/light-masks/`).
+- **Painted flat, lit in the engine** (C11, amended by C35): parts keep dark
+  outlines and flat colors but carry no baked light or shadow. Light is smooth
+  engine light: world lamps, beacons, the fountain and the depot's fixtures are
+  additive `PointLight2D`s using the smooth textures from
+  `SceneryDraw.smooth_cone_texture()`/`smooth_disc_texture()`, each at its
+  real position with a `height` (`SceneryDraw.make_light(..., height_px)`,
+  because a normal-mapped character takes its lighting direction from where
+  the light is), shadows off, world layer only. Each shot also flashes a short
+  muzzle light (`scrapjack.gd` `_flash_muzzle_light()`). Characters are lit
+  cutouts (next section). Platform tops keep thin lit or rim-lit edges, and
+  flat glow shapes and additive glow sprites (the Kenney light masks live in
+  `assets/kenney/light-masks/`) stay as halos.
   `LevelDirector` instances the optional screen-space night overlay only if
   `scenes/world/night_overlay.tscn` exists. It is a `CanvasLayer`
   (`scripts/world/night_overlay.gd`, layer 5, below the HUD, subtitles and
@@ -474,11 +512,48 @@ burnt orange so the hero reads against the cool darks.
   the grain and scanlines and holds the pulse steady.
 - **Readability rules:** a light near every landing; platform tops lit or
   rim-lit; every character keeps a readable silhouette against the dark;
-  darkness never hides a tell, a ledge or a pickup.
+  darkness and blood never hide a tell, a ledge or a pickup.
 - **Motion and flashes:** honor `Settings.reduced_motion`; alarms and strobes
   stay slow (at most 3 flashes per second) and never flash the whole screen.
 - **No stealth (C16):** lens and Link lights are readability cues, not
   detection states; there are no vision cones, alert icons or hiding.
+
+## Lit cutouts (C35, the C33 rebuild)
+
+Every enemy is a lit cutout rig, and Dave's frames are lit the same way. A rig
+is presentation only: no collision and no gameplay state live in it.
+
+- **Rigs:** `assets/characters/lit/<night_guard|staffer|patrol_rover>/` holds
+  `albedo.png`, `normal.png`, `spec.png` and `rig.json`. The Night Guard has 16
+  parts, the Staffer 15 and the Patrol Rover 10 (a machine rig: chassis, dome,
+  lightbar, bumper, hatch, battery and four wheels). `tools/art/README.md`
+  documents the format. The art is procedural placeholder art.
+- **Shader:** `assets/shaders/lit_part.gdshader` (normal-mapped, with specular
+  and emissive maps), shared by every part.
+- **Code:** `scripts/actors/lit/`: `cutout_rig.gd` (builds a rig from its
+  `rig.json`), `rig_animator.gd` (plays clips; a converted Mixamo clip of the
+  same name replaces a hand-keyed one), `clips_night_guard.gd` and
+  `clips_staffer.gd` (the hand-keyed clips), `ragdoll.gd` and `ragdoll_part.gd`
+  (a death turns the parts into physics bodies) and `lights.gd` (small smooth
+  light textures for tells). Blood is `scripts/effects/blood.gd` with
+  `assets/effects/blood/` (wound marks, a floor pool, a spray drop, and an oil
+  pool for machines).
+- **Deaths:** a `Brawler` becomes a pinned ragdoll that stays where it falls
+  until the area is rebuilt, settles into a corpse and leaves a blood pool. A
+  `PatrolRover` bursts into loose debris that settles in an oil pool, never
+  blood.
+- **Dave:** each Rook frame has a normal map in
+  `assets/characters/rook/normals/` (made by `tools/art/make_normal_maps.py`),
+  used in `scripts/actors/visuals/hero_visual.gd`.
+- **Moonlight:** `scenes/world/night_lighting.tscn` (one faint, cool
+  `DirectionalLight2D`, `scripts/world/night_lighting.gd`) is instanced by
+  `LevelDirector` beside the night overlay. It is meant as a rim on characters
+  only; in Godot 4.7.2's Compatibility renderer it also faintly washes the
+  world (the script's header explains).
+- **Art tools:** `tools/art/` holds the painters (`paint_night_guard.py`,
+  `paint_staffer.py`, `paint_patrol_rover.py`, `paint_blood.py`), the shared
+  `lit_rig_common.py`, `make_normal_maps.py` and the Mixamo tools
+  (`mixamo_to_rig.py`, `make_test_armature.py`, `README-mixamo.md`).
 
 ## Shared node contracts
 
@@ -494,6 +569,14 @@ burnt orange so the hero reads against the cool darks.
 - **HitZone** (`scripts/combat/hit_zone.gd`): Area2D on layer 5.
   `take_hit(damage, hit_position, direction) -> &"hit" | &"blocked"`. Owner
   listens to its `hit` signal. `blocks = true` gives blocked feedback.
+  `bleeds = true` marks a person or dog (C29): an accepted hit then skips the
+  shot's green HIT spark and its `bolt_hit` cue, because the target shows its
+  own blood and plays its own hit cue (`Brawler` sets it in `_ready()`;
+  machines never bleed).
+- **ArmorHitZone** (`scripts/combat/armor_hit_zone.gd`, extends HitZone): the
+  Patrol Rover's armored front. It always blocks, and its
+  `blocked_hit(hit_position)` signal lets the owner show its armor spark, play
+  `rover_armor` and count ineffective hits for its one-time hint.
 - **AttackBox** (`scripts/combat/attack_box.gd`): enemy attack sensor, masks
   layer 4; deals damage only while `active`. Enable it only during the
   attack's active frames, after a visible warning.
@@ -501,20 +584,28 @@ burnt orange so the hero reads against the cool darks.
   `prompt`, `entity_id`, `can_interact(hero)`, `interact(hero)`,
   `set_highlighted(on)`. The hero highlights exactly one: the nearest eligible.
 - **Block** (`scripts/world/block.gd`, @tool): blockout solid on layer 1.
-  `cracked` (M7 readability): set once by `clipper.gd` when a Clipper's
+  `cracked` (M7 readability): set once by `patrol_rover.gd` when a rover's
   charge stalls against a block; only `Kind.BACKSTOP` actually draws the
   crack overlay, so setting it on any other kind is a harmless no-op — never
   touches collision/size/position.
 - **Enemies** (group `"enemy"`): exported `entity_id` such as
-  `L01-E07-R01-01`; `queue_free()` in `_ready()` if `Session.is_defeated`.
+  `L01-E07-M01-01`; `queue_free()` in `_ready()` if `Session.is_defeated`.
   Call `Session.mark_defeated(entity_id)` once on death. No chip drops. The
-  two kinds are the CY01 **Staffer** (`scenes/actors/staffer.tscn`,
-  `class_name Staffer`, tuning `data/tuning/staffer.tres` /
-  `StafferTuning`, drawn procedurally by
-  `scripts/actors/visuals/staffer_visual.gd`) and the R01 **Clipper**
-  (`scenes/actors/clipper.tscn`, `class_name Clipper`, tuning
-  `data/tuning/clipper.tres`). A Staffer is disabled, not killed: its Link
-  light dies and the body slumps, with no gore.
+  three kinds are the SE01 **Night Guard** (`scenes/actors/night_guard.tscn`,
+  tuning `data/tuning/night_guard.tres`) and the LK01 **Staffer**
+  (`scenes/actors/staffer.tscn`, tuning `data/tuning/staffer.tres`), both a
+  `Brawler` (`scripts/actors/brawler.gd`, `class_name Brawler`, states
+  `DORMANT, PATROL, APPROACH, WINDUP, STRIKE, RECOVERY, DEFEATED`), told apart
+  by their `BrawlerTuning` (`scripts/tuning/brawler_tuning.gd`: health,
+  timings, swing or lunge, rig, clips, tell, sounds and barks); and the M01
+  **Patrol Rover** (`scenes/actors/patrol_rover.tscn`,
+  `scripts/actors/patrol_rover.gd`, `class_name PatrolRover`, states
+  `PATROL, WINDUP, CHARGE, STALL, RECOVERY, DEFEATED`, tuning
+  `data/tuning/patrol_rover.tres`, `ChargerTuning`), whose front is an
+  `ArmorHitZone`. Every enemy dies and bleeds (C28, C29): people leave a
+  ragdoll and a blood pool, the rover a debris wreck and an oil pool. A
+  Staffer starts DORMANT (`dormant_until_active`) and wakes with its
+  encounter.
 - **EncounterGroup** (Node2D, enemies as descendants): `group_id`
   (`L01-E07`), lane bounds, visible-approach activation;
   `request_attack_token(enemy) -> bool`, `release_attack_token(enemy)`. At most
@@ -530,15 +621,16 @@ burnt orange so the hero reads against the cool darks.
 
 Exactly as `02-area-blueprints.md` / `04-godot-architecture.md`: areas
 `L01-A01`…, beats `L01-A02-B03`, encounters `L01-E01`…, enemies
-`L01-E01-CY01-01`, chips `L01-A02-G001`, clusters `L01-A02-GC01`, cache
-`L01-OPT02-CACHE01` (the `G` in the chip ids predates the microchip rename and
-is kept so ids, saves and tests stay stable), evidence file `EF01` (pickup
-entity `L01-OPT01-A01`), keycard `L01-KC01` (pickup entity `L01-KC01-P`),
-med-patches `L01-HS01`…, checkpoints `CP00`…`CP05`, switch `L01-SW01`,
-workbench `L01-UPG01`, weapon instances `L01-W01-P01`/`P02` (pad
-`L01-A05-PAD01`), core node `L01-SC01`. The workbench's own checkpoint id is
-`"UPG01"` (not one of `CP00`-`CP05`) — `CheckpointService` whitelists it
-alongside the `CP0[0-5]` pattern.
+`L01-E01-SE01-01` (Night Guard `SE01`; Patrol Rover `M01`, as in
+`L01-E02-M01-01`; Staffer `LK01`, as in `L01-E10-LK01-01`), chips
+`L01-A02-G001`, clusters `L01-A02-GC01`, cache `L01-OPT02-CACHE01` (the `G` in
+the chip ids predates the microchip rename and is kept so ids, saves and tests
+stay stable), evidence file `EF01` (pickup entity `L01-OPT01-A01`), keycard
+`L01-KC01` (pickup entity `L01-KC01-P`), med-patches `L01-HS01`…, checkpoints
+`CP00`…`CP05`, switch `L01-SW01`, workbench `L01-UPG01`, weapon instances
+`L01-W01-P01`/`P02` (pad `L01-A05-PAD01`), core node `L01-SC01`. The
+workbench's own checkpoint id is `"UPG01"` (not one of `CP00`-`CP05`) —
+`CheckpointService` whitelists it alongside the `CP0[0-5]` pattern.
 
 ## Areas and route bot
 
@@ -671,7 +763,10 @@ mask 2; `Interactable` subclasses are layer 6 (hero's `InteractSensor` masks
   the card plays `door_unlock`, emits `wicket_reached` once, and joins group
   `"exit_wicket"`. `LevelDirector._on_wicket_reached()` owns everything that
   follows: CP05, the final objective, `Session.level_completed`, permanently
-  disabling `hero.input_enabled`, and `scenes/ui/completion.tscn`. Loading a
+  disabling `hero.input_enabled`, the Security PA line (`PA_SPEAKER`,
+  `PA_LINE`: "All teams: lethal force is authorized. Harlan is armed.", shown
+  once on the subtitle panel) and `scenes/ui/completion.tscn`, which opens
+  `PA_BEAT` (3.2 s) later; `level_ended` still fires at once. Loading a
   snapshot whose `story["level_complete"]` is already true (Continue on a
   save made AFTER finishing) never relies on the wicket firing again —
   `LevelDirector._ready()` checks that flag directly and shows the completion
@@ -703,6 +798,9 @@ mask 2; `Interactable` subclasses are layer 6 (hero's `InteractSensor` masks
   `once_per_run_key` gates showing at all behind
   `Session.get_runtime_flag()`/`set_runtime_flag()`; `auto_fade_time` (> 0)
   also fades it after that many seconds even if `action` is never pressed.
+  E02's Patrol Rover prompt (`TutorialPrompt_E02Rover` in `a02_gardens.tscn`,
+  key `e02_rover_intro`, text "Rovers are armored in front. Let it crash into
+  the stone planter.") uses all three, with an empty `action`.
 - `scenery.tscn` (`Scenery`): non-colliding `_draw()` prop; `kind` (an
   append-only enum, never reorder existing values — `Scenery.Kind` in
   `scripts/objects/scenery.gd` is the authoritative list), `size`, `text`
@@ -744,7 +842,9 @@ and pale text; the file name is unchanged), 20-28px text at 1280x720, mouse
   names — `DisplayServer.keyboard_get_label_from_physical`/
   `OS.get_keycode_string` for keys, falling back to the raw keycode on the
   headless display server which doesn't implement that call; "Left mouse
-  button" etc. for mouse buttons), plus a few short spoiler-free tips.
+  button" etc. for mouse buttons), plus a few short spoiler-free tips (one names
+  the rover's weak point: "Patrol Rovers stall against stone: shoot the battery
+  on their back.").
   `refresh()` re-reads `InputMap` so a future rebinding screen stays correct
   with zero changes here. Embedded as a child VIEW inside both the Title
   screen (between Continue and Quit) and the Pause menu (after Journal) —
@@ -774,7 +874,7 @@ and pale text; the file name is unchanged), 20-28px text at 1280x720, mouse
 - `swap_confirm.tscn` (`SwapConfirm`, `CanvasLayer`): names both instances by
   workshop tag, Confirm/Cancel. Opened by `WeaponPad.interact()`.
 - `completion.tscn` (`CompletionScreen`, `CanvasLayer`): shown once by
-  `LevelDirector._on_wicket_reached()`. Stats view: active play time
+  `LevelDirector`, `PA_BEAT` after the wicket (`_on_pa_line_done()`). Stats view: active play time
   (`Session.run_meta["active_seconds"]`), microchips found / 65
   (`Session.chips_found()`), Lockout Notice found/not (`has_evidence("EF01")`),
   Quickcycle obtained/not; Play again opens a confirm sub-view (same
@@ -798,7 +898,7 @@ and pale text; the file name is unchanged), 20-28px text at 1280x720, mouse
   `load_latest()` actually returns — a bad primary transparently falling
   back to a good backup already satisfies "offer the backup"; only when
   BOTH are invalid does it show an honest message and point at New Game (a
-  pre-revamp schema-1 save counts as invalid).
+  schema-1 or schema-2 save counts as invalid).
 - `pause.tscn` (`PauseMenu`, `CanvasLayer`, M5 part 2): Resume, Journal,
   Controls (help/controls-menu follow-up — same `ControlsPanel` the title
   screen uses), Settings, Restart from checkpoint, Quit to title. Added once
@@ -848,7 +948,11 @@ id like `"OPT01"`, only included when a harness/bot run enables it),
 (WAIT_PLATFORM — `platform_target` is AreaRoot-**local**; RouteBot converts
 it through the point's owning AreaRoot, so the same authored value works
 whether that area is tested alone at the origin or placed at a nonzero x
-offset inside the assembled level), `seconds` (WAIT_SECONDS).
+offset inside the assembled level), `seconds` (WAIT_SECONDS). Point names are
+free-form, and the C33 rebuild renamed the ones that named the old enemies: A04
+`RP02_PastGuard`, `RP07_PastRover`, `RP15_PastGuard1`, `RP16_PastGuard2`,
+`RP21_PastE09Guard`, `RP24_PastE09Rover`, and A06 `RP11_PastRover`
+(`tests/cases/test_rover_real_level.gd` walks them).
 
 `RouteBot` (`class_name RouteBot`, `Node`, `scripts/debug/route_bot.gd`):
 drives a `Hero` **only** through `Input.action_press`/`action_release` of the
@@ -911,13 +1015,14 @@ Assert persistent contracts (collected/committed/switch state) through
 
 Solo hero (Dave Harlan); one carried weapon; W01 Scrapjack only, infinite
 basic fire, no magazine/reload/ammo UI; only Quickcycle stage 1 purchasable;
-Staffer (CY01) + Clipper (R01) only; no boss, companion, radio contact,
-Heirs, double jump, dash, climb, ladder, drop-through, or wall jump; **no
-stealth or detection (C16)**; enemies drop no chips; every damaging attack is
-preceded by a visible warning; no kill-all doors; the exit wicket needs the
-level's keycard, which sits on the main route; Staffers are disabled, not
-killed, with no gore; honor reduced motion, and never let darkness hide a
-tell, a ledge or a pickup.
+Night Guard (SE01), Patrol Rover (M01) and Staffer (LK01) only; no boss,
+companion, radio contact, Heirs, double jump, dash, climb, ladder,
+drop-through, or wall jump; **no stealth or detection (C16)**; enemies drop no
+chips; every damaging attack is preceded by a visible warning; no kill-all
+doors; the exit wicket needs the level's keycard, which sits on the main
+route; every enemy dies and bleeds (C28, C29): people leave a corpse and
+blood, the rover a wreck and oil; honor reduced motion, and never let darkness
+or blood hide a tell, a ledge or a pickup.
 
 ## Tests and evidence
 

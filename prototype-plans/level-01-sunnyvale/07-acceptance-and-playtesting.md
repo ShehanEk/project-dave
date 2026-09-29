@@ -1,13 +1,13 @@
 # 07 — Acceptance and playtesting
 
-**Visual direction (C11, C15):** [hand-drawn 2D in a dark night-campus palette](../../art-design/style-guide.md). Revamped 2026-09-29 (C14–C24); there are no selected scene images for the new look.
+**Visual direction (C11, C15, C35):** [hand-drawn 2D in a dark night-campus palette, painted flat and lit in the engine](../../art-design/style-guide.md). Revamped 2026-09-29 (C14–C24) and rebuilt 2026-09-30 (C33); there are no selected scene images for the new look.
 
 ## Completion gates
 
 A complete prototype must launch, finish, preserve the confirmed rules, and meet the measured duration target. A working editor scene alone is not a finished deliverable.
 
 1. No parser errors, missing required resources, or blocking runtime errors.
-2. All six areas in order; two enemy types; one carried pistol; no companion, boss or stealth system.
+2. All six areas in order; three enemy types (Night Guard, Patrol Rover, Staffer); one carried pistol; no companion, boss or stealth system.
 3. Fair stage-0 completion with zero optional chips, no evidence file, and no purchase (the main-route keycard is still needed to leave).
 4. Coherent checkpoint, swap, purchase, keycard and story persistence.
 5. Readable chosen 2D direction in the night palette, with any remaining art placeholders explicitly listed.
@@ -20,9 +20,9 @@ A complete prototype must launch, finish, preserve the confirmed rules, and meet
 | --- | --- | --- |
 | T01 | New Game | Six health, zero chips, stage 0, one held W01-P01, core node installed, Adam quiet (awakening_done false), CP00 |
 | T02 | Movement course | Variable jump, grace/buffer, low ceiling, and platform carry work without extra abilities |
-| T03 | Wall / enemy shots | Solid walls block; Staffer body hits damage; Clipper frontal hits show blocked feedback |
-| T04 | Staffer | Every lunge warns; one attack deals at most one health during immunity |
-| T05 | Clipper | Charge stays grounded and straight; backstop exposes rear; three base hits fit a fair opening |
+| T03 | Wall / enemy shots | Solid walls block; Night Guard and Staffer body hits damage and bleed (no green HIT spark); Patrol Rover frontal hits show blocked feedback |
+| T04 | Night Guard and Staffer | Every swing or lunge warns; one attack deals at most one health during immunity |
+| T05 | Patrol Rover | Charge stays grounded and straight; a backstop stall exposes the rear battery; three base hits fit a fair opening |
 | T06 | Mixed lane | At most two enemies active; only one windup/active attacker; usable retreat remains |
 | T07 | Roof fall | Recovery lane reaches the route by normal jumps; no damage, trap, or forced fight |
 | T08 | SW01 | Walkway extends once; repeated use/reload cannot retract it under the hero |
@@ -37,12 +37,12 @@ A complete prototype must launch, finish, preserve the confirmed rules, and meet
 | T17 | Resume after the depot event | Lockdown geometry already settled; no blocked spawn, surprise damage, or replayed copy scene |
 | T18 | Zero-upgrade finish | Base pistol and normal movement finish A06 with the main-route keycard; no chip or evidence gate |
 | T19 | Save failure / invalid save | No partial purchase; valid backup or clear recovery option; no half-loaded world |
-| T20 | Completion / replay | Found-chip total is independent of wallet spend; fresh run resets all run progress |
+| T20 | Completion / replay | The Security PA line plays and the completion screen opens 3.2 s later; found-chip total is independent of wallet spend; fresh run resets all run progress |
 | T21 | Pause / subtitles / resize | Gameplay stops while paused; text and warnings remain readable; input resumes correctly |
 | T22 | Export | Local Windows build starts, saves, continues, and completes outside the editor |
 | T23 | Keycard exit | A new run starts without the card; the A06 wicket refuses entry without L01-KC01 (harmless "Clearance card required" message, no completion, no damage); the card is collected on the A04 main route; a committed card never duplicates and survives CP04; a card taken after the last checkpoint returns on death; the wicket opens and completes with the card; no softlock |
 
-Automate the high-value state contracts in a small Godot test harness: (a) snapshot restoration/no duplicate IDs, (b) upgrade transaction including failed persistence, and (c) SC01 skip/resume equivalence. Run gameplay/visual checks manually. Do not create a large testing framework before a playable route exists. T01–T22 were verified before the revamp; T23 and the revamp's re-verification are recorded in [09](09-progress-and-handoff.md) and `reports/functional-matrix.md`.
+Automate the high-value state contracts in a small Godot test harness: (a) snapshot restoration/no duplicate IDs, (b) upgrade transaction including failed persistence, and (c) SC01 skip/resume equivalence. Run gameplay/visual checks manually. Do not create a large testing framework before a playable route exists. T01–T22 were verified before the revamp; T23 and the revamp's re-verification are recorded in [09](09-progress-and-handoff.md) and `reports/functional-matrix.md`. The C33 rebuild replaced the enemies behind T03–T06 and their tests; the full suite ran 56/56 on 2026-09-30 (09's latest entry), and the matrix's results are still those of M7 and the revamp unless a row says otherwise.
 
 ## Timing protocol
 
@@ -65,9 +65,9 @@ If the timing gate fails, use 01's area-by-area adjustments and retest with fres
 
 Record test PC, resolution, engine build, and graphics mode. Aim for stable 60 fps on that machine, with a responsive 30 fps fallback check; these are targets, not guaranteed requirements for every computer. Check the plaza and the lockdown transition for spikes. Inspect at normal game scale with muted audio, grayscale screenshots, and reduced shake/background motion.
 
-The night look adds these checks to every capture: a light near every landing; platform tops lit or rim-lit; every character keeps a readable silhouette against the dark; darkness never hides a tell, a ledge or a pickup; the reserved colors keep their meaning (red attack or locked, amber warning, teal at rest or unlocked, gold pickups); alarms and strobes are slow, at most three flashes per second, with no full-screen flashes; and the reduced-motion setting is honored.
+The night look adds these checks to every capture: a light near every landing; platform tops lit or rim-lit; every character keeps a readable silhouette against the dark; darkness and blood never hide a tell, a ledge or a pickup; the reserved colors keep their meaning (red attack or locked, amber warning, teal at rest or unlocked, gold pickups); alarms and strobes are slow, at most three flashes per second, with no full-screen flashes; and the reduced-motion setting is honored.
 
-Capture at least: first Staffer warning, Clipper stall, rooftop recovery, mixed plaza lane, depot workbench, and the lockdown exit. Screenshots demonstrate composition; only a playthrough verifies traversal and controls.
+Capture at least: first Night Guard warning, Patrol Rover stall, first Staffer walk-out at the alarm exit, rooftop recovery, mixed plaza lane, depot workbench, and the lockdown exit. Screenshots demonstrate composition; only a playthrough verifies traversal and controls.
 
 ## Report template
 

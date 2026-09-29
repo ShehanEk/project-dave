@@ -8,7 +8,7 @@ On 2026-09-29 the user replaced the story and atmosphere (C14–C21 in the [deci
 
 ## Level 1 prototype route
 
-A separate [Godot prototype execution plan](prototype-plans/level-01-sunnyvale/README.md) defines a 10–15 minute slice of Level 1, and the prototype was built from it. **Both describe the C14–C24 build, not the current roster.** They still use disabled-not-killed Staffers and the Clipper. Under C33 the Level 1 prototype will be rebuilt from the ground up around the new roster (Night Guards, Patrol Rovers and Staffers at the alarm exit only), after the lit-cutout test on one Night Guard (C35). Read the plan's scope and progress record before any implementation work, and only change the prototype when the user asks.
+A separate [Godot prototype execution plan](prototype-plans/level-01-sunnyvale/README.md) defines a 10–15 minute slice of Level 1, and the prototype was built from it. **Both were rebuilt under C33 (2026-09-30)** around the new roster: Night Guards, Patrol Rovers and Staffers at the alarm exit only, drawn as lit cutouts (C35) that die and bleed. Read the plan's scope and progress record before any implementation work, and only change the prototype when the user asks.
 
 ## Minimum reading
 

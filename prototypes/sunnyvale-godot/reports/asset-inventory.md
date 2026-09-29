@@ -1,8 +1,9 @@
 # M6 asset inventory — Sunnyvale prototype
 
 Compiled during the M6 integration/verification pass (consolidating the
-parallel audio, characters, environment, and fx/UI presentation passes), and
-revised for the 2026-09-29 revamp (C24). Every entry's provenance was checked
+parallel audio, characters, environment, and fx/UI presentation passes),
+revised for the 2026-09-29 revamp (C24) and again for the 2026-09-30 Level 1
+rebuild (C33). Every entry's provenance was checked
 against the file actually on disk in this repo, not just against the
 authoring agent's own report. "Status" follows the schema requested for this
 pass:
@@ -13,11 +14,11 @@ pass:
 - **reference-only** — kept in the repo for comparison, not wired into any scene.
 
 All image/audio assets are either original to this project (synthesized by a
-local script, `tools/gen_audio.py`; drawn procedurally in GDScript; derived
-from the approved Clipper concept-art PNG under `../../concept-art/`, which
-was never modified — see `derive_character_sprites.py`, which only *reads*
-it; or the user-generated Rook sprite pack, §8) or CC0 Kenney assets with
-their licences kept beside them (§7).
+local script, `tools/gen_audio.py`; painted procedurally by the `tools/art/`
+painters, §1; drawn procedurally in GDScript; or the user-generated Rook
+sprite pack, §8) or CC0 Kenney assets with their licences kept beside them
+(§7). The Clipper PNGs that an earlier build derived from a concept-art file
+are gone (C32, C33).
 
 ## Revamp changes at a glance (2026-09-29)
 
@@ -30,10 +31,11 @@ four ways. File and cue names throughout are the current ones.
   deleted), and in `concept-art/` the Resident sources (`z01-resident/`: the
   selected PNG, its prompt and selection record) and the three daytime
   Sunnyvale scene keyframes (`l01-sunnyvale/`).
-  `tools/derive_character_sprites.py` no longer produces any Resident output;
-  it derives only the Clipper's.
+  `tools/derive_character_sprites.py` no longer produced any Resident output;
+  it derived only the Clipper's (the tool itself was deleted on 2026-09-30).
 - **New.** A fully procedural **Staffer** (`scripts/actors/visuals/
-  staffer_visual.gd`, no image file at all: §3), drawings for the microchip,
+  staffer_visual.gd`, no image file at all: §3; replaced by a lit cutout rig in
+  C33), drawings for the microchip,
   evidence file, keycard, med-patch and Adam's core node, the clearance-card
   HUD icon, a night UI theme, the night-campus world visuals, and the revamp
   audio cues and music (§2).
@@ -44,24 +46,63 @@ four ways. File and cue names throughout are the current ones.
   `gem_cluster`, `artifact`, `capsule`, `eden_chime`, `resident_*`,
   `suburb_loop` and `quarantine_loop` to `chip`, `chip_cluster`, `evidence`,
   `med_patch`, `adam_chime`, `staffer_*`, `campus_loop` and `lockdown_loop`).
-- **Kept.** The Clipper's in-game cutout (`clipper_body_2x.png`, until the
-  Clipper leaves in the Level 1 rebuild — C32/C33), the Rook sprite pack as
+- **Kept.** The Clipper's in-game cutout (`clipper_body_2x.png`, which left
+  with the Clipper in the C33 rebuild, below), the Rook sprite pack as
   placeholder art for Dave Harlan (C23), and every Kenney asset the game uses
   (7 unused interface sounds were removed on 2026-09-30).
 
-## 1. Character/creature image assets (`assets/characters/*.png`)
+## Level 1 rebuild changes at a glance (2026-09-30, C33)
 
-> **Cleanup 2026-09-30:** the Clipper is removed from the game (C32). Its three unused reference images (`clipper_body_1x`, `clipper_full_1x`, `clipper_full_2x`) and `tools/derive_character_sprites.py` were deleted. `clipper_body_2x.png` stays only until the Clipper leaves the prototype in the Level 1 rebuild (C33). Mentions of the tool below are history.
+The rebuild replaced the enemies and their art, so this inventory changed
+again. Entries below use the current names; the sections that describe a fix
+made on the Clipper or the C24 Staffer are kept as history and say so.
+
+- **Deleted.** The Clipper's art and code: `assets/characters/clipper_body_2x.png`
+  and `scripts/actors/visuals/clipper_visual.gd`; the C24 Staffer's drawing,
+  `scripts/actors/visuals/staffer_visual.gd`; the M6 characters demo; the five
+  `clipper_*` cues (their wavs) and the five Kenney files only they played
+  (`scratch_004`, `impactMining_000`, `forceField_000`, `forceField_001` and
+  `impactMetal_002`); and the lit-cutout test's `spike/` and `tools/spike/`
+  folders, whose contents moved into the game.
+- **New.** Three lit cutout rigs (`assets/characters/lit/`), blood decals
+  (`assets/effects/blood/`), normal maps for Dave's Rook frames
+  (`assets/characters/rook/normals/`), the shared shader
+  (`assets/shaders/lit_part.gdshader`), the painters in `tools/art/`, 11 roster
+  cues (§2), the moonlight scene and the enemy lab (`scenes/debug/enemy_lab.tscn`).
+  All of it is procedural placeholder art.
+- **Moved.** The Kenney particles staged as `particles/clipper_later/` are now
+  `particles/machines/` (§7.6).
+- **Changed.** The three Staffer cues were revoiced (§2), and the world lights
+  became smooth engine lights with a height (§3).
+
+## 1. Character/creature image assets (`assets/characters/`)
+
+> **C33 rebuild (2026-09-30):** every enemy is now a lit cutout rig, painted procedurally by the painters in `tools/art/` (see its `README.md`). The Clipper's last PNG, `clipper_body_2x.png`, was deleted with the Clipper, so no file in `assets/characters/` is derived from concept art any more. The Clipper table and the two fix notes below are history of the C24 build.
+
+**Lit cutout rigs.** Each rig folder holds three 256×256 px maps that share one layout (`albedo.png` flat colour, `normal.png`, and `spec.png` for specular, gloss and emissive) and a `rig.json` (parts, joints, ragdoll colliders, and sockets for lights and sparks). Parts are painted at 3 atlas pixels per world pixel. Every painter is deterministic: rerunning it writes the same pixels. `scripts/actors/lit/cutout_rig.gd` builds a rig and `assets/shaders/lit_part.gdshader` lights it.
+
+| id | path | source / provenance | atlas and parts | status |
+| --- | --- | --- | --- | --- |
+| night_guard (SE01) | `assets/characters/lit/night_guard/` | `tools/art/paint_night_guard.py`, the approved lit-cutout test's guard, unchanged | 256×256 per map; 16 parts | draft (placeholder art) |
+| staffer (LK01) | `assets/characters/lit/staffer/` | `tools/art/paint_staffer.py`: the guard's joints minus the baton, a bare near forearm and a Link port lens behind the near ear | 256×256 per map; 15 parts | draft (placeholder art) |
+| patrol_rover (M01) | `assets/characters/lit/patrol_rover/` | `tools/art/paint_patrol_rover.py`: a machine rig of rigid parts (chassis, dome, lightbar, bumper, hatch, battery and four wheels) that fly apart as debris | 256×256 per map; 10 parts | draft (placeholder art) |
+| blood decals | `assets/effects/blood/` (`wound_0/1/2` with normals, `pool` with a normal, `drop`, and two 4×4 helper maps) | `tools/art/paint_blood.py`; used by `scripts/effects/blood.gd` | wounds 18–24 px, pool 360×24 px, drop 16×16 px | draft (placeholder art) |
+| Rook normal maps | `assets/characters/rook/normals/` (`rook_*_n.png` and `dave_spec.png`) | `tools/art/make_normal_maps.py`, from the silhouette and painted detail of every Rook frame | one per Rook frame | draft (placeholder art) |
+
+Dimensions were read from the files. No image in this table comes from concept art or a downloaded source.
+
+### History: the C24 build's Clipper image assets (all deleted)
+
+The 2026-09-30 cleanup removed the three unused reference images and `tools/derive_character_sprites.py`, and the C33 rebuild removed `clipper_body_2x.png`. Mentions of the tool are history.
 
 | id | path | source / provenance | dimensions | pivot | status |
 | --- | --- | --- | --- | --- | --- |
 | ~~clipper_body_1x~~ (removed 2026-09-30) | `assets/characters/clipper_body_1x.png` | Derived from `concept-art/r01-clipper/r01-clipper-2d-v1.png` (background removed, cropped, scaled to 80px tall; eye-stalk and shear-blade regions erased/feathered — those parts change shape across gameplay states and a single flat concept illustration cannot supply that per `art-design/style-guide.md`'s "concept art is not a layered source" note) | 139×80 px | bottom-center (wheel/floor baseline) | usable-in-prototype |
-| clipper_body_2x | `assets/characters/clipper_body_2x.png` | Same source, 2x export — the texture bound to `clipper.tscn`'s Photo node (displayed at 0.5 scale); `clipper_visual.gd` layers animated vector eye-stalks/shear blades and a STALL-only rear-motor glow/hatch overlay on top of this | 278×160 px | same as 1x, scaled | usable-in-prototype |
+| ~~clipper_body_2x~~ (removed 2026-09-30, C33) | `assets/characters/clipper_body_2x.png` | Same source, 2x export — the texture bound to `clipper.tscn`'s Photo node (displayed at 0.5 scale); `clipper_visual.gd` layers animated vector eye-stalks/shear blades and a STALL-only rear-motor glow/hatch overlay on top of this | 278×160 px | same as 1x, scaled | was usable-in-prototype |
 | ~~clipper_full_1x~~ (removed 2026-09-30) | `assets/characters/clipper_full_1x.png` | Same source, nothing erased — whole-body neutral-pose reference | 139×80 px | n/a | reference-only (not wired into any scene) |
 | ~~clipper_full_2x~~ (removed 2026-09-30) | `assets/characters/clipper_full_2x.png` | Same source, 2x export | 278×160 px | n/a | reference-only |
 
-There is no Staffer image asset: it is drawn entirely in GDScript (§3), and
-the Resident cutouts that used to sit here were deleted by the revamp.
+The C24 build's Staffer had no image asset either: it was drawn entirely in GDScript, and that drawing was deleted in C33 (the Resident cutouts before it were deleted by the revamp).
 
 **AD-02 fix (M6 adversarial review pass, 2026-09-27):** the border flood-fill in
 `remove_background()` leaked through the wide-open shear-arm linkage of the
@@ -96,7 +137,7 @@ byte-identically.
 
 **Hero (Dave Harlan) — Rook sprite pack since 2026-09-28 (see §8).** The
 earlier original procedural vector rig has been replaced by frames from the
-user-generated Rook sprite pack, which is placeholder art for Dave.
+user-generated Rook sprite pack, which is placeholder art for Dave. Since C35 each of its frames also has a normal map (`assets/characters/rook/normals/`), so Dave is lit like the enemies.
 
 ## 2. Audio assets (`assets/audio/**/*.wav`)
 
@@ -104,25 +145,28 @@ Every cue and both music loops have a synthesized `.wav` generated by
 `tools/gen_audio.py` (python3 stdlib only — `wave`/`struct`/`math`/`random`,
 fixed seed `20260927`, re-running it reproduces byte-identical output) from
 oscillators, filtered-noise bursts, a small reverb and envelopes — nothing
-recorded or downloaded. There are 40 SFX cues (the 34 M6 cues, renamed by the
-revamp, plus `keycard`, `keycard_denied`, `door_unlock`, `uplink`, `lockdown`
-and `link_chirp`) and two music loops, `campus_loop.wav` (48 s) and
+recorded or downloaded. There are 46 SFX cues (the 34 M6 cues, renamed by the
+revamp, plus the revamp's `keycard`, `keycard_denied`, `door_unlock`, `uplink`,
+`lockdown` and `link_chirp`, less the five Clipper cues the C33 rebuild
+removed, plus its 11 roster cues) and two music loops, `campus_loop.wav` (48 s) and
 `lockdown_loop.wav` (30 s), which the revamp's audio pass rewrote. Which file
 a cue actually plays is decided by `Audio.SFX_SOURCES`
-(`scripts/audio/audio_director.gd`): 16 cues play their synthesized `.wav`
-(the sounds that define the night-campus identity: the Staffer implant cues,
-chips, evidence, the med-patch, Adam's chime, the alarm and lockdown stinger,
-the keycard family, the uplink tick, the Link chirp and the exit sting), and
-the other 24 play curated Kenney CC0 recordings (§7.1), with their
-synthesized `.wav` kept as an unused fallback. The intended sound identity,
+(`scripts/audio/audio_director.gd`): 27 cues play their synthesized `.wav`
+(the sounds that define the night-campus identity and the Level 1 roster: the
+Staffer implant cues, the Night Guard's baton, hits and falls on people, the
+Patrol Rover and metal debris, chips, evidence, the med-patch, Adam's chime,
+the alarm and lockdown stinger, the keycard family, the uplink tick, the Link
+chirp and the exit sting), and the other 19 play curated Kenney CC0
+recordings (§7.1), with their synthesized `.wav` kept as an unused fallback. The intended sound identity,
 as stated in `tools/gen_audio.py`'s header, is empty corporate spaces after
 hours: low drones, mains hum, soft relay clicks, a calm PA voice that knows
 Dave's name, restrained tension and no organic sounds. The per-cue
 `volume_db` trims were re-set by the revamp's audio pass from a measured
 loudness pass (as recorded in the comment above `SFX_SOURCES`; this report
-did not re-measure them), and the hero, pistol and Clipper cues play about a
-semitone down (`DARKEN` = 0.94) so the mix does not sit on bright effects. Every cue and both music loops are **wired to a call
-site**, as verified below. Status for all:
+did not re-measure them; the C33 rebuild's trims are recorded in the same
+comment), and the hero and pistol cues play about a semitone down (`DARKEN` =
+0.94) so the mix does not sit on bright effects. Every cue and both music
+loops are **wired to a call site**, as verified below. Status for all:
 **usable-in-prototype** for cadence/distinguishability purposes; synthesis
 quality itself is prototype-grade DSP, not final sound design (see gaps).
 
@@ -134,7 +178,7 @@ Synthesized cues and music (played by default):
 | chip_cluster | chip_cluster.wav | 0.50s | `Session.pickup_collected` (id matches `-GC\d+$`) |
 | med_patch | med_patch.wav | 0.51s | `Session.pickup_collected` (id starts `L01-HS`) |
 | evidence | evidence.wav | 1.21s | `Session.evidence_recorded` |
-| staffer_windup / lunge / defeat | staffer_windup.wav / staffer_lunge.wav / staffer_defeat.wav | 0.62 / 0.26 / 0.86s | `staffer.gd` state-enter/`_defeat()` |
+| staffer_windup / lunge / defeat | staffer_windup.wav / staffer_lunge.wav / staffer_defeat.wav | 0.62 / 0.24 / 0.82s (revoiced in C33: implant chirp, grab whoosh, collapse plus implant fizzle; measured from the files) | `brawler.gd` `_enter()` (windup, strike) and `_defeat()`, through the Staffer's `BrawlerTuning` |
 | keycard | keycard.wav | 0.40s | `keycard.gd` on a successful `Session.take_keycard()` |
 | keycard_denied | keycard_denied.wav | 0.25s | `exit_wicket.gd` when the hero enters the locked wicket (rate-limited) |
 | door_unlock | door_unlock.wav | 0.88s | `exit_wicket.gd` when the hero enters the unlocked wicket |
@@ -142,7 +186,18 @@ Synthesized cues and music (played by default):
 | adam_chime | adam_chime.wav | 2.70s | `core_node.gd`'s SC01 coroutine, alongside Adam's first subtitled line |
 | lockdown | lockdown.wav | 3.00s | `core_node.gd`'s SC01 coroutine, the moment the lockdown starts |
 | alarm | alarm.wav | 1.41s | `core_node.gd`'s SC01 coroutine, at the same moment (the M6 integration pass first wired `alarm` and `adam_chime`; `core_node.gd`, then `core_console.gd`, was in no parallel agent's explicit ownership list) |
-| link_chirp | link_chirp.wav | 0.06s | `staffer_visual.gd _chirp()`, once as a Staffer's Link light turns from teal to amber |
+| link_chirp | link_chirp.wav | 0.06s | `brawler.gd` `_enter()`, once when a dormant Staffer wakes and its Link light steadies (Adam takes the body over); the old caller, `staffer_visual.gd`, is deleted |
+| guard_windup | guard_windup.wav | 0.50s | `brawler.gd` `_enter()` on WINDUP, through the Night Guard's `BrawlerTuning.sfx_windup` (the stun baton charging, the tell) |
+| guard_swing | guard_swing.wav | 0.30s | `brawler.gd` `_enter()` on STRIKE, through `sfx_strike` |
+| hit_flesh | hit_flesh.wav | 0.17s | `brawler.gd` `_on_hit()`, every accepted hit on a person |
+| body_fall | body_fall.wav | 0.37s | `brawler.gd` `_defeat()`, 0.45 s after a defeat whose tuning has no `sfx_defeat` (the Night Guard) |
+| rover_patrol | rover_patrol.wav | 0.62s | `patrol_rover.gd _tick_patrol()`, each time the rover turns at the end of its beat |
+| rover_windup | rover_windup.wav | 0.80s | `patrol_rover.gd _enter_windup()` (a siren whoop with wheel-spin revs, the tell) |
+| rover_charge | rover_charge.wav | 0.80s | `patrol_rover.gd _enter_charge()` |
+| rover_stall | rover_stall.wav | 0.95s | `patrol_rover.gd _enter_stall()` |
+| rover_armor | rover_armor.wav | 0.40s | `patrol_rover.gd _on_front_blocked_hit()` (the clang of its armored front) |
+| rover_destroyed | rover_destroyed.wav | 0.90s | `patrol_rover.gd _defeat()` |
+| debris_clatter | debris_clatter.wav | 0.60s | `patrol_rover.gd _on_wreck_settled()`, when the wreck's parts settle |
 | exit | exit.wav | 2.40s | `Session.level_completed` |
 | music: campus | campus_loop.wav | 48.00s loop | `Audio.set_music(&"campus")`, driven from `main.gd`/`story_state_changed` |
 | music: lockdown | lockdown_loop.wav | 30.00s loop | `Audio.set_music(&"lockdown")`, same driver, after `awakening_done` |
@@ -152,13 +207,10 @@ Kenney-sourced cues (played by default; details in §7.1):
 | cue | pack | call site |
 | --- | --- | --- |
 | pistol_fire / pistol_fire_quick | sci-fi-sounds | `scrapjack.gd _try_fire()` (quick variant at Quickcycle stage ≥1); the muzzle-clamp instant-resolve path also plays `bolt_hit`/`bolt_blocked` itself, mutually exclusive with `scrap_bolt.gd`'s own resolve (verified: the clamp path `return`s before a bolt is ever spawned, so a shot never double-plays its hit/blocked cue) |
-| bolt_hit / bolt_blocked | impact-sounds | `scrap_bolt.gd _resolve()` |
+| bolt_hit / bolt_blocked | impact-sounds | `scrap_bolt.gd _resolve()` (a hit on something that bleeds skips `bolt_hit`: the target plays `hit_flesh`) |
 | hero_hurt | impact-sounds | `hero.gd take_damage()` (damage-applied path only) |
 | hero_jump | interface-sounds | `hero.gd _handle_jump_takeoff()` |
 | hero_land | impact-sounds | `hero.gd _physics_process()` (floor edge) |
-| clipper_scrape | interface-sounds | `clipper.gd _tick_patrol()` (idle roll) |
-| clipper_windup / charge / stall | sci-fi-sounds | `clipper.gd` state-enter |
-| clipper_defeat | impact-sounds | `clipper.gd _defeat()` |
 | cache_open | interface-sounds | `Session.pickup_collected` (id contains `CACHE`) |
 | interact | interface-sounds | `hero.gd`, at `_highlighted.interact(self)` — **wired in the M6 integration pass** (previously an open gap in every agent's ownership list) |
 | checkpoint | interface-sounds | `Session.checkpoint_committed` |
@@ -176,16 +228,17 @@ Kenney-sourced cues (played by default; details in §7.1):
 Everything below is original vector art authored directly in `_draw()` in the
 hand-drawn C11 style, in the night-campus palette of `art-design/style-guide.md`
 and `level-design/l01-welcome-to-sunnyvale.md` (near-black, navy, steel,
-slate, teal, amber, alarm red, microchip gold, signal green; drawn light
-pools, rim light and glow). No file to list a path for; the "path" column
-names the script that owns the drawing.
+slate, teal, amber, alarm red, microchip gold, signal green; light pools from
+smooth engine lights, thin lit edges and glow halos). The C33 enemies are not
+here: they are lit cutout rigs (§1). No file to list a path for; the "path"
+column names the script that owns the drawing.
 
 | id | script | states / notes | status |
 | --- | --- | --- | --- |
-| hero_visual_rig | `scripts/actors/visuals/hero_visual.gd` | Drives the Rook sprite frames (§8): idle, run, jump rise/fall, land, hit, defeated, interact; the gun arm reaches to the real `AimPivot` grip point, hands otherwise empty (no second weapon). The earlier procedural vector rig was replaced on 2026-09-28. The night pass adds a small `WristLight` (`PointLight2D`) under the aim pivot, so the hero throws a little light of his own | draft (placeholder art for Dave Harlan; no approved hero design exists) |
-| staffer_visual | `scripts/actors/visuals/staffer_visual.gd`, `scripts/actors/staffer.gd` | **New in the revamp; replaces the retired zombie cutout.** A fully procedural Linked cyborg per `art-design/cyborgs/cy01-staffer.md`: a night-shift office worker in a charcoal uniform jacket over a pale shirt, dark trousers, ID lanyard, collar brace and wrist cuffs, with the coin-sized Link implant behind the ear. Link light: teal at rest, slow amber pulse while Adam drives the body (approach, lunge, stumble recovery), red flashes during the lunge wind-up (the tell; two flashes over the wind-up, never above three per second), dark when disabled (a short burn-out pop, then the body slumps, with no gore). Flat colors with cel shadows, a cool rim light and flat additive glow; `Settings.reduced_motion` keeps every state and color but drops the pulse, flashing and twitch jitter. Presentation only: `staffer.gd` pushes plain pose values | draft (no selected concept image exists) |
-| clipper_eye_stalks_and_blades | `scripts/actors/visuals/clipper_visual.gd`, `scripts/actors/clipper.gd` | Animated vector overlays pivoting from the real hinge/mount points baked into the body cutout; rear-motor glow ring + hatch flap + warning glyph, visible only during STALL. **Night pass (revamp):** the body cutout is drawn through a small night-grade shader built in code (enamel colors darkened and cooled, cel shadows and outlines sunk toward navy/near-black, a thin cold rim on the top and back edges) and the vector parts match. Lens light per the style guide's lens-light rule, a readability cue only (C16): amber with a small flat glow while hunting (patrol, stall, recovery), alarm red with a bigger glow from the charge wind-up until the charge ends (pulsing at 2.5 Hz in the wind-up, steady in the charge and throughout under reduced motion), dull dark amber with no glow when disabled | usable-in-prototype |
-| scrapjack_weapon | `scripts/weapons/scrapjack.gd` | Chunky-L silhouette per `w01-scrapjack-pistol.md`: recoil, small muzzle flash, Quickcycle flywheel cover (visible at stage ≥1, spins faster while firing), held (aim-pivot, firing pose) vs. resting (ground/pad, contact shadow) look, workshop tag text. **M6-integration fix**: the tag previously mirrored/rotated into unreadable reversed glyphs whenever the pre-existing aim-pivot rotate+flip mechanic (unrelated to M6, from the original M1 aiming code) pointed the weapon left/up/down — the tag is now drawn through a corrective transform that keeps it screen-upright at every aim angle, without touching the housing's own rotation/flip (still correct) or any physics/aim code | usable-in-prototype |
+| hero_visual_rig | `scripts/actors/visuals/hero_visual.gd` | Drives the Rook sprite frames (§8): idle, run, jump rise/fall, land, hit, defeated, interact; the gun arm reaches to the real `AimPivot` grip point, hands otherwise empty (no second weapon). The earlier procedural vector rig was replaced on 2026-09-28. The night pass adds a small `WristLight` (`PointLight2D`) under the aim pivot, so the hero throws a little light of his own. Since C35 every frame is lit through its normal map (`assets/characters/rook/normals/`), so lamps, the moonlight and muzzle flashes shade Dave like the enemies | draft (placeholder art for Dave Harlan; no approved hero design exists) |
+| ~~staffer_visual~~ (removed, C33) | `scripts/actors/visuals/staffer_visual.gd` | **Deleted.** The C24 build's fully procedural Linked cyborg Staffer (a night-shift office worker with a Link implant light: teal at rest, amber while Adam drove the body, red in the wind-up, dark when disabled, with no gore). The Staffer is now a lit cutout rig (§1) driven by `brawler.gd`; its Link port glows dim while dormant and steady once awake, and its hands glow with the tell. | removed |
+| ~~clipper_eye_stalks_and_blades~~ (removed, C33) | `scripts/actors/visuals/clipper_visual.gd`, `scripts/actors/clipper.gd` | **Deleted** with the Clipper (C32, C33): animated vector eye stalks and shear blades over the body cutout, a STALL-only rear-motor overlay and a night-graded body shader. The Patrol Rover is a lit machine rig (§1) driven by `patrol_rover.gd`: its lightbar is dim amber on patrol, amber then red in the wind-up and red in the charge; in the stall the rear hatch swings open and the teal battery glows; a wreck's lights are dark. Lights are readability cues only (C16). | removed |
+| scrapjack_weapon | `scripts/weapons/scrapjack.gd` | Chunky-L silhouette per `w01-scrapjack-pistol.md`: recoil, small muzzle flash, Quickcycle flywheel cover (visible at stage ≥1, spins faster while firing), held (aim-pivot, firing pose) vs. resting (ground/pad, contact shadow) look, workshop tag text. **M6-integration fix**: the tag previously mirrored/rotated into unreadable reversed glyphs whenever the pre-existing aim-pivot rotate+flip mechanic (unrelated to M6, from the original M1 aiming code) pointed the weapon left/up/down — the tag is now drawn through a corrective transform that keeps it screen-upright at every aim angle, without touching the housing's own rotation/flip (still correct) or any physics/aim code Since C35 each shot also flashes a short smooth muzzle light (`_flash_muzzle_light()`) that lights whoever is near the muzzle through their normal maps | usable-in-prototype |
 | scrap_bolt | `scripts/weapons/scrap_bolt.gd` | Bolt travel + hit/blocked resolution mark, distinct SHAPES (not just color) for hit vs. blocked | usable-in-prototype |
 | impact_spark | `scripts/effects/impact_spark.gd` | HIT/BLOCKED shapes at the muzzle-clamp instant-resolve point | usable-in-prototype |
 | practice_target | `scripts/objects/practice_target.gd` | Circular target, hit-flash | usable-in-prototype |
@@ -197,7 +250,7 @@ names the script that owns the drawing.
 | workbench / weapon_pad | `scripts/objects/workbench.gd`, `weapon_pad.gd` | Steel workbench with a hanging task lamp (teal when usable, red while locked before the depot event) and the weapon pad with its resting-weapon tag | usable-in-prototype |
 | core_node | `scripts/objects/core_node.gd` | Adam's core node in the server depot: a server cabinet behind glass with teal light moving through the racks, a status screen with the copy bar, a maintenance port and Dave's drive; phases idle, copying, dimmed, answered and awake (a red lockdown strip); the cabinet itself never moves | usable-in-prototype |
 | Block (world geometry) | `scripts/world/block.gd` | GROUND/PLATFORM/WALL/ROOF/BACKSTOP/PORCH/SCENERY_SOLID + an auto-detected depot-metal-floor GROUND variant (found through the owning area's id, so collision, size and position are never touched). **Night pass:** every kind is dark concrete or steel under a thin full-width cold path-light-white top edge (`#D8E6F0`) with a lit bevel, so every standing surface reads at night (the depot floor takes an Arcadia teal edge), a large near-black shadow mass below it and a faint slate rim on the short ends; no non-walkable prop uses that bright edge | usable-in-prototype |
-| Scenery (props) | `scripts/objects/scenery.gd`, `scripts/world/scenery_draw.gd` | Non-colliding props, each `Scenery.Kind` redrawn as its night-campus equivalent: glass office pavilions with a few lit windows, steel security railings, dark sculpted hedges with a cool rim, low bioluminescent garden plants, the tall Arcadia emblem tower sign (`CLOCK`, the navigation landmark), a teal-lit fountain, cold-white path lamps, planters, card-reader posts, the guard's family photo and abandoned coffee tray, teal-lit signage (exit signs green), a holographic billboard projector, the server-depot door, workbench, amber-chevron guide rails, wall terminals, the broken perimeter gate, alarm beacons and support columns. Lamps, beacons and the fountain carry real additive light pools; in the lockdown look lamps go amber (outdoors) or red (the depot), swivel toward the exit and pulse in a slow chase. `scenery_draw.gd` holds the shared night palette tokens and the stepped light textures. Props never take a walkable Block's bright top edge | usable-in-prototype |
+| Scenery (props) | `scripts/objects/scenery.gd`, `scripts/world/scenery_draw.gd` | Non-colliding props, each `Scenery.Kind` redrawn as its night-campus equivalent: glass office pavilions with a few lit windows, steel security railings, dark sculpted hedges with a cool rim, low bioluminescent garden plants, the tall Arcadia emblem tower sign (`CLOCK`, the navigation landmark), a teal-lit fountain, cold-white path lamps, planters, card-reader posts, the guard's family photo and abandoned coffee tray, teal-lit signage (exit signs green), a holographic billboard projector, the server-depot door, workbench, amber-chevron guide rails, wall terminals, the broken perimeter gate, alarm beacons and support columns. Lamps, beacons and the fountain carry real smooth additive lights placed at their source with a height (C35); in the lockdown look lamps go amber (outdoors) or red (the depot), swivel toward the exit and pulse in a slow chase. `scenery_draw.gd` holds the shared night palette tokens and the smooth light textures. Props never take a walkable Block's bright top edge | usable-in-prototype |
 | Area backdrops | `scripts/world/visuals/area_backdrop.gd` | Per-area night backgrounds on Parallax2D nodes (at default scroll_scale=(1,1) after a Godot bug was found and worked around — see the script's own `KNOWN DEVIATION` note). SKY: deep navy-to-black in flat hard-edged bands, sparse stars, a thin low cloud band and a faint horizon glow. HOMES: Arcadia's campus skyline of distant glass towers with a few lit windows, aviation lights and teal arch emblems, a flickering holographic billboard, a delivery drone, low office pavilions, hedges, distant path lights and flat ground-fog bands. DEPOT: dark server racks with blinking teal and green LEDs, hanging cables and teal ceiling lights. The lockdown look (`set_lockdown_mode()`) turns the glow and windows red and the emblems and billboard amber, and takes the depot's ceiling lights out one bank at a time before they return red. Details hold a steady pose under reduced motion and nothing flashes faster than about twice a second | usable-in-prototype |
 | Night overlay | `scenes/world/night_overlay.tscn`, `scripts/world/night_overlay.gd` | Optional screen-space treatment: one shader on a full-screen, mouse-transparent rect on a `CanvasLayer` below every UI layer draws a vignette, faint grain and scanlines, and, once the lockdown starts, a slow alarm-red pulse at the screen edges (never a flash). Reduced motion drops the grain and scanlines and holds the pulse steady. Instanced by `LevelDirector` only if the scene exists | draft |
 | Hud icons | `scripts/ui/chip_icon.gd`, `keycard_icon.gd`, `weapon_icon.gd` | Small HUD glyphs | usable-in-prototype |
@@ -209,23 +262,32 @@ names the script that owns the drawing.
   pack (§8), which is placeholder art: it predates the new design for him
   (a 28-year-old AI researcher in a burnt-orange jacket, design H01) and no
   approved hero concept sprite exists. Remaining gaps for the pack are in §8.
-- **The Staffer has no concept image.** The zombie Resident PNG was deleted
-  (C23), and the new night-shift cyborg is drawn procedurally to its written
-  brief only. It has not been reviewed against a selected picture, and
-  making one is future concept work.
+- **None of the three enemies has a concept image.** The zombie Resident PNG
+  was deleted (C23) and the Clipper's with the Clipper (C32). The Night Guard,
+  the Patrol Rover and the Staffer are procedural placeholder rigs (§1) built
+  to their written briefs only. They have not been reviewed against a
+  selected picture, and final painted art is future work.
+- **Enemy motion is hand-keyed placeholder clips.** Real Mixamo clips are not
+  in the project: the converter (`tools/art/mixamo_to_rig.py`) has been
+  verified only on synthetic Mixamo-named armatures, since no real Mixamo
+  files exist on this machine (the user downloads them with their own Adobe
+  account).
 - **No new concept art for the night campus.** The three daytime scene
   keyframes were deleted (C23), so the night look is built from the level
   brief and style guide alone, and no picture has been selected for it.
 - **No frame-by-frame hand animation anywhere.** Every "animation" in this
-  prototype (hero run cycle, Staffer/Clipper motion, Quickcycle spin,
-  drone silhouettes, etc.) is procedural transform/tween-driven from a
+  prototype (hero run cycle, the enemies' hand-keyed rig clips, Quickcycle
+  spin, drone silhouettes, etc.) is procedural transform/tween-driven from a
   static cutout, sprite frame or vector shape, not authored frame sequences.
-- **Light is graphic, not physically simulated.** Light pools are additive
-  `PointLight2D`s with hard-edged three-band textures and shadows disabled,
-  alongside rim light, flat glow shapes and additive sprites (plus the
-  optional overlay), so there are no real shadows or reflections; "a light
-  near every landing" is enforced by authoring and capture review, not by a
-  tool.
+- **Light is smooth engine light, but it casts no shadows.** Lamps, beacons,
+  the fountain, the depot fixtures and the muzzle flash are additive
+  `PointLight2D`s with smooth falloff textures, each at its real position
+  with a height so normal-mapped characters shade correctly, and with shadows
+  disabled (plus glow halos and the optional overlay), so there are no real
+  shadows or reflections; "a light near every landing" is enforced by
+  authoring and capture review, not by a tool. The moonlight is meant as a
+  rim on characters only, but in Godot 4.7.2's Compatibility renderer it also
+  faintly washes the world (see `scripts/world/night_lighting.gd`).
 - **Synthesized and library audio, not composed/recorded sound design.**
   `tools/gen_audio.py`'s oscillator/noise/envelope DSP and the Kenney packs
   are sufficient for cue distinguishability and milestone testing, not a
@@ -234,15 +296,12 @@ names the script that owns the drawing.
   `scripts/effects/kenney/kenney_puff.gd`'s one-shot puffs (landing and
   pit-fall dust, defeat puffs, chip and checkpoint sparkles, muzzle flash)
   still use the pre-revamp cream, peach, gold and amber tints; the Clipper's
-  stall steam and stars were retinted in `clipper_visual.gd`. The puffs are
-  small and brief but read pale against the dark palette.
-- **Clipper mirrored-facing asymmetry.** The derived Clipper sprite faces
-  screen-left in its source concept PNG and is mirrored (`scale.x` flip) for
-  the opposite facing. A true fix needs a separately hand-drawn mirrored
-  asset, not a flip. (The same limitation applies to the Rook pack, §8.)
-- **Clipper wheels are static** (baked into the body cutout, no wheel-spin
-  animation) — low priority since it does not affect the required warning/
-  charge/stall readability.
+  stall steam and stars, retinted in `clipper_visual.gd`, went with it in C33.
+  The puffs are small and brief but read pale against the dark palette.
+- **Clipper mirrored-facing asymmetry and static wheels (history).** Both
+  concerned the derived Clipper cutout, which C33 deleted. The Patrol Rover's
+  four wheels are separate parts that spin. (The mirrored-facing limitation
+  still applies to the Rook pack, §8.)
 - **No automated pixel-measured hitbox/art alignment tool** — sprite-to-
   collision alignment was verified only by eye across captured frames in
   this and the characters pass, not by an overlay/measurement script.
@@ -283,8 +342,10 @@ names the script that owns the drawing.
 
 ## 5. M6 integration-pass fixes (on top of the three parallel passes)
 
-File and cue names in §5–§7 are the current ones; the M6-era names are in the
-revamp changes above.
+File and cue names in §5–§7 are those of the build each fix was made on (the
+M6-era names are in the revamp changes above). Fixes that concern the Clipper,
+the C24 Staffer drawing or the deleted demos are history: those files went in
+C33.
 
 1. `scripts/actors/hero.gd` — added the missing `interact` SFX call site.
 2. `scripts/objects/core_node.gd` — added the missing SC01 SFX call sites
@@ -294,7 +355,7 @@ revamp changes above.
    rendering mirrored/rotated (unreadable) whenever the pre-existing (M1)
    aim-pivot rotate+flip mechanic pointed the gun somewhere other than
    straight right; the housing/flash/shadow drawing is untouched.
-4. `scripts/debug/m3_route_demo.gd`, `scripts/debug/m6_characters_demo.gd` —
+4. `scripts/debug/m3_route_demo.gd`, `scripts/debug/m6_characters_demo.gd` (deleted in C33) —
    added `M6_REDUCED_MOTION=1` / `M6_MUTED=1` env-var toggles (debug-capture
    scenes only) so the M6 readability captures could be reproduced with
    `Settings.reduced_motion`/muted audio, and a `M6_PERF_LOG=1` toggle on the
@@ -311,7 +372,8 @@ per-finding detail (evidence, exact before/after) is in `../../prototype-plans/l
 09-progress-and-handoff.md`'s "M6 adversarial review fixes" session log entry; summarized here.
 Fixes 2–3, the Staffer half of 4, 7 and 12 concerned art that has since been deleted or replaced (the
 zombie Resident cutout and its vector overlay, the procedural hero rig, the pre-revamp palette), and are
-kept as history only:
+kept as history only. The Clipper's files (fixes 1, 5 and the Clipper's `HintLabel` in 8, plus the Clipper halves of 2 and 4) were
+deleted too in C33; the Patrol Rover kept the warning triangle and the screen-anchored hint (`HintLayer`):
 
 1. `scripts/actors/visuals/clipper_visual.gd` — re-anchored the STALL motor overlay
    (`MOTOR_LOCAL`) onto `RearHitZone`'s own center and shrank its radii to fit inside the zone
@@ -324,8 +386,8 @@ kept as history only:
    own note above and the regenerated `assets/characters/*.png` files (the zombie half is gone).
 3. The zombie's vector overlay (then `resident_visual.gd`) — gave the WINDUP/LUNGE procedural redraw
    hair, a face mark, and outlined slippers instead of bare rectangles (AD-03). Superseded: the file
-   is now the fully procedural `staffer_visual.gd`.
-4. `scripts/actors/staffer.gd`, `scripts/actors/clipper.gd` — outlined both warning triangles and
+   became the fully procedural `staffer_visual.gd`, which C33 deleted (the Staffer is now a lit cutout rig, §1).
+4. The C24 `staffer.gd` and `clipper.gd` (now `brawler.gd` and `patrol_rover.gd`) — outlined both warning triangles and
    raised their minimum alpha from 0.2 to 0.9 (AD-05); raised the Clipper's triangle further above its
    own sprite.
 5. `scenes/actors/clipper.tscn` — added `z_index = 1` (matching `staffer.tscn`) so the Clipper
@@ -389,7 +451,9 @@ combat, 15 fps) were captured windowed and inspected frame-by-frame: lamp/
 beacon glows read as soft ambient light (not the earlier flat debug-looking
 discs), all effects stay brief/low-alpha, and nothing covers feet, edges,
 chips, or attack warnings. (These captures and counts are of the pre-revamp
-build.)
+build. Later passes changed the file counts, the revamp's audio pass, the
+2026-09-30 cleanup and C33; `assets/kenney/README.md` has the current per-pack
+counts.)
 
 ### 7.1 Audio (`scripts/audio/audio_director.gd`'s `SFX_SOURCES`)
 
@@ -400,18 +464,19 @@ Kenney (the hero, pistol, Clipper and generic UI/world cues) and moved the
 rest to synthesized sounds (§2): `chip`, `chip_cluster`, `evidence`,
 `med_patch` and `alarm` left Kenney, so seven copied files
 (`interface-sounds/confirmation_001`, `_002`, `_003`, `_004`, `error_005`,
-`glass_002` and `select_002`) are no longer referenced by `Audio.SFX_SOURCES`;
-they stay in the repo with their licence. The hero, pistol and Clipper
-cues play about a semitone down (`DARKEN` = 0.94). Cue **names** and
-`Audio.play_sfx()` call sites are otherwise unchanged. The remaining 37 wired
-files:
+`glass_002` and `select_002`) were no longer referenced by `Audio.SFX_SOURCES`;
+the 2026-09-30 cleanup deleted them. The C33 rebuild then removed the five
+Clipper cues and the five Kenney files only they played, which leaves 19 cues
+on Kenney. The hero and pistol cues play about a semitone down (`DARKEN` =
+0.94). Cue **names** and `Audio.play_sfx()` call sites are otherwise
+unchanged. The 32 wired files:
 
 | Pack | Source | CC0 | Files used | Cues |
 | --- | --- | --- | --- | --- |
-| Interface Sounds | https://kenney.nl/assets/interface-sounds | Yes | `back_001/002`, `bong_001`, `error_001`, `open_001`, `pluck_001`, `scratch_004`, `select_001/005` (9 wired of 16 copied) | `ui_back`, `checkpoint`, `save_failed`, `cache_open`, `hero_jump`, `clipper_scrape`, `interact`, `purchase` |
-| Impact Sounds | https://kenney.nl/assets/impact-sounds | Yes | `footstep_concrete_000/001/002`, `impactGeneric_light_000/001/002`, `impactMetal_medium_000/001/002`, `impactMining_000`, `impactPunch_medium_001`, `impactSoft_heavy_000` (12) | `hero_land`, `bolt_hit`, `bolt_blocked`, `clipper_defeat`, `hero_hurt`, `pit_fall` |
+| Interface Sounds | https://kenney.nl/assets/interface-sounds | Yes | `back_001/002`, `bong_001`, `error_001`, `open_001`, `pluck_001`, `select_001/005` (8, all wired) | `ui_back`, `checkpoint`, `save_failed`, `cache_open`, `hero_jump`, `interact`, `purchase` |
+| Impact Sounds | https://kenney.nl/assets/impact-sounds | Yes | `footstep_concrete_000/001/002`, `impactGeneric_light_000/001/002`, `impactMetal_medium_000/001/002`, `impactPunch_medium_001`, `impactSoft_heavy_000` (11) | `hero_land`, `bolt_hit`, `bolt_blocked`, `hero_hurt`, `pit_fall` |
 | UI Audio | https://kenney.nl/assets/ui-audio | Yes | `click1/2`, `rollover2/3/4`, `switch1` (6) | `ui_confirm`, `ui_move`, `swap` |
-| Sci-fi Sounds | https://kenney.nl/assets/sci-fi-sounds | Yes | `doorClose_000`, `doorOpen_000`, `forceField_000/001`, `impactMetal_002`, `laserRetro_000/001/002`, `laserSmall_000/001` (10) | `latch`, `hatch_open`, `clipper_windup`/`clipper_stall`, `clipper_charge`, `pistol_fire`, `pistol_fire_quick` |
+| Sci-fi Sounds | https://kenney.nl/assets/sci-fi-sounds | Yes | `doorClose_000`, `doorOpen_000`, `laserRetro_000/001/002`, `laserSmall_000/001` (7) | `latch`, `hatch_open`, `pistol_fire`, `pistol_fire_quick` |
 
 ### 7.2 Input-prompt icons (`scripts/ui/controls_panel.gd`)
 
@@ -456,42 +521,41 @@ additive `PointLight2D`s with stepped textures (`scenery_draw.gd`).
 
 `particle-pack`, **Transparent** variant, tinted, capped under ~0.5s, halved
 amount/speed under `Settings.reduced_motion`. Status:
-**usable-in-prototype**. Wired at 7 call sites: `scrapjack.gd` (muzzle
+**usable-in-prototype**. Wired at 6 call sites: `scrapjack.gd` (muzzle
 flash), `hero.gd` (landing dust, gated to a real fall/jump), `chip.gd`
 (pickup sparkle), `chip_cache.gd` (cache-open sparkle), `recovery_station.gd`
-(checkpoint-save sparkle), `staffer.gd` (defeat puff), `pit_hazard.gd`
-(pit-fall dust).
+(checkpoint-save sparkle) and `pit_hazard.gd` (pit-fall dust). The seventh,
+the old `staffer.gd`'s defeat puff, went in C33, and the rebuild removed its
+`defeat_puff` kind and `smoke_02.png` with it.
 
 | Pack | Source | CC0 | Files used |
 | --- | --- | --- | --- |
-| Particle Pack | https://kenney.nl/assets/particle-pack | Yes | `muzzle_02` (muzzle flash), `dirt_01` (landing dust), `dirt_03` (pit-fall dust), `star_04` (chip/cache sparkle), `star_05` (checkpoint sparkle), `smoke_02` (Staffer defeat puff) (6) |
+| Particle Pack | https://kenney.nl/assets/particle-pack | Yes | `muzzle_02` (muzzle flash), `dirt_01` (landing dust), `dirt_03` (pit-fall dust), `star_04` (chip/cache sparkle), `star_05` (checkpoint sparkle) (5) |
 
-### 7.6 Clipper particles — now wired (M7 Kenney part B, 2026-09-27)
+### 7.6 Machine particles (M7 Kenney part B, 2026-09-27; moved and rewired in C33)
 
-`assets/kenney/particles/clipper_later/` was staged (copied, import-verified,
-deliberately unreferenced) by the earlier Kenney pass "for the concurrent
-Clipper workflow" — that workflow is this one. All three files are now wired
-through `scripts/effects/kenney/kenney_puff.gd` (the frontal spark and the
-two defeat effects — same one-shot `CONFIGS`-table pattern as §7.5) and
-`scripts/actors/visuals/clipper_visual.gd` (the two looping STALL effects,
-outside that one-shot pattern — see below). Status: **usable-in-prototype**.
+`assets/kenney/particles/machines/` (named `clipper_later/` until C33) holds
+two files. The earlier Kenney pass staged three "for the concurrent Clipper
+workflow", M7 Kenney part B wired them to the Clipper, and the C33 rebuild
+wired two of them to the Patrol Rover through
+`scripts/effects/kenney/kenney_puff.gd` (the same one-shot `CONFIGS`-table
+pattern as §7.5) and removed the third, `star_02_dazed_star.png` (the
+Clipper's `StallStars` in `clipper_visual.gd` was its only user). Status:
+**usable-in-prototype**.
 
 | Pack | Source | CC0 | File | Wired as |
 | --- | --- | --- | --- | --- |
-| Particle Pack | https://kenney.nl/assets/particle-pack | Yes | `star_01_metal_spark.png` | `clipper.gd::_on_front_blocked_hit()` — a short (<=0.3s), warm-white/amber, capped (`max_concurrent: 3`) `clipper_spark` burst at the exact impact point, additive to the existing shape-based chevron/shield-flash cues; also `clipper.gd::_defeat()`'s `clipper_defeat_spark` (a few spark bits) |
-| Smoke Particles | https://kenney.nl/assets/smoke-particles | Yes | `whitePuff00_stall_steam.png` | `clipper_visual.gd`'s `StallSteam` `CPUParticles2D` — steam looping from the exposed rear motor for as long as `Clipper.State.STALL` lasts; also `clipper.gd::_defeat()`'s one-shot `clipper_defeat_smoke` |
-| Particle Pack | https://kenney.nl/assets/particle-pack | Yes | `star_02_dazed_star.png` | `clipper_visual.gd`'s `StallStars` `CPUParticles2D` — 2 stars orbiting (`orbit_velocity`) above the exposed motor for as long as STALL lasts, additive to the existing hand-drawn stunned-star glyph (`_draw_stunned_indicator()`) |
+| Particle Pack | https://kenney.nl/assets/particle-pack | Yes | `star_01_metal_spark.png` | `patrol_rover.gd::_on_front_blocked_hit()` — a short (<=0.3s), warm-white/amber, capped (`max_concurrent: 3`) `armor_spark` burst at the exact impact point, additive to the existing shape-based chevron cue; also `_on_rear_hit()` (a hit on the exposed battery) and `_defeat()`'s `machine_spark` (a few spark bits) |
+| Smoke Particles | https://kenney.nl/assets/smoke-particles | Yes | `whitePuff00_stall_steam.png` | `machine_smoke`, one-shot: `patrol_rover.gd::_enter_stall()` (one puff when the stall starts) and `_defeat()` |
 
-`max_concurrent` (new on `kenney_puff.gd`'s `CONFIGS`, only set for
-`clipper_spark`) is what keeps rapid fire from flooding the screen with
-overlapping spark bursts — see `KenneyPuff._active_counts`. The two STALL
-loops are `CPUParticles2D` children of `clipper.tscn`'s `Visual` node
-(`show_behind_parent = true`, same as `Photo`, so the existing target-ring/
-timer-arc overlay still draws on top and stays readable); `clipper_visual.gd`
-toggles their `emitting` and repositions them at the motor anchor every pose
-update, and swaps to a single static (non-looping) puff sprite instead under
-`Settings.reduced_motion` rather than hiding the cue outright. Both stop the
-instant STALL ends (RECOVERY) or a defeat starts.
+`max_concurrent` (on `kenney_puff.gd`'s `CONFIGS`, only set for `armor_spark`,
+which was `clipper_spark` in the C24 build) is what keeps rapid fire from
+flooding the screen with overlapping spark bursts — see
+`KenneyPuff._active_counts`. The Clipper's two looping STALL effects (steam and
+stars, with a static reduced-motion stand-in) were deleted with
+`clipper_visual.gd`. The rover vents one `machine_smoke` puff when its stall
+starts and nothing while the stall lasts; `tests/cases/test_kenney_part_b.gd`
+proves that one-shot.
 
 Also now wired: tutorial-prompt input icons. `scripts/ui/input_icon_map.gd`
 (new, no `class_name`) pulls `controls_panel.gd`'s original icon-file table
@@ -501,7 +565,7 @@ and layout-aware key-label logic out into one shared place; both
 exports) now resolve the SAME CURRENT-InputMap-binding icon for a given
 action, with a bracketed text token (e.g. `[Q]`) falling back for any
 binding this pack has no icon file for. A01's Move/Jump/Aim+Fire prompts and
-the Clipper's 2-hit hint label were also restyled to the subtitle/toast
+the 2-hit hint label (the Clipper's, now the Patrol Rover's) were also restyled to the subtitle/toast
 panel material (a backed panel, >= 22px at Normal text size, scaling with
 `Settings.text_size`) — see
 `prototype-plans/level-01-sunnyvale/09-progress-and-handoff.md`'s Kenney
@@ -517,8 +581,9 @@ part B entry for the full list of touched scenes.
 - `scripts/objects/scenery.gd`'s `CLOUD_PROJECTOR` kind (a pre-revamp prop
   from the old sealed-habitat look) still drew its original flat circles at
   the time — flagged separately by the fx workflow, not a Kenney asset.
-- The E02 Clipper tutorial prompt and the Clipper's 2-hit hint label got the
-  same readable-panel/text-size treatment as A01's prompts but were left
+- The E02 Patrol Rover tutorial prompt and the rover's 2-hit hint label (the
+  Clipper's until C33) got the same readable-panel/text-size treatment as
+  A01's prompts but were left
   WITHOUT input icons (neither names a single key the way "Move"/"Jump"/
   "Aim + Fire" do) — plain styled text only.
 
@@ -544,6 +609,8 @@ part B entry for the full list of touched scenes.
   here + 2 staged for the Clipper pass, matching §7.5/§7.6's own tally).
 
 ### 7.9 Review fixes (2026-09-28 follow-up, Kenney part B review)
+
+History: the first and third fixes below were made on the Clipper's `HintLabel` and its capture demo. The Patrol Rover inherits the screen-anchored `HintLayer` hint, and the E02 capture demo was deleted in the 2026-09-30 cleanup.
 
 - **Clipper's 2-hit HintLabel could render directly over the hero
   (confirmed, fixed).** It was a `Label` at a FIXED local offset
@@ -655,7 +722,9 @@ test cases pass at 60 and 30 fps with this change.
 - The index finger lies along the pistol but the fingers don't wrap it; the
   pistol itself is still the procedural drawing (no Scrapjack sprite yet).
 - The pack was drawn for the old daytime look, so it has no night rim light
-  of its own, and its cream trousers are much lighter than the H01 brief's
+  painted in (since C35 the engine supplies it: each frame has a normal map in
+  `assets/characters/rook/normals/`, and lamps, the moonlight and muzzle
+  flashes shade Dave through it), and its cream trousers are much lighter than the H01 brief's
   dark cargo trousers (the orange jacket already reads as the brief's burnt
   orange, and the knee patches are there).
 - `scenes/debug/rook_rig_demo.tscn` is a close-up capture scene for this

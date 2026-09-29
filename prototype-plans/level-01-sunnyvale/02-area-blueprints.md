@@ -1,6 +1,6 @@
 # 02 — Six-area build blueprints
 
-**Visual direction (C11, C15):** [hand-drawn 2D in a dark night-campus palette](../../art-design/style-guide.md). Revamped 2026-09-29 (C14–C24); there are no selected scene images for the new look.
+**Visual direction (C11, C15, C35):** [hand-drawn 2D in a dark night-campus palette, painted flat and lit in the engine](../../art-design/style-guide.md). Revamped 2026-09-29 (C14–C24) and rebuilt 2026-09-30 (C33); there are no selected scene images for the new look.
 
 ## Common layout rules
 
@@ -14,7 +14,7 @@ All enemy counts below are the total placed population, not simultaneous waves. 
 
 ## L01-A01 — Perimeter gate
 
-**Budget:** 75 seconds. **Population:** 0 Staffers, 0 Clippers. **Main-route treasure:** 5 chips.
+**Budget:** 75 seconds. **Population:** no enemies. **Main-route treasure:** 5 chips.
 
 | Beat | Target | Action |
 | --- | ---: | --- |
@@ -33,22 +33,22 @@ All enemy counts below are the total placed population, not simultaneous waves. 
 
 ## L01-A02 — Front gardens
 
-**Budget:** 150 seconds. **Population:** 2 Staffers, 2 Clippers. **Main-route treasure:** 10 chips.
+**Budget:** 150 seconds. **Population:** 2 Night Guards, 2 Patrol Rovers. **Main-route treasure:** 10 chips.
 
 | Beat | Target | Action |
 | --- | ---: | --- |
-| L01-A02-B01 | 30s | First Staffer in isolation |
-| L01-A02-B02 | 30s | First Clipper beside stone planter |
+| L01-A02-B01 | 30s | First Night Guard in isolation |
+| L01-A02-B02 | 30s | First Patrol Rover beside stone planter |
 | L01-A02-B03 | 25s | Garden-wall jump trail |
-| L01-A02-B04 | 25s | Staffer in the next court |
-| L01-A02-B05 | 25s | Second Clipper practice lane |
+| L01-A02-B04 | 25s | Night Guard in the next court |
+| L01-A02-B05 | 25s | Second Patrol Rover practice lane |
 | L01-A02-B06 | 15s | Safe porch and recovery station |
 
 **Entry and silhouette:** Two garden courts under cold path lights form the front half, separated by a low wall. Add two connected rear-court practice pockets before the porch exit. There is no selected scene image for the new look; follow the level brief's written layout, never a picture, for collision.
 
-**Enemies:** E01 teaches a Staffer alone: its stiff walk, its twitching wind-up and the red Link flash before the lunge. E02 teaches a Clipper alone beside an indestructible stone planter that ends its charge. E03 and E04 repeat the individual patterns in changed geometry, with no simultaneous ranged or airborne threat. Each enemy has a clear grounded approach, retreat floor, and visible warning before damage.
+**Enemies:** E01 teaches a Night Guard alone: he patrols his beat, notices Dave and barks, then raises his stun baton (its light goes amber, then red for the last 0.25 s) and swings once. The 1.2 s recovery after the swing is the moment to shoot him. Three shots kill him, and his body stays where it falls. E02 teaches a Patrol Rover alone beside an indestructible stone planter that ends its charge. E03 (a Night Guard) and E04 (a Patrol Rover) repeat the individual patterns in changed geometry, with no simultaneous ranged or airborne threat. Each enemy has a clear grounded approach, retreat floor, and visible warning before damage.
 
-**First Clipper setup:** Show the stone backstop, safe jumping space, and a raised observation step in the same camera view. Its stalled wheels and exposed rear motor explain the opening. The hero can jump past its charge and shoot the rear; no special dash is needed. A short optional hint follows repeated ineffective frontal hits.
+**First Patrol Rover setup:** Show the stone backstop, safe jumping space, and a raised observation step in the same camera view. Its open rear hatch and exposed teal battery explain the opening. The hero can jump past its charge and shoot the battery; no special dash is needed. When E02 activates, a one-shot prompt (`e02_rover_intro`, shown once per run) reads "Rovers are armored in front. Let it crash into the stone planter." A short optional hint follows repeated ineffective frontal hits.
 
 **Rewards:** Five loose small chips and one five-value cluster, all reachable with ordinary movement. OPT01 leaves near B03 via stepped ledges beside a lit guard post at the edge of the gardens, passes the guard's untouched breakfast tray and family photo, and reaches the optional EF01 evidence file, the Lockout Notice memo, on the desk in the post's loft. Collect with Interact, then rejoin B04. No ladder or new gun. The evidence file adds zero chips.
 
@@ -58,19 +58,19 @@ All enemy counts below are the total placed population, not simultaneous waves. 
 
 ## L01-A03 — Rooftop walk
 
-**Budget:** 135 seconds. **Population:** 2 Staffers, 0 Clippers. **Main-route treasure:** 10 chips.
+**Budget:** 135 seconds. **Population:** 2 Night Guards, no Patrol Rovers. **Main-route treasure:** 10 chips.
 
 | Beat | Target | Action |
 | --- | ---: | --- |
 | L01-A03-B01 | 25s | Porch-step ascent |
 | L01-A03-B02 | 30s | First moving-platform crossing |
-| L01-A03-B03 | 25s | Staffer on broad far terrace |
-| L01-A03-B04 | 30s | Roof-height sequence and second Staffer |
+| L01-A03-B03 | 25s | Night Guard on broad far terrace |
+| L01-A03-B04 | 30s | Roof-height sequence and second Night Guard |
 | L01-A03-B05 | 25s | Safe descent and recovery station |
 
 **Entry and silhouette:** Three broad roof terraces (green roofs on low glass-and-steel office wings) with a visible service lane below. The campus landmark remains the navigation cue. Enter from normal porch steps.
 
-**Traversal:** First demonstrate a moving maintenance platform over shallow recovery ground. Keep its travel path and both boarding ledges visible. Missing it returns via the service lane and stepped ledges in about 15–20 seconds, without a mandatory fight or damage. The far terrace's Staffer E05 stands at least 2H beyond the landing. B04 combines a short static roof sequence with E06 on another broad landing; E05 must not chase into that group.
+**Traversal:** First demonstrate a moving maintenance platform over shallow recovery ground. Keep its travel path and both boarding ledges visible. Missing it returns via the service lane and stepped ledges in about 15–20 seconds, without a mandatory fight or damage. The far terrace's Night Guard E05 stands at least 2H beyond the landing. B04 combines a short static roof sequence with E06 on another broad landing; E05 must not chase into that group.
 
 **Rewards:** Five loose small chips and one five-value cluster on the main roof path. OPT02 begins after the first safe landing and uses ordinary roof steps to a separate 20-chip cache in a roof alcove; rejoin before the final descent. No evidence file is hidden inside this cache. The optional branch is visible from the route.
 
@@ -80,21 +80,21 @@ All enemy counts below are the total placed population, not simultaneous waves. 
 
 ## L01-A04 — Campus plaza
 
-**Budget:** 165 seconds. **Population:** 4 Staffers, 2 Clippers. **Main-route treasure:** 20 chips, plus the level keycard.
+**Budget:** 165 seconds. **Population:** 4 Night Guards, 2 Patrol Rovers. **Main-route treasure:** 20 chips, plus the level keycard.
 
 | Beat | Target | Action |
 | --- | ---: | --- |
 | L01-A04-B01 | 20s | Clock and fountain overlook |
 | L01-A04-B02 | 30s | First mixed encounter |
 | L01-A04-B03 | 20s | Raised planter-bed traversal |
-| L01-A04-B04 | 25s | Two staggered Staffers |
+| L01-A04-B04 | 25s | Two staggered Night Guards |
 | L01-A04-B05 | 20s | Service-walkway switch |
 | L01-A04-B06 | 25s | Second mixed encounter |
 | L01-A04-B07 | 25s | Quiet far porch: recovery station and keycard |
 
 **Entry and silhouette:** The landmark and the depot to the right, a fountain lit from within in the middle ground, and a clear raised planter bed on the play plane. The fountain itself does not block firing lanes.
 
-**Combat sequence:** E07 is one Clipper plus one Staffer on separated approach lanes. A central step lets the hero separate them. E08 is two Staffers entering lunge range at staggered times. E09 repeats one Clipper plus one Staffer after a traversal break. Each group has two enemies total, only one attack windup/active attack at a time, and a retreat lane that does not aggro another group.
+**Combat sequence:** E07 is one Patrol Rover plus one Night Guard on separated approach lanes. A central step lets the hero separate them. E08 is two Night Guards entering swing range at staggered times. E09 repeats one Patrol Rover plus one Night Guard after a traversal break. Each group has two enemies total, only one attack windup/active attack at a time, and a retreat lane that does not aggro another group.
 
 **Traversal and switch:** Raised beds reward planned jumps. B05 adds one visible hand lever SW01 that extends a short service walkway across a small channel. Show the destination and matching symbol before activation. Interact is repeatable/idempotent; it never retracts under the hero. This is an ordinary switch, not a puzzle that demands a weapon upgrade.
 
@@ -108,7 +108,7 @@ All enemy counts below are the total placed population, not simultaneous waves. 
 
 ## L01-A05 — Server depot
 
-**Budget:** 90 seconds. **Population:** 0 Staffers, 0 Clippers. **Main-route treasure:** 0 chips.
+**Budget:** 90 seconds. **Population:** no enemies. **Main-route treasure:** 0 chips.
 
 | Beat | Target | Action |
 | --- | ---: | --- |
@@ -138,42 +138,44 @@ Normal scene treatment is approximately 19 seconds and skippable. Brief subtitle
 
 ## L01-A06 — Alarm exit
 
-**Budget:** 135 seconds. **Population:** 1 Staffer, 2 Clippers. **Main-route treasure:** 0 chips.
+**Budget:** 135 seconds. **Population:** 2 Staffers, 2 Patrol Rovers (a deliberate deviation from the level brief, below). **Main-route treasure:** 0 chips.
 
 | Beat | Target | Action |
 | --- | ---: | --- |
 | L01-A06-B01 | 25s | Preview lockdown rails |
-| L01-A06-B02 | 25s | Familiar Clipper lane |
+| L01-A06-B02 | 25s | Familiar Patrol Rover lane and the first Staffer |
 | L01-A06-B03 | 25s | Safe raised path and settled panels |
-| L01-A06-B04 | 35s | Final Staffer and Clipper encounter |
+| L01-A06-B04 | 35s | Final Staffer and Patrol Rover encounter |
 | L01-A06-B05 | 25s | Service wicket, keycard and completion |
 
 **Entry and silhouette:** Familiar garden forms under a slow amber lockdown pattern. Path-light posts swivel their beams onto the route, garden barrier panels rotate into temporary railings ahead of Dave, and the landmark's teal light shifts to a slow amber pulse. Everything guides toward the service wicket, including Arcadia's cheerful wellness signage ("PLEASE REMAIN CALM", "EXITS CLOSED FOR YOUR COMFORT") beside amber "THIS WAY" arrows.
 
 **Safe transformation:** Panels settle ahead of the player while the entry landing stays fixed. Re-entering the area after a retry applies the completed arrangement directly; it never replays a dangerous transition around a spawned hero. No countdown, chase enemy, or moving-floor ambush. The reduced-motion setting applies to every lockdown lamp, and alarms stay slow: no more than three flashes per second and no full-screen flashes.
 
-**Test of learning:** E10 is one familiar Clipper with a stone backstop. A fixed raised path then gives breathing room. E11 combines one Staffer and one Clipper under the same one-attacker rule as the plaza. Both are optional to kill if a clean route is taken; the wicket stays reachable. Quickcycle should feel useful, never required.
+**Test of learning:** E10 is one familiar Patrol Rover with a stone backstop, plus the first Staffer, dormant in a "STAFF ANNEX" door at x 2080 until its encounter wakes it. A fixed raised path then gives breathing room. E11 combines the second Staffer (annex door at x 4300) and a Patrol Rover under the same one-attacker rule as the plaza. Both are optional to kill if a clean route is taken; the wicket stays reachable. Quickcycle should feel useful, never required.
+
+**Deviation from the level brief (deliberate).** The [campaign brief](../../level-design/l01-welcome-to-sunnyvale.md) puts two Staffers and no rovers at the alarm exit. This plan keeps A06's two Patrol Rovers and adds the second Staffer, because A06's stone backstops exist only for the rovers and its final rover encounter is the level's "use what you learned" test. A06 therefore has 2 Staffers and 2 Patrol Rovers.
 
 **Recovery and reward:** HS03 before E11 offers two health. A marked low hazard drop in B03 may test the one-health pit return; its reset foothold is fixed and free of enemy attacks. Zero health uses CP04 or the later complete workbench/purchase snapshot. No chips or new equipment are necessary here.
 
-**Exit:** The service wicket is the level's keycard door. Its card reader is locked until the hero holds L01-KC01 and shows its unlocked state once the card is held. Entering without the card gives a harmless "Clearance card required" message and never ends the level. With the card, crossing the wicket commits CP05 and shows completion. Display time, chips found out of 65, evidence file found, and upgrade obtained. Chips found is a collection total, distinct from the wallet after spending. Offer replay/new run and quit; no Level 2 scene is required.
+**Exit:** The service wicket is the level's keycard door. Its card reader is locked until the hero holds L01-KC01 and shows its unlocked state once the card is held. Entering without the card gives a harmless "Clearance card required" message and never ends the level. With the card, crossing the wicket commits CP05 and fires the level-ended signal at once. A Security PA line (speaker "Security PA", not Adam) then plays once as a subtitle: "All teams: lethal force is authorized. Harlan is armed." (`LevelDirector.PA_LINE`). The completion screen opens 3.2 s later (`LevelDirector.PA_BEAT`). Display time, chips found out of 65, evidence file found, and upgrade obtained. Chips found is a collection total, distinct from the wallet after spending. Offer replay/new run and quit; no Level 2 scene is required.
 
 ## Encounter registry
 
-Enemy instances use E##-CY01-01 or E##-R01-01 suffixes under the level ID (for example L01-E08-CY01-02). Persist individual defeated IDs, not just a group's cleared flag; surviving enemies can restart in safe idle positions on reload.
+Enemy instances use E##-SE01-nn (Night Guard), E##-M01-nn (Patrol Rover) or E##-LK01-nn (Staffer) suffixes under the level ID (for example L01-E08-SE01-02). Persist individual defeated IDs, not just a group's cleared flag; surviving enemies can restart in safe idle positions on reload.
 
-| Group | Beat | Staffers | Clippers |
-| --- | --- | ---: | ---: |
-| L01-E01 | L01-A02-B01 | 1 | 0 |
-| L01-E02 | L01-A02-B02 | 0 | 1 |
-| L01-E03 | L01-A02-B04 | 1 | 0 |
-| L01-E04 | L01-A02-B05 | 0 | 1 |
-| L01-E05 | L01-A03-B03 | 1 | 0 |
-| L01-E06 | L01-A03-B04 | 1 | 0 |
-| L01-E07 | L01-A04-B02 | 1 | 1 |
-| L01-E08 | L01-A04-B04 | 2 | 0 |
-| L01-E09 | L01-A04-B06 | 1 | 1 |
-| L01-E10 | L01-A06-B02 | 0 | 1 |
-| L01-E11 | L01-A06-B04 | 1 | 1 |
+| Group | Beat | Night Guards | Patrol Rovers | Staffers | Entity IDs |
+| --- | --- | ---: | ---: | ---: | --- |
+| L01-E01 | L01-A02-B01 | 1 | 0 | 0 | `L01-E01-SE01-01` |
+| L01-E02 | L01-A02-B02 | 0 | 1 | 0 | `L01-E02-M01-01` |
+| L01-E03 | L01-A02-B04 | 1 | 0 | 0 | `L01-E03-SE01-01` |
+| L01-E04 | L01-A02-B05 | 0 | 1 | 0 | `L01-E04-M01-01` |
+| L01-E05 | L01-A03-B03 | 1 | 0 | 0 | `L01-E05-SE01-01` |
+| L01-E06 | L01-A03-B04 | 1 | 0 | 0 | `L01-E06-SE01-01` |
+| L01-E07 | L01-A04-B02 | 1 | 1 | 0 | `L01-E07-SE01-01`, `L01-E07-M01-01` |
+| L01-E08 | L01-A04-B04 | 2 | 0 | 0 | `L01-E08-SE01-01`, `L01-E08-SE01-02` |
+| L01-E09 | L01-A04-B06 | 1 | 1 | 0 | `L01-E09-SE01-01`, `L01-E09-M01-01` |
+| L01-E10 | L01-A06-B02 | 0 | 1 | 1 | `L01-E10-M01-01`, `L01-E10-LK01-01` |
+| L01-E11 | L01-A06-B04 | 0 | 1 | 1 | `L01-E11-LK01-01`, `L01-E11-M01-01` |
 
-**Totals:** 32 beats, 11 groups, 9 Staffers, 6 Clippers. The two optional branches add discovery, not enemies.
+**Totals:** 32 beats, 11 groups, 8 Night Guards, 6 Patrol Rovers, 2 Staffers (16 enemies). The two optional branches add discovery, not enemies. The C24 build had 9 Staffers and 6 Clippers (15); the C33 rebuild changed every enemy ID, so the save schema is 3. The E10 Staffer is new since the C24 build. A06's two rovers (E10 and E11) are where this table differs from the level brief (see A06).

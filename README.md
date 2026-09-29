@@ -5,7 +5,7 @@
 A game concept for a mature dark sci-fi **2D platformer shooter**, not for kids, about a rogue AI researcher, an evil corporation, the sentient AI they built, and the guards, contractors, cyborgs and machines that hunt him.
 
 **Working title:** DEAD EDEN\
-**Stage:** concept development, plus a Level 1 Godot prototype. The prototype reflects the C14–C24 build; it will be rebuilt from the ground up around the new enemy roster (C33), after a lit-cutout test on one Night Guard. There are no finished production sprites or animations.
+**Stage:** concept development, plus a Level 1 Godot prototype. The prototype was rebuilt from the ground up around the new enemy roster (C33, 2026-09-30): Night Guards, Patrol Rovers and Staffers, drawn as lit cutouts. Their art is procedural placeholder art; there are no finished production sprites or animations.
 
 The project takes inspiration from the 2D *Metal Gear* games (lone infiltration, secret weapons, cyborg bosses) and *Dangerous Dave* (treasure hunting, platforming and gunplay), and aims for a mysterious, slightly scary sci-fi atmosphere for adults, while developing its own world, characters, and visual identity.
 
@@ -26,14 +26,14 @@ Arcadia Dynamics sells **Adam** to the world as the mind that will "fix the plan
 - [Structured campaign reference](level-design/campaign.json): the same twelve-level plan in JSON.
 - [Art reference index](art-design/README.md): every enemy, protected NPC, mini-boss, enemy gun and weapon brief.
 - [Visual style guide](art-design/style-guide.md): hand-drawn 2D rendering with the new dark palette, the lit cutout rig for enemies, and the lighting and readability rules.
-- [Level 1 Godot prototype plan](prototype-plans/level-01-sunnyvale/README.md): the playable-slice plan (it describes the C14–C24 build and will be rebuilt around the new roster, C33).
+- [Level 1 Godot prototype plan](prototype-plans/level-01-sunnyvale/README.md): the playable-slice plan (rebuilt around the new roster, C33).
 - [Concept-art gallery](concept-art/README.md): the hero's placeholder sprite pack. There is no current visual selection.
 
 ## Current scope
 
 | Area | Planned content |
 | --- | --- |
-| Level 1 prototype | Godot, built to the C14–C24 story; to be rebuilt from the ground up around the new roster (C33) |
+| Level 1 prototype | Godot; rebuilt from the ground up around the new roster (C33, 2026-09-30) |
 | Campaign | 12 levels in 4 acts: Sunnyvale campus, the Rootworks, the Wellness Center, the Garden |
 | Detailed level design | 12 standalone briefs with ordered areas and reusable AI prompts |
 | Hero | Dave Harlan, a rogue AI researcher (name confirmed; look and details proposed) |
@@ -63,9 +63,9 @@ AI_START_HERE.md
 dead-eden-concept.md
 core-gameplay.md
 prototype-plans/
-  level-01-sunnyvale/  # Prototype plan (C14–C24 build; to be rebuilt, C33)
+  level-01-sunnyvale/  # Prototype plan (rebuilt around the new roster, C33)
 prototypes/
-  sunnyvale-godot/     # Godot prototype (C14–C24 build; to be rebuilt, C33)
+  sunnyvale-godot/     # Godot prototype (rebuilt around the new roster, C33)
 design/
   README.md
   decisions.md

@@ -1,6 +1,6 @@
 # 01 — Player journey and pacing
 
-**Visual direction (C11, C15):** [hand-drawn 2D in a dark night-campus palette](../../art-design/style-guide.md). Revamped 2026-09-29 (C14–C24); there are no selected scene images for the new look.
+**Visual direction (C11, C15, C35):** [hand-drawn 2D in a dark night-campus palette, painted flat and lit in the engine](../../art-design/style-guide.md). Revamped 2026-09-29 (C14–C24) and rebuilt 2026-09-30 (C33); there are no selected scene images for the new look.
 
 ## What the duration means
 
@@ -23,7 +23,7 @@ These estimates allocate attention, not enforced dwell time. A beat can span sev
 
 ## Keeping the level substantial
 
-Alternate survey → action → recovery → reward. Gardens isolate threats; roofs emphasize jumps; the plaza mixes learned patterns; the depot changes the meaning of the scenery when Adam answers and the campus locks down; the exit tests recognition after that change. Encounters have navigable floors, routes to retreat, and small environmental stories: a Staffer badging into a door that is already open, sprinklers watering an empty lawn. Avoid eleven identical flat shooting lanes.
+Alternate survey → action → recovery → reward. Gardens isolate threats; roofs emphasize jumps; the plaza mixes learned patterns; the depot changes the meaning of the scenery when Adam answers and the campus locks down; the exit tests recognition after that change. Encounters have navigable floors, routes to retreat, and small environmental stories: a night-shift employee badging into a door that is already open, sprinklers watering an empty lawn. Avoid eleven identical flat shooting lanes.
 
 Movement should stay responsive. Do not obtain twelve minutes by reducing running speed, multiplying enemy health, hiding a required switch, forcing repeated backtracking, repeating the same wave, or extending platform waits. Moving-platform missed-cycle wait should be at most about 6 seconds in the first blockout; tune down if it feels idle.
 

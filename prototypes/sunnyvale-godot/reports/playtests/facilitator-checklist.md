@@ -33,9 +33,10 @@ what they were confused about.
 ## Missed warnings
 
 Any enemy attack, hazard, or hint the tester did not react to before taking
-the resulting hit (e.g. walked into a Staffer's lunge warning, ran into a
-Clipper's charge lane without noticing the stall). Distinct from ordinary
-damage taken while reacting correctly but losing the exchange.
+the resulting hit (e.g. walked into a Night Guard's raised baton, walked into
+the grab of a Staffer coming out of an annex door, ran into a Patrol Rover's
+charge lane without noticing its amber lightbar and rock-back). Distinct from
+ordinary damage taken while reacting correctly but losing the exchange.
 
 | Time (approx) | Area / encounter | Warning missed | Result |
 | --- | --- | --- | --- |
@@ -43,8 +44,8 @@ damage taken while reacting correctly but losing the exchange.
 
 ## Damage sources
 
-Tally where health was actually lost, by cause (Staffer lunge, Clipper
-frontal charge, Clipper rear hit misjudged, fall, other). This is separate
+Tally where health was actually lost, by cause (Night Guard baton swing,
+Staffer grab lunge, Patrol Rover charge, fall, other). This is separate
 from the `death` events in the log (which only record the death that
 triggered a respawn) — note every hit, not just fatal ones.
 
@@ -55,7 +56,7 @@ triggered a respawn) — note every hit, not just fatal ones.
 ## Repetitive / dull places
 
 Any stretch the tester's energy visibly dropped, that felt like "more of the
-same" rather than new content (e.g. a third near-identical Staffer lane, an
+same" rather than new content (e.g. a third near-identical Night Guard lane, an
 empty travel stretch with nothing to react to). Note which area and roughly
 how long it lasted — this maps directly to 01's "avoid eleven identical flat
 shooting lanes" and "reduce redundant encounters" guidance.
