@@ -1,6 +1,6 @@
 extends TestCase
-## M3 L01-A02 "Front gardens" (02-area-blueprints.md): 2 Staffers + 2
-## Clippers across B01/B02/B04/B05, a garden-wall jump trail at B03 with the
+## M3 L01-A02 "Front gardens" (02-area-blueprints.md): 2 Night Guards + 2
+## Patrol Rovers across B01/B02/B04/B05, a garden-wall jump trail at B03 with the
 ## OPT01 loft branch (Lockout Notice evidence), a med-patch shelf before E04,
 ## and CP01 on the final porch (B06). See CONVENTIONS.md "Areas and route
 ## bot" for the harness/RouteBot contract.
@@ -29,8 +29,8 @@ func _test_static_population_matches_blueprint() -> void:
 
 	var enemy_ids := area.get_enemy_ids()
 	check(enemy_ids == PackedStringArray([
-		"L01-E01-CY01-01", "L01-E02-R01-01", "L01-E03-CY01-01", "L01-E04-R01-01",
-	]), "exactly the 4 enemies (2 Staffer + 2 Clipper), in route order (got %s)" % [enemy_ids])
+		"L01-E01-SE01-01", "L01-E02-M01-01", "L01-E03-SE01-01", "L01-E04-M01-01",
+	]), "exactly the 4 enemies (2 Night Guard + 2 Patrol Rover), in route order (got %s)" % [enemy_ids])
 
 	var group_ids: PackedStringArray = []
 	for group in _find_encounter_groups(area):
@@ -38,20 +38,21 @@ func _test_static_population_matches_blueprint() -> void:
 	check(group_ids == PackedStringArray(["L01-E01", "L01-E02", "L01-E03", "L01-E04"]),
 			"exactly 4 encounter groups E01-E04, in route order (got %s)" % [group_ids])
 
-	var staffer_count := 0
-	var clipper_count := 0
+	# Night Guards and Staffers are both Brawlers; the scene tells them apart.
+	var guard_count := 0
+	var rover_count := 0
 	for group in _find_encounter_groups(area):
 		for child in group.get_children():
-			if child is Staffer:
-				staffer_count += 1
-			elif child is Clipper:
-				clipper_count += 1
-	check(staffer_count == 2, "2 Staffer instances total (got %d)" % staffer_count)
-	check(clipper_count == 2, "2 Clipper instances total (got %d)" % clipper_count)
+			if child is Brawler and child.scene_file_path == "res://scenes/actors/night_guard.tscn":
+				guard_count += 1
+			elif child is PatrolRover:
+				rover_count += 1
+	check(guard_count == 2, "2 Night Guard instances total (got %d)" % guard_count)
+	check(rover_count == 2, "2 Patrol Rover instances total (got %d)" % rover_count)
 	for group in _find_encounter_groups(area):
 		var enemies_in_group := 0
 		for child in group.get_children():
-			if child is Staffer or child is Clipper:
+			if child is Brawler or child is PatrolRover:
 				enemies_in_group += 1
 		check(enemies_in_group == 1, "encounter group %s has exactly 1 enemy (got %d)" % [group.group_id, enemies_in_group])
 

@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" path="res://scenes/objects/exit_wicket.tscn" id="6_wicket"]
 [ext_resource type="PackedScene" path="res://scenes/objects/kill_plane.tscn" id="7_kill"]
 [ext_resource type="Script" path="res://scripts/combat/encounter_group.gd" id="8_group"]
-[ext_resource type="PackedScene" path="res://scenes/actors/clipper.tscn" id="9_clipper"]
+[ext_resource type="PackedScene" path="res://scenes/actors/patrol_rover.tscn" id="9_rover"]
 [ext_resource type="PackedScene" path="res://scenes/actors/staffer.tscn" id="10_staffer"]
 [ext_resource type="PackedScene" path="res://scenes/objects/beat_zone.tscn" id="11_beat"]
 [ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="12_routepoint"]
@@ -212,6 +212,30 @@ position = Vector2(2500, -64)
 kind = 1
 size = Vector2(190, 60)
 
+[node name="AnnexDoors" type="Node2D" parent="Scenery"]
+
+[node name="AnnexDoor_E10" parent="Scenery/AnnexDoors" instance=ExtResource("3_scenery")]
+position = Vector2(2080, 0)
+kind = 13
+size = Vector2(96, 150)
+
+[node name="AnnexSign_E10" parent="Scenery/AnnexDoors" instance=ExtResource("3_scenery")]
+position = Vector2(2080, -150)
+kind = 11
+size = Vector2(120, 40)
+text = "STAFF ANNEX"
+
+[node name="AnnexDoor_E11" parent="Scenery/AnnexDoors" instance=ExtResource("3_scenery")]
+position = Vector2(4300, 0)
+kind = 13
+size = Vector2(96, 150)
+
+[node name="AnnexSign_E11" parent="Scenery/AnnexDoors" instance=ExtResource("3_scenery")]
+position = Vector2(4300, -150)
+kind = 11
+size = Vector2(120, 40)
+text = "STAFF ANNEX"
+
 [node name="LockdownVisuals" type="Node2D" parent="Scenery"]
 
 [node name="Rail1" parent="Scenery/LockdownVisuals" instance=ExtResource("3_scenery")]
@@ -320,9 +344,13 @@ monitorable = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E10/ApproachZone"]
 shape = SubResource("RectangleShape2D_approach")
 
-[node name="Clipper" parent="Encounters/EncounterGroup_E10" instance=ExtResource("9_clipper")]
+[node name="PatrolRover" parent="Encounters/EncounterGroup_E10" instance=ExtResource("9_rover")]
 position = Vector2(1600, 0)
-entity_id = "L01-E10-R01-01"
+entity_id = "L01-E10-M01-01"
+
+[node name="Staffer" parent="Encounters/EncounterGroup_E10" instance=ExtResource("10_staffer")]
+position = Vector2(2080, 0)
+entity_id = "L01-E10-LK01-01"
 
 [node name="EncounterGroup_E11" type="Node2D" parent="Encounters"]
 script = ExtResource("8_group")
@@ -342,11 +370,11 @@ shape = SubResource("RectangleShape2D_approach")
 
 [node name="Staffer" parent="Encounters/EncounterGroup_E11" instance=ExtResource("10_staffer")]
 position = Vector2(4300, 0)
-entity_id = "L01-E11-CY01-01"
+entity_id = "L01-E11-LK01-01"
 
-[node name="Clipper" parent="Encounters/EncounterGroup_E11" instance=ExtResource("9_clipper")]
+[node name="PatrolRover" parent="Encounters/EncounterGroup_E11" instance=ExtResource("9_rover")]
 position = Vector2(4750, 0)
-entity_id = "L01-E11-R01-01"
+entity_id = "L01-E11-M01-01"
 
 [node name="Beats" type="Node2D" parent="."]
 
@@ -462,7 +490,7 @@ script = ExtResource("12_routepoint")
 action = 0
 tolerance = 12.0
 
-[node name="RP11_PastClipper" type="Marker2D" parent="Route"]
+[node name="RP11_PastRover" type="Marker2D" parent="Route"]
 position = Vector2(4800, 0)
 script = ExtResource("12_routepoint")
 action = 0

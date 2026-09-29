@@ -34,7 +34,7 @@ const SETTINGS_FILE := "settings.json"
 
 ## Kept in sync with Session's own constants (session.gd). Not read directly
 ## from Session so this file's validation never depends on autoload order.
-const SCHEMA_VERSION := 2
+const SCHEMA_VERSION := 3
 const LEVEL := "L01"
 const MAX_HEALTH := 6
 const MAX_OBJECTIVE_LEN := 300

@@ -1,0 +1,105 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/patrol_rover.gd" id="1_rover"]
+[ext_resource type="Resource" path="res://data/tuning/patrol_rover.tres" id="2_tuning"]
+[ext_resource type="Script" path="res://scripts/combat/armor_hit_zone.gd" id="3_armor"]
+[ext_resource type="Script" path="res://scripts/combat/hit_zone.gd" id="4_hitzone"]
+[ext_resource type="Script" path="res://scripts/combat/attack_box.gd" id="5_attackbox"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(64, 48)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_front"]
+size = Vector2(24, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rear"]
+size = Vector2(20, 32)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_shell"]
+size = Vector2(30, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_attack"]
+size = Vector2(16, 40)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hint"]
+bg_color = Color(0.055, 0.09, 0.149, 0.92)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.69, 0.18, 0.8)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
+
+[node name="PatrolRover" type="CharacterBody2D"]
+z_index = 1
+script = ExtResource("1_rover")
+tuning = ExtResource("2_tuning")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -24)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="FrontHitZone" type="Area2D" parent="."]
+script = ExtResource("3_armor")
+blocks = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FrontHitZone"]
+shape = SubResource("RectangleShape2D_front")
+
+[node name="RearHitZone" type="Area2D" parent="."]
+script = ExtResource("4_hitzone")
+blocks = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RearHitZone"]
+shape = SubResource("RectangleShape2D_rear")
+
+[node name="ShellHitZone" type="Area2D" parent="."]
+script = ExtResource("4_hitzone")
+blocks = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ShellHitZone"]
+shape = SubResource("RectangleShape2D_shell")
+
+[node name="AttackBox" type="Area2D" parent="."]
+script = ExtResource("5_attackbox")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackBox"]
+shape = SubResource("RectangleShape2D_attack")
+
+[node name="Bark" type="Label" parent="."]
+visible = false
+z_index = 40
+offset_left = -170.0
+offset_top = -108.0
+offset_right = 170.0
+offset_bottom = -84.0
+theme_override_colors/font_color = Color(0.909804, 0.929412, 0.94902, 1)
+theme_override_colors/font_outline_color = Color(0.0196078, 0.027451, 0.0431373, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 15
+horizontal_alignment = 1
+
+[node name="HintLayer" type="CanvasLayer" parent="."]
+layer = 16
+
+[node name="HintLabel" type="Label" parent="HintLayer"]
+visible = false
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -270.0
+offset_top = 128.0
+offset_right = 270.0
+offset_bottom = 228.0
+theme_override_styles/normal = SubResource("StyleBoxFlat_hint")
+theme_override_colors/font_color = Color(0.847, 0.886, 0.925, 1)
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2

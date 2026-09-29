@@ -2,7 +2,7 @@ extends Node2D
 ## Tiny reusable one-shot particle puff (M6.5 Kenney integration pass —
 ## assets/kenney/README.md section 5, `particle-pack` Transparent variant).
 ## Purely cosmetic, self-freeing, never read by gameplay/physics: muzzle
-## flash, hero landing dust, chip/checkpoint sparkle, staffer defeat puff,
+## flash, hero landing dust, chip/checkpoint sparkle, machine smoke and sparks,
 ## pit-fall dust all go through the single `spawn()` factory below instead of
 ## each call site hand-rolling its own CPUParticles2D.
 ##
@@ -23,14 +23,12 @@ const TEX_DIRT_SMALL := preload("res://assets/kenney/particle-pack/dirt_01.png")
 const TEX_DIRT_BIG := preload("res://assets/kenney/particle-pack/dirt_03.png")
 const TEX_STAR := preload("res://assets/kenney/particle-pack/star_04.png")
 const TEX_STAR_SOFT := preload("res://assets/kenney/particle-pack/star_05.png")
-const TEX_SMOKE := preload("res://assets/kenney/particle-pack/smoke_02.png")
-## M7 Kenney part B: the three candidates staged (not wired) by the earlier
-## Kenney pass — assets/kenney/README.md "Staged for the LATER Clipper pass".
-## `star_01`/`star_02` are a `particle-pack` cutout kept in its own folder
-## because they're used at a different (Clipper-specific) scale/tint than
-## `TEX_STAR`/`TEX_STAR_SOFT` above; `whitePuff00` is from `smoke-particles`.
-const TEX_CLIPPER_SPARK := preload("res://assets/kenney/particles/clipper_later/star_01_metal_spark.png")
-const TEX_CLIPPER_STEAM := preload("res://assets/kenney/particles/clipper_later/whitePuff00_stall_steam.png")
+## Machine effects (armored hits, stalls, wrecks): `star_01` is a
+## `particle-pack` cutout kept in its own folder because it is used at a
+## different scale/tint than `TEX_STAR`/`TEX_STAR_SOFT` above; `whitePuff00`
+## is from `smoke-particles`.
+const TEX_METAL_SPARK := preload("res://assets/kenney/particles/machines/star_01_metal_spark.png")
+const TEX_STEAM := preload("res://assets/kenney/particles/machines/whitePuff00_stall_steam.png")
 
 # Sunnyvale palette (CONVENTIONS.md / art-design/style-guide.md C11).
 const CREAM := Color("#D8E2EC")  # night pass: cool white
@@ -39,7 +37,7 @@ const GOLD := Color("#FFD166")  # microchip gold
 const TEAL_GLOW := Color("#3FE0D0")  # Arcadia/Adam teal
 const CHARCOAL := Color("#07090F")
 const AMBER := Color("#FFB02E")
-## Warm white/amber for the Clipper's metallic deflection spark (task brief:
+## Warm white/amber for a machine's metallic deflection spark (task brief:
 ## "palette-tinted (warm white/amber)") — a touch paler than plain AMBER so it
 ## reads as a bright momentary flash, not the same tone as the STALL glow.
 const WARM_SPARK := Color("#f4d9a0")
@@ -89,34 +87,27 @@ const CONFIGS := {
 		"spread": 180.0, "speed_min": 10.0, "speed_max": 35.0,
 		"scale_min": 0.30, "scale_max": 0.44, "gravity": Vector2(0.0, -15.0), "alpha": 0.95,
 	},
-	&"defeat_puff": {
-		"texture": TEX_SMOKE, "color": Color(0.55, 0.5, 0.45, 1.0), "amount": 6, "lifetime": 0.45,
-		"spread": 40.0, "speed_min": 10.0, "speed_max": 30.0,
-		"scale_min": 0.16, "scale_max": 0.26, "gravity": Vector2(0.0, -25.0), "alpha": 0.5,
-	},
-	# --- M7 Kenney part B: R01 Clipper readability (frontal clang + defeat) ---
-	# Short (<=0.3s per the task brief) metallic burst at the exact impact
-	# point, ADDITIVE to clipper.gd's own hand-drawn spark/chevron (the shape
-	# cue) and clipper_visual.gd's shield-flash — never a replacement for
-	# either, since those two are what actually reads as "armored" at a
-	# glance; this is the extra material-feel polish on top. `max_concurrent`
-	# (checked by spawn() below) is what keeps rapid fire from flooding the
-	# screen with overlapping bursts.
-	&"clipper_spark": {
-		"texture": TEX_CLIPPER_SPARK, "color": WARM_SPARK, "amount": 5, "lifetime": 0.18,
+	# --- Machines: armored hits, stalls and wrecks (the Patrol Rover) ---
+	# Short (<=0.3s) metallic burst at the exact impact point, ADDITIVE to
+	# patrol_rover.gd's own hand-drawn spark/chevron (the shape cue) — never
+	# a replacement for it, since that is what reads as "armored" at a
+	# glance. `max_concurrent` (checked by spawn() below) is what keeps rapid
+	# fire from flooding the screen with overlapping bursts.
+	&"armor_spark": {
+		"texture": TEX_METAL_SPARK, "color": WARM_SPARK, "amount": 5, "lifetime": 0.18,
 		"spread": 180.0, "speed_min": 70.0, "speed_max": 150.0,
 		"scale_min": 0.12, "scale_max": 0.20, "gravity": Vector2.ZERO, "alpha": 0.95,
 		"max_concurrent": 3,
 	},
-	# Clipper defeat (task brief: "a small smoke puff + a few spark bits"),
-	# both one-shot and fired together only once, from `clipper.gd::_defeat()`.
-	&"clipper_defeat_smoke": {
-		"texture": TEX_CLIPPER_STEAM, "color": CREAM, "amount": 4, "lifetime": 0.4,
+	# A machine wrecked: a smoke puff and a spray of sparks, fired together
+	# once from `patrol_rover.gd::_defeat()` (the debris does the rest).
+	&"machine_smoke": {
+		"texture": TEX_STEAM, "color": CREAM, "amount": 4, "lifetime": 0.4,
 		"spread": 50.0, "speed_min": 10.0, "speed_max": 30.0,
 		"scale_min": 0.20, "scale_max": 0.30, "gravity": Vector2(0.0, -30.0), "alpha": 0.6,
 	},
-	&"clipper_defeat_spark": {
-		"texture": TEX_CLIPPER_SPARK, "color": WARM_SPARK, "amount": 6, "lifetime": 0.25,
+	&"machine_spark": {
+		"texture": TEX_METAL_SPARK, "color": WARM_SPARK, "amount": 6, "lifetime": 0.25,
 		"spread": 180.0, "speed_min": 40.0, "speed_max": 110.0,
 		"scale_min": 0.12, "scale_max": 0.18, "gravity": Vector2(0.0, 60.0), "alpha": 0.9,
 	},
@@ -124,10 +115,10 @@ const CONFIGS := {
 
 ## Live count of not-yet-freed instances per `kind`, only tracked for kinds
 ## whose CONFIGS entry sets `max_concurrent` (every other kind is uncapped, as
-## before). This is what stops rapid Clipper fire from flooding the screen
-## with overlapping spark bursts (task brief: "capped count so rapid fire
-## doesn't flood the screen") without touching `bolt_blocked` audio or the
-## shape-based cues in clipper.gd/clipper_visual.gd, which never rate-limit.
+## before). This is what stops rapid fire at an armored machine from flooding
+## the screen with overlapping spark bursts (task brief: "capped count so
+## rapid fire doesn't flood the screen") without touching `bolt_blocked`
+## audio or the shape-based cue in patrol_rover.gd, which never rate-limit.
 static var _active_counts: Dictionary = {}
 
 var _life: float = 0.4

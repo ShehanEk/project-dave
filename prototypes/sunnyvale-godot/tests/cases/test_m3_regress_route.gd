@@ -4,10 +4,10 @@ extends TestCase
 ## every airborne transition (gap, rise, obstacle clearance), every landing's
 ## distance to same-floor enemy starts, and the retreat floor behind the hero
 ## at each encounter activation. Design limits from 02-area-blueprints.md.
-## Grew out of the M3 assembly review (LAY-03 Clipper windup on the landing,
-## LAY-08 Staffers too close to a landing, LAY-09 backstops above the
-## ordinary-rise limit, LAY-16 E11 retreat floor); keep passing after any
-## future geometry change.
+## Grew out of the M3 assembly review (LAY-03 Rover (then Clipper) windup on
+## the landing, LAY-08 Night Guards and Staffers (then Staffers) too close to a
+## landing, LAY-09 backstops above the ordinary-rise limit, LAY-16 E11 retreat
+## floor); keep passing after any future geometry change.
 
 const LEVEL_01 := "res://scenes/levels/level_01.tscn"
 const H := 96.0

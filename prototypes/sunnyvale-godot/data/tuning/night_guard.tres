@@ -1,0 +1,44 @@
+[gd_resource type="Resource" script_class="BrawlerTuning" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/tuning/brawler_tuning.gd" id="1_brawler"]
+
+[resource]
+script = ExtResource("1_brawler")
+health = 3
+damage = 1
+approach_speed_h_per_s = 1.05
+patrol_speed_h_per_s = 0.62
+notice_range = 520.0
+engage_range = 84.0
+floor_band = 64.0
+gravity = 1800.0
+windup_time = 0.5
+red_time = 0.25
+strike = 0
+swing_time = 0.22
+swing_active_from = 0.07
+swing_active_to = 0.2
+swing_step_speed = 60.0
+recovery_time = 1.2
+attack_box_size = Vector2(46, 56)
+attack_box_offset = Vector2(34, -60)
+dormant_until_active = false
+rig_path = "res://assets/characters/lit/night_guard/rig.json"
+clips_script = "res://scripts/actors/lit/clips_night_guard.gd"
+clip_idle = "idle"
+clip_walk = "walk"
+clip_stalk = "stalk"
+clip_windup = "windup"
+clip_strike = "swing"
+clip_recover = "recover"
+tell_joint = "baton"
+tell_offset = Vector2(0, 25.5)
+tell_emissive = true
+tell_hand_glow = false
+link_joint = ""
+voice_notice = PackedStringArray("Harlan! Get on the fucking ground!", "Security! Don't you move!", "There he is — hands where I can see them!")
+voice_windup = PackedStringArray("Don't make me do this!", "Last warning!")
+voice_hurt = PackedStringArray("Fuck — he's shooting!", "Shit! Shots fired!")
+sfx_windup = &"guard_windup"
+sfx_strike = &"guard_swing"
+sfx_defeat = &""

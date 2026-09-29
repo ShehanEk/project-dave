@@ -24,8 +24,9 @@ extends Node2D
 ##   bands of ground fog in front.
 ## - DEPOT: the server depot interior. Rows of dark server racks with
 ##   blinking teal and signal-green LEDs, hanging cable bundles, and cool
-##   teal ceiling utility lights (real PointLight2Ds that light the racks,
-##   floor and anyone standing under them).
+##   teal ceiling utility lights (real, smooth PointLight2Ds sitting AT each
+##   fixture with a `height`, lighting the racks, floor and anyone standing
+##   under them, characters through their normal maps; C35).
 ##
 ## Seamless across areas: SKY and HOMES features are laid out on GLOBAL x
 ## cells (the owning area's world x plus local x), and every layer clips
@@ -151,6 +152,15 @@ const RACK_GAP := 8.0
 const CEILING_Y := -300.0
 const FIXTURE_SPACING := 420.0
 const UTILITY_LIGHT := Color(0.62, 0.95, 0.92)
+## Each fixture's smooth cone reaches this many times the fixture's height
+## above the floor, so its pool on the floor is clearly visible; `height` is
+## the light's height above the scene for normal-mapped characters.
+const FIXTURE_REACH_RATIO := 1.75
+const FIXTURE_LIGHT_HEIGHT := 90.0
+const UTILITY_ENERGY := 1.0
+const LOCKDOWN_ENERGY := 1.3
+## Strength of the faint haze shaft drawn under each fixture.
+const HAZE_ALPHA := 0.15
 const BANK_STEP := 0.32
 const BANK_DARK := 0.22
 const SETTLED := 1.0e9
@@ -868,12 +878,16 @@ func _build_depot() -> void:
 		if is_instance_valid(l):
 			l.queue_free()
 	_fixture_lights.clear()
-	var tex := SceneryDraw.light_cone_texture()
-	var reach: float = horizon_y - (CEILING_Y + 8.0) + 34.0
+	var tex := SceneryDraw.smooth_cone_texture()
 	for f in _fixtures:
-		var apex := Vector2(float(f), CEILING_Y + 8.0)
-		_fixture_lights.append(SceneryDraw.make_light(self, tex, apex + Vector2(0.0, reach * 0.5), reach, UTILITY_LIGHT, 0.6))
+		_fixture_lights.append(SceneryDraw.make_light(self, tex, Vector2(float(f), CEILING_Y + 8.0),
+				_fixture_reach(), UTILITY_LIGHT, UTILITY_ENERGY, FIXTURE_LIGHT_HEIGHT))
 	_apply_depot_lights()
+
+
+## How far a fixture's smooth light reaches down from the fixture.
+func _fixture_reach() -> float:
+	return (horizon_y - (CEILING_Y + 8.0)) * FIXTURE_REACH_RATIO
 
 
 func _sag_curve(a: Vector2, b: Vector2, sag: float) -> PackedVector2Array:
@@ -906,13 +920,13 @@ func _apply_depot_lights() -> void:
 		match _fixture_state(i):
 			0:
 				l.color = UTILITY_LIGHT
-				l.energy = 0.6
+				l.energy = UTILITY_ENERGY
 				l.visible = true
 			1:
 				l.visible = false
 			2:
 				l.color = ALARM
-				l.energy = 0.75
+				l.energy = LOCKDOWN_ENERGY
 				l.visible = true
 
 
@@ -936,22 +950,18 @@ func _draw_depot() -> void:
 	while bx < w:
 		draw_line(Vector2(bx + 10.0, horizon_y - 8.0), Vector2(minf(bx + 140.0, w), horizon_y - 8.0), Color(base, 0.3), 2.0)
 		bx += 180.0
-	# utility light cones (flat, hard-edged, two bands) under each fixture.
+	# A faint haze shaft under each fixture: the same smooth cone as its real
+	# light, so the shaft and the pool it makes match and neither has an edge.
+	var cone := SceneryDraw.smooth_cone_texture()
+	var reach := _fixture_reach()
 	for i in _fixtures.size():
-		var fx: float = _fixtures[i]
 		var st := _fixture_state(i)
 		if st == 1:
 			continue
 		var lc: Color = ALARM if st == 2 else TEAL
-		var y0: float = CEILING_Y + 8.0
-		draw_colored_polygon(PackedVector2Array([
-			Vector2(fx - 24.0, y0), Vector2(fx + 24.0, y0),
-			Vector2(fx + 140.0, horizon_y), Vector2(fx - 140.0, horizon_y),
-		]), Color(lc, 0.035))
-		draw_colored_polygon(PackedVector2Array([
-			Vector2(fx - 14.0, y0), Vector2(fx + 14.0, y0),
-			Vector2(fx + 72.0, horizon_y), Vector2(fx - 72.0, horizon_y),
-		]), Color(lc, 0.045))
+		var apex := Vector2(float(_fixtures[i]), CEILING_Y + 8.0)
+		draw_texture_rect(cone, Rect2(apex - Vector2(reach, reach), Vector2(reach, reach) * 2.0), false,
+				Color(lc, HAZE_ALPHA))
 	for rk in _racks:
 		_draw_rack(rk)
 	for cable in _cables:

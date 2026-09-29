@@ -1,43 +1,50 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
-[ext_resource type="Script" path="res://scripts/actors/staffer.gd" id="1_staffer"]
+[ext_resource type="Script" path="res://scripts/actors/brawler.gd" id="1_brawler"]
 [ext_resource type="Resource" path="res://data/tuning/staffer.tres" id="2_tuning"]
 [ext_resource type="Script" path="res://scripts/combat/hit_zone.gd" id="3_hitzone"]
 [ext_resource type="Script" path="res://scripts/combat/attack_box.gd" id="4_attackbox"]
-[ext_resource type="Script" path="res://scripts/actors/visuals/staffer_visual.gd" id="5_visual"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
-size = Vector2(48, 84)
+size = Vector2(22, 94)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hitzone"]
-size = Vector2(48, 84)
+size = Vector2(30, 96)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_attack"]
-size = Vector2(56, 60)
+size = Vector2(46, 56)
 
 [node name="Staffer" type="CharacterBody2D"]
 z_index = 1
-script = ExtResource("1_staffer")
+script = ExtResource("1_brawler")
 tuning = ExtResource("2_tuning")
 
-[node name="Visual" type="Node2D" parent="."]
-script = ExtResource("5_visual")
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -42)
+position = Vector2(0, -47)
 shape = SubResource("RectangleShape2D_body")
 
 [node name="HitZone" type="Area2D" parent="."]
 script = ExtResource("3_hitzone")
-blocks = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitZone"]
-position = Vector2(0, -42)
+position = Vector2(0, -48)
 shape = SubResource("RectangleShape2D_hitzone")
 
 [node name="AttackBox" type="Area2D" parent="."]
 script = ExtResource("4_attackbox")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackBox"]
-position = Vector2(0, -46)
 shape = SubResource("RectangleShape2D_attack")
+
+[node name="Bark" type="Label" parent="."]
+visible = false
+z_index = 40
+offset_left = -150.0
+offset_top = -152.0
+offset_right = 150.0
+offset_bottom = -128.0
+theme_override_colors/font_color = Color(0.909804, 0.929412, 0.94902, 1)
+theme_override_colors/font_outline_color = Color(0.0196078, 0.027451, 0.0431373, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 15
+horizontal_alignment = 1

@@ -1,7 +1,7 @@
 extends TestCase
 ## M6 (presentation pass) — the Audio autoload (scripts/audio/audio_director.gd),
-## its cue sources (Audio.SFX_SOURCES: Kenney .ogg for the hero, pistol,
-## Clipper and generic UI/world cues; synthesized night-campus .wav from
+## its cue sources (Audio.SFX_SOURCES: Kenney .ogg for the hero, pistol and
+## generic UI/world cues; synthesized night-campus .wav from
 ## tools/gen_audio.py for the rest) and the two synthesized music loops
 ## (assets/audio/music/**).
 ## Contracts under test (see CONVENTIONS.md "Audio"):
@@ -11,8 +11,10 @@ extends TestCase
 ##   2. The night-campus cue set: the renamed cues (staffer_*, chip*, evidence,
 ##      med_patch, adam_chime, alarm) and the six new ones (keycard,
 ##      keycard_denied, door_unlock, uplink, lockdown, link_chirp) are
-##      registered and play their generated wav; the zombie-era cue names,
-##      wavs and music keys are gone.
+##      registered and play their generated wav; so are the Level 1 roster
+##      cues (the Night Guard's baton, hits and falls on people, the Patrol
+##      Rover, debris). The zombie-era cue names, wavs and music keys are gone,
+##      and so is every Clipper cue with its wav and Kenney source files.
 ##   3. Every cue and music track a script asks for by literal name is
 ##      registered (scans res://scripts, so a typo or a retired name fails).
 ##   4. play_sfx() runs for every known cue (flat AND positional) without
@@ -20,8 +22,11 @@ extends TestCase
 ##      crashing.
 ##   5. The generated cue files are clean: 16-bit mono, sane length, not
 ##      clipped, not silent, no DC, starting and ending on ~0 (no click), the
-##      alarm and denied buzz stay low. Mix settings are in range, the hero/
-##      pistol/Clipper cues are darkened slightly, telegraphs keep a fixed pitch.
+##      alarm and denied buzz stay low, hits and falls on people stay dull (never
+##      a bright splatter). Mix settings are in range, the hero/pistol cues are
+##      darkened slightly, telegraphs keep a fixed pitch. The roster's tells fit
+##      their windups and play at comparable loudness, and no roster cue is far
+##      louder or quieter than its neighbours.
 ##   6. The music loops: track keys are campus/lockdown, the loop points cover
 ##      the WHOLE file (regression: a byte-count loop end on a QOA-compressed
 ##      import looped only the first fifth), long enough, at a sensible level,
@@ -49,27 +54,52 @@ const RENAMED_CUES: Array[StringName] = [
 	&"staffer_windup", &"staffer_lunge", &"staffer_defeat", &"chip", &"chip_cluster",
 	&"evidence", &"med_patch", &"adam_chime", &"alarm", &"exit",
 ]
+## The Level 1 roster (C33): the Night Guard's baton, hits and falls on people,
+## the Patrol Rover and metal debris. All synthesized.
+const ROSTER_CUES: Array[StringName] = [
+	&"guard_windup", &"guard_swing", &"hit_flesh", &"body_fall",
+	&"rover_patrol", &"rover_windup", &"rover_charge", &"rover_stall", &"rover_armor", &"rover_destroyed",
+	&"debris_clatter",
+]
 const RETIRED_CUES: Array[StringName] = [
 	&"resident_windup", &"resident_lunge", &"resident_defeat", &"gem", &"gem_cluster",
 	&"artifact", &"capsule", &"eden_chime",
+	&"clipper_scrape", &"clipper_windup", &"clipper_charge", &"clipper_stall", &"clipper_defeat",
 ]
 const RETIRED_FILES: Array[String] = [
 	SFX_ROOT + "resident_windup.wav", SFX_ROOT + "resident_lunge.wav", SFX_ROOT + "resident_defeat.wav",
 	SFX_ROOT + "gem.wav", SFX_ROOT + "gem_cluster.wav", SFX_ROOT + "artifact.wav",
 	SFX_ROOT + "capsule.wav", SFX_ROOT + "eden_chime.wav",
 	MUSIC_ROOT + "suburb_loop.wav", MUSIC_ROOT + "quarantine_loop.wav",
+	SFX_ROOT + "clipper_scrape.wav", SFX_ROOT + "clipper_windup.wav", SFX_ROOT + "clipper_charge.wav",
+	SFX_ROOT + "clipper_stall.wav", SFX_ROOT + "clipper_defeat.wav",
+	"res://assets/kenney/interface-sounds/scratch_004.ogg", "res://assets/kenney/sci-fi-sounds/forceField_000.ogg",
+	"res://assets/kenney/sci-fi-sounds/forceField_001.ogg", "res://assets/kenney/sci-fi-sounds/impactMetal_002.ogg",
+	"res://assets/kenney/impact-sounds/impactMining_000.ogg",
 ]
 ## Kenney-sourced cues that carry the base "pitch" trim (about a semitone down).
 const DARKENED_CUES: Array[StringName] = [
 	&"pistol_fire", &"pistol_fire_quick", &"bolt_hit", &"bolt_blocked",
 	&"hero_hurt", &"hero_jump", &"hero_land",
-	&"clipper_scrape", &"clipper_windup", &"clipper_charge", &"clipper_stall", &"clipper_defeat",
 ]
 ## Attack telegraphs and one-off story/access beats: the same sound every time.
 const FIXED_PITCH_CUES: Array[StringName] = [
-	&"staffer_windup", &"staffer_lunge", &"clipper_windup", &"clipper_charge", &"clipper_stall",
+	&"staffer_windup", &"staffer_lunge", &"guard_windup", &"guard_swing",
+	&"rover_windup", &"rover_charge", &"rover_stall", &"rover_destroyed",
 	&"keycard", &"keycard_denied", &"door_unlock", &"lockdown", &"alarm", &"adam_chime",
 ]
+## The three windup tells and the window each cue has to fit in (seconds): the
+## Night Guard's baton charge (about 0.5 s), the Staffer's twitch (0.65 s) and the
+## Patrol Rover's rock-back (about 0.8 s).
+const TELL_LENGTHS := {
+	&"guard_windup": Vector2(0.40, 0.60),
+	&"staffer_windup": Vector2(0.50, 0.70),
+	&"rover_windup": Vector2(0.65, 0.95),
+}
+## Every roster cue, played at its trim, lands between these loudest-200 ms RMS
+## levels (dBFS, unweighted): debris and the Rover's idle roll are the quietest,
+## the tells, the ram and the Guard's baton the loudest.
+const ROSTER_LEVEL_DB := Vector2(-34.0, -8.0)
 
 
 func run() -> void:
@@ -79,6 +109,7 @@ func run() -> void:
 	_test_play_sfx_every_cue()
 	_test_unknown_cue_warns_not_crashes()
 	_test_synth_cue_files()
+	_test_roster_cue_shape_and_levels()
 	_test_mix_settings()
 	_test_music_loops()
 	await _test_music_switches_on_new_game_awakening_and_restore()
@@ -126,6 +157,7 @@ func _test_night_campus_cue_set() -> void:
 	var generated: Array = []
 	generated.append_array(NEW_CUES)
 	generated.append_array(RENAMED_CUES)
+	generated.append_array(ROSTER_CUES)
 	for cue in generated:
 		check(Audio.SFX_NAMES.has(cue), "night-campus cue is listed in SFX_NAMES: %s" % String(cue))
 		check(Audio.has_cue(cue), "night-campus cue is registered: %s" % String(cue))
@@ -136,9 +168,9 @@ func _test_night_campus_cue_set() -> void:
 
 	for cue in RETIRED_CUES:
 		check(not Audio.SFX_NAMES.has(cue) and not Audio.has_cue(cue),
-				"retired zombie-era cue is gone: %s" % String(cue))
+				"retired cue (zombie-era or Clipper) is gone: %s" % String(cue))
 	for path in RETIRED_FILES:
-		check(not FileAccess.file_exists(path), "retired zombie-era file is deleted: %s" % path)
+		check(not FileAccess.file_exists(path), "retired zombie-era or Clipper file is deleted: %s" % path)
 	for track in [&"suburb", &"quarantine"]:
 		check(not Audio.MUSIC_FILES.has(track), "retired music track key is gone: %s" % String(track))
 	check(Audio.MUSIC_FILES.has(&"campus") and Audio.MUSIC_FILES.has(&"lockdown"),
@@ -258,6 +290,61 @@ func _test_synth_cue_files() -> void:
 		var wav := _read_wav(SFX_ROOT + "%s.wav" % String(cue))
 		if not wav.is_empty():
 			check(float(wav.frames) / float(wav.rate) <= 0.15, "%s is a short tick (<= 0.15s)" % String(cue))
+
+
+# --- 5b. the roster cues: tells fit their windups, people stay dull, levels sit together ---
+
+func _test_roster_cue_shape_and_levels() -> void:
+	# A tell is over before the swing, ram or grab it announces.
+	for cue in TELL_LENGTHS:
+		var wav := _read_wav(SFX_ROOT + "%s.wav" % String(cue))
+		if wav.is_empty():
+			check(false, "tell cue wav parses: %s" % String(cue))
+			continue
+		var window: Vector2 = TELL_LENGTHS[cue]
+		var length_s := float(wav.frames) / float(wav.rate)
+		check(length_s >= window.x and length_s <= window.y,
+				"%s fits its windup (%.2fs, want %.2f-%.2fs)" % [String(cue), length_s, window.x, window.y])
+
+	# Restrained by ear: a hit on a person and a body landing are dull (a bright
+	# splatter scores well over 0.5 on the 2 kHz highpass fraction), the Rover's
+	# idle roll is a low hum, and its siren warns without shrieking.
+	var dull := {&"body_fall": 0.25, &"hit_flesh": 0.40, &"rover_patrol": 0.30, &"rover_windup": 0.45}
+	for cue in dull:
+		var wav := _read_wav(SFX_ROOT + "%s.wav" % String(cue))
+		if not wav.is_empty():
+			var high := _highpass_fraction(wav, 2000.0)
+			check(high < float(dull[cue]), "%s stays low and dull, not bright (highpass fraction %.2f)" % [String(cue), high])
+	var patrol := _read_wav(SFX_ROOT + "rover_patrol.wav")
+	if not patrol.is_empty():
+		var patrol_s := float(patrol.frames) / float(patrol.rate)
+		check(patrol_s <= 0.8, "rover_patrol is a short hum, so plays that follow each other overlap into a roll (%.2fs, want <= 0.8s)" % patrol_s)
+
+	# Nothing in the roster is far louder or quieter than its neighbours: each
+	# cue, at its own trim, sits in one band, and the three tells (Night Guard,
+	# Staffer, Rover) play within a few dB of each other.
+	var tells := {}
+	for cue in ROSTER_CUES:
+		var wav := _read_wav(SFX_ROOT + "%s.wav" % String(cue))
+		if wav.is_empty():
+			continue
+		var trim := float(Audio.SFX_SOURCES.get(cue, {}).get("volume_db", 0.0))
+		var played := _loudest_rms_db(wav, 0.2) + trim
+		check(played >= ROSTER_LEVEL_DB.x and played <= ROSTER_LEVEL_DB.y,
+				"%s plays at a level that sits with its neighbours (%.1f dBFS, want %.0f to %.0f)" %
+				[String(cue), played, ROSTER_LEVEL_DB.x, ROSTER_LEVEL_DB.y])
+		if TELL_LENGTHS.has(cue):
+			tells[cue] = played
+	var staffer := _read_wav(SFX_ROOT + "staffer_windup.wav")
+	if not staffer.is_empty():
+		tells[&"staffer_windup"] = _loudest_rms_db(staffer, 0.2) + float(Audio.SFX_SOURCES.get(&"staffer_windup", {}).get("volume_db", 0.0))
+	if tells.size() == TELL_LENGTHS.size():
+		var lo := 1000.0
+		var hi := -1000.0
+		for cue in tells:
+			lo = minf(lo, float(tells[cue]))
+			hi = maxf(hi, float(tells[cue]))
+		check(hi - lo <= 5.0, "the three windup tells play at comparable loudness (spread %.1f dB)" % (hi - lo))
 
 
 func _test_mix_settings() -> void:
@@ -466,6 +553,26 @@ func _seam_score(wav: Dictionary, step_after: float) -> float:
 			count += 1
 	var sigma := sqrt(squares / maxf(1.0, count))
 	return seam_peak / maxf(sigma, 0.000001)
+
+
+## The loudest `window_s` seconds of a mono 16-bit wav, as an RMS level in dBFS
+## (a wav shorter than the window is measured as if padded with silence, the
+## way a short cue lands in a 200 ms measurement).
+func _loudest_rms_db(wav: Dictionary, window_s: float) -> float:
+	var frames: int = wav.frames
+	var window := maxi(1, int(round(window_s * float(wav.rate))))
+	var sums := PackedFloat64Array()
+	sums.resize(frames + 1)
+	for i in frames:
+		var v := _sample(wav, i)
+		sums[i + 1] = sums[i] + v * v
+	var best := 0.0
+	if frames <= window:
+		best = sums[frames] / float(window)
+	else:
+		for i in range(0, frames - window + 1):
+			best = maxf(best, (sums[i + window] - sums[i]) / float(window))
+	return 10.0 * log(maxf(best, 0.000000000001)) / log(10.0)
 
 
 ## RMS of the wav after a one-pole highpass, relative to its own RMS: how much

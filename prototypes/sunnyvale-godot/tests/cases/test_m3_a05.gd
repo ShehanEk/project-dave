@@ -63,7 +63,7 @@ func _test_area_population_matches_blueprint() -> void:
 	# Let AreaRoot._ready() and every child's _ready() run once.
 	await physics_frames(2)
 
-	check(area.get_enemy_ids().is_empty(), "L01-A05 has zero enemies (Staffers/Clippers) per 02-area-blueprints.md")
+	check(area.get_enemy_ids().is_empty(), "L01-A05 has zero enemies (Night Guards/Staffers/Rovers) per 02-area-blueprints.md")
 
 	var entity_ids := area.get_entity_ids()
 	check(entity_ids.has("L01-SC01"), "the core node L01-SC01 is present")

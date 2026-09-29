@@ -35,7 +35,11 @@ const SFX_NAMES: Array[StringName] = [
 	&"pistol_fire", &"pistol_fire_quick", &"bolt_hit", &"bolt_blocked",
 	&"hero_hurt", &"hero_jump", &"hero_land",
 	&"staffer_windup", &"staffer_lunge", &"staffer_defeat",
-	&"clipper_scrape", &"clipper_windup", &"clipper_charge", &"clipper_stall", &"clipper_defeat",
+	# Level 1 roster (C33): the Night Guard's baton, hits and falls on people, the
+	# Patrol Rover's roll, tell, ram, stall, armor and wreck, and metal debris.
+	&"guard_windup", &"guard_swing", &"hit_flesh", &"body_fall",
+	&"rover_patrol", &"rover_windup", &"rover_charge", &"rover_stall", &"rover_armor", &"rover_destroyed",
+	&"debris_clatter",
 	&"chip", &"chip_cluster", &"cache_open", &"evidence", &"med_patch",
 	&"interact", &"checkpoint", &"purchase", &"swap", &"latch",
 	&"adam_chime", &"alarm", &"hatch_open", &"pit_fall", &"exit",
@@ -52,19 +56,20 @@ const SFX_NAMES: Array[StringName] = [
 ## authored pitch so they stay a precise, repeatable read.
 const PITCH_VARIANCE_FREQUENT := 0.04
 
-## Base playback pitch for the hero, pistol and Clipper cues (all Kenney
-## sources): about a semitone down, so the dark night-campus mix does not sit
+## Base playback pitch for the hero and pistol cues (all Kenney sources):
+## about a semitone down, so the dark night-campus mix does not sit
 ## on bright, toy-like effects. Applied as the cue's "pitch" in SFX_SOURCES
 ## and multiplied with any pitch variance.
 const DARKEN := 0.94
 
 ## Per-cue source pools + mix trim. Two source kinds: Kenney's CC0 interface/
 ## impact/ui-audio/sci-fi packs (see assets/kenney/README.md section 1) for
-## the hero, pistol, Clipper and generic UI/world cues, and the sounds that
-## define the dark night-campus identity, synthesized by tools/gen_audio.py
-## (Staffer implant cues, microchips, evidence, med patch, Adam's PA chime,
-## the alarm and lockdown stinger, the keycard family, uplink, Link chirp,
-## the exit sting). `files` is one or more `res://` paths (multiple = a
+## the hero, pistol and generic UI/world cues, and the sounds that define the
+## dark night-campus identity, synthesized by tools/gen_audio.py (the Night
+## Guard's baton, hits and falls on people, the Staffer cues, the Patrol Rover
+## and machine debris, microchips, evidence, med patch, Adam's PA chime, the
+## alarm and lockdown stinger, the keycard family, uplink, Link chirp, the
+## exit sting). `files` is one or more `res://` paths (multiple = a
 ## variety pool: play_sfx picks one at random each call, the same
 ## round-robin-ish spirit as the AudioStreamPlayer pools below, just applied
 ## to source material too); `volume_db` is a fixed trim applied to the pooled
@@ -72,14 +77,18 @@ const DARKEN := 0.94
 ## `pitch` (optional, default 1.0) is the base pitch scale. The synthesized
 ## cues' trims come from a measured pass (each cue recorded as played through
 ## the Master bus; A-weighted RMS over the loudest 200 ms, dBFS): story beats
-## -12 to -14 (Adam's chime, exit, evidence), Staffer cues and the keycard
-## family -15 to -17, chips and med patch -16 to -20, and the soft or repeated
-## ones lower (denied buzz and Link chirp -22, uplink tick -26). The lockdown
-## stinger (-17.5) and the alarm (-20.5) sit lower than their rank because
-## core_node.gd plays them at the same instant: at their earlier levels their
-## peaks summed to full scale with the master and SFX sliders at 100%. Kenney
-## cues keep their original trims. Cue **names** and the Audio.play_sfx(...)
-## call sites are unchanged.
+## -12 to -14 (Adam's chime, exit, evidence), the enemy tells and strikes and
+## the keycard family -15 to -17 (the Staffer, Night Guard and Patrol Rover
+## windups all sit at about -15.5, so no tell is louder than another), chips
+## and med patch -16 to -20, the Staffer's collapse, the rover's wall crash and
+## wreck -19, its armor clang -21, and the soft or repeated ones lower (denied
+## buzz and Link chirp -22, a hit on a person -25 like Dave's own hurt cue,
+## debris -25, uplink tick and the rover's idle roll -26 like the old Clipper's
+## scrape, and a body landing -31, since a thud is mostly low end that the
+## weighting discounts). The lockdown stinger (-17.5) and the alarm (-20.5) sit
+## lower than their rank because core_node.gd plays them at the same instant:
+## at their earlier levels their peaks summed to full scale with the master and
+## SFX sliders at 100%. Kenney cues keep their original trims.
 const SFX_SOURCES: Dictionary = {
 	&"pistol_fire": {
 		"files": [
@@ -104,9 +113,10 @@ const SFX_SOURCES: Dictionary = {
 		],
 		"volume_db": -4.0, "pitch": DARKEN, "pitch_variance": PITCH_VARIANCE_FREQUENT,
 	},
-	# The Clipper's frontal-shield clang (scrapjack.gd / scrap_bolt.gd play
-	# this on a blocked shot) — trimmed less than bolt_hit so it stays
-	# clearly, unmistakably audible over pistol_fire without getting harsh.
+	# The clang of a shot turned away (scrapjack.gd / scrap_bolt.gd play this on
+	# a blocked shot; rover_armor below is the Patrol Rover's own) — trimmed
+	# less than bolt_hit so it stays clearly, unmistakably audible over
+	# pistol_fire without getting harsh.
 	&"bolt_blocked": {
 		"files": [
 			"res://assets/kenney/impact-sounds/impactMetal_medium_000.ogg",
@@ -131,40 +141,64 @@ const SFX_SOURCES: Dictionary = {
 		],
 		"volume_db": -6.0, "pitch": DARKEN, "pitch_variance": PITCH_VARIANCE_FREQUENT,
 	},
-	# Staffer implant cues (cyborgs, not creatures: no groans or organic
-	# sounds). None of the curated packs has a servo whine plus rising Link
-	# chirp, so these are synthesized. Attack telegraphs keep a fixed pitch.
+	# Staffer cues (a Linked office worker: no groans, no servos). The port's
+	# rising chirp is the tell, the lunge is a fast grab of air and cloth, and
+	# the collapse is a spit of sparks, the light going out and a body landing.
+	# None of the curated packs has an implant chirp, so these are synthesized.
+	# Attack telegraphs keep a fixed pitch.
 	&"staffer_windup": {
-		"files": [SFX_DIR + "staffer_windup.wav"], "volume_db": -4.0, "pitch_variance": 0.0,
+		"files": [SFX_DIR + "staffer_windup.wav"], "volume_db": -2.0, "pitch_variance": 0.0,
 	},
 	&"staffer_lunge": {
-		"files": [SFX_DIR + "staffer_lunge.wav"], "volume_db": 0.0, "pitch_variance": 0.0,
+		"files": [SFX_DIR + "staffer_lunge.wav"], "volume_db": -3.0, "pitch_variance": 0.0,
 	},
 	&"staffer_defeat": {
-		"files": [SFX_DIR + "staffer_defeat.wav"], "volume_db": -6.5, "pitch_variance": 0.0,
+		"files": [SFX_DIR + "staffer_defeat.wav"], "volume_db": -1.5, "pitch_variance": 0.0,
 	},
-	&"clipper_scrape": {
-		"files": ["res://assets/kenney/interface-sounds/scratch_004.ogg"],
-		"volume_db": -7.0, "pitch": DARKEN, "pitch_variance": PITCH_VARIANCE_FREQUENT,
+	# Night Guard (SE01): the stun baton charging is the tell and the swing is the
+	# commit, so both keep a fixed pitch. The hit on a person and the dull thud
+	# of a body landing are restrained and low (never a splatter) and are heard
+	# often enough to get the frequent nudge. Synthesized: the curated packs'
+	# impacts are all bright, hollow or mechanical next to a person.
+	&"guard_windup": {
+		"files": [SFX_DIR + "guard_windup.wav"], "volume_db": -2.5, "pitch_variance": 0.0,
 	},
-	# Attack-telegraph cues (windup/charge/stall) keep a fixed pitch — an
-	# attack warning must read as the exact same sound every time, never
-	# randomized.
-	&"clipper_windup": {
-		"files": ["res://assets/kenney/sci-fi-sounds/forceField_000.ogg"],
-		"volume_db": -3.0, "pitch": DARKEN, "pitch_variance": 0.0,
+	&"guard_swing": {
+		"files": [SFX_DIR + "guard_swing.wav"], "volume_db": -5.0, "pitch_variance": 0.0,
 	},
-	&"clipper_charge": {
-		"files": ["res://assets/kenney/sci-fi-sounds/impactMetal_002.ogg"],
-		"volume_db": -2.0, "pitch": DARKEN, "pitch_variance": 0.0,
+	&"hit_flesh": {
+		"files": [SFX_DIR + "hit_flesh.wav"], "volume_db": -2.0, "pitch_variance": PITCH_VARIANCE_FREQUENT,
 	},
-	&"clipper_stall": {
-		"files": ["res://assets/kenney/sci-fi-sounds/forceField_001.ogg"],
-		"volume_db": -4.0, "pitch": DARKEN, "pitch_variance": 0.0,
+	&"body_fall": {
+		"files": [SFX_DIR + "body_fall.wav"], "volume_db": -5.5, "pitch_variance": PITCH_VARIANCE_FREQUENT,
 	},
-	&"clipper_defeat": {
-		"files": ["res://assets/kenney/impact-sounds/impactMining_000.ogg"],
-		"volume_db": -1.0, "pitch": DARKEN, "pitch_variance": 0.0,
+	# Patrol Rover (M01, the charger): a quiet electric roll while it patrols
+	# (played again and again, so it gets the nudge), then the attack chain, all
+	# at a fixed pitch like every telegraph: siren whoop with wheel-spin revs
+	# (the tell), the motor surge (the ram), the crash and electrical fizz of the
+	# wall stall. rover_armor is the clang of its armored front turning a shot,
+	# rover_destroyed the burst and clatter of the wreck, debris_clatter a few
+	# metal parts landing.
+	&"rover_patrol": {
+		"files": [SFX_DIR + "rover_patrol.wav"], "volume_db": -12.0, "pitch_variance": PITCH_VARIANCE_FREQUENT,
+	},
+	&"rover_windup": {
+		"files": [SFX_DIR + "rover_windup.wav"], "volume_db": -5.5, "pitch_variance": 0.0,
+	},
+	&"rover_charge": {
+		"files": [SFX_DIR + "rover_charge.wav"], "volume_db": -3.0, "pitch_variance": 0.0,
+	},
+	&"rover_stall": {
+		"files": [SFX_DIR + "rover_stall.wav"], "volume_db": -2.0, "pitch_variance": 0.0,
+	},
+	&"rover_armor": {
+		"files": [SFX_DIR + "rover_armor.wav"], "volume_db": -5.0, "pitch_variance": PITCH_VARIANCE_FREQUENT,
+	},
+	&"rover_destroyed": {
+		"files": [SFX_DIR + "rover_destroyed.wav"], "volume_db": -4.0, "pitch_variance": 0.0,
+	},
+	&"debris_clatter": {
+		"files": [SFX_DIR + "debris_clatter.wav"], "volume_db": -11.5, "pitch_variance": PITCH_VARIANCE_FREQUENT,
 	},
 	# Microchips: crisp digital blips (the cluster is brighter and multi-note).
 	&"chip": {
@@ -272,9 +306,9 @@ const SFX_SOURCES: Dictionary = {
 		"files": [SFX_DIR + "door_unlock.wav"], "volume_db": -5.5, "pitch_variance": 0.0,
 	},
 	# SC01's copy bar ticks this every ~0.45 s, so it is short, soft and gets
-	# the frequent pitch nudge; the Link chirp (staffer_visual.gd plays it once
-	# as Adam takes a body over, teal -> amber) is tiny but must still read
-	# over the music bed.
+	# the frequent pitch nudge; the Link chirp (brawler.gd plays it once as a
+	# dormant Staffer wakes and Adam takes the body over) is tiny but must
+	# still read over the music bed.
 	&"uplink": {
 		"files": [SFX_DIR + "uplink.wav"], "volume_db": -6.5, "pitch_variance": PITCH_VARIANCE_FREQUENT,
 	},

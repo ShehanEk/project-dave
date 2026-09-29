@@ -5,13 +5,15 @@ math, random). Deterministic: a fixed seed means re-running this script
 reproduces byte-identical WAVs.
 
 Writes:
-    assets/audio/sfx/<cue>.wav     (40 one-shot cues, mono 16-bit PCM)
+    assets/audio/sfx/<cue>.wav     (46 one-shot cues, mono 16-bit PCM)
     assets/audio/music/<name>.wav  (2 seamless loops, mono 16-bit PCM)
 
 Sound identity (design/05-presentation/audio-direction.md): empty corporate
 spaces after hours — low drones, mains hum, soft relay clicks, a calm PA
-voice that knows Dave's name. Tense but restrained; no organic sounds, no
-gore. Every pitched cue and both loops sit around D (open fifths, one
+voice that knows Dave's name. Tense but restrained. Organic sound stays in
+combat and stays small: a restrained wet hit, a body landing, the rustle of
+cloth. Never a splatter, a scream or a groan; machines die in metal, sparks
+and clatter. Every pitched cue and both loops sit around D (open fifths, one
 flattened second for unease, never a bright major third), so cues that
 overlap in play never clash. Link implants chirp in the top octaves, Adam's
 PA chime is soft and reverberant, alarms stay low.
@@ -23,7 +25,8 @@ the Audio autoload API that plays them. Which .wav the game actually plays
 for a cue is decided by Audio.SFX_SOURCES in scripts/audio/audio_director.gd
 (a cue may still be sourced from Kenney .ogg files; its .wav here is then the
 fallback). After generating, this script cross-checks that file against
-this one and exits non-zero if a director cue has no generator.
+this one (comment lines ignored) and exits non-zero if a director cue has no
+generator.
 
 Usage:
     python3 tools/gen_audio.py                       # everything
@@ -536,8 +539,8 @@ def loop_locked_freq(target_hz: float, loop_seconds: float) -> float:
 # Each function returns a finished list[float].
 # ---------------------------------------------------------------------------
 
-# --- kept as they were: hero, pistol, Clipper (the game plays Kenney sources
-# for most of these; see Audio.SFX_SOURCES) and the generic UI/world cues ------
+# --- kept as they were: hero, pistol (the game plays Kenney sources for most of
+# these; see Audio.SFX_SOURCES) and the generic UI/world cues ------------------
 
 def sfx_pistol_fire():
     # "Crisp spring snap and small metal bolt; short controlled tail."
@@ -588,52 +591,6 @@ def sfx_hero_land():
     thump = apply_pluck(sine(95, 0.14), 0.06)
     puff = apply_pluck(lowpass(noise(0.08, 106), 0.25), 0.04, 0.001)
     return normalize(mix(gain(thump, 0.85), gain(puff, 0.45)))
-
-
-def sfx_clipper_scrape():
-    # Idle roll: rough, periodic, unmistakably mechanical.
-    base = bandpass(noise(0.5, 108), 0.55, 0.6)
-    tremolo = [0.6 + 0.4 * math.sin(2 * math.pi * 5.0 * (i / SR)) for i in range(len(base))]
-    out = [a * b for a, b in zip(base, tremolo)]
-    out = apply_env(out, [(0, 0.0), (0.08, 1.0), (0.85, 1.0), (1.0, 0.0)])
-    return normalize(gain(out, 0.8))
-
-
-def sfx_clipper_windup():
-    # Shears open: two quick metallic clicks, then a short rising ring.
-    click1 = apply_pluck(sine(2100, 0.03), 0.012, 0.0005)
-    click2 = apply_pluck(sine(2400, 0.03), 0.012, 0.0005)
-    ring = apply_pluck(sweep(900, 1500, 0.18, shape="lin"), 0.09, 0.002)
-    out = mix(gain(click1, 0.7), gain(click2, 0.7), gain(ring, 0.55),
-              at=[0, n_samples(0.05), n_samples(0.09)])
-    return normalize(out)
-
-
-def sfx_clipper_charge():
-    buzz = sweep(180, 520, 0.5, shape="exp", osc="square")
-    buzz = lowpass(buzz, 0.5)
-    buzz = apply_env(buzz, [(0, 0.0), (0.1, 1.0), (0.9, 1.0), (1.0, 0.0)])
-    return normalize(gain(buzz, 0.75))
-
-
-def sfx_clipper_stall():
-    # Wall stall: a warble that stutters and abruptly cuts, unlike the
-    # smooth rise of clipper_charge.
-    n = n_samples(0.5)
-    wobble = square(140, 0.5, duty=0.5)
-    lfo = [1.0 if math.sin(2 * math.pi * 9.0 * (i / SR)) > -0.2 else 0.0 for i in range(n)]
-    out = [w * g for w, g in zip(wobble, lfo)]
-    out = lowpass(out, 0.4)
-    out = apply_env(out, [(0, 0.0), (0.05, 1.0), (0.9, 0.8), (1.0, 0.0)])
-    return normalize(gain(out, 0.7))
-
-
-def sfx_clipper_defeat():
-    down = sweep(420, 60, 0.6, shape="exp", osc="square")
-    down = lowpass(down, 0.35)
-    down = apply_env(down, [(0, 0.0), (0.08, 1.0), (0.8, 0.5), (1.0, 0.0)])
-    clunk = apply_pluck(sine(85, 0.2), 0.09)
-    return normalize(mix(gain(down, 0.7), gain(clunk, 0.7), at=[0, n_samples(0.55)]))
 
 
 def sfx_cache_open():
@@ -740,22 +697,138 @@ def _bell(freq, seconds, tau, ratios=(1.0, 2.0, 3.0, 4.1), amps=(1.0, 0.40, 0.16
     return out
 
 
+# --- building blocks for the combat cues: the stun baton, sparks, bodies and
+# metal (Night Guard, Staffer, Patrol Rover, debris) ------------------------------
+
+def _crackle(seconds, seed, rate0, rate1, f_lo=2000.0, f_hi=7000.0, tau=0.003, level=(0.35, 1.0), curve=1.0):
+    """Sparse electrical crackle (a stun baton, sparks, a shorting implant): a
+    random train of tiny band-limited noise cracks. The event rate glides from
+    `rate0` to `rate1` per second (`curve` bends the glide), each crack is one
+    of six precomputed ticks at a random level, and a seed always renders the
+    same train."""
+    n = n_samples(seconds)
+    out = [0.0] * n
+    rnd = random.Random(seed)
+    ticks = [click(f_lo * ((f_hi / f_lo) ** rnd.random()), tau * 8.0, tau, seed * 16 + j, q=rnd.uniform(0.8, 1.6))
+             for j in range(6)]
+    t = 0.0
+    while True:
+        frac = min(1.0, t / seconds)
+        t += rnd.expovariate(max(0.5, rate0 + (rate1 - rate0) * (frac ** curve)))
+        i = int(t * SR)
+        if i >= n:
+            break
+        g = rnd.uniform(level[0], level[1])
+        for k, v in enumerate(ticks[rnd.randrange(len(ticks))]):
+            if i + k >= n:
+                break
+            out[i + k] += v * g
+    return out
+
+
+def _gate(seconds, seed, block_s, p0, p1, smooth=0.04):
+    """A random on/off gate, like a contact that keeps making and breaking: each
+    `block_s` block is on with a probability gliding p0 -> p1 (so the sputter
+    thins out and dies), edges softened by a one-pole lowpass."""
+    n = n_samples(seconds)
+    rnd = random.Random(seed)
+    blk = max(1, n_samples(block_s))
+    out = [0.0] * n
+    for i in range(0, n, blk):
+        on = 1.0 if rnd.random() < p0 + (p1 - p0) * (i / max(1, n - 1)) else 0.0
+        for j in range(i, min(n, i + blk)):
+            out[j] = on
+    return lowpass(out, smooth)
+
+
+def _thud(f0, f1, seconds, tau, attack=0.003, amps=(1.0, 0.45, 0.22)):
+    """A low body hit: an exponential pitch drop f0 -> f1 with two overtones (so
+    it still reads on speakers that cannot reproduce 40 Hz), plucked."""
+    curve = exp_curve(f0, f1, n_samples(seconds))
+    return pluck(partials(curve, seconds, list(amps), max_hz=1400.0), tau, attack, tail=seconds * 0.3)
+
+
+def _metal(freq, seconds, tau, amps=(1.0, 0.7, 0.4, 0.2), attack=0.0006):
+    """A struck steel plate: free-bar mode ratios (1, 2.76, 5.40, 8.93) in the
+    _bell voice, the upper modes dying faster."""
+    return _bell(freq, seconds, tau, ratios=(1.0, 2.76, 5.40, 8.93), amps=amps, attack=attack)
+
+
+def _clunk(freq, seed):
+    """A dull hit on a heavy panel: a short pitch-dropped knock, a band-limited
+    noise tick and a faint, quickly damped ring. Peak 1."""
+    body = pluck(partials(exp_curve(freq * 1.25, freq, n_samples(0.12)), 0.12, [1.0, 0.5], max_hz=3000.0),
+                 0.035, 0.0008, tail=0.05)
+    knock = pluck(svf(noise(0.06, seed), freq * 5.0, 0.9, "bp"), 0.012, 0.0004, tail=0.03)
+    ring = gain(_metal(freq * 2.3, 0.18, 0.05), 0.35)
+    return normalize(mix(body, gain(knock, 0.8), ring), 1.0)
+
+
+def _clatter(seconds, seed, parts, f_lo, f_hi, first=0.0, span=0.35, heavy=0.3, level=1.0):
+    """Metal parts landing on a hard floor. Each of `parts` pieces lands at a
+    random moment in the first `span` of the cue (after `first` seconds) and
+    bounces a few times, the gaps shrinking and the level halving like a
+    dropped plate coming to rest. A piece is a bright ping (a small plate,
+    pitched between f_lo and f_hi) or, with chance `heavy`, a dull clunk (a
+    chassis panel). A seed always renders the same pile."""
+    n = n_samples(seconds)
+    out = [0.0] * n
+    rnd = random.Random(seed)
+    pings = [normalize(_metal(f_lo * ((f_hi / f_lo) ** rnd.random()), 0.16, rnd.uniform(0.02, 0.05), attack=0.0005), 1.0)
+             for _ in range(6)]
+    clunks = [_clunk(rnd.uniform(170.0, 340.0), seed * 8 + j) for j in range(3)]
+    for p in range(parts):
+        voice = clunks[rnd.randrange(len(clunks))] if rnd.random() < heavy else pings[rnd.randrange(len(pings))]
+        t = first + (0.0 if p == 0 else rnd.uniform(0.0, seconds * span))
+        gap = rnd.uniform(0.045, 0.11)
+        decel = rnd.uniform(0.62, 0.80)
+        g = level * rnd.uniform(0.6, 1.0)
+        while t < seconds - 0.04 and g > 0.05:
+            i = int(t * SR)
+            for k, v in enumerate(voice):
+                if i + k >= n:
+                    break
+                out[i + k] += v * g
+            t += gap * rnd.uniform(0.7, 1.3)
+            gap *= decel
+            g *= rnd.uniform(0.45, 0.65)
+    return out
+
+
+def _landing(seed, rustle=0.22):
+    """A body landing on a hard floor: a dull torso thud, the hips and legs a
+    beat behind, cloth and gear settling. Shared by body_fall and the Staffer's
+    collapse so a person always lands the same way. Peak about 1.1."""
+    torso = _thud(88.0, 42.0, 0.30, 0.055, attack=0.004)
+    legs = gain(_thud(112.0, 56.0, 0.20, 0.040, attack=0.003), 0.5)
+    whump = pluck(blp(noise(0.16, seed), 520.0), 0.035, 0.005, tail=0.06)
+    cloth = pluck(blp(noise(0.30, seed + 2), 950.0), 0.09, 0.012, tail=0.12)
+    scuff = gain(pluck(svf(noise(0.26, seed + 1), 1600.0, 0.6, "bp"), 0.06, 0.02, tail=0.10), rustle)
+    return mix(torso, legs, gain(whump, 1.6), gain(cloth, 0.60), scuff,
+               at=[0, n_samples(0.07), 0, n_samples(0.03), n_samples(0.11)])
+
+
 def sfx_staffer_windup():
-    # The attack tell (red Link light): servo whine climbing under a stepped,
-    # rising implant chirp that peaks right as the 0.65 s windup ends. No
-    # organic sounds — Staffers are cyborgs, the whine is actuators.
+    # The attack tell (red Link light) of a driven office worker: the twitch is a
+    # pair of small cloth rustles, and the implant's two-tone hum (a fourth
+    # apart) climbs and flutters faster under a stepped, rising chirp that peaks
+    # right as the 0.65 s windup ends. No servo: the body is a person's, only
+    # the port makes a sound.
     dur = 0.62
     n = n_samples(dur)
-    curve = [220.0 + 560.0 * (i / (n - 1)) ** 1.7 for i in range(n)]
-    whine = partials(curve, dur, [1.0, 0.7, 0.5, 0.34, 0.22, 0.14], max_hz=6500.0)
-    rev = 0.0
-    grain = [0.0] * n
-    for i, f in enumerate(curve):
-        rev += 2.0 * math.pi * (f / 6.0) / SR  # gear-tooth grain follows the pitch
-        grain[i] = 0.76 + 0.24 * math.sin(rev)
-    whine = [w * g for w, g in zip(whine, grain)]
-    whine = svf(whine, 2600, q=0.7, mode="lp")
-    whine = apply_env(whine, [(0, 0.0), (0.10, 0.7), (0.85, 1.0), (0.96, 0.9), (1.0, 0.0)])
+    lo = exp_curve(hz("D4"), hz("A4"), n)
+    hi = [f * (4.0 / 3.0) for f in lo]
+    hum = mix(partials(lo, dur, [1.0, 0.26, 0.09], max_hz=5000.0),
+              partials(hi, dur, [1.0, 0.26, 0.09], max_hz=6000.0))
+    ph = 0.0
+    flutter = [0.0] * n
+    for i in range(n):
+        ph += 2.0 * math.pi * (9.0 + 17.0 * (i / (n - 1))) / SR  # the twitch quickens
+        flutter[i] = 0.72 + 0.28 * math.sin(ph)
+    hum = [h * f for h, f in zip(hum, flutter)]
+    hum = apply_env(hum, [(0, 0.0), (0.08, 0.6), (0.85, 1.0), (0.96, 0.9), (1.0, 0.0)])
+    rustle_a = pluck(svf(noise(0.06, 751), 1500.0, 1.2, "bp"), 0.014, 0.004, tail=0.025)
+    rustle_b = pluck(svf(noise(0.06, 752), 1200.0, 1.2, "bp"), 0.014, 0.004, tail=0.025)
     steps = 8
     parts, offs = [], []
     for k in range(steps):
@@ -765,44 +838,49 @@ def sfx_staffer_windup():
         parts.append(gain(blip, 0.34 + 0.66 * k / (steps - 1)))
         offs.append(n_samples(0.27 + 0.038 * k))
     chirp = mix(*parts, at=offs)
-    return finish(mix(gain(whine, 0.6), gain(chirp, 0.5), at=[0, 0]), 0.9, fade_out_s=0.02)
+    out = mix(gain(hum, 0.6), gain(chirp, 0.5), gain(rustle_a, 0.34), gain(rustle_b, 0.26),
+              at=[0, 0, n_samples(0.04), n_samples(0.16)])
+    return finish(out, 0.9, fade_out_s=0.02)
 
 
 def sfx_staffer_lunge():
-    # A short servo burst riding a dry whoosh, with a low thrust thump.
-    dur = 0.26
-    nb = n_samples(0.14)
-    curve = exp_curve(360.0, 1150.0, nb)
-    burst = partials(curve, 0.14, [1.0, 0.6, 0.4, 0.25, 0.15], max_hz=6000.0)
-    grain = [0.7 + 0.3 * math.sin(2.0 * math.pi * 86.0 * (i / SR)) for i in range(nb)]
-    burst = [b * g for b, g in zip(burst, grain)]
-    burst = apply_env(burst, [(0, 0.0), (0.06, 1.0), (0.5, 0.7), (1.0, 0.0)])
-    nw = n_samples(dur)
-    sweep_hz = exp_curve(600.0, 2600.0, nw)
-    whoosh = svf(noise(dur, 302), sweep_hz, q=1.6, mode="bp")
-    whoosh = apply_env(whoosh, [(0, 0.0), (0.12, 1.0), (0.4, 0.75), (1.0, 0.0)])
-    thump = pluck(sweep(150, 62, 0.12, shape="exp"), 0.05, 0.002, tail=0.04)
-    out = mix(gain(burst, 0.6), gain(whoosh, 0.9), gain(thump, 0.3))
+    # The grab. Head and torso lead and the feet catch up, so it is all air and
+    # cloth, and fast: a tight whoosh whose band leaps upward and peaks as the
+    # arms come round, a dry swish of sleeve, a low thrust as the weight goes
+    # forward, and the port's one small blip. No servo burst.
+    dur = 0.24
+    n = n_samples(dur)
+    rise = int(n * 0.55)
+    band = exp_curve(500.0, 3200.0, rise) + exp_curve(3200.0, 2500.0, n - rise)
+    whoosh = svf(noise(dur, 302), band, q=1.8, mode="bp")
+    whoosh = apply_env(whoosh, [(0, 0.0), (0.10, 0.45), (0.42, 1.0), (0.62, 0.65), (1.0, 0.0)])
+    swish = svf(noise(dur, 753), 4200.0, 0.8, "bp")
+    swish = apply_env(swish, [(0, 0.0), (0.3, 1.0), (0.55, 0.5), (1.0, 0.0)])
+    thrust = _thud(150.0, 70.0, 0.14, 0.05)
+    blip = apply_env(sweep(2500.0, 3500.0, 0.035, shape="exp"), [(0, 0.0), (0.15, 1.0), (1.0, 0.0)])
+    out = mix(gain(whoosh, 1.4), gain(swish, 0.30), gain(thrust, 0.30), gain(blip, 0.18),
+              at=[0, 0, n_samples(0.02), 0])
     return finish(out, 0.9, fade_out_s=0.03)
 
 
 def sfx_staffer_defeat():
-    # Implant power-down: the tone spools down, the motor stutters, one dry
-    # relay click, then silence. No groan, nothing organic.
-    fall = 0.56
-    n = n_samples(fall)
-    curve = [1150.0 * ((62.0 / 1150.0) ** ((i / (n - 1)) ** 0.85)) for i in range(n)]
-    tone = partials(curve, fall, [1.0, 0.45, 0.25, 0.12], max_hz=5000.0)
-    flutter = [0.78 + 0.22 * math.sin(2.0 * math.pi * (14.0 + 26.0 * (i / n)) * (i / SR)) for i in range(n)]
-    tone = [t * f for t, f in zip(tone, flutter)]
-    cutoffs = [min(4200.0, 2.4 * f + 150.0) for f in curve]  # darkens as it falls
-    tone = svf(tone, cutoffs, q=0.8, mode="lp")
-    tone = apply_env(tone, [(0, 0.0), (0.03, 1.0), (0.6, 0.8), (1.0, 0.0)])
-    tick = gain(click(2800, 0.012, 0.0035, 303, q=1.0), 0.9)
-    clunk = gain(pluck(sweep(120, 62, 0.06, shape="exp"), 0.02, 0.001, tail=0.03), 0.5)
-    at = n_samples(fall + 0.035)
-    out = mix(gain(tone, 0.8), tick, clunk, at=[0, at, at])
-    return finish(pad_to(out, 0.86), 0.9, fade_out_s=0.01)
+    # A collapse: the Link light dies and the body goes down. The port shorts in a
+    # spit of sparks while a thin tone spools down through the top octaves (the
+    # light going out); then the body lands 0.45 s after the kill, when the
+    # ragdoll reaches the floor, with the same landing as body_fall. No groan,
+    # no last word.
+    fizz = _crackle(0.40, 761, 130.0, 10.0, 3000.0, 8000.0, 0.0018, curve=0.7)
+    nf = n_samples(0.30)
+    tone = partials(exp_curve(3400.0, 520.0, nf), 0.30, [1.0, 0.18], max_hz=8000.0)
+    ph = 0.0
+    for i in range(nf):
+        ph += 2.0 * math.pi * (26.0 - 14.0 * (i / nf)) / SR
+        tone[i] *= 0.6 + 0.4 * math.sin(ph)
+    tone = apply_env(tone, [(0, 0.0), (0.05, 1.0), (0.55, 0.5), (1.0, 0.0)])
+    pop = click(3200, 0.014, 0.004, 762, q=1.1)
+    body = _landing(763)
+    out = mix(gain(pop, 0.8), gain(fizz, 0.8), gain(tone, 0.42), body, at=[0, 0, 0, n_samples(0.45)])
+    return finish(out, 0.9, fade_out_s=0.06)
 
 
 def sfx_chip():
@@ -1007,6 +1085,214 @@ def sfx_exit():
     return finish(pad_to(wet, 2.4), 0.88, fade_out_s=0.4)
 
 
+# --- the Level 1 roster (C33): Night Guard, people going down, Patrol Rover ------
+# Human combat is restrained and a little wet (audio-direction.md: a short thud,
+# never a splatter); machines break in metal, sparks and clatter. The baton, hit
+# and fall cues started as the lit-cutout test's placeholders (baton_crackle,
+# baton_swing, flesh_hit, body_fall, from the since-removed
+# tools/spike/make_spike_audio.py) and were rebuilt here on the shared DSP
+# helpers so they match the rest of the set.
+
+def sfx_guard_windup():
+    # The Night Guard hauls the baton overhead: a stun baton charging, about 0.5 s.
+    # A hard mains buzz (a pulse wave gliding A2 -> D3, a rising fourth, in two
+    # detuned twins) whose filter opens as the charge builds, over a raspy arc
+    # that stutters at 18 Hz and quickens to 44 Hz until it fuses into one
+    # continuous zap, plus a thin capacitor whine and a crackle that goes from
+    # sparse to spitting right as the swing lands. A thumb-switch click opens it.
+    dur = 0.5
+    n = n_samples(dur)
+    f0, f1 = hz("A2"), hz("D3")
+    curve = [f0 * ((f1 / f0) ** ((i / (n - 1)) ** 1.5)) for i in range(n)]
+    pulse = harm_pulse(0.16, 30)
+    buzz = mix(partials(curve, dur, pulse, max_hz=5200.0),
+               gain(partials([f * 1.012 for f in curve], dur, pulse, max_hz=5200.0), 0.7))
+    buzz = svf(buzz, exp_curve(420.0, 3600.0, n), q=0.9, mode="lp")
+    buzz = soft_clip(normalize(buzz, 1.0), 2.4)
+    buzz = apply_env(buzz, [(0, 0.0), (0.03, 0.30), (0.75, 0.80), (0.97, 1.0), (1.0, 0.0)])
+    rasp = svf(noise(dur, 703), exp_curve(1800.0, 3200.0, n), q=1.2, mode="bp")
+    ph = 0.0
+    for i in range(n):
+        ph += 2.0 * math.pi * (18.0 + 26.0 * (i / (n - 1))) / SR
+        rasp[i] *= max(0.0, math.sin(ph)) ** 3
+    rasp = apply_env(rasp, [(0, 0.0), (0.1, 0.15), (0.8, 0.8), (0.97, 1.0), (1.0, 0.0)])
+    whine = apply_env(sweep(1000.0, 2500.0, dur, shape="exp"),
+                      [(0, 0.0), (0.4, 0.25), (0.95, 1.0), (1.0, 0.0)])
+    crack = _crackle(dur, 701, 6.0, 95.0, 1500.0, 6500.0, 0.0035, level=(0.3, 0.8), curve=1.7)
+    switch = click(1500, 0.03, 0.008, 702, q=1.2)
+    out = mix(gain(buzz, 0.7), gain(rasp, 1.0), gain(whine, 0.12), gain(crack, 0.5), gain(switch, 0.5))
+    return finish(soft_clip(out, 1.0), 0.9, fade_out_s=0.02)
+
+
+def sfx_guard_swing():
+    # One short, hard overhead swing: air rushing past a heavy baton. A band of
+    # noise that climbs as the arm comes over and falls as it lands, a low
+    # pressure pulse for the weight, and the baton's mains buzz caught under it
+    # for a moment (with a few sparks) so it is his baton and not a bat.
+    dur = 0.30
+    n = n_samples(dur)
+    half = n // 2
+    band = exp_curve(600.0, 2300.0, half) + exp_curve(2300.0, 750.0, n - half)
+    air = svf(noise(dur, 711), band, q=2.0, mode="bp")
+    air = apply_env(air, [(0, 0.0), (0.16, 0.85), (0.38, 1.0), (0.70, 0.45), (1.0, 0.0)])
+    weight = apply_env(blp(noise(dur, 712), 380.0), [(0, 0.0), (0.2, 1.0), (0.5, 0.75), (1.0, 0.0)])
+    hum = apply_env(partials(hz("D3"), dur, harm_pulse(0.2, 14), max_hz=3500.0),
+                    [(0, 0.0), (0.15, 1.0), (0.6, 0.7), (1.0, 0.0)])
+    sparks = _crackle(dur, 713, 45.0, 8.0, 2000.0, 7000.0, 0.003, level=(0.2, 0.5))
+    out = mix(gain(air, 1.5), gain(weight, 1.2), gain(hum, 0.10), gain(sparks, 0.30))
+    return finish(out, 0.9, fade_out_s=0.05)
+
+
+def sfx_hit_flesh():
+    # A restrained wet impact on a person (audio-direction.md: a short thud, never
+    # a splatter): a short low thump for the blow, a damp slap on top, and a
+    # small moist squelch riding the tail. Nothing bright.
+    thump = _thud(125.0, 62.0, 0.12, 0.030, amps=(1.0, 0.40, 0.15))
+    slap = pluck(blp(noise(0.08, 721), 2400.0), 0.025, 0.0007, tail=0.03)
+    wet = svf(noise(0.16, 722), exp_curve(1250.0, 380.0, n_samples(0.16)), q=2.4, mode="bp")
+    wet = pluck(wet, 0.045, 0.004, tail=0.08)
+    out = mix(gain(thump, 0.8), gain(slap, 1.4), gain(wet, 0.7), at=[0, 0, n_samples(0.012)])
+    return finish(out, 0.9, fade_out_s=0.03)
+
+
+def sfx_body_fall():
+    # A body landing: a dull thud (the torso), the hips and legs a beat behind,
+    # cloth and gear settling. Low and short, with no clank in it.
+    return finish(_landing(731), 0.9, fade_out_s=0.06)
+
+
+def sfx_rover_patrol():
+    # The Patrol Rover's idle roll, quiet: an electric drive hum (a soft A3 with a
+    # slow wobble and a thin upper whine), tread ticking over paving joints, and
+    # two small relay ticks. Faded at both ends so plays that follow each other
+    # overlap into one steady roll.
+    dur = 0.62
+    n = n_samples(dur)
+    wob = [220.0 * (1.0 + 0.012 * math.sin(2.0 * math.pi * 3.0 * (i / SR))) for i in range(n)]
+    hum = blp(partials(wob, dur, [1.0, 0.5, 0.32, 0.18, 0.1], max_hz=3200.0), 1500.0)
+    whine = partials([f * 4.0 for f in wob], dur, [1.0, 0.3], max_hz=4000.0)
+    tread = blp(noise(dur, 741), 520.0)
+    tread = [t * (0.55 + 0.45 * math.sin(2.0 * math.pi * 9.0 * (i / SR)) ** 2) for i, t in enumerate(tread)]
+    body = mix(gain(hum, 0.8), gain(whine, 0.10), gain(tread, 0.9))
+    body = apply_env(body, [(0, 0.0), (0.10, 1.0), (0.80, 0.85), (1.0, 0.0)])
+    tick_a = click(2100, 0.02, 0.004, 742, q=1.3)
+    tick_b = click(1700, 0.02, 0.004, 743, q=1.3)
+    out = mix(body, gain(tick_a, 0.35), gain(tick_b, 0.22), at=[0, n_samples(0.03), n_samples(0.33)])
+    return finish(out, 0.85, fade_in_s=0.04, fade_out_s=0.10)
+
+
+def sfx_rover_windup():
+    # The rock-back before the ram (lightbar amber, then red for the last quarter
+    # second): a two-part siren whoop, each part a rising sweep and the second
+    # climbing higher, over wheel-spin revs that climb the whole way. It sits
+    # mostly under about 2 kHz, so it warns without shrieking.
+    dur = 0.80
+    n = n_samples(dur)
+    na = n_samples(0.40)
+    siren_hz = exp_curve(270.0, 700.0, na) + exp_curve(330.0, 980.0, n - na)
+    siren = partials(siren_hz, dur, harm_saw(6), max_hz=4000.0)
+    siren = svf(siren, 2200.0, q=0.7, mode="lp")
+    siren = apply_env(siren, [(0, 0.0), (0.02, 0.8), (0.47, 1.0), (0.495, 0.35), (0.52, 0.9), (0.97, 1.0), (1.0, 0.0)])
+    drive = partials(exp_curve(150.0, 640.0, n), dur, [1.0, 0.6, 0.35, 0.2], max_hz=3500.0)
+    rev = 0.0
+    for i in range(n):
+        f = 150.0 * ((640.0 / 150.0) ** (i / (n - 1)))
+        rev += 2.0 * math.pi * (f / 7.0) / SR  # the rotor's grain follows the pitch
+        drive[i] *= 0.78 + 0.22 * math.sin(rev)
+    drive = apply_env(drive, [(0, 0.0), (0.10, 0.5), (0.9, 1.0), (1.0, 0.0)])
+    slip = svf(noise(dur, 751), 1800.0, q=1.1, mode="bp")
+    ph = 0.0
+    for i in range(n):
+        ph += 2.0 * math.pi * (10.0 + 24.0 * (i / (n - 1))) / SR  # the tread bites faster and faster
+        slip[i] *= 0.55 + 0.45 * math.sin(ph)
+    slip = apply_env(slip, [(0, 0.0), (0.1, 0.25), (0.95, 1.0), (1.0, 0.0)])
+    out = mix(gain(siren, 0.85), gain(drive, 0.40), gain(slip, 0.28))
+    return finish(out, 0.9, fade_out_s=0.02)
+
+
+def sfx_rover_charge():
+    # The ram: the drive motor surges (a hard, gritty pitch climb) with the tyres
+    # biting into the deck, a low kick as the wheels grab, and the tread rumble
+    # that follows. No siren, so it never reads as the windup again.
+    dur = 0.80
+    n = n_samples(dur)
+    surge = partials(exp_curve(170.0, 540.0, n), dur, [1.0, 0.75, 0.55, 0.38, 0.25, 0.16, 0.10], max_hz=4200.0)
+    surge = soft_clip(normalize(surge, 1.0), 2.2)
+    surge = svf(surge, exp_curve(700.0, 2600.0, n), q=0.8, mode="lp")
+    surge = apply_env(surge, [(0, 0.0), (0.04, 1.0), (0.55, 0.85), (1.0, 0.0)])
+    rumble = blp(noise(dur, 761), 800.0)
+    rumble = [r * (0.6 + 0.4 * math.sin(2.0 * math.pi * 26.0 * (i / SR))) for i, r in enumerate(rumble)]
+    rumble = apply_env(rumble, [(0, 0.0), (0.06, 0.7), (0.6, 1.0), (1.0, 0.0)])
+    kick = _thud(120.0, 52.0, 0.16, 0.05)
+    out = mix(gain(surge, 0.75), gain(rumble, 1.0), gain(kick, 0.6))
+    return finish(out, 0.9, fade_out_s=0.05)
+
+
+def sfx_rover_stall():
+    # The ram meets a wall: a crash (a heavy slam, a crunch of shell, a ringing
+    # steel rebound), the wheels spinning down against the wall, and the
+    # electronics fizzing and sputtering out. Just under a second.
+    slam = _thud(150.0, 46.0, 0.34, 0.085, attack=0.002)
+    crunch = pluck(svf(noise(0.20, 771), 1300.0, 0.5, "bp"), 0.045, 0.0006, tail=0.08)
+    ring = gain(_metal(410.0, 0.55, 0.17, attack=0.0007), 0.5)
+    rebound = gain(_metal(545.0, 0.35, 0.10, attack=0.0007), 0.28)
+    crash = mix(gain(slam, 1.0), gain(crunch, 0.8), ring, rebound, at=[0, 0, 0, n_samples(0.045)])
+    ns = n_samples(0.85)
+    spin = partials(exp_curve(520.0, 110.0, ns), 0.85, [1.0, 0.5, 0.28], max_hz=3000.0)
+    ph = 0.0
+    for i in range(ns):
+        ph += 2.0 * math.pi * (28.0 - 18.0 * (i / ns)) / SR  # the grain slows as the wheels wind down
+        spin[i] *= 0.8 + 0.2 * math.sin(ph)
+    spin = apply_env(spin, [(0, 0.0), (0.05, 1.0), (0.7, 0.5), (1.0, 0.0)])
+    slip = apply_env(svf(noise(0.85, 772), 2300.0, 0.6, "bp"), [(0, 0.0), (0.05, 1.0), (0.6, 0.3), (1.0, 0.0)])
+    fizz = _crackle(0.85, 773, 210.0, 12.0, 2500.0, 7500.0, 0.002, level=(0.25, 0.8), curve=0.7)
+    arc = partials(hz("D3"), 0.85, harm_square(13), max_hz=2800.0)
+    arc = [a * g for a, g in zip(arc, _gate(0.85, 774, 0.025, 0.9, 0.05))]
+    arc = apply_env(arc, [(0, 0.0), (0.05, 1.0), (0.5, 0.5), (1.0, 0.0)])
+    at = n_samples(0.06)
+    out = mix(crash, gain(spin, 0.30), gain(slip, 0.22), gain(fizz, 0.40), gain(arc, 0.14),
+              at=[0, at, at, n_samples(0.10), n_samples(0.10)])
+    return finish(out, 0.9, fade_out_s=0.10)
+
+
+def sfx_rover_armor():
+    # The armored front turns a shot: a hard steel clang (two slightly detuned
+    # plate strikes), a padded knock under it, the strike's tick, and the bolt
+    # whining away.
+    clang = mix(_metal(1180.0, 0.40, 0.11), gain(_metal(1247.0, 0.40, 0.10), 0.6))
+    knock = _thud(340.0, 170.0, 0.10, 0.028, attack=0.0008, amps=(1.0, 0.5))
+    tick = click(3200, 0.02, 0.005, 781, q=1.4)
+    zing = pluck(sweep(3900.0, 1500.0, 0.09, shape="exp"), 0.03, 0.0006, tail=0.04)
+    out = mix(gain(clang, 0.85), gain(knock, 0.55), gain(tick, 0.5), gain(zing, 0.18),
+              at=[0, 0, 0, n_samples(0.012)])
+    return finish(out, 0.9, fade_out_s=0.08)
+
+
+def sfx_rover_destroyed():
+    # A small machine bursting: a crump (a low thump and a gust of noise, pressed
+    # together so the burst is dense rather than spiky) with sparks spitting, the
+    # electronics dropping away, a brief hiss of oil, and the parts clattering
+    # down as they land. Just under a second.
+    thump = _thud(170.0, 45.0, 0.35, 0.10, attack=0.002)
+    gust = pluck(blp(noise(0.25, 791), 3200.0), 0.07, 0.001, tail=0.08)
+    sparks = _crackle(0.45, 792, 120.0, 20.0, 2500.0, 8000.0, 0.002, level=(0.25, 0.7), curve=0.8)
+    burst = soft_clip(mix(gain(thump, 1.0), gain(gust, 0.9), gain(sparks, 0.6), at=[0, 0, n_samples(0.02)]), 1.4)
+    nd = n_samples(0.40)
+    dying = partials(exp_curve(900.0, 90.0, nd), 0.40, [1.0, 0.4], max_hz=3000.0)
+    dying = apply_env(dying, [(0, 0.0), (0.03, 1.0), (0.5, 0.45), (1.0, 0.0)])
+    oil = apply_env(svf(noise(0.30, 793), 4200.0, 0.6, "bp"), [(0, 0.0), (0.12, 1.0), (1.0, 0.0)])
+    clatter = _clatter(0.78, 794, 10, 700.0, 3600.0, first=0.08, span=0.45)
+    out = mix(gain(burst, 1.0), gain(dying, 0.28), gain(oil, 0.13), gain(clatter, 0.75),
+              at=[0, 0, n_samples(0.25), n_samples(0.12)])
+    return finish(out, 0.9, fade_out_s=0.15)
+
+
+def sfx_debris_clatter():
+    # Metal parts landing: five small pieces bouncing to rest (a dome, a lightbar,
+    # a hatch lid, wheels), mostly bright pings with a duller clunk or two.
+    return finish(_clatter(0.60, 801, 5, 900.0, 4200.0, heavy=0.35), 0.9, fade_out_s=0.08)
+
+
 SFX_GENERATORS = {
     "pistol_fire": sfx_pistol_fire,
     "pistol_fire_quick": sfx_pistol_fire_quick,
@@ -1018,11 +1304,6 @@ SFX_GENERATORS = {
     "staffer_windup": sfx_staffer_windup,
     "staffer_lunge": sfx_staffer_lunge,
     "staffer_defeat": sfx_staffer_defeat,
-    "clipper_scrape": sfx_clipper_scrape,
-    "clipper_windup": sfx_clipper_windup,
-    "clipper_charge": sfx_clipper_charge,
-    "clipper_stall": sfx_clipper_stall,
-    "clipper_defeat": sfx_clipper_defeat,
     "chip": sfx_chip,
     "chip_cluster": sfx_chip_cluster,
     "cache_open": sfx_cache_open,
@@ -1048,6 +1329,17 @@ SFX_GENERATORS = {
     "uplink": sfx_uplink,
     "lockdown": sfx_lockdown,
     "link_chirp": sfx_link_chirp,
+    "guard_windup": sfx_guard_windup,
+    "guard_swing": sfx_guard_swing,
+    "hit_flesh": sfx_hit_flesh,
+    "body_fall": sfx_body_fall,
+    "rover_patrol": sfx_rover_patrol,
+    "rover_windup": sfx_rover_windup,
+    "rover_charge": sfx_rover_charge,
+    "rover_stall": sfx_rover_stall,
+    "rover_armor": sfx_rover_armor,
+    "rover_destroyed": sfx_rover_destroyed,
+    "debris_clatter": sfx_debris_clatter,
 }
 
 
@@ -1328,6 +1620,8 @@ def check_director_sync():
     except OSError:
         print("note: %s not found, skipping the director cross-check" % DIRECTOR)
         return True
+    # comment lines are prose: a quoted example in one must not read as a cue or a wav
+    text = "\n".join(ln for ln in text.splitlines() if not ln.lstrip().startswith("#"))
     ok = True
     m = re.search(r"const SFX_NAMES[^=]*=\s*\[(.*?)\]", text, re.S)
     cues = re.findall(r'&"([a-z0-9_]+)"', m.group(1)) if m else []

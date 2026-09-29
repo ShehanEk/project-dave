@@ -9,6 +9,10 @@ signal hit(damage: int, hit_position: Vector2, direction: Vector2)
 
 ## When true every strike is refused with "blocked" feedback.
 @export var blocks: bool = false
+## A person or a dog (C29): the owner shows blood for an accepted hit, so
+## the shot skips its green HIT spark (roster rule: the spark is suppressed
+## on anything with a fluid).
+@export var bleeds: bool = false
 
 
 func _init() -> void:

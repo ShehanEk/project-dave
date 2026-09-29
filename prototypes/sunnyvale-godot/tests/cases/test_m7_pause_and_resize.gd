@@ -8,7 +8,7 @@ extends TestCase
 ## SC01's own hold timer freezes too. Neither ever checks an ENEMY, and
 ## nothing in the suite exercises a live window resize against the HUD's own
 ## anchored Controls. This case closes both gaps:
-##   1. Pause freezes a Staffer's and a Clipper's own state machine (the
+##   1. Pause freezes a Staffer's and a Patrol Rover's own state machine (the
 ##      engine's default PROCESS_MODE_PAUSABLE — CONVENTIONS.md: "every other
 ##      node in a level ... uses the engine's default pausable process
 ##      mode" — is what CONVENTIONS documents, but nothing before this case
@@ -23,7 +23,7 @@ const HUD_SCENE := "res://scenes/ui/hud.tscn"
 
 func run() -> void:
 	await _test_pause_freezes_staffer()
-	await _test_pause_freezes_clipper()
+	await _test_pause_freezes_rover()
 	await _test_resize_keeps_hud_anchored()
 
 
@@ -37,14 +37,15 @@ func _make_hero(pos: Vector2) -> Hero:
 
 func _test_pause_freezes_staffer() -> void:
 	Session.new_run()
-	var staffer: Staffer = load("res://scenes/actors/staffer.tscn").instantiate()
+	var staffer: Brawler = load("res://scenes/actors/staffer.tscn").instantiate()
 	add_child(staffer)
 	staffer.global_position = Vector2(0, 96)
-	# No EncounterGroup ancestor: attacks freely (CONVENTIONS.md), so a hero
-	# within engage_range triggers WINDUP on its own next tick.
+	# No EncounterGroup ancestor: attacks freely (CONVENTIONS.md), so the
+	# dormant Staffer wakes on its first tick and a hero within engage_range
+	# triggers WINDUP on the next.
 	var hero := _make_hero(Vector2(40, 96))
 	await physics_frames(3)
-	check(staffer.state == Staffer.State.WINDUP,
+	check(staffer.state == Brawler.State.WINDUP,
 			"setup: an isolated Staffer within engage_range enters WINDUP on its own (got state %d)" % staffer.state)
 
 	get_tree().paused = true
@@ -73,38 +74,38 @@ func _test_pause_freezes_staffer() -> void:
 	await physics_frames(2)
 
 
-func _test_pause_freezes_clipper() -> void:
+func _test_pause_freezes_rover() -> void:
 	Session.new_run()
-	var clipper: Clipper = load("res://scenes/actors/clipper.tscn").instantiate()
-	add_child(clipper)
-	clipper.global_position = Vector2(0, 96)
+	var rover: PatrolRover = load("res://scenes/actors/patrol_rover.tscn").instantiate()
+	add_child(rover)
+	rover.global_position = Vector2(0, 96)
 	var hero := _make_hero(Vector2(120, 96))
 	await physics_frames(3)
-	check(clipper.state == Clipper.State.WINDUP,
-			"setup: an isolated Clipper within acquire_range/line-of-sight enters WINDUP on its own (got state %d)" % clipper.state)
+	check(rover.state == PatrolRover.State.WINDUP,
+			"setup: an isolated Rover within acquire_range/line-of-sight enters WINDUP on its own (got state %d)" % rover.state)
 
 	get_tree().paused = true
 	await physics_frames(1)
-	var frozen_state := clipper.state
-	var frozen_pos := clipper.global_position
+	var frozen_state := rover.state
+	var frozen_pos := rover.global_position
 	for i in 90:
 		await get_tree().physics_frame
-	check(clipper.state == frozen_state,
-			"pause: a Clipper's state machine does not advance while paused (was %d, still %d after 1.5s paused)" % [frozen_state, clipper.state])
-	check(clipper.global_position.distance_to(frozen_pos) < 1.0,
-			"pause: a Clipper does not move (e.g. mid-charge) while paused")
+	check(rover.state == frozen_state,
+			"pause: a Rover's state machine does not advance while paused (was %d, still %d after 1.5s paused)" % [frozen_state, rover.state])
+	check(rover.global_position.distance_to(frozen_pos) < 1.0,
+			"pause: a Rover does not move (e.g. mid-charge) while paused")
 
 	get_tree().paused = false
 	await physics_frames(1)
 	var advanced := false
 	for i in 180:
 		await get_tree().physics_frame
-		if clipper.state != frozen_state:
+		if rover.state != frozen_state:
 			advanced = true
 			break
-	check(advanced, "pause: the Clipper's state machine resumes advancing once unpaused")
+	check(advanced, "pause: the Rover's state machine resumes advancing once unpaused")
 
-	clipper.queue_free()
+	rover.queue_free()
 	hero.queue_free()
 	get_tree().paused = false
 	await physics_frames(2)

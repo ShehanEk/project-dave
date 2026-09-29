@@ -11,11 +11,13 @@ const AREA_SCENE := "res://scenes/levels/areas/a06_exit.tscn"
 const EXPECTED_BEATS: PackedStringArray = [
 	"L01-A06-B01", "L01-A06-B02", "L01-A06-B03", "L01-A06-B04", "L01-A06-B05",
 ]
-## Tree order: Encounters/EncounterGroup_E10 (Clipper), then
-## EncounterGroup_E11 (Staffer, Clipper) — matches the encounter registry
-## row-by-row (L01-E10: 0 Staffers/1 Clipper; L01-E11: 1 Staffer/1 Clipper).
+## Tree order: Encounters/EncounterGroup_E10 (Patrol Rover, Staffer), then
+## EncounterGroup_E11 (Staffer, Patrol Rover) — matches the encounter
+## registry row-by-row (L01-E10: 1 Rover + 1 Staffer; L01-E11: 1 Staffer +
+## 1 Rover). Both Staffers are Linked workers who walk out of an annex door
+## after the lockdown (C33).
 const EXPECTED_ENEMIES: PackedStringArray = [
-	"L01-E10-R01-01", "L01-E11-CY01-01", "L01-E11-R01-01",
+	"L01-E10-M01-01", "L01-E10-LK01-01", "L01-E11-LK01-01", "L01-E11-M01-01",
 ]
 ## 0 chips on the main route; the only Entities-container id is the HS03
 ## capsule (no cache/evidence/switch/station/workbench/pad in this area).
@@ -71,7 +73,7 @@ func _test_structure_and_ids() -> void:
 			"entity ids match: 0 chips/caches/evidence/switches, 1 med-patch (got %s)" % [entity_ids])
 
 	# Encounter groups: exact group_id and per-group enemy composition
-	# (E10: 1 Clipper only; E11: 1 Staffer + 1 Clipper, one-attacker rule).
+	# (E10: 1 Rover + 1 Staffer; E11: 1 Staffer + 1 Rover, one-attacker rule).
 	var encounters := area.get_node("Encounters")
 	var group_e10: EncounterGroup = encounters.get_node("EncounterGroup_E10")
 	var group_e11: EncounterGroup = encounters.get_node("EncounterGroup_E11")
@@ -79,12 +81,29 @@ func _test_structure_and_ids() -> void:
 	check(group_e11.group_id == "L01-E11", "E11 group_id is exactly L01-E11")
 
 	var e10_types := _enemy_types(group_e10)
-	check(e10_types.size() == 1 and e10_types.count("Clipper") == 1,
-			"E10 has exactly 1 Clipper, 0 Staffers (got %s)" % [e10_types])
+	check(e10_types.size() == 2 and e10_types.count("Rover") == 1 and e10_types.count("Staffer") == 1,
+			"E10 has exactly 1 Rover + 1 Staffer (got %s)" % [e10_types])
 
 	var e11_types := _enemy_types(group_e11)
-	check(e11_types.size() == 2 and e11_types.count("Staffer") == 1 and e11_types.count("Clipper") == 1,
-			"E11 has exactly 1 Staffer + 1 Clipper (got %s)" % [e11_types])
+	check(e11_types.size() == 2 and e11_types.count("Staffer") == 1 and e11_types.count("Rover") == 1,
+			"E11 has exactly 1 Staffer + 1 Rover (got %s)" % [e11_types])
+
+	# Each Staffer is dormant in its own annex door until its group's
+	# ApproachZone fires: it stands at the door's x, asleep (DORMANT).
+	for pair in [[group_e10, "AnnexDoor_E10"], [group_e11, "AnnexDoor_E11"]]:
+		var group: EncounterGroup = pair[0]
+		var door: Node2D = area.get_node("Scenery/AnnexDoors/" + pair[1])
+		var staffer: Brawler = null
+		for child in group.get_children():
+			if child is Brawler:
+				staffer = child
+		check(staffer != null, "%s has a Staffer to walk out of %s" % [group.group_id, pair[1]])
+		if staffer != null:
+			check(absf(area.to_local(staffer.global_position).x - area.to_local(door.global_position).x) < 1.0,
+					"%s's Staffer stands in %s (x %.0f vs door x %.0f)" % [group.group_id, pair[1],
+							area.to_local(staffer.global_position).x, area.to_local(door.global_position).x])
+			check(staffer.tuning.dormant_until_active and staffer.state == Brawler.State.DORMANT,
+					"%s's Staffer is dormant while its encounter is inactive (state %d)" % [group.group_id, staffer.state])
 
 	# Both groups have an ApproachZone (visible-approach activation, per
 	# CONVENTIONS.md: "no enemy attack begins ... from an unpreviewed region").
@@ -93,7 +112,7 @@ func _test_structure_and_ids() -> void:
 	check(group_e11.has_node("ApproachZone") and not group_e11.is_active,
 			"E11 starts inactive behind its ApproachZone")
 
-	# Clipper backstops: a solid BACKSTOP block sits in each Clipper's lane.
+	# Rover backstops: a solid BACKSTOP block sits in each Rover's lane.
 	var backstop_e10 := area.get_node("Geometry/BackstopE10")
 	var backstop_e11 := area.get_node("Geometry/BackstopE11")
 	check(backstop_e10.kind == 4, "BackstopE10 uses the BACKSTOP block kind")
@@ -149,11 +168,14 @@ func _test_structure_and_ids() -> void:
 	await physics_frames(2)
 
 
+## "Rover", "Staffer" or "Night Guard" for every enemy directly under `group`
+## (the Staffer and the Night Guard are both Brawlers; the scene tells them
+## apart).
 func _enemy_types(group: Node) -> Array:
 	var types: Array = []
 	for child in group.get_children():
-		if child is Clipper:
-			types.append("Clipper")
-		elif child is Staffer:
-			types.append("Staffer")
+		if child is PatrolRover:
+			types.append("Rover")
+		elif child is Brawler:
+			types.append("Staffer" if child.scene_file_path == "res://scenes/actors/staffer.tscn" else "Night Guard")
 	return types

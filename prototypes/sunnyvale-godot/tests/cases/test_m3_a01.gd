@@ -4,7 +4,7 @@ extends TestCase
 ## gap with a walkable catch floor -> inert practice target -> chip trail ->
 ## open exit seam) is completable by the debug RouteBot, and that the exact
 ## population from 02-area-blueprints.md is present: 5 small chips
-## (L01-A01-G001..G005), 0 Staffers, 0 Clippers, 4 beats.
+## (L01-A01-G001..G005), no Night Guards, Staffers or Patrol Rovers, 4 beats.
 
 const AREA := "res://scenes/levels/areas/a01_gate.tscn"
 
@@ -79,7 +79,7 @@ func _test_static_population_matches_blueprint() -> void:
 		check(entity_ids.has(id), "entity_ids includes chip %s" % id)
 
 	var enemy_ids: PackedStringArray = area.get_enemy_ids()
-	check(enemy_ids.is_empty(), "A01 has zero enemies (0 Staffers, 0 Clippers) per 02-area-blueprints.md (got %s)" % [enemy_ids])
+	check(enemy_ids.is_empty(), "A01 has zero enemies (no Night Guards, Staffers or Rovers) per 02-area-blueprints.md (got %s)" % [enemy_ids])
 
 	var encounters := area.get_node_or_null("Encounters")
 	check(encounters == null or encounters.get_child_count() == 0,

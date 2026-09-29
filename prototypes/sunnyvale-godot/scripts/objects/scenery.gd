@@ -21,7 +21,7 @@ extends Node2D
 ##   CLOCK           the tall Arcadia emblem tower sign — the navigation
 ##                   landmark (replaces the smiling sun clock)
 ##   FOUNTAIN        dark reflecting pool with teal underlights (real light)
-##   LAMP            cold-white path lamp with a real light pool
+##   LAMP            cold-white path lamp with a real, smooth light pool
 ##   PLANTER         concrete planter with a clipped hedge
 ##   MAILBOX         card-reader / intercom post
 ##   PORTRAIT        framed family photo on the guard's desk
@@ -40,6 +40,12 @@ extends Node2D
 ## area scene files store `kind` as a plain integer; changing an existing
 ## value's number would silently reskin an unrelated prop everywhere it's
 ## placed.
+##
+## Lit cutouts (C35): the LAMP, BEACON and FOUNTAIN lights are smooth
+## (SceneryDraw.smooth_cone_texture()/smooth_disc_texture()) and each sits at
+## its REAL source (a lamp's light is AT the lamp head, a beacon's at its
+## dome) with a `height`, because Dave and the enemies are shaded through
+## normal maps and take their lighting direction from where the light is.
 ##
 ## Lockdown: `set_lamp_examination_mode()` (kept by name; EnvironmentState
 ## calls it for its own `lamp_paths` only) now switches a prop to the
@@ -103,8 +109,26 @@ const GLOW_RING_BEACON := preload("res://assets/kenney/light-masks/ring_a.png")
 ## PNG (assets/kenney/README.md sections 4-5) — glow scale factors below
 ## are all "desired on-screen pixel size / this".
 const LIGHT_MASK_PX := 512.0
-const LAMP_ENERGY := 1.0
-const LAMP_LOCKDOWN_ENERGY := 1.15
+## Smooth light energies: tuned so a lamp's pool reads clearly on the paving
+## and lights whoever stands in it. The lockdown tints (amber, alarm red) are
+## darker than cold white, so their energy is higher.
+const LAMP_ENERGY := 1.6
+const LAMP_LOCKDOWN_ENERGY := 1.85
+## Height of each light above the scene, in px (SceneryDraw.make_light()).
+const LAMP_LIGHT_HEIGHT := 70.0
+const BEACON_LIGHT_HEIGHT := 30.0
+const FOUNTAIN_LIGHT_HEIGHT := 20.0
+## A lamp's beam reaches this many times its head's height (so the pool on
+## the paving stays about as bright under a low lamp as a tall one), within
+## these limits in px.
+const LAMP_REACH_RATIO := 2.35
+const LAMP_REACH_MIN := 230.0
+const LAMP_REACH_MAX := 420.0
+## The alarm beacon's light pulses between these (held at the midpoint under
+## reduced motion).
+const BEACON_ENERGY_MIN := 0.7
+const BEACON_ENERGY_MAX := 1.6
+const FOUNTAIN_ENERGY := 1.8
 ## The lockdown swivel: the head (and its light) turns toward +x, the exit.
 const LOCKDOWN_TILT := -0.2
 ## Lockdown chase: a slow wave of brightness travelling toward the exit.
@@ -247,16 +271,23 @@ func _lamp_head() -> Vector2:
 	return Vector2(0.0, -size.y * 0.9)
 
 
-## How far the lamp's light reaches from its head: to the ground line and
-## 30 px into the floor's lit face, where the pool lands.
+## How far the lamp's glow beam reaches from its head: to the ground line and
+## 30 px into the floor's lit face.
 func _lamp_reach() -> float:
 	return size.y * 0.9 + 30.0
 
 
+## How far the lamp's smooth light reaches from its head (see
+## LAMP_REACH_RATIO): past the ground line, fading out as it goes.
+func _lamp_light_radius() -> float:
+	return clampf((size.y * 0.9 + 4.0) * LAMP_REACH_RATIO, LAMP_REACH_MIN, LAMP_REACH_MAX)
+
+
 ## A cold-white path lamp: a Kenney glow halo at the head, a faint beam, and
-## a real PointLight2D whose hard-edged cone paints the light pool on the
-## ground, on props and on anyone passing under it. Beam and light hang off
-## one pivot at the head, so the lockdown swivel turns them together.
+## a real PointLight2D at the head whose smooth cone paints the light pool on
+## the ground, on props and on anyone passing under it. Beam and light hang
+## off one pivot at the head (the cone's apex is the light's origin), so the
+## lockdown swivel turns them together about the head.
 func _setup_lamp() -> void:
 	var head := _lamp_head()
 	var circle_px: float = clampf(size.x * 1.9, 44.0, 86.0)
@@ -267,9 +298,8 @@ func _setup_lamp() -> void:
 	add_child(_lamp_pivot)
 	_lamp_glow_beam = _make_glow(GLOW_CONE_UTILITY, Vector2.ZERO, Vector2.ONE, 0.1, _lamp_pivot)
 	_lamp_glow_beam.flip_v = true
-	var reach := _lamp_reach()
-	_lamp_light = SceneryDraw.make_light(_lamp_pivot, SceneryDraw.light_cone_texture(),
-			Vector2(0.0, reach * 0.5), reach, LAMP_WHITE, LAMP_ENERGY)
+	_lamp_light = SceneryDraw.make_light(_lamp_pivot, SceneryDraw.smooth_cone_texture(),
+			Vector2.ZERO, _lamp_light_radius(), LAMP_WHITE, LAMP_ENERGY, LAMP_LIGHT_HEIGHT)
 	_apply_lamp_state(false)
 
 
@@ -292,8 +322,9 @@ func _setup_beacon_glow() -> void:
 	_beacon_ring = _make_glow(GLOW_RING_BEACON, dome_c, Vector2.ONE * ring_scale, 0.5)
 	_beacon_ring.modulate = Color(ALARM.r, ALARM.g, ALARM.b, 0.5)
 	_beacon_ring_base_scale = ring_scale
-	_beacon_light = SceneryDraw.make_light(self, SceneryDraw.light_disc_texture(), dome_c,
-			clampf(w * 13.0, 220.0, 480.0), ALARM, 0.7)
+	_beacon_light = SceneryDraw.make_light(self, SceneryDraw.smooth_disc_texture(), dome_c,
+			clampf(w * 8.0, 160.0, 340.0), ALARM, (BEACON_ENERGY_MIN + BEACON_ENERGY_MAX) * 0.5,
+			BEACON_LIGHT_HEIGHT)
 	if _reduced_motion:
 		_beacon_ring.modulate.a = 0.35
 
@@ -306,14 +337,15 @@ func _pulse_beacon() -> void:
 	_beacon_ring.scale = Vector2.ONE * (_beacon_ring_base_scale * (1.0 + 0.14 * p))
 	_beacon_glow.modulate.a = lerpf(0.25, 0.5, p)
 	if _beacon_light:
-		_beacon_light.energy = lerpf(0.4, 1.0, p)
+		_beacon_light.energy = lerpf(BEACON_ENERGY_MIN, BEACON_ENERGY_MAX, p)
 
 
 ## The reflecting pool's teal underlight also lights whoever walks past it.
 func _setup_fountain_light() -> void:
 	var rim_h: float = maxf(16.0, size.y * 0.22)
-	_fountain_light = SceneryDraw.make_light(self, SceneryDraw.light_disc_texture(),
-			Vector2(0.0, -rim_h - 10.0), size.x * 1.8, Color(0.5, 0.95, 0.9), 0.55)
+	_fountain_light = SceneryDraw.make_light(self, SceneryDraw.smooth_disc_texture(),
+			Vector2(0.0, -rim_h - 10.0), size.x * 1.5, Color(0.5, 0.95, 0.9), FOUNTAIN_ENERGY,
+			FOUNTAIN_LIGHT_HEIGHT)
 
 
 func _setup_clock_glow() -> void:

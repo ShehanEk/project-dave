@@ -43,7 +43,9 @@ signal run_reset
 ## kept in memory only" message from this.
 signal save_failed(reason: String, attempted_checkpoint_id: String)
 
-const SCHEMA_VERSION := 2
+## 3: the C33 Level 1 rebuild renamed every enemy's entity ID, so an older
+## save's defeated list would name enemies that no longer exist.
+const SCHEMA_VERSION := 3
 const BUILD := "sunnyvale-proto-revamp"
 const LEVEL := "L01"
 const MAX_HEALTH := 6
@@ -70,7 +72,7 @@ var run_meta: Dictionary = {}
 ## which is the ONLY action that ends a noninteractive scene early).
 var cutscene_active: bool = false
 ## Live-only, never-persisted one-shot UI flags (e.g. "has this run already
-## shown the E02 first-Clipper tutorial prompt"), same idiom as
+## shown the E02 first-Rover tutorial prompt"), same idiom as
 ## `cutscene_active` above: a death/respawn rebuild mid-run must not re-show
 ## something already shown this run, but it must show again on a genuinely
 ## new run/Continue. Reset only by `new_run()`/`load_from_snapshot()`.

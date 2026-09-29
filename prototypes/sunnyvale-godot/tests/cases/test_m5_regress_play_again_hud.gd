@@ -50,7 +50,8 @@ func run() -> void:
 	check(level.hud._weapon_pip.visible, "setup: HUD shows Quickcycle pip")
 
 	level._on_wicket_reached()
-	await physics_frames(2)
+	# The completion screen opens after the Security PA line (C28).
+	await physics_frames(int(LevelDirector.PA_BEAT * 60.0) + 2)
 	check(level._completion_screen != null, "completion screen shown")
 	level._completion_screen._on_confirm_pressed()  # Play again confirmed
 	await physics_frames(4)

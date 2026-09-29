@@ -50,7 +50,7 @@ const ROWS: Array[Dictionary] = [
 ## a walkthrough.
 const TIPS: Array[String] = [
 	"Watch for the warning before an attack.",
-	"Clippers stall against stone — shoot the exposed motor on their back.",
+	"Patrol Rovers stall against stone: shoot the battery on their back.",
 	"Recovery stations heal you and save progress.",
 	"You carry one weapon; the pistol never needs reloading.",
 ]

@@ -38,8 +38,8 @@ func _test_continue_from_cp02() -> void:
 	# A03 recovery station's own checkpoint id), exactly like reaching that
 	# station mid-run would.
 	check(Session.collect("L01-A03-G001", 1), "setup: collect a chip in A03")
-	var staffer: Staffer = level.areas[A03_INDEX].get_node("Encounters/EncounterGroup_E05/Staffer_CY01_01")
-	Session.mark_defeated(staffer.entity_id)
+	var guard: Brawler = level.areas[A03_INDEX].get_node("Encounters/EncounterGroup_E05/NightGuard_SE01_01")
+	Session.mark_defeated(guard.entity_id)
 	var committed := Session.commit("CP02")
 	check(committed, "setup: CP02 commits successfully")
 
@@ -62,8 +62,8 @@ func _test_continue_from_cp02() -> void:
 			"Continue: hero rebuilds at CP02's own Respawn marker")
 	var chip := level2.areas[A03_INDEX].get_node_or_null("Entities/Chip_G001")
 	check(chip == null, "Continue: the already-collected chip is absent after rebuild")
-	var fresh_staffer := level2.areas[A03_INDEX].get_node_or_null("Encounters/EncounterGroup_E05/Staffer_CY01_01")
-	check(fresh_staffer == null, "Continue: the already-defeated enemy is absent after rebuild")
+	var fresh_guard := level2.areas[A03_INDEX].get_node_or_null("Encounters/EncounterGroup_E05/NightGuard_SE01_01")
+	check(fresh_guard == null, "Continue: the already-defeated enemy is absent after rebuild")
 
 	level2.queue_free()
 	await physics_frames(2)

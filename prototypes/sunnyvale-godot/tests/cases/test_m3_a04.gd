@@ -14,9 +14,9 @@ const EXPECTED_BEATS := [
 ]
 const EXPECTED_GROUP_IDS := ["L01-E07", "L01-E08", "L01-E09"]
 const EXPECTED_ENEMY_IDS := [
-	"L01-E07-CY01-01", "L01-E07-R01-01",
-	"L01-E08-CY01-01", "L01-E08-CY01-02",
-	"L01-E09-CY01-01", "L01-E09-R01-01",
+	"L01-E07-SE01-01", "L01-E07-M01-01",
+	"L01-E08-SE01-01", "L01-E08-SE01-02",
+	"L01-E09-SE01-01", "L01-E09-M01-01",
 ]
 const EXPECTED_CHIP_IDS := [
 	"L01-A04-G001", "L01-A04-G002", "L01-A04-G003", "L01-A04-G004",
@@ -53,15 +53,15 @@ func _test_main_route_reaches_exit_and_ids_match() -> void:
 			"A04 has exactly %d enemies (got %d: %s)" % [EXPECTED_ENEMY_IDS.size(), enemy_ids.size(), enemy_ids])
 	for id in EXPECTED_ENEMY_IDS:
 		check(enemy_ids.has(id), "enemy id %s present" % id)
-	var staffer_count := 0
-	var clipper_count := 0
+	var guard_count := 0
+	var rover_count := 0
 	for id in enemy_ids:
-		if id.contains("-CY01-"):
-			staffer_count += 1
-		elif id.contains("-R01-"):
-			clipper_count += 1
-	check(staffer_count == 4, "A04 population: 4 Staffers (got %d)" % staffer_count)
-	check(clipper_count == 2, "A04 population: 2 Clippers (got %d)" % clipper_count)
+		if id.contains("-SE01-"):
+			guard_count += 1
+		elif id.contains("-M01-"):
+			rover_count += 1
+	check(guard_count == 4, "A04 population: 4 Night Guards (got %d)" % guard_count)
+	check(rover_count == 2, "A04 population: 2 Patrol Rovers (got %d)" % rover_count)
 
 	var group_ids: Array = []
 	var encounters := probe.get_node("Encounters")

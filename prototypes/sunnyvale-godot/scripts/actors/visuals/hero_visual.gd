@@ -17,10 +17,31 @@ extends Node2D
 ## the chunky pistol is ~18% of Rook's height, not the ~28% it was sized for
 ## on the old blocky hero) sits in the hand.
 ##
+## Lit like the enemies (C35 lit cutouts): the Body and Arm sprites use the
+## shared lit-part shader, so the world's lights (lamps, beacons, the depot's
+## fixtures, the muzzle flash) shade Rook smoothly through a normal map, from
+## the side each light is really on, over a dim night `ambient`; the
+## moonlight (light mask bit 2, world/night_lighting.gd) adds a cool rim.
+## Each Rook frame has its own normal map, swapped in only when the frame
+## changes (assets/characters/rook/normals/<texture>_n.png, made by
+## tools/art/make_normal_maps.py) and one shared spec map (`dave_spec.png`).
+## A frame with no normal map yet just falls back to flat normals.
+##
 ## No class_name (hero.tscn attaches this by path; hero.gd calls it through
 ## an untyped `visual` reference).
 
 const Frames := preload("res://scripts/actors/visuals/rook_frames.gd")
+const SceneryDrawScript := preload("res://scripts/world/scenery_draw.gd")
+const LIT_SHADER := preload("res://assets/shaders/lit_part.gdshader")
+const NORMAL_DIR := "res://assets/characters/rook/normals/"
+const SPEC_PATH := NORMAL_DIR + "dave_spec.png"
+## Rook's unlit night level (the shader's `ambient`) and how far a light just
+## past an edge still grazes it (`wrap`).
+const AMBIENT := Vector3(0.3, 0.3, 0.36)
+const WRAP := 0.3
+## Lit characters sit on light masks 1 (the world's lights) and 2 (the
+## moonlight).
+const LIGHT_MASK := 1 | 2
 
 const TEXTURES := {
 	&"idle_1": preload("res://assets/characters/rook/rook_idle_1.png"),
@@ -71,6 +92,14 @@ var _idle_time: float = 0.0
 var _body: Sprite2D
 var _arm: Sprite2D
 var _gun: CanvasItem
+var _body_mat: ShaderMaterial
+var _arm_mat: ShaderMaterial
+var _normals_on: bool = true
+## Texture name ("rook_idle_1", "rook_arm") -> its normal map, or null when
+## that file is missing (cached either way, so it is looked up once).
+var _normal_cache: Dictionary = {}
+var _spec: Texture2D
+static var _no_spec: Texture2D
 
 
 func _ready() -> void:
@@ -80,7 +109,14 @@ func _ready() -> void:
 	_body.offset = Frames.CANVAS_OFFSET
 	_body.scale = Vector2(Frames.TEXTURE_SCALE, Frames.TEXTURE_SCALE)
 	_body.texture = TEXTURES[_frame]
+	_body_mat = _make_material()
+	_body.material = _body_mat
+	_body.light_mask = LIGHT_MASK
 	add_child(_body)
+	# Look every frame's normal map up now, so none loads mid-fight.
+	for frame in TEXTURES:
+		_lookup_normal("rook_%s" % frame)
+	_apply_normal(_body_mat, "rook_%s" % _frame)
 
 
 func setup(pivot: Node2D) -> void:
@@ -94,9 +130,19 @@ func setup(pivot: Node2D) -> void:
 	_arm.centered = false
 	_arm.offset = -Frames.ARM_SHOULDER_PX
 	_arm.scale = Vector2(Frames.TEXTURE_SCALE, Frames.TEXTURE_SCALE)
+	_arm_mat = _make_material()
+	_arm.material = _arm_mat
+	_arm.light_mask = LIGHT_MASK
 	# Added after the Scrapjack so the fist and the index finger along the
 	# side are drawn over the gun's rear, reading as a held grip.
 	pivot.add_child(_arm)
+	_apply_normal(_arm_mat, "rook_arm")
+	# The small light at the wrist uses the same smooth falloff as the world's.
+	# hero.tscn gives it no texture of its own: swapping out a light texture
+	# the renderer hasn't built yet logs an engine error.
+	var wrist := pivot.get_node_or_null("WristLight") as PointLight2D
+	if wrist:
+		wrist.texture = SceneryDrawScript.smooth_disc_texture()
 
 
 ## Reduced motion (interface-and-accessibility.md) removes the hit wiggle
@@ -171,6 +217,57 @@ func _set_frame(name: StringName) -> void:
 		return
 	_frame = name
 	_body.texture = TEXTURES[name]
+	_apply_normal(_body_mat, "rook_%s" % name)
+
+
+## One lit-part material per sprite (each has its own normal map).
+func _make_material() -> ShaderMaterial:
+	if _spec == null:
+		_spec = _load_or_null(SPEC_PATH)
+		if _spec == null:
+			# No spec map yet: none (a bare sampler would read as white).
+			if _no_spec == null:
+				var img := Image.create_empty(1, 1, false, Image.FORMAT_RGBA8)
+				img.fill(Color(0.0, 0.0, 0.0, 0.0))
+				_no_spec = ImageTexture.create_from_image(img)
+			_spec = _no_spec
+	var mat := ShaderMaterial.new()
+	mat.shader = LIT_SHADER
+	mat.set_shader_parameter("spec_atlas", _spec)
+	mat.set_shader_parameter("ambient", AMBIENT)
+	mat.set_shader_parameter("wrap", WRAP)
+	return mat
+
+
+func _load_or_null(path: String) -> Texture2D:
+	return load(path) as Texture2D if ResourceLoader.exists(path) else null
+
+
+## The normal map for the sprite texture `tex_name` (null when there is none
+## yet), looked up once.
+func _lookup_normal(tex_name: String) -> Texture2D:
+	if not _normal_cache.has(tex_name):
+		_normal_cache[tex_name] = _load_or_null("%s%s_n.png" % [NORMAL_DIR, tex_name])
+	return _normal_cache[tex_name]
+
+
+## Points `mat` at the normal map for the sprite texture `tex_name`. With no
+## map for it the material keeps flat normals (`normals_on` 0) rather than
+## sampling an empty texture.
+func _apply_normal(mat: ShaderMaterial, tex_name: String) -> void:
+	if mat == null:
+		return
+	var tex := _lookup_normal(tex_name)
+	mat.set_shader_parameter("normal_atlas", tex)
+	mat.set_shader_parameter("normals_on", 1.0 if (_normals_on and tex != null) else 0.0)
+
+
+## A/B switch for the lighting: false lights Rook with flat normals (the same
+## lights, no shading from the normal maps).
+func set_normals_enabled(on: bool) -> void:
+	_normals_on = on
+	_apply_normal(_body_mat, "rook_%s" % _frame)
+	_apply_normal(_arm_mat, "rook_arm")
 
 
 ## Current frame name (tests / debugging).

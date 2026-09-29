@@ -9,8 +9,8 @@
 [ext_resource type="PackedScene" path="res://scenes/objects/recovery_station.tscn" id="7_station"]
 [ext_resource type="PackedScene" path="res://scenes/objects/scenery.tscn" id="9_scenery"]
 [ext_resource type="Script" path="res://scripts/combat/encounter_group.gd" id="10_group"]
-[ext_resource type="PackedScene" path="res://scenes/actors/staffer.tscn" id="11_staffer"]
-[ext_resource type="PackedScene" path="res://scenes/actors/clipper.tscn" id="12_clipper"]
+[ext_resource type="PackedScene" path="res://scenes/actors/night_guard.tscn" id="11_guard"]
+[ext_resource type="PackedScene" path="res://scenes/actors/patrol_rover.tscn" id="12_rover"]
 [ext_resource type="PackedScene" path="res://scenes/objects/beat_zone.tscn" id="13_beat"]
 [ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="14_routepoint"]
 [ext_resource type="PackedScene" path="res://scenes/objects/kill_plane.tscn" id="15_killplane"]
@@ -275,7 +275,7 @@ position = Vector2(1370, 96)
 kind = 6
 size = Vector2(30, 150)
 
-[node name="LandingLamp_ClipperLane" parent="Scenery" instance=ExtResource("9_scenery")]
+[node name="LandingLamp_RoverLane" parent="Scenery" instance=ExtResource("9_scenery")]
 position = Vector2(1700, 96)
 kind = 6
 size = Vector2(30, 160)
@@ -442,13 +442,13 @@ monitorable = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E07/ApproachZone"]
 shape = SubResource("RectangleShape2D_approach")
 
-[node name="Staffer_CY01_01" parent="Encounters/EncounterGroup_E07" instance=ExtResource("11_staffer")]
+[node name="NightGuard_SE01_01" parent="Encounters/EncounterGroup_E07" instance=ExtResource("11_guard")]
 position = Vector2(350, 96)
-entity_id = "L01-E07-CY01-01"
+entity_id = "L01-E07-SE01-01"
 
-[node name="Clipper_R01_01" parent="Encounters/EncounterGroup_E07" instance=ExtResource("12_clipper")]
+[node name="PatrolRover_M01_01" parent="Encounters/EncounterGroup_E07" instance=ExtResource("12_rover")]
 position = Vector2(1450, 96)
-entity_id = "L01-E07-R01-01"
+entity_id = "L01-E07-M01-01"
 patrol_min_x = 1810.0
 patrol_max_x = 1980.0
 
@@ -469,13 +469,13 @@ monitorable = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E08/ApproachZone"]
 shape = SubResource("RectangleShape2D_approach")
 
-[node name="Staffer_CY01_01" parent="Encounters/EncounterGroup_E08" instance=ExtResource("11_staffer")]
+[node name="NightGuard_SE01_01" parent="Encounters/EncounterGroup_E08" instance=ExtResource("11_guard")]
 position = Vector2(400, 96)
-entity_id = "L01-E08-CY01-01"
+entity_id = "L01-E08-SE01-01"
 
-[node name="Staffer_CY01_02" parent="Encounters/EncounterGroup_E08" instance=ExtResource("11_staffer")]
+[node name="NightGuard_SE01_02" parent="Encounters/EncounterGroup_E08" instance=ExtResource("11_guard")]
 position = Vector2(650, 96)
-entity_id = "L01-E08-CY01-02"
+entity_id = "L01-E08-SE01-02"
 
 [node name="EncounterGroup_E09" type="Node2D" parent="Encounters"]
 position = Vector2(4680, 0)
@@ -494,13 +494,13 @@ monitorable = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E09/ApproachZone"]
 shape = SubResource("RectangleShape2D_approach")
 
-[node name="Staffer_CY01_01" parent="Encounters/EncounterGroup_E09" instance=ExtResource("11_staffer")]
+[node name="NightGuard_SE01_01" parent="Encounters/EncounterGroup_E09" instance=ExtResource("11_guard")]
 position = Vector2(400, 96)
-entity_id = "L01-E09-CY01-01"
+entity_id = "L01-E09-SE01-01"
 
-[node name="Clipper_R01_01" parent="Encounters/EncounterGroup_E09" instance=ExtResource("12_clipper")]
+[node name="PatrolRover_M01_01" parent="Encounters/EncounterGroup_E09" instance=ExtResource("12_rover")]
 position = Vector2(1070, 96)
-entity_id = "L01-E09-R01-01"
+entity_id = "L01-E09-M01-01"
 patrol_min_x = 5510.0
 patrol_max_x = 5780.0
 
@@ -557,7 +557,7 @@ script = ExtResource("14_routepoint")
 action = 0
 tolerance = 16.0
 
-[node name="RP02_PastStaffer" type="Marker2D" parent="Route"]
+[node name="RP02_PastGuard" type="Marker2D" parent="Route"]
 position = Vector2(1050, 0)
 script = ExtResource("14_routepoint")
 action = 0
@@ -589,7 +589,7 @@ action = 1
 tolerance = 15.0
 hold_jump = 0.25
 
-[node name="RP07_PastClipper" type="Marker2D" parent="Route"]
+[node name="RP07_PastRover" type="Marker2D" parent="Route"]
 position = Vector2(1990, 0)
 script = ExtResource("14_routepoint")
 action = 0
@@ -641,13 +641,13 @@ action = 1
 tolerance = 12.0
 hold_jump = 0.15
 
-[node name="RP15_PastStaffer1" type="Marker2D" parent="Route"]
+[node name="RP15_PastGuard1" type="Marker2D" parent="Route"]
 position = Vector2(3450, 0)
 script = ExtResource("14_routepoint")
 action = 0
 tolerance = 16.0
 
-[node name="RP16_PastStaffer2" type="Marker2D" parent="Route"]
+[node name="RP16_PastGuard2" type="Marker2D" parent="Route"]
 position = Vector2(3900, 0)
 script = ExtResource("14_routepoint")
 action = 0
@@ -677,7 +677,7 @@ script = ExtResource("14_routepoint")
 action = 0
 tolerance = 16.0
 
-[node name="RP21_PastE09Staffer" type="Marker2D" parent="Route"]
+[node name="RP21_PastE09Guard" type="Marker2D" parent="Route"]
 position = Vector2(5250, 0)
 script = ExtResource("14_routepoint")
 action = 0
@@ -696,7 +696,7 @@ action = 1
 tolerance = 15.0
 hold_jump = 0.25
 
-[node name="RP24_PastE09Clipper" type="Marker2D" parent="Route"]
+[node name="RP24_PastE09Rover" type="Marker2D" parent="Route"]
 position = Vector2(6250, 0)
 script = ExtResource("14_routepoint")
 action = 0

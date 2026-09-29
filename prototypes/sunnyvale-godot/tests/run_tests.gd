@@ -59,6 +59,12 @@ func _run() -> void:
 			checkpoint_service.clear()
 			checkpoint_service.debug_force_write_failure(false)
 		var case_script: Script = load(CASES_DIR + "/" + f)
+		# A case that fails to compile is a failure, not a hang (calling
+		# new() on it would stop this coroutine and the runner never quits).
+		if case_script == null or not case_script.can_instantiate():
+			print("FAIL %s (script failed to compile; see the errors above)" % f)
+			failed += 1
+			continue
 		var tc: TestCase = case_script.new()
 		tc.name = f.get_basename()
 		root.add_child(tc)

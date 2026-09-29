@@ -46,6 +46,16 @@ const AMBER := Color("#e8b65a")          # amber indicator / muzzle flash
 ## comment) — reached through this plain preload + its static `spawn()`.
 const KenneyPuff := preload("res://scripts/effects/kenney/kenney_puff.gd")
 
+## C35 lit cutouts: each shot also flashes a short, smooth light at the
+## muzzle (see `_flash_muzzle_light()`), warm ivory like every muzzle flash in
+## the kit, so Dave and anyone near him are lit, through their normal maps,
+## from the muzzle's real position and height.
+const FLASH_COLOR := Color("#FFE4BD")
+const FLASH_TIME := 0.07
+const FLASH_ENERGY := 2.4
+const FLASH_HEIGHT := 26.0
+const FLASH_RADIUS := 140.0
+
 
 func _ready() -> void:
 	if tuning == null:
@@ -108,6 +118,7 @@ func _try_fire() -> void:
 		audio.play_sfx(&"pistol_fire_quick" if _current_stage() >= 1 else &"pistol_fire",
 				_muzzle.global_position)
 	KenneyPuff.spawn(&"muzzle_flash", _muzzle.global_position, _spawn_container())
+	_flash_muzzle_light(_muzzle.global_position)
 
 	var pivot: Node2D = get_parent()
 	var shoulder: Vector2 = pivot.global_position
@@ -130,14 +141,16 @@ func _try_fire() -> void:
 	var block := space_state.intersect_ray(params)
 	if not block.is_empty():
 		var collider = block.get("collider")
-		var spark := ImpactSpark.new()
 		var resolved_hit := false
 		if collider is HitZone:
 			var outcome: StringName = collider.take_hit(tuning.damage, block.position, forward)
 			resolved_hit = outcome == &"hit"
-			spark.color = ScrapBolt.HIT_COLOR if resolved_hit else ScrapBolt.BLOCK_COLOR
-		else:
-			spark.color = ScrapBolt.BLOCK_COLOR
+			if resolved_hit and collider.bleeds:
+				# Same rule as ScrapBolt: the target shows its own blood and
+				# plays its own hit sound, so no spark here.
+				return
+		var spark := ImpactSpark.new()
+		spark.color = ScrapBolt.HIT_COLOR if resolved_hit else ScrapBolt.BLOCK_COLOR
 		spark.shape = ImpactSpark.Shape.HIT if resolved_hit else ImpactSpark.Shape.BLOCKED
 		spark.global_position = block.position
 		_spawn_container().add_child(spark)
@@ -224,6 +237,24 @@ func _draw() -> void:
 
 func get_muzzle_global_position() -> Vector2:
 	return _muzzle.global_position
+
+
+## A brief smooth point light at the muzzle. It lives under the same
+## container as the bolts and sparks (not under this weapon), so it outlives a
+## freed gun and is freed with the scene; it fades over FLASH_TIME and frees
+## itself. It never moves, so it is drawn uninterpolated. Halved under
+## reduced motion, like the drawn flash.
+func _flash_muzzle_light(at: Vector2) -> void:
+	var settings := get_node_or_null("/root/Settings")
+	var k: float = 0.5 if (settings and settings.get_reduced_motion()) else 1.0
+	var light := SceneryDraw.make_light(_spawn_container(), SceneryDraw.smooth_disc_texture(),
+			Vector2.ZERO, FLASH_RADIUS, FLASH_COLOR, FLASH_ENERGY * k, FLASH_HEIGHT)
+	light.name = "MuzzleFlashLight"
+	light.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
+	light.global_position = at
+	var tween := light.create_tween()
+	tween.tween_property(light, "energy", 0.0, FLASH_TIME)
+	tween.tween_callback(light.queue_free)
 
 
 ## Parent for spawned bolts/sparks (ENG-05): the current scene when one is

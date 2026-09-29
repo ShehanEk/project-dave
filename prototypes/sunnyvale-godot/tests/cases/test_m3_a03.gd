@@ -1,12 +1,12 @@
 extends TestCase
 ## M3 area: L01-A03 Rooftop walk (scenes/levels/areas/a03_roofs.tscn).
 ## Porch-step ascent -> first moving-platform crossing (with an untested but
-## present ground-level recovery lane below) -> Staffer E05 on a broad far
-## terrace -> a short roof-height sequence to Staffer E06's broad landing ->
+## present ground-level recovery lane below) -> Night Guard E05 on a broad far
+## terrace -> a short roof-height sequence to Night Guard E06's broad landing ->
 ## protected descent with CP02 -> broad descending terraces to the exit seam.
 ## OPT02 is a small up-and-back detour right after the platform landing that
 ## opens the 20-value chip cache and rejoins the main route in place.
-## Population/treasure per 02-area-blueprints.md: 2 Staffers, 0 Clippers,
+## Population/treasure per 02-area-blueprints.md: 2 Night Guards, 0 Rovers,
 ## 5 small chips + 1 cluster (10) on the main route, 20 in the OPT02 cache.
 
 const AREA := "res://scenes/levels/areas/a03_roofs.tscn"
@@ -19,7 +19,7 @@ const EXPECTED_CHIPS := [
 ]
 const CLUSTER_ID := "L01-A03-GC01"
 const CACHE_ID := "L01-OPT02-CACHE01"
-const EXPECTED_ENEMIES := ["L01-E05-CY01-01", "L01-E06-CY01-01"]
+const EXPECTED_ENEMIES := ["L01-E05-SE01-01", "L01-E06-SE01-01"]
 
 
 func run() -> void:
@@ -136,15 +136,15 @@ func _test_static_population_matches_blueprint() -> void:
 			"E05's lane (ends at x=%.0f) does not overlap E06's lane (starts at x=%.0f)"
 			% [e05_end, e06_start])
 
-	# Each Staffer starts at least 2H (192px) beyond the edge of its own
+	# Each Night Guard starts at least 2H (192px) beyond the edge of its own
 	# lane closest to the approach, i.e. away from where the hero lands.
 	var h := 96.0
-	var staffer05: Node = e05.get_node("Staffer_CY01_01")
-	var staffer06: Node = e06.get_node("Staffer_CY01_01")
-	check(staffer05.global_position.x - e05.lane_rect.position.x >= 2.0 * h,
-			"E05's Staffer stands at least 2H beyond its lane's landing edge")
-	check(staffer06.global_position.x - e06.lane_rect.position.x >= 2.0 * h,
-			"E06's Staffer stands at least 2H beyond its lane's landing edge")
+	var guard05: Node = e05.get_node("NightGuard_SE01_01")
+	var guard06: Node = e06.get_node("NightGuard_SE01_01")
+	check(guard05.global_position.x - e05.lane_rect.position.x >= 2.0 * h,
+			"E05's Night Guard stands at least 2H beyond its lane's landing edge")
+	check(guard06.global_position.x - e06.lane_rect.position.x >= 2.0 * h,
+			"E06's Night Guard stands at least 2H beyond its lane's landing edge")
 
 	var route_points: Array = area.get_route_points([])
 	check(route_points.size() >= 10,

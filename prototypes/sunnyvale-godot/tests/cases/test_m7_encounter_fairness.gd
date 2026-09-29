@@ -6,11 +6,13 @@ extends TestCase
 ## dwelling RouteBot for a sustained multi-attack-cycle sample (CONVENTIONS.md's
 ## EncounterGroup contract: "At most one windup/active attacker per group").
 ##
-## AUD-07 correction: L01-E09 (also in a04_square.tscn) also pairs a Staffer
-## with a Clipper, and L01-E08 pairs two Staffers — E07/E11 are NOT the only
-## multi-attacker groups in the shipped level, just the two this dwell-style
-## test happens to sample. E08/E09 (and every other group) still get the
-## brief whole-route one-attacker check from
+## E07 pairs a Night Guard with a Patrol Rover and E11 a Staffer with a
+## Patrol Rover. AUD-07 correction: L01-E09 (also in a04_square.tscn) also
+## pairs a Night Guard with a Patrol Rover, L01-E10 (a06_exit.tscn) a Patrol
+## Rover with a Staffer, and L01-E08 pairs two Night Guards — E07/E11 are
+## NOT the only multi-attacker groups in the shipped level, just the two this
+## dwell-style test happens to sample. E08/E09/E10 (and every other group)
+## still get the brief whole-route one-attacker check from
 ## test_m3_regress_encounters.gd::_combat_run() as a RouteBot walks past them
 ## once; E08 specifically also gets test_m3_regress_encounters.gd's LAY-14
 ## exposure check. The "usable retreat remains" clause of T06 is evidenced
@@ -59,8 +61,8 @@ func run() -> void:
 
 
 ## `start`/`finish` and `mid_terrain` (any jumps that sit BETWEEN the
-## Staffer and the Clipper on the real route, unchanged authored terrain
-## coordinates) bracket two dynamic dwell points measured at each enemy's own
+## brawler (Night Guard or Staffer) and the Patrol Rover on the real route,
+## unchanged authored terrain coordinates) bracket two dynamic dwell points measured at each enemy's own
 ## actual settled position, so this stays correct even if area geometry is
 ## retuned later.
 func _sample_group(area_path: String, group_path: String, label: String,
@@ -80,27 +82,27 @@ func _sample_group(area_path: String, group_path: String, label: String,
 	for c in group.get_children():
 		if c.is_in_group("enemy"):
 			enemies.append(c)
-	check(enemies.size() == 2, "%s has exactly 2 enemies (a Staffer + a Clipper) (got %d)" % [label, enemies.size()])
+	check(enemies.size() == 2, "%s has exactly 2 enemies (a brawler + a Patrol Rover) (got %d)" % [label, enemies.size()])
 	if enemies.size() != 2:
 		area.queue_free()
 		return
-	var staffer: Node2D = enemies[0] if enemies[0] is Staffer else enemies[1]
-	var clipper: Node2D = enemies[0] if enemies[0] is Clipper else enemies[1]
-	check(staffer is Staffer and clipper is Clipper,
-			"%s: group has exactly one Staffer and one Clipper" % label)
+	var brawler: Node2D = enemies[0] if enemies[0] is Brawler else enemies[1]
+	var rover: Node2D = enemies[0] if enemies[0] is PatrolRover else enemies[1]
+	check(brawler is Brawler and rover is PatrolRover,
+			"%s: group has exactly one brawler and one Patrol Rover" % label)
 
-	# Build: start -> [dwell at the real Staffer / authored mid-lane terrain
-	# (backstop hop(s)) / dwell at the real Clipper, merged in x-order since
+	# Build: start -> [dwell at the real brawler / authored mid-lane terrain
+	# (backstop hop(s)) / dwell at the real rover, merged in x-order since
 	# the terrain can sit before, between, or after either enemy depending on
 	# the area] -> finish.
 	var items: Array = [
-		{"x": staffer.global_position.x, "points": [
-			{"pos": Vector2(staffer.global_position.x, 0.0), "tol": 24.0},
-			{"pos": Vector2(staffer.global_position.x, 0.0), "tol": 24.0, "action": RoutePoint.Action.WAIT_SECONDS, "seconds": DWELL_SECONDS},
+		{"x": brawler.global_position.x, "points": [
+			{"pos": Vector2(brawler.global_position.x, 0.0), "tol": 24.0},
+			{"pos": Vector2(brawler.global_position.x, 0.0), "tol": 24.0, "action": RoutePoint.Action.WAIT_SECONDS, "seconds": DWELL_SECONDS},
 		]},
-		{"x": clipper.global_position.x, "points": [
-			{"pos": Vector2(clipper.global_position.x, 0.0), "tol": 24.0},
-			{"pos": Vector2(clipper.global_position.x, 0.0), "tol": 24.0, "action": RoutePoint.Action.WAIT_SECONDS, "seconds": DWELL_SECONDS},
+		{"x": rover.global_position.x, "points": [
+			{"pos": Vector2(rover.global_position.x, 0.0), "tol": 24.0},
+			{"pos": Vector2(rover.global_position.x, 0.0), "tol": 24.0, "action": RoutePoint.Action.WAIT_SECONDS, "seconds": DWELL_SECONDS},
 		]},
 	]
 	for m in mid_terrain:
@@ -140,8 +142,8 @@ func _sample_group(area_path: String, group_path: String, label: String,
 	bot.build_points(tmp, [])
 	bot.start(hero)
 
-	var attacks := {staffer: 0, clipper: 0}
-	var was_active := {staffer: false, clipper: false}
+	var attacks := {brawler: 0, rover: 0}
+	var was_active := {brawler: false, rover: false}
 	var max_concurrent := 0
 	var violation_tick := -1
 	var t := 0
@@ -150,7 +152,7 @@ func _sample_group(area_path: String, group_path: String, label: String,
 		await get_tree().physics_frame
 		t += 1
 		var concurrent := 0
-		for e in [staffer, clipper]:
+		for e in [brawler, rover]:
 			if not is_instance_valid(e):
 				continue
 			var active: bool = _is_attacking(e)
@@ -167,18 +169,18 @@ func _sample_group(area_path: String, group_path: String, label: String,
 		bot.running = false
 
 	var rep := bot.get_report()
-	print("[test_m7_encounter_fairness] %s: %.1fs run (success=%s, failure=%s), max_concurrent=%d, staffer_attacks=%d clipper_attacks=%d" % [
-			label, t / 60.0, rep.success, rep.failure, max_concurrent, attacks[staffer], attacks[clipper]])
+	print("[test_m7_encounter_fairness] %s: %.1fs run (success=%s, failure=%s), max_concurrent=%d, brawler_attacks=%d rover_attacks=%d" % [
+			label, t / 60.0, rep.success, rep.failure, max_concurrent, attacks[brawler], attacks[rover]])
 	check(rep.success, "%s: scripted hero completes the real lane past both enemies (failure=%s)" % [label, rep.failure])
 	check(violation_tick < 0,
 			"%s: never more than one windup/active attacker at once (first violation at tick %d)" % [label, violation_tick])
 	check(max_concurrent <= 1, "%s: max concurrent windup/active attackers is <=1 (got %d)" % [label, max_concurrent])
-	check(attacks[staffer] >= 1,
+	check(attacks[brawler] >= 1,
 			"%s: %s actually got at least one attack turn (got %d) — proves the invariant was really exercised, not vacuously true" % [
-					label, staffer.entity_id, attacks[staffer]])
-	check(attacks[clipper] >= 1,
+					label, brawler.entity_id, attacks[brawler]])
+	check(attacks[rover] >= 1,
 			"%s: %s actually got at least one attack turn (got %d) — proves the invariant was really exercised, not vacuously true" % [
-					label, clipper.entity_id, attacks[clipper]])
+					label, rover.entity_id, attacks[rover]])
 	check(hero.input_enabled, "%s: hero input remains enabled throughout (never trapped/soft-locked by the encounter)" % label)
 
 	bot.queue_free()
@@ -189,6 +191,6 @@ func _sample_group(area_path: String, group_path: String, label: String,
 
 
 func _is_attacking(e: Node) -> bool:
-	if e is Clipper:
-		return e.state == Clipper.State.WINDUP or e.state == Clipper.State.CHARGE
-	return e.state == Staffer.State.WINDUP or e.state == Staffer.State.LUNGE
+	if e is PatrolRover:
+		return e.state == PatrolRover.State.WINDUP or e.state == PatrolRover.State.CHARGE
+	return e.state == Brawler.State.WINDUP or e.state == Brawler.State.STRIKE

@@ -50,7 +50,7 @@ func _physics_process(delta: float) -> void:
 		var collider = result.get("collider")
 		if collider is HitZone:
 			var outcome: StringName = collider.take_hit(tuning.damage, result.position, direction)
-			_resolve(outcome, result.position)
+			_resolve(outcome, result.position, outcome == &"hit" and collider.bleeds)
 		else:
 			_resolve(&"blocked", result.position)
 		return
@@ -61,16 +61,20 @@ func _physics_process(delta: float) -> void:
 		queue_free()
 
 
-func _resolve(outcome: StringName, at: Vector2) -> void:
+func _resolve(outcome: StringName, at: Vector2, bled: bool = false) -> void:
 	_spent = true
 	global_position = at
+	var audio := get_node_or_null("/root/Audio")
+	if bled:
+		# The target shows its own blood (and plays its own hit sound).
+		queue_free()
+		return
 	var spark := ImpactSpark.new()
 	var is_hit: bool = outcome == &"hit"
 	spark.color = HIT_COLOR if is_hit else BLOCK_COLOR
 	spark.shape = ImpactSpark.Shape.HIT if is_hit else ImpactSpark.Shape.BLOCKED
 	spark.global_position = at
 	get_parent().add_child(spark)
-	var audio := get_node_or_null("/root/Audio")
 	if audio:
 		audio.play_sfx(&"bolt_hit" if is_hit else &"bolt_blocked", at)
 	queue_free()

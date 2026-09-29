@@ -2,10 +2,11 @@ extends TestCase
 ## M3 layout/fairness regression: encounter lanes, approach zones, backstops,
 ## attack visibility, lane leashing, interactable spacing, depot exit gating,
 ## and seams, measured in the assembled level_01. Grew out of the M3 assembly
-## review (LAY-10 Clipper leash compared in global space, LAY-11 Clipper
+## review (LAY-10 rover leash compared in global space, LAY-11 rover
 ## backstops out of charge range, LAY-13/LAY-14 recovery-station/switch
 ## exposure to a neighbouring encounter); keep passing after any future
-## geometry or tuning change.
+## geometry or tuning change. The level's enemies are Night Guards and
+## Staffers (both Brawlers) and Patrol Rovers (the old Clippers).
 
 const LEVEL_01 := "res://scenes/levels/level_01.tscn"
 const H := 96.0
@@ -16,7 +17,7 @@ var level: LevelDirector
 func run() -> void:
 	await _station_and_switch_exposure()
 	await _static_checks()
-	await _clipper_leash_in_level()
+	await _idle_patrol_in_level()
 	await _depot_exit()
 	await _combat_run()
 
@@ -82,9 +83,9 @@ func _static_checks() -> void:
 			var retreat := Rect2(lane.position.x - 2.0 * H, lane.position.y, lane.size.x + 4.0 * H, lane.size.y)
 			check(not retreat.intersects(hz), "%s lane(+2H retreat) does not contain %s approach zone" % [g.group_id, h.group_id])
 			check(not lane.intersects(_lane_global(h)), "%s lane does not overlap %s lane" % [g.group_id, h.group_id])
-		# Clipper backstops within one charge (4H) on each side, same floor
+		# Rover backstops within one charge (4H) on each side, same floor
 		for e in g.get_children():
-			if e is Clipper:
+			if e is PatrolRover:
 				var space := level.get_world_2d().direct_space_state
 				var res := {}
 				for dir in [-1, 1]:
@@ -94,18 +95,18 @@ func _static_checks() -> void:
 					q.collision_mask = 1
 					var hit := space.intersect_ray(q)
 					res[dir] = ("%s at %.0fpx" % [hit.collider.name, absf(hit.position.x - from.x)]) if not hit.is_empty() else "NONE"
-				print("[probe_lay_enc]   Clipper %s start local x=%.0f: wall within 4H left=%s right=%s" % [
+				print("[probe_lay_enc]   Rover %s start local x=%.0f: wall within 4H left=%s right=%s" % [
 						e.entity_id, e.global_position.x - a.global_position.x, res[-1], res[1]])
-				# LAY-11 regression: every Clipper must have SOME indestructible
+				# LAY-11 regression: every Rover must have SOME indestructible
 				# backstop within one charge (4H) of its start, so a charge in
 				# whichever direction it actually fires can stall and expose
-				# the motor (03: "Indestructible backstops make a stall
+				# the battery (03: "Indestructible backstops make a stall
 				# possible in every lane"). A backstop on only one side (as
 				# with E02/E04's existing right-side Backstop1/2) is not
-				# itself a defect — a Clipper can acquire and charge toward
+				# itself a defect — a Rover can acquire and charge toward
 				# the hero from either side depending on where it is when it
 				# acquires — so this does not require a LEFT-specific one.
-				check(res[-1] != "NONE" or res[1] != "NONE", "Clipper %s has a backstop within one charge (4H) of its start" % e.entity_id)
+				check(res[-1] != "NONE" or res[1] != "NONE", "Rover %s has a backstop within one charge (4H) of its start" % e.entity_id)
 	# depot interactables
 	var a5: AreaRoot = level.areas[4]
 	var names := ["CoreNode", "Workbench", "WeaponPad"]
@@ -134,41 +135,63 @@ func _static_checks() -> void:
 				bad.append(-x)
 		check(bad.is_empty(), "%s seams have 4H flat y=0 floor both ends (missing at %s)" % [ar.area_id, str(bad)])
 	# population / forbidden
+	# Kinds by the scene each enemy was instanced from (a Night Guard and a
+	# Staffer are the same Brawler script).
 	var kinds := {}
 	for e in get_tree().get_nodes_in_group("enemy"):
 		if level.is_ancestor_of(e):
-			var k: String = e.get_script().get_global_name()
+			var k: String = e.scene_file_path.get_file().get_basename()
 			kinds[k] = kinds.get(k, 0) + 1
 	print("[probe_lay_enc] enemy kinds in level: %s" % str(kinds))
-	check(kinds.keys().size() == 2 and kinds.get("Staffer", 0) == 9 and kinds.get("Clipper", 0) == 6, "only Staffer x9 + Clipper x6")
+	check(kinds.keys().size() == 3 and kinds.get("night_guard", 0) == 8 and kinds.get("staffer", 0) == 2 and kinds.get("patrol_rover", 0) == 6,
+			"only Night Guard x8 + Staffer x2 + Patrol Rover x6 (got %s)" % str(kinds))
 	await _unload()
 
 
-func _clipper_leash_in_level() -> void:
+## The enemies that idle by patrolling (every Rover; the Night Guards) must
+## not jitter (LAY-10: a leash compared in the wrong space flipped facing
+## every frame) and must stay in their lane; the dormant Staffers must stand
+## perfectly still until their encounter wakes them.
+func _idle_patrol_in_level() -> void:
 	await _load()
-	# hero stays at A01 start, far away; watch every Clipper's idle patrol
-	var clippers: Array = []
+	# hero stays at A01 start, far away; watch every patroller's idle beat
+	var patrollers: Array = []
+	var sleepers: Array = []
 	for e in get_tree().get_nodes_in_group("enemy"):
-		if level.is_ancestor_of(e) and e is Clipper:
-			clippers.append(e)
+		if not level.is_ancestor_of(e):
+			continue
+		if e is PatrolRover or (e is Brawler and e.tuning.patrol_speed() > 0.0):
+			patrollers.append(e)
+		elif e is Brawler and e.tuning.dormant_until_active:
+			sleepers.append(e)
+	check(patrollers.size() == 14, "8 Night Guards + 6 Rovers idle by patrolling (got %d)" % patrollers.size())
+	check(sleepers.size() == 2, "the 2 Staffers idle dormant (got %d)" % sleepers.size())
 	var flips := {}
 	var last := {}
 	var x0 := {}
-	for c in clippers:
+	var max_out := {}
+	for c in patrollers + sleepers:
 		flips[c] = 0
 		last[c] = c.facing
 		x0[c] = c.global_position.x
+		max_out[c] = 0.0
 	for t in 120:
 		await get_tree().physics_frame
-		for c in clippers:
+		for c in patrollers + sleepers:
 			if c.facing != last[c]:
 				flips[c] += 1
 				last[c] = c.facing
-	for c in clippers:
-		var a := _area_of(c.global_position.x)
-		print("[probe_lay_enc] Clipper %s idle 2s in assembled level: facing flips=%d, moved %.0f px, patrol_min/max_x=%s/%s vs global x=%.0f" % [
-				c.entity_id, flips[c], c.global_position.x - x0[c], str(c.patrol_min_x), str(c.patrol_max_x), c.global_position.x])
-		check(flips[c] <= 4, "Clipper %s does not jitter (facing flipped %d times in 2 s idle)" % [c.entity_id, flips[c]])
+			if c._group != null:
+				var lane := _lane_global(c._group)
+				max_out[c] = maxf(max_out[c], maxf(lane.position.x - c.global_position.x, c.global_position.x - lane.end.x))
+	for c in patrollers:
+		print("[probe_lay_enc] %s %s idle 2s in assembled level: facing flips=%d, moved %.0f px, patrol_min/max_x=%s/%s vs global x=%.0f" % [
+				c.scene_file_path.get_file().get_basename(), c.entity_id, flips[c], c.global_position.x - x0[c], str(c.patrol_min_x), str(c.patrol_max_x), c.global_position.x])
+		check(flips[c] <= 4, "%s does not jitter (facing flipped %d times in 2 s idle)" % [c.entity_id, flips[c]])
+		check(max_out[c] <= 0.0, "%s stays inside its lane while idle (out by %.1f px)" % [c.entity_id, max_out[c]])
+	for c in sleepers:
+		check(c.state == Brawler.State.DORMANT and absf(c.global_position.x - x0[c]) < 1.0 and flips[c] == 0,
+				"%s stands still, dormant, while its encounter sleeps (state %d, moved %.1f px)" % [c.entity_id, c.state, c.global_position.x - x0[c]])
 	await _unload()
 
 
@@ -261,15 +284,15 @@ func _combat_run() -> void:
 
 
 func _is_windup(e: Node) -> bool:
-	if e is Clipper:
-		return e.state == Clipper.State.WINDUP
-	return e.state == Staffer.State.WINDUP
+	if e is PatrolRover:
+		return e.state == PatrolRover.State.WINDUP
+	return e.state == Brawler.State.WINDUP
 
 
 func _attacking(e: Node) -> bool:
-	if e is Clipper:
-		return e.state == Clipper.State.WINDUP or e.state == Clipper.State.CHARGE
-	return e.state == Staffer.State.WINDUP or e.state == Staffer.State.LUNGE
+	if e is PatrolRover:
+		return e.state == PatrolRover.State.WINDUP or e.state == PatrolRover.State.CHARGE
+	return e.state == Brawler.State.WINDUP or e.state == Brawler.State.STRIKE
 
 
 ## Hero idles at a CP/switch interaction spot while the neighbouring group is
@@ -303,9 +326,9 @@ func _exposure(area_idx: int, group_path: String, enemy_name: String, enemy_loca
 
 func _station_and_switch_exposure() -> void:
 	# LAY-13 fix: E06's lane_rect was shrunk to end at local 5100 (was 5310)
-	# so its Staffer can never reach anywhere near CP02 (station at local
-	# 5420). Worst case is the Staffer sitting right at that new lane edge.
-	await _exposure(2, "Encounters/EncounterGroup_E06", "Staffer_CY01_01", 5100.0, Vector2(5360, -540), "A03 CP02 station vs E06")
+	# so its Night Guard can never reach anywhere near CP02 (station at local
+	# 5420). Worst case is the guard sitting right at that new lane edge.
+	await _exposure(2, "Encounters/EncounterGroup_E06", "NightGuard_SE01_01", 5100.0, Vector2(5360, -540), "A03 CP02 station vs E06")
 	# LAY-14 fix: E08's lane_rect ends at local 3900 (SW01 lever at 4130,
-	# outside it). Worst case is the Staffer at that lane edge.
-	await _exposure(3, "Encounters/EncounterGroup_E08", "Staffer_CY01_02", 3900.0, Vector2(4130, 96), "A04 SW01 lever vs E08")
+	# outside it). Worst case is the Night Guard at that lane edge.
+	await _exposure(3, "Encounters/EncounterGroup_E08", "NightGuard_SE01_02", 3900.0, Vector2(4130, 96), "A04 SW01 lever vs E08")

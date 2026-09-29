@@ -3,9 +3,14 @@ extends TestCase
 ## sprite pack in assets/characters/rook/): the body frame follows the hero's
 ## state, AimPivot stays on the current frame's shoulder (so the arm and the
 ## Scrapjack stay attached), and the arm + gun hide when Rook is defeated.
-## Presentation only — movement/collision are covered by the M1 tests.
+## Lit like the enemies (C35): the body and arm use the shared lit-part shader
+## with each frame's normal map (a frame without one falls back to flat
+## normals). Presentation only — movement/collision are covered by the M1
+## tests.
 
 const Frames := preload("res://scripts/actors/visuals/rook_frames.gd")
+const LIT_SHADER_PATH := "res://assets/shaders/lit_part.gdshader"
+const NORMAL_DIR := "res://assets/characters/rook/normals/"
 
 
 func run() -> void:
@@ -13,6 +18,7 @@ func run() -> void:
 	_test_smoothing_settings()
 	await _test_states()
 	await _test_faces_aim_and_backpedals()
+	await _test_lit_with_normal_maps()
 
 
 func _test_textures_load() -> void:
@@ -149,3 +155,75 @@ func _test_faces_aim_and_backpedals() -> void:
 		elif step == 1:
 			up += 1
 	check(down > up and down >= 3, "backpedalling plays the run frames in reverse (sequence %s)" % str(order))
+
+
+## The frame's normal map, or null when that file is not there (yet).
+func _normal_for(frame: StringName) -> Texture2D:
+	var path := "%srook_%s_n.png" % [NORMAL_DIR, frame]
+	return load(path) as Texture2D if ResourceLoader.exists(path) else null
+
+
+## Body and Arm are lit through the shared shader on light masks 1 | 2, and the
+## normal map follows the frame that is showing (set when the frame changes).
+func _test_lit_with_normal_maps() -> void:
+	Session.new_run()
+	var hero := _make_level()
+	hero.position = Vector2(200, -1)
+	hero.use_aim_override = true
+	hero.aim_override = hero.global_position + Vector2(400, -60)
+	await seconds(0.3)
+	var visual = hero.visual
+	var body: Sprite2D = visual.get_node("Body")
+	var arm: Sprite2D = hero.get_node("AimPivot/Arm")
+	for sprite in [body, arm]:
+		var mat := sprite.material as ShaderMaterial
+		check(mat != null and mat.shader != null and mat.shader.resource_path == LIT_SHADER_PATH,
+				"%s uses the lit-part shader" % sprite.name)
+		check_eq(sprite.light_mask, 3, "%s is on light masks 1 | 2 (world lights and the moon rim)" % sprite.name)
+		var ambient: Vector3 = mat.get_shader_parameter("ambient")
+		check(ambient.x > 0.2 and ambient.x < 0.4, "%s has a dim night ambient (about 0.3)" % sprite.name)
+		check(float(mat.get_shader_parameter("wrap")) > 0.0, "%s wraps its light a little" % sprite.name)
+		check(mat.get_shader_parameter("spec_atlas") != null, "%s always has a spec map (never a bare sampler)" % sprite.name)
+	check(body.material != arm.material, "the body and the arm have their own materials (their own normal maps)")
+
+	# The Body's normal map follows the frame, standing and running.
+	var body_mat := body.material as ShaderMaterial
+	var arm_mat := arm.material as ShaderMaterial
+	var seen := {}
+	var in_sync := true
+	press(&"move_right")
+	for i in 40:
+		await physics_frames(1)
+		var frame: StringName = visual.current_frame()
+		var expected := _normal_for(frame)
+		seen[frame] = true
+		var got: Texture2D = body_mat.get_shader_parameter("normal_atlas")
+		var on: float = body_mat.get_shader_parameter("normals_on")
+		if got != expected or on != (1.0 if expected != null else 0.0):
+			in_sync = false
+	release(&"move_right")
+	check(seen.size() >= 3, "the check saw several frames (%s)" % str(seen.keys()))
+	check(in_sync, "the body's normal map (or flat fallback) matches the frame showing, every tick")
+	var arm_expected := _normal_for(&"arm")
+	check_eq(arm_mat.get_shader_parameter("normal_atlas"), arm_expected, "the arm carries the arm normal map (null: flat, none made yet)")
+	check_eq(float(arm_mat.get_shader_parameter("normals_on")), 1.0 if arm_expected != null else 0.0, "the arm falls back to flat normals only when it has none")
+
+	# A texture with no normal map gets flat normals, not an empty sampler.
+	visual._apply_normal(body_mat, "rook_no_such_frame")
+	check(body_mat.get_shader_parameter("normal_atlas") == null and float(body_mat.get_shader_parameter("normals_on")) == 0.0,
+			"a missing normal map falls back to flat normals")
+	# The A/B switch: flat normals on request, normal maps back on.
+	visual.set_normals_enabled(false)
+	check(float(body_mat.get_shader_parameter("normals_on")) == 0.0 and float(arm_mat.get_shader_parameter("normals_on")) == 0.0,
+			"normals can be switched off for an A/B look")
+	visual.set_normals_enabled(true)
+	var frame_now: StringName = visual.current_frame()
+	check_eq(float(body_mat.get_shader_parameter("normals_on")), 1.0 if _normal_for(frame_now) != null else 0.0,
+			"and back on (where a normal map exists)")
+
+	# The small wrist light shares the world lights' smooth falloff and has a height.
+	var wrist: PointLight2D = hero.get_node("AimPivot/WristLight")
+	check_eq(wrist.texture, SceneryDraw.smooth_disc_texture(), "the wrist light uses the shared smooth disc")
+	check(wrist.height > 0.0, "the wrist light has a height for the normal-mapped body")
+	hero.queue_free()
+	await physics_frames(2)

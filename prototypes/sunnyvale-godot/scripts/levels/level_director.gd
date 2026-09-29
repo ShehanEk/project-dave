@@ -52,6 +52,15 @@ const DEPOT_AREA_ID := "L01-A05"
 ## wash). Optional: instanced only if the scene exists, owned by the world-
 ## visuals pass (scenes/world/night_overlay.tscn).
 const NIGHT_OVERLAY_SCENE := "res://scenes/world/night_overlay.tscn"
+## C35: the character-only moonlight that rims Dave and the lit enemies.
+## Optional in the same way as the overlay (scripts/world/night_lighting.gd).
+const NIGHT_LIGHTING_SCENE := "res://scenes/world/night_lighting.tscn"
+## C28, the turn to lethal force: as Dave badges out, security command's
+## flat PA voice (not Adam's) gives its one line; the completion screen
+## opens after it. The run is already committed and input is off.
+const PA_SPEAKER := "Security PA"
+const PA_LINE := "All teams: lethal force is authorized. Harlan is armed."
+const PA_BEAT := 3.2
 
 ## Session `checkpoint_id` -> [index into `areas`, marker name under that
 ## area's Markers node]. CP00 is the initial spawn; CP01-CP03 are the
@@ -121,6 +130,8 @@ func _ready() -> void:
 
 	if ResourceLoader.exists(NIGHT_OVERLAY_SCENE):
 		add_child(load(NIGHT_OVERLAY_SCENE).instantiate())
+	if ResourceLoader.exists(NIGHT_LIGHTING_SCENE):
+		add_child(load(NIGHT_LIGHTING_SCENE).instantiate())
 
 	_place_hero_at_checkpoint(String(Session.state.get("checkpoint_id", "CP00")))
 	var start_rect := _camera_target_rect_for_area(_area_for_x(hero.global_position.x))
@@ -403,8 +414,18 @@ func _on_wicket_reached() -> void:
 				Session.chips_found(),
 				Session.has_evidence("EF01"),
 				Session.weapon_stage("W01"))
-	_show_completion_screen()
+	var subtitles := get_tree().get_first_node_in_group("subtitle_panel")
+	if subtitles:
+		subtitles.say(PA_SPEAKER, PA_LINE)
+	get_tree().create_timer(PA_BEAT, false).timeout.connect(_on_pa_line_done)
 	level_ended.emit()
+
+
+func _on_pa_line_done() -> void:
+	var subtitles := get_tree().get_first_node_in_group("subtitle_panel")
+	if subtitles:
+		subtitles.clear_line()
+	_show_completion_screen()
 
 
 func _show_completion_screen() -> void:

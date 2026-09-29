@@ -67,7 +67,7 @@ const DEPOT_BEVEL := Color("#2A5A62")
 		fill_override = v
 		queue_redraw()
 ## M7 readability (02 "a subtle crack/impact mark on the stone after the
-## first stall"): set once by clipper.gd when a Clipper's charge stalls
+## first stall"): set once by patrol_rover.gd when a Rover's charge stalls
 ## against this block. Only BACKSTOP-kind stone actually draws it; every
 ## other kind ignores the flag, so a stray `cracked = true` elsewhere (e.g. a
 ## test helper) never changes ordinary geometry's look.

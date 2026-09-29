@@ -34,7 +34,8 @@ func run() -> void:
 	await physics_frames(3)
 	Session.tick_active_time(754.0)
 	level._on_wicket_reached()
-	await physics_frames(2)
+	# The completion screen opens after the Security PA line (C28).
+	await physics_frames(int(LevelDirector.PA_BEAT * 60.0) + 2)
 	var before: String = level._completion_screen._time_label.text
 	level.queue_free()
 	await physics_frames(3)

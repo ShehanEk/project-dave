@@ -251,8 +251,8 @@ func _test_t20_completion_totals_and_replay() -> void:
 	# has real progress across every field to reset, not just chips/wallet.
 	Session.apply_damage(2)
 	var a02: AreaRoot = level.areas[1]
-	var staffer: Staffer = a02.get_node("Encounters/EncounterGroup_E01/Staffer")
-	Session.mark_defeated(staffer.entity_id)
+	var guard: Brawler = a02.get_node("Encounters/EncounterGroup_E01/NightGuard")
+	Session.mark_defeated(guard.entity_id)
 	Session.set_switch("L01-SW01", true)
 	var swap := Session.swap_weapon("L01-A05-PAD01")
 	check(swap.get("ok", false), "setup: the depot weapon swap succeeds")
@@ -266,7 +266,11 @@ func _test_t20_completion_totals_and_replay() -> void:
 	level.hero.global_position = wicket.global_position
 	await physics_frames(3)
 	check(level.level_ended_flag, "setup: the exit wicket triggers completion")
-	check(is_instance_valid(level._completion_screen), "the completion screen opens")
+	# C28: the Security PA line plays first; the completion screen opens
+	# PA_BEAT later (level_ended_flag and level_ended are set at once).
+	check(not is_instance_valid(level._completion_screen), "the completion screen waits for the Security PA line")
+	await physics_frames(int(LevelDirector.PA_BEAT * 60.0) + 2)
+	check(is_instance_valid(level._completion_screen), "the completion screen opens after the PA line")
 	check(Session.chips_found() == 45, "chips found is still 45 on the completion screen (independent of the earlier spend)")
 
 	level._completion_screen.play_again_confirmed.emit()

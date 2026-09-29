@@ -10,21 +10,26 @@ const EXPECTED_AREA_IDS: Array[String] = [
 	"L01-A01", "L01-A02", "L01-A03", "L01-A04", "L01-A05", "L01-A06",
 ]
 const BEATS_PER_AREA: Array[int] = [4, 6, 5, 7, 5, 5]  # -> 32 total
+## Night Guards (SE01) and Staffers (LK01) are both Brawlers; the two are told
+## apart by their scene. Rovers are the M01 Patrol Rover (the old Clipper).
+const NIGHT_GUARD_SCENE := "res://scenes/actors/night_guard.tscn"
+const STAFFER_SCENE := "res://scenes/actors/staffer.tscn"
 const EXPECTED_ENCOUNTERS := {
-	"L01-E01": {"staffers": 1, "clippers": 0},
-	"L01-E02": {"staffers": 0, "clippers": 1},
-	"L01-E03": {"staffers": 1, "clippers": 0},
-	"L01-E04": {"staffers": 0, "clippers": 1},
-	"L01-E05": {"staffers": 1, "clippers": 0},
-	"L01-E06": {"staffers": 1, "clippers": 0},
-	"L01-E07": {"staffers": 1, "clippers": 1},
-	"L01-E08": {"staffers": 2, "clippers": 0},
-	"L01-E09": {"staffers": 1, "clippers": 1},
-	"L01-E10": {"staffers": 0, "clippers": 1},
-	"L01-E11": {"staffers": 1, "clippers": 1},
+	"L01-E01": {"guards": 1, "staffers": 0, "rovers": 0},
+	"L01-E02": {"guards": 0, "staffers": 0, "rovers": 1},
+	"L01-E03": {"guards": 1, "staffers": 0, "rovers": 0},
+	"L01-E04": {"guards": 0, "staffers": 0, "rovers": 1},
+	"L01-E05": {"guards": 1, "staffers": 0, "rovers": 0},
+	"L01-E06": {"guards": 1, "staffers": 0, "rovers": 0},
+	"L01-E07": {"guards": 1, "staffers": 0, "rovers": 1},
+	"L01-E08": {"guards": 2, "staffers": 0, "rovers": 0},
+	"L01-E09": {"guards": 1, "staffers": 0, "rovers": 1},
+	"L01-E10": {"guards": 0, "staffers": 1, "rovers": 1},
+	"L01-E11": {"guards": 0, "staffers": 1, "rovers": 1},
 }
-const EXPECTED_STAFFERS_TOTAL := 9
-const EXPECTED_CLIPPERS_TOTAL := 6
+const EXPECTED_GUARDS_TOTAL := 8
+const EXPECTED_STAFFERS_TOTAL := 2
+const EXPECTED_ROVERS_TOTAL := 6
 const EXPECTED_MAIN_CHIP_VALUE := 45
 const EXPECTED_CACHE_VALUE := 20
 ## Spawn/respawn markers commonly sit a few px above their floor by design
@@ -105,27 +110,31 @@ func _test_population_counts() -> void:
 	check(actual_beats == expected_beats,
 			"beat ids match exactly, in area/route order\n  got:  %s\n  want: %s" % [actual_beats, expected_beats])
 
-	# 11 EncounterGroups with exact Staffer/Clipper counts.
+	# 11 EncounterGroups with exact Night Guard/Staffer/Rover counts.
 	var groups := {}
 	for area in level.areas:
 		_collect_encounter_groups(area.get_node_or_null("Encounters"), groups)
 	check(groups.size() == 11, "level has exactly 11 EncounterGroups (got %d: %s)" % [groups.size(), groups.keys()])
+	var guards_total := 0
 	var staffers_total := 0
-	var clippers_total := 0
+	var rovers_total := 0
 	for group_id in EXPECTED_ENCOUNTERS:
 		check(groups.has(group_id), "encounter %s is present" % group_id)
 		if groups.has(group_id):
 			var got: Dictionary = groups[group_id]
 			var want: Dictionary = EXPECTED_ENCOUNTERS[group_id]
-			check(got.staffers == want.staffers and got.clippers == want.clippers,
-					"%s has %d staffer(s)/%d clipper(s) (got %d/%d)"
-					% [group_id, want.staffers, want.clippers, got.staffers, got.clippers])
+			check(got.guards == want.guards and got.staffers == want.staffers and got.rovers == want.rovers,
+					"%s has %d guard(s)/%d staffer(s)/%d rover(s) (got %d/%d/%d)"
+					% [group_id, want.guards, want.staffers, want.rovers, got.guards, got.staffers, got.rovers])
+			guards_total += got.guards
 			staffers_total += got.staffers
-			clippers_total += got.clippers
+			rovers_total += got.rovers
+	check(guards_total == EXPECTED_GUARDS_TOTAL,
+			"total Night Guards across the level is %d (got %d)" % [EXPECTED_GUARDS_TOTAL, guards_total])
 	check(staffers_total == EXPECTED_STAFFERS_TOTAL,
 			"total Staffers across the level is %d (got %d)" % [EXPECTED_STAFFERS_TOTAL, staffers_total])
-	check(clippers_total == EXPECTED_CLIPPERS_TOTAL,
-			"total Clippers across the level is %d (got %d)" % [EXPECTED_CLIPPERS_TOTAL, clippers_total])
+	check(rovers_total == EXPECTED_ROVERS_TOTAL,
+			"total Patrol Rovers across the level is %d (got %d)" % [EXPECTED_ROVERS_TOTAL, rovers_total])
 
 	# Chip economy: 45 main-route + 20 cache = 65.
 	var values := {"main": 0, "cache": 0}
@@ -163,9 +172,10 @@ func _test_population_counts() -> void:
 			enemy_dupes.append(id)
 		enemy_seen[id] = true
 	check(enemy_dupes.is_empty(), "no duplicate enemy ids anywhere in the level (dupes: %s)" % [enemy_dupes])
-	check(all_enemy_ids.size() == EXPECTED_STAFFERS_TOTAL + EXPECTED_CLIPPERS_TOTAL,
-			"enemy id count matches Staffer+Clipper total (got %d, want %d)"
-			% [all_enemy_ids.size(), EXPECTED_STAFFERS_TOTAL + EXPECTED_CLIPPERS_TOTAL])
+	var expected_enemy_total := EXPECTED_GUARDS_TOTAL + EXPECTED_STAFFERS_TOTAL + EXPECTED_ROVERS_TOTAL
+	check(all_enemy_ids.size() == expected_enemy_total,
+			"enemy id count matches the Night Guard+Staffer+Rover total (got %d, want %d)"
+			% [all_enemy_ids.size(), expected_enemy_total])
 
 	# Stations / console / workbench / pad / switch+walkway / wicket (by node
 	# type, since several of these deliberately leave entity_id empty).
@@ -196,14 +206,18 @@ func _collect_encounter_groups(node: Node, groups: Dictionary) -> void:
 	for child in node.get_children():
 		if child is EncounterGroup:
 			var group := child as EncounterGroup
+			var guards := 0
 			var staffers := 0
-			var clippers := 0
+			var rovers := 0
 			for enemy in group.get_children():
-				if enemy is Staffer:
-					staffers += 1
-				elif enemy is Clipper:
-					clippers += 1
-			groups[group.group_id] = {"staffers": staffers, "clippers": clippers}
+				if enemy is Brawler:
+					if enemy.scene_file_path == NIGHT_GUARD_SCENE:
+						guards += 1
+					elif enemy.scene_file_path == STAFFER_SCENE:
+						staffers += 1
+				elif enemy is PatrolRover:
+					rovers += 1
+			groups[group.group_id] = {"guards": guards, "staffers": staffers, "rovers": rovers}
 		_collect_encounter_groups(child, groups)
 
 

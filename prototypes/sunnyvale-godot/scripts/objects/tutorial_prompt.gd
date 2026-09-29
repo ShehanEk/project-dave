@@ -25,8 +25,8 @@ extends Node2D
 ## menu uses, never a second hardcoded table — falling back to a small
 ## bracketed text token (e.g. "[Q]") for any sub-binding this project has no
 ## icon file for, so the prompt always documents the CURRENT binding either
-## way. A prompt that doesn't literally name an input (e.g. the E02 Clipper
-## prompt) simply leaves `icon_actions` empty and reads as plain styled text.
+## way. A prompt that doesn't literally name an input (e.g. the E02 Patrol
+## Rover prompt) simply leaves `icon_actions` empty and reads as plain styled text.
 
 const InputIconMap := preload("res://scripts/ui/input_icon_map.gd")
 
@@ -159,8 +159,8 @@ func _process(delta: float) -> void:
 		return
 	_visible_elapsed += delta
 	# An empty `action` makes a purely informational prompt that only fades on
-	# its timer (or via dismiss()) — e.g. the E02 Clipper prompt, which must not
-	# vanish on the very first shot the player fires at the Clipper.
+	# its timer (or via dismiss()) — e.g. the E02 Patrol Rover prompt, which must
+	# not vanish on the very first shot the player fires at the Rover.
 	var acted := action != &"" and InputMap.has_action(action) and Input.is_action_just_pressed(action)
 	if acted or (auto_fade_time > 0.0 and _visible_elapsed >= auto_fade_time):
 		_fade_out()
@@ -168,8 +168,8 @@ func _process(delta: float) -> void:
 
 ## Fades out a prompt that is currently showing (no-op otherwise), exactly as
 ## performing its action would. Called through the "tutorial_prompt" group by
-## anything that replaces it with a more specific message — e.g. the Clipper's
-## "Armored!" hint supersedes the E02 prompt instead of overlapping it.
+## anything that replaces it with a more specific message — e.g. the Patrol
+## Rover's "Armored!" hint supersedes the E02 prompt instead of overlapping it.
 func dismiss() -> void:
 	if _shown_once or not _panel.visible:
 		return

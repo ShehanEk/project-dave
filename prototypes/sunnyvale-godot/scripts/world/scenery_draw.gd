@@ -7,10 +7,13 @@ extends RefCounted
 ##
 ## Revamp (C24) night pass: also home to the shared night palette tokens
 ## (art-design/style-guide.md "Palette tokens"; level-design/l01 "Palette and
-## lighting") and the hard-edged light textures every world PointLight2D
-## uses, so lamps, beacons and the depot's ceiling lights all paint the same
-## flat, three-band cel light pool instead of an airbrushed falloff (style
-## guide "Light pools: flat, hard-edged shapes of lighter color").
+## lighting") and the smooth light textures every world PointLight2D uses.
+## Lit cutouts (C35): the world lights are smooth, realistic falloffs (the
+## old flat three-band pools are gone), each sitting at its REAL position
+## with a `height`, because a normal-mapped character takes its lighting
+## direction from where the light is. The textures are generated once at
+## runtime (white, with the falloff in alpha), so there is no PNG to keep in
+## sync.
 
 const NIGHT := Color("#07090F")
 const NAVY := Color("#0E1726")
@@ -31,13 +34,17 @@ const OUTLINE := Color("#05070B")
 const ON_COLOR := TEAL
 const OFF_COLOR := AMBER
 
-## Light textures are square, white, with a stepped alpha: (outer extent as
-## a fraction of the texture, band level), outermost first.
-const LIGHT_TEX_SIZE := 256
-const LIGHT_BANDS := [[1.0, 0.3], [0.72, 0.62], [0.44, 1.0]]
-## Cone half-width per pixel of depth (the outer band's slope): the widest
-## band just fits the texture at its bottom row.
-const CONE_SLOPE := 0.5
+## Smooth light textures are square and white, with the falloff in alpha.
+## The cone's apex is at the texture CENTRE (so the light node sits AT the
+## lamp head and turns about it) and it points straight down; only the lower
+## half carries the beam, the upper half holds a small round halo. Both reach
+## the texture's edge (half the size) at `texture_scale` 1.
+const CONE_TEX_SIZE := 512
+const DISC_TEX_SIZE := 256
+## The beam is at full strength within CONE_CORE_DEG of the axis and feathers
+## to nothing at CONE_HALF_DEG.
+const CONE_HALF_DEG := 48.0
+const CONE_CORE_DEG := 27.0
 
 static var _cone_texture: Texture2D = null
 static var _disc_texture: Texture2D = null
@@ -54,60 +61,104 @@ static func draw_switch_symbol(node: CanvasItem, pos: Vector2, on: bool) -> void
 	node.draw_line(pts[2], pts[0], OUTLINE, 2.0)
 
 
-## A downward light cone: apex at the texture's top centre, three nested
-## hard-edged bands (brightest down the middle). Place a PointLight2D using
-## it at the cone's CENTRE (apex + half the scaled height straight down).
-static func light_cone_texture() -> Texture2D:
+## A smooth downward light cone (see the constants above): a beam that is
+## brightest near the apex and fades along its length and toward its edges,
+## plus a soft halo round the apex. Place a PointLight2D using it AT the lamp
+## head; `radius_px` in `make_light()` is how far the beam reaches.
+static func smooth_cone_texture() -> Texture2D:
 	if _cone_texture == null:
-		_cone_texture = _build_light_texture(true)
+		_cone_texture = _build_cone()
 	return _cone_texture
 
 
-## A round light pool with three hard-edged concentric bands.
-static func light_disc_texture() -> Texture2D:
+## A smooth round light: a bright core with a long, gentle falloff to nothing
+## at the texture's edge.
+static func smooth_disc_texture() -> Texture2D:
 	if _disc_texture == null:
-		_disc_texture = _build_light_texture(false)
+		_disc_texture = _build_disc()
 	return _disc_texture
 
 
 ## One additive PointLight2D (the Compatibility renderer's default 2D light
-## blend). Lights only reach canvas layer 0 (the world), never a UI
-## CanvasLayer. `extent_px` is the texture's on-screen size (a cone's
-## height, a disc's diameter).
-static func make_light(parent: Node, tex: Texture2D, pos: Vector2, extent_px: float,
-		color: Color, energy: float) -> PointLight2D:
+## blend), placed at `pos` (the real source: a lamp head, a beacon dome, the
+## muzzle). `radius_px` is how far it reaches from `pos` (a cone's length
+## down its axis, a disc's radius). `height_px` is the light's height above
+## the scene in pixels: characters shaded through normal maps take their
+## lighting direction from it. Lights only reach canvas layer 0 (the world),
+## never a UI CanvasLayer, and cast no shadows.
+static func make_light(parent: Node, tex: Texture2D, pos: Vector2, radius_px: float,
+		color: Color, energy: float, height_px: float) -> PointLight2D:
 	var light := PointLight2D.new()
 	light.texture = tex
-	light.texture_scale = extent_px / float(LIGHT_TEX_SIZE)
+	light.texture_scale = radius_px / (float(tex.get_width()) * 0.5)
 	light.position = pos
 	light.color = color
 	light.energy = energy
+	light.height = height_px
 	light.blend_mode = Light2D.BLEND_MODE_ADD
 	light.shadow_enabled = false
 	parent.add_child(light)
 	return light
 
 
-static func _build_light_texture(cone: bool) -> Texture2D:
-	var n := LIGHT_TEX_SIZE
-	var img := Image.create_empty(n, n, false, Image.FORMAT_RGBA8)
-	img.fill(Color(1.0, 1.0, 1.0, 0.0))
+## Both builders fill an RGBA8 byte array (white, alpha = falloff) and mirror
+## it, since each shape is left-right symmetric.
+static func _build_cone() -> Texture2D:
+	var n := CONE_TEX_SIZE
+	var data := PackedByteArray()
+	data.resize(n * n * 4)
+	data.fill(255)
 	var c := float(n) * 0.5
+	var mid := n >> 1
+	var half_rad := deg_to_rad(CONE_HALF_DEG)
+	var core_rad := deg_to_rad(CONE_CORE_DEG)
+	var feather := half_rad - core_rad
 	for y in n:
-		var fy := float(y) + 0.5
-		for band in LIGHT_BANDS:
-			var frac: float = band[0]
-			var hw := 0.0
-			if cone:
-				hw = fy * CONE_SLOPE * frac
-			else:
-				var r := c * frac
-				var dy := fy - c
-				if absf(dy) >= r:
-					continue
-				hw = sqrt(r * r - dy * dy)
-			var x0 := clampi(int(round(c - hw)), 0, n)
-			var x1 := clampi(int(round(c + hw)), 0, n)
-			if x1 > x0:
-				img.fill_rect(Rect2i(x0, y, x1 - x0, 1), Color(1.0, 1.0, 1.0, band[1]))
-	return ImageTexture.create_from_image(img)
+		var dy := (float(y) + 0.5 - c) / c
+		for x in range(mid, n):
+			var dx := (float(x) + 0.5 - c) / c
+			var dist := sqrt(dx * dx + dy * dy)
+			var a := 0.0
+			if dist < 1.0:
+				var beam := 0.0
+				if dy > 0.0:
+					var inside := clampf((half_rad - atan2(dx, dy)) / feather, 0.0, 1.0)
+					beam = smoothstep(0.0, 1.0, inside) * pow(1.0 - dist, 0.9)
+				# A soft halo round the apex, so the lamp head itself glows.
+				var spill := pow(clampf(1.0 - dist * 3.0, 0.0, 1.0), 1.5) * 0.7
+				var glow := 0.25 * pow(clampf(1.0 - dist * 1.6, 0.0, 1.0), 2.0)
+				a = clampf(maxf(beam, spill) + glow, 0.0, 1.0)
+			var byte := int(a * 255.0 + 0.5)
+			data[(y * n + x) * 4 + 3] = byte
+			data[(y * n + (n - 1 - x)) * 4 + 3] = byte
+	return _texture_from(n, data)
+
+
+static func _build_disc() -> Texture2D:
+	var n := DISC_TEX_SIZE
+	var data := PackedByteArray()
+	data.resize(n * n * 4)
+	data.fill(255)
+	var c := float(n) * 0.5
+	var mid := n >> 1
+	for y in range(mid, n):
+		var dy := (float(y) + 0.5 - c) / c
+		for x in range(mid, n):
+			var dx := (float(x) + 0.5 - c) / c
+			var r2 := dx * dx + dy * dy
+			var a := 0.0
+			if r2 < 1.0:
+				# Soft, roughly inverse-square falloff: a hot core, a long tail.
+				a = pow(1.0 - sqrt(r2), 2.2) * (0.35 + 0.65 / (1.0 + 9.0 * r2))
+			var byte := int(a * 255.0 + 0.5)
+			var mx := n - 1 - x
+			var my := n - 1 - y
+			data[(y * n + x) * 4 + 3] = byte
+			data[(y * n + mx) * 4 + 3] = byte
+			data[(my * n + x) * 4 + 3] = byte
+			data[(my * n + mx) * 4 + 3] = byte
+	return _texture_from(n, data)
+
+
+static func _texture_from(n: int, data: PackedByteArray) -> Texture2D:
+	return ImageTexture.create_from_image(Image.create_from_data(n, n, false, Image.FORMAT_RGBA8, data))

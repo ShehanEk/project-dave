@@ -89,8 +89,8 @@ func _test_snapshot_restoration() -> void:
 	Session.apply_damage(2)
 	check(Session.get_health() == Session.MAX_HEALTH - 2, "take damage after the commit")
 
-	var staffer: Staffer = a02.get_node("Encounters/EncounterGroup_E01/Staffer")
-	var enemy_id: String = staffer.entity_id
+	var guard: Brawler = a02.get_node("Encounters/EncounterGroup_E01/NightGuard")
+	var enemy_id: String = guard.entity_id
 	Session.mark_defeated(enemy_id)
 	check(Session.is_defeated(enemy_id), "defeat an enemy after the commit")
 
@@ -116,11 +116,11 @@ func _test_snapshot_restoration() -> void:
 	var fresh_a02: AreaRoot = level.areas[1]
 	var fresh_chip: Chip = fresh_a02.get_node_or_null("Entities/Chip_G001")
 	check(is_instance_valid(fresh_chip), "a fresh, uncollected Chip_G001 exists in the rebuilt A02")
-	var fresh_staffer: Staffer = fresh_a02.get_node_or_null("Encounters/EncounterGroup_E01/Staffer")
-	check(is_instance_valid(fresh_staffer), "the rebuilt A02 has a fresh Staffer at E01's authored (idle) placement")
-	if is_instance_valid(fresh_staffer):
-		check(fresh_staffer._health == fresh_staffer.tuning.health,
-				"the rebuilt Staffer is back at full health (got %d want %d)" % [fresh_staffer._health, fresh_staffer.tuning.health])
+	var fresh_guard: Brawler = fresh_a02.get_node_or_null("Encounters/EncounterGroup_E01/NightGuard")
+	check(is_instance_valid(fresh_guard), "the rebuilt A02 has a fresh Night Guard at E01's authored (idle) placement")
+	if is_instance_valid(fresh_guard):
+		check(fresh_guard.health == fresh_guard.tuning.health,
+				"the rebuilt Night Guard is back at full health (got %d want %d)" % [fresh_guard.health, fresh_guard.tuning.health])
 
 	# Chip collectible again: walking onto the fresh chip collects it fresh.
 	level.hero.global_position = fresh_chip.global_position
@@ -150,7 +150,7 @@ func _test_care_and_station_reuse_t12() -> void:
 
 	var chip: Chip = a02.get_node("Entities/Chip_G001")
 	check(Session.collect(chip.entity_id, chip.value), "setup: collect a chip before the station commit")
-	var enemy_id := "L01-E01-CY01-01"
+	var enemy_id := "L01-E01-SE01-01"
 	Session.mark_defeated(enemy_id)
 
 	var station: RecoveryStation = a02.get_node("Entities/RecoveryStation_CP01")
@@ -361,7 +361,7 @@ func _test_checkpoint_service_validation_t19() -> void:
 	rich["upgrades"] = {"W01": 1}
 	rich["equipped_weapon"] = "L01-W01-P02"
 	rich["world_weapons"] = {"L01-W01-P01": "L01-A05-PAD01"}
-	rich["defeated"] = {"L01-E01-CY01-01": true}
+	rich["defeated"] = {"L01-E01-SE01-01": true}
 	rich["switches"] = {"L01-SW01": true}
 	check(CheckpointService.save_snapshot(rich), "a fully-populated snapshot saves successfully")
 	var round_trip := CheckpointService.load_latest()

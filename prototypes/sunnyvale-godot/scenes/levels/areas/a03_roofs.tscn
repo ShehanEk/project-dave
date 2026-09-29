@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" path="res://scenes/objects/recovery_station.tscn" id="6_station"]
 [ext_resource type="PackedScene" path="res://scenes/objects/scenery.tscn" id="7_scenery"]
 [ext_resource type="Script" path="res://scripts/combat/encounter_group.gd" id="8_group"]
-[ext_resource type="PackedScene" path="res://scenes/actors/staffer.tscn" id="9_staffer"]
+[ext_resource type="PackedScene" path="res://scenes/actors/night_guard.tscn" id="9_guard"]
 [ext_resource type="PackedScene" path="res://scenes/objects/beat_zone.tscn" id="10_beat"]
 [ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="11_routepoint"]
 [ext_resource type="PackedScene" path="res://scenes/objects/kill_plane.tscn" id="12_killplane"]
@@ -404,9 +404,9 @@ monitorable = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E05/ApproachZone"]
 shape = SubResource("RectangleShape2D_approach")
 
-[node name="Staffer_CY01_01" parent="Encounters/EncounterGroup_E05" instance=ExtResource("9_staffer")]
+[node name="NightGuard_SE01_01" parent="Encounters/EncounterGroup_E05" instance=ExtResource("9_guard")]
 position = Vector2(3230, -216)
-entity_id = "L01-E05-CY01-01"
+entity_id = "L01-E05-SE01-01"
 
 [node name="EncounterGroup_E06" type="Node2D" parent="Encounters"]
 script = ExtResource("8_group")
@@ -424,9 +424,9 @@ monitorable = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E06/ApproachZone"]
 shape = SubResource("RectangleShape2D_approach")
 
-[node name="Staffer_CY01_01" parent="Encounters/EncounterGroup_E06" instance=ExtResource("9_staffer")]
+[node name="NightGuard_SE01_01" parent="Encounters/EncounterGroup_E06" instance=ExtResource("9_guard")]
 position = Vector2(5090, -540)
-entity_id = "L01-E06-CY01-01"
+entity_id = "L01-E06-SE01-01"
 
 [node name="Beats" type="Node2D" parent="."]
 

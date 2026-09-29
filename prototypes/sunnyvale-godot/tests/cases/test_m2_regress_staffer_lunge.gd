@@ -3,9 +3,12 @@ extends TestCase
 ## ever be on the facing/lunge side of the body, never reach a hero standing
 ## behind it) and lane leash (a lunge must not push the Staffer out of its
 ## EncounterGroup lane, and if it ever ends up outside, it must be able to
-## walk back in rather than getting stuck).
+## walk back in rather than getting stuck). The Staffer is the Brawler
+## template with the LK01 tuning (LUNGE strike); its `_lunge_dir` is now the
+## Brawler's `_strike_dir`.
 
 const BlockScript := preload("res://scripts/world/block.gd")
+const STAFFER := "res://scenes/actors/staffer.tscn"
 
 
 func _make_floor(x: float, y: float, w: float, h: float = 200.0) -> StaticBody2D:
@@ -35,7 +38,7 @@ func _probe_front_lunge_damages() -> void:
 	Session.new_run()
 	var f := _make_floor(0, 560, 2000)
 	var hero := _make_hero(Vector2(300, 560))
-	var r: Staffer = load("res://scenes/actors/staffer.tscn").instantiate()
+	var r: Brawler = load(STAFFER).instantiate()
 	add_child(r)
 	r.global_position = Vector2(400, 560)
 	await physics_frames(90)
@@ -50,12 +53,14 @@ func _probe_lunge_hits_hero_behind() -> void:
 	Session.new_run()
 	var f := _make_floor(0, 560, 2000)
 	var hero := _make_hero(Vector2(300, 560))
-	var r: Staffer = load("res://scenes/actors/staffer.tscn").instantiate()
+	var r: Brawler = load(STAFFER).instantiate()
 	add_child(r)
 	r.global_position = Vector2(400, 560)
+	# Frame 1 wakes the dormant Staffer, frame 2 starts the windup.
 	await physics_frames(3)
-	check(r.state == Staffer.State.WINDUP, "staffer winds up facing LEFT toward hero")
-	var lunge_dir := r._lunge_dir
+	check(r.state == Brawler.State.WINDUP, "staffer winds up facing LEFT toward hero")
+	var lunge_dir: int = r._strike_dir
+	check(lunge_dir == -1, "the committed lunge points LEFT, toward the hero (got %d)" % lunge_dir)
 	# During the windup the hero relocates BEHIND the staffer (e.g. after
 	# jumping over it), 40px behind its centre.
 	hero.global_position = Vector2(440, 560)
@@ -74,7 +79,7 @@ func _probe_lunge_leaves_lane_and_sticks() -> void:
 	var group := EncounterGroup.new()
 	group.lane_rect = Rect2(380, -500, 750, 1200)
 	add_child(group)
-	var r: Staffer = load("res://scenes/actors/staffer.tscn").instantiate()
+	var r: Brawler = load(STAFFER).instantiate()
 	group.add_child(r)
 	await physics_frames(1)
 	r.global_position = Vector2(400, 560)

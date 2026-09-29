@@ -17,6 +17,7 @@ const BASE_HINT_SIZE := 18
 const SPEAKER_COLORS := {
 	"Adam": Color("#3FE0D0"),
 	"Dave": Color("#E07A3F"),
+	"Security PA": Color("#C9D6E6"),
 }
 const SPEAKER_DEFAULT := Color("#FFB02E")
 
