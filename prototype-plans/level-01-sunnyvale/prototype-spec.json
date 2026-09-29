@@ -1,9 +1,30 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "kind": "prototype_execution_plan_not_runtime_level_data",
   "project": "DEAD EDEN",
   "level": "L01",
   "status": "implemented_unverified",
+  "revamp": {
+    "date": "2026-09-29",
+    "decisions": "C14-C24",
+    "milestone": "R1",
+    "summary": "Story, names, look and collectibles rebuilt to the new game (cyborg Staffers, microchips, evidence file EF01, the L01-KC01 keycard, Adam's core-node scene, night campus). Gameplay, tuning, timings, counts and encounter group IDs are unchanged; enemy IDs differ only by Z01 becoming CY01.",
+    "record": "09-progress-and-handoff.md (latest entry)",
+    "renamed_keys_in_schema_2": {
+      "residents": "staffers",
+      "gems": "chips",
+      "gem_drops": "chip_drops",
+      "resident_health": "staffer_health",
+      "artifact": "evidence",
+      "artifact_id": "evidence_id",
+      "artifact_mandatory": "evidence_mandatory",
+      "returned_present": "heirs_present",
+      "main_route_gems": "main_route_chips",
+      "main_route_gems_available_before_bench": "main_route_chips_available_before_workbench",
+      "optional_gems": "optional_chips",
+      "total_gems": "total_chips"
+    }
+  },
   "engine": {
     "family": "Godot",
     "major": 4,
@@ -34,31 +55,41 @@
       "W01"
     ],
     "enemy_types": [
-      "Z01",
+      "CY01",
       "R01"
     ],
     "boss_count": 0,
-    "returned_present": false,
+    "heirs_present": false,
+    "stealth_or_detection_systems": false,
+    "exit_keycards_required": 1,
     "new_gameplay_abilities": false
   },
   "prototype_only_elaborations": [
     "Extended beats within the six existing areas",
-    "Extra authored Resident and Clipper encounters",
+    "Extra authored Staffer and Clipper encounters",
     "Recovery stations CP01 and CP02",
     "One optional same-type pistol swap at depot",
     "One service-walkway switch in A04"
   ],
   "economy": {
-    "main_route_gems": 45,
-    "main_route_gems_available_before_bench": 45,
-    "optional_gems": 20,
-    "total_gems": 65,
+    "main_route_chips": 45,
+    "main_route_chips_available_before_workbench": 45,
+    "optional_chips": 20,
+    "total_chips": 65,
     "quickcycle_price": 40,
     "purchasable_stages": [
       1
     ],
-    "artifact_id": "A01",
-    "artifact_mandatory": false
+    "evidence_id": "EF01",
+    "evidence_mandatory": false
+  },
+  "keycard": {
+    "id": "L01-KC01",
+    "pickup_entity_id": "L01-KC01-P",
+    "area": "L01-A04",
+    "opens": "L01-A06 exit wicket",
+    "chip_value": 0,
+    "mandatory_for_exit": true
   },
   "tuning": {
     "status": "proposed_unverified",
@@ -73,7 +104,7 @@
     "pistol_damage": 1,
     "pistol_base_interval_s": 0.32,
     "pistol_quickcycle_interval_s": 0.24,
-    "resident_health": 3,
+    "staffer_health": 3,
     "clipper_exposed_motor_health": 3
   },
   "areas": [
@@ -81,9 +112,9 @@
       "id": "L01-A01",
       "name": "Perimeter gate",
       "seconds": 75,
-      "residents": 0,
+      "staffers": 0,
       "clippers": 0,
-      "gems": 5,
+      "chips": 5,
       "small": 5,
       "clusters": 0,
       "cp": "CP00",
@@ -105,7 +136,7 @@
         },
         {
           "id": "L01-A01-B04",
-          "name": "Gem trail and open gate",
+          "name": "Chip trail and open gate",
           "target_seconds": 15
         }
       ]
@@ -114,16 +145,16 @@
       "id": "L01-A02",
       "name": "Front gardens",
       "seconds": 150,
-      "residents": 2,
+      "staffers": 2,
       "clippers": 2,
-      "gems": 10,
+      "chips": 10,
       "small": 5,
       "clusters": 1,
       "cp": "CP01",
       "beats": [
         {
           "id": "L01-A02-B01",
-          "name": "First Resident in isolation",
+          "name": "First Staffer in isolation",
           "target_seconds": 30
         },
         {
@@ -138,7 +169,7 @@
         },
         {
           "id": "L01-A02-B04",
-          "name": "Resident in the next yard",
+          "name": "Staffer in the next court",
           "target_seconds": 25
         },
         {
@@ -157,9 +188,9 @@
       "id": "L01-A03",
       "name": "Rooftop walk",
       "seconds": 135,
-      "residents": 2,
+      "staffers": 2,
       "clippers": 0,
-      "gems": 10,
+      "chips": 10,
       "small": 5,
       "clusters": 1,
       "cp": "CP02",
@@ -176,12 +207,12 @@
         },
         {
           "id": "L01-A03-B03",
-          "name": "Resident on broad far terrace",
+          "name": "Staffer on broad far terrace",
           "target_seconds": 25
         },
         {
           "id": "L01-A03-B04",
-          "name": "Roof-height sequence and second Resident",
+          "name": "Roof-height sequence and second Staffer",
           "target_seconds": 30
         },
         {
@@ -193,11 +224,11 @@
     },
     {
       "id": "L01-A04",
-      "name": "Neighborhood square",
+      "name": "Campus plaza",
       "seconds": 165,
-      "residents": 4,
+      "staffers": 4,
       "clippers": 2,
-      "gems": 20,
+      "chips": 20,
       "small": 10,
       "clusters": 2,
       "cp": "CP03",
@@ -214,12 +245,12 @@
         },
         {
           "id": "L01-A04-B03",
-          "name": "Raised flowerbed traversal",
+          "name": "Raised planter-bed traversal",
           "target_seconds": 20
         },
         {
           "id": "L01-A04-B04",
-          "name": "Two staggered Residents",
+          "name": "Two staggered Staffers",
           "target_seconds": 25
         },
         {
@@ -234,35 +265,36 @@
         },
         {
           "id": "L01-A04-B07",
-          "name": "Quiet far porch and recovery station",
+          "name": "Quiet far porch: recovery station and keycard",
           "target_seconds": 25
         }
-      ]
+      ],
+      "keycard": "L01-KC01"
     },
     {
       "id": "L01-A05",
-      "name": "Maintenance depot",
+      "name": "Server depot",
       "seconds": 90,
-      "residents": 0,
+      "staffers": 0,
       "clippers": 0,
-      "gems": 0,
+      "chips": 0,
       "small": 0,
       "clusters": 0,
       "cp": "CP04",
       "beats": [
         {
           "id": "L01-A05-B01",
-          "name": "Workshop and mounted core",
+          "name": "Workbench and Adam's core node",
           "target_seconds": 15
         },
         {
           "id": "L01-A05-B02",
-          "name": "Release latch triggers EDEN",
+          "name": "Plug in: Adam answers",
           "target_seconds": 20
         },
         {
           "id": "L01-A05-B03",
-          "name": "Read transformed exit and save",
+          "name": "Read the lockdown exit and save",
           "target_seconds": 15
         },
         {
@@ -281,16 +313,16 @@
       "id": "L01-A06",
       "name": "Alarm exit",
       "seconds": 135,
-      "residents": 1,
+      "staffers": 1,
       "clippers": 2,
-      "gems": 0,
+      "chips": 0,
       "small": 0,
       "clusters": 0,
       "cp": "CP05",
       "beats": [
         {
           "id": "L01-A06-B01",
-          "name": "Preview quarantine rails",
+          "name": "Preview lockdown rails",
           "target_seconds": 25
         },
         {
@@ -305,104 +337,105 @@
         },
         {
           "id": "L01-A06-B04",
-          "name": "Final Resident and Clipper encounter",
+          "name": "Final Staffer and Clipper encounter",
           "target_seconds": 35
         },
         {
           "id": "L01-A06-B05",
-          "name": "Service wicket and completion",
+          "name": "Service wicket, keycard and completion",
           "target_seconds": 25
         }
-      ]
+      ],
+      "requires_keycard": "L01-KC01"
     }
   ],
   "encounters": [
     {
       "id": "L01-E01",
       "beat_id": "L01-A02-B01",
-      "residents": 1,
+      "staffers": 1,
       "clippers": 0,
-      "gem_drops": 0,
+      "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E02",
       "beat_id": "L01-A02-B02",
-      "residents": 0,
+      "staffers": 0,
       "clippers": 1,
-      "gem_drops": 0,
+      "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E03",
       "beat_id": "L01-A02-B04",
-      "residents": 1,
+      "staffers": 1,
       "clippers": 0,
-      "gem_drops": 0,
+      "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E04",
       "beat_id": "L01-A02-B05",
-      "residents": 0,
+      "staffers": 0,
       "clippers": 1,
-      "gem_drops": 0,
+      "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E05",
       "beat_id": "L01-A03-B03",
-      "residents": 1,
+      "staffers": 1,
       "clippers": 0,
-      "gem_drops": 0,
+      "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E06",
       "beat_id": "L01-A03-B04",
-      "residents": 1,
+      "staffers": 1,
       "clippers": 0,
-      "gem_drops": 0,
+      "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E07",
       "beat_id": "L01-A04-B02",
-      "residents": 1,
+      "staffers": 1,
       "clippers": 1,
-      "gem_drops": 0,
+      "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E08",
       "beat_id": "L01-A04-B04",
-      "residents": 2,
+      "staffers": 2,
       "clippers": 0,
-      "gem_drops": 0,
+      "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E09",
       "beat_id": "L01-A04-B06",
-      "residents": 1,
+      "staffers": 1,
       "clippers": 1,
-      "gem_drops": 0,
+      "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E10",
       "beat_id": "L01-A06-B02",
-      "residents": 0,
+      "staffers": 0,
       "clippers": 1,
-      "gem_drops": 0,
+      "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E11",
       "beat_id": "L01-A06-B04",
-      "residents": 1,
+      "staffers": 1,
       "clippers": 1,
-      "gem_drops": 0,
+      "chip_drops": 0,
       "max_simultaneous_attackers": 1
     }
   ],
@@ -410,8 +443,9 @@
     {
       "id": "L01-OPT01",
       "area": "L01-A02",
-      "artifact": "A01",
-      "gems": 0,
+      "evidence": "EF01",
+      "evidence_name": "Lockout Notice",
+      "chips": 0,
       "seconds": [
         45,
         60
@@ -420,8 +454,8 @@
     {
       "id": "L01-OPT02",
       "area": "L01-A03",
-      "artifact": null,
-      "gems": 20,
+      "evidence": null,
+      "chips": 20,
       "seconds": [
         45,
         60
@@ -438,7 +472,7 @@
     {
       "id": "CP01",
       "area": "L01-A02",
-      "trigger": "interact_safe_portrait_porch_station",
+      "trigger": "interact_safe_porch_station",
       "kind": "recovery"
     },
     {
@@ -456,13 +490,13 @@
     {
       "id": "CP04",
       "area": "L01-A05",
-      "trigger": "awakening_sequence_complete",
+      "trigger": "core_node_sequence_complete",
       "kind": "story_snapshot"
     },
     {
       "id": "CP05",
       "area": "L01-A06",
-      "trigger": "cross_service_wicket",
+      "trigger": "cross_service_wicket_with_keycard",
       "kind": "completion_snapshot"
     }
   ],

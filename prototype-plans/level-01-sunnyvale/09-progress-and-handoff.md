@@ -1,15 +1,15 @@
 # 09 — Progress and next-agent handoff
 
-**Approved visual direction (C11):** [Hand-drawn 2D](../../art-design/style-guide.md). [Selected references](../../concept-art/l01-sunnyvale/README.md).
+**Direction (C14–C35, 2026-09-29):** mature dark sci-fi — evil corporation Arcadia Dynamics, sentient AI Adam, rogue AI researcher Dave Harlan; human, cyborg and machine enemies with guns; visible blood; no zombies, no stealth. Enemy art: lit cutout rig with smooth realistic lighting ([style guide](../../art-design/style-guide.md)). This prototype is still the C24 build (Staffers and the Clipper); under C33 Level 1 will be rebuilt from the ground up around the C31 roster now that the lit-cutout test (`prototypes/sunnyvale-godot/spike/lit_cutout/`) is approved (see the last session-log entry).
 
 ## Current state
 
 **Planning status:** Complete, pending any user refinements.  
-**Implementation status:** M0-M6 verified; M7 implemented, unverified (gate 6 — first-time playtests — and T22-Windows/gate 7's Windows launch both pending). Playable, timing unverified.  
+**Implementation status:** Rebuilt for the 2026-09-29 revamp (C24): Staffer cyborgs, microchips, keycard exit, EF01 evidence file, Adam core-node SC01, night-campus look, new audio — tests 54/54. M0-M6 verified; M7 implemented, unverified (gate 6 — first-time playtests — and T22-Windows/gate 7's Windows launch both pending). Playable, timing unverified.  
 **Engine:** Godot 4.7.2.stable.official (ed1daf0bf), /Applications/Godot.app/Contents/MacOS/Godot (macOS host).  
 **Build directory:** prototypes/sunnyvale-godot/ (exports under its `exports/`, gitignored — see its README.md for build commands) — see its CONVENTIONS.md for contracts, layers, IDs and commands.  
 **Duration:** 750-second (12:30) main-route design budget; no measured playtest — duration unverified (see gate 6 below; `reports/pacing-risk.md` for the only data that exists, which is bot-traversal time, explicitly not pacing evidence).  
-**Next action:** run >=3 first-time playtests with the kit at `prototypes/sunnyvale-godot/reports/playtests/` (gate 6). Also still pending, separately: T22-Windows/gate 7's Windows launch on a real Windows PC (no Wine on this host) — see M7 row and session log below for both.
+**Next action:** the lit-cutout look is approved (C35, 2026-09-30); rebuild Level 1 from the ground up around the C31 roster (C33). Earlier, still valid for the C24 build: run >=3 first-time playtests with the kit at `prototypes/sunnyvale-godot/reports/playtests/` (gate 6). Also still pending, separately: T22-Windows/gate 7's Windows launch on a real Windows PC (no Wine on this host) — see M7 row and session log below for both.
 
 | Milestone | Status | Evidence |
 | --- | --- | --- |
@@ -22,6 +22,8 @@
 | M5 Story/exit (part 2: game flow shell + telemetry) | Verified | tools/test.sh and FPS=30 tools/test.sh both → 27/27 cases passed (see session log below). New `scenes/main.tscn`/`scripts/main.gd` game-flow shell: a real Title screen (`scenes/ui/title_screen.tscn`) with New Game (asks confirmation only when a save already exists), Continue (enabled only via `CheckpointService.has_valid_save()`; transparently recovers a valid backup with an honest message, or points at New Game if both copies are invalid — never a crash or a dead end), and Quit; a real Continue on a CP05 (already-complete) save opens straight to the completion screen instead of a dead trigger. New pause menu (`scenes/ui/pause.tscn`, added by `LevelDirector` alongside its `Hud`): Resume/Journal/Settings/Restart from checkpoint/Quit to title, entirely via `get_tree().paused` (every other node's default pausable process mode already stops gameplay/enemies/`Session.tick_active_time()` for free); opens only from real gameplay (a 2-physics-frame "was input already enabled" streak keeps it from ever racing a same-tick modal-close, which was found to freeze RouteBot-driven tests during development and is now a permanent contract note in CONVENTIONS.md); the `journal` action (Tab) opens straight to the Journal view, which shows the current objective and, once discovered, a short written A01 Welcome Key entry. New minimal `Settings` autoload (subtitles/text size/reduced motion/Master-Music-SFX volume via a new `data/audio/default_bus_layout.tres`), persisted through two new `CheckpointService` methods (`save_settings`/`load_settings`) to a SEPARATE `settings.json`, never mixed into the checkpoint. New local-only `Telemetry` autoload (`scripts/telemetry.gd`) writing one JSONL file per run under `user://sunnyvale/playtests/` (never uploaded, never touched by any test unless that test explicitly calls `run_start()` against its own redirected throwaway dir): `run_start`, `area_enter`/`area_exit`, `beat_enter`, new `branch_enter`/`branch_exit` (new `BranchZone` markers added to a02_gardens.tscn/a03_roofs.tscn around the existing OPT01/OPT02 routes, no geometry/id changes), `encounter_complete` (via a new `AreaRoot.get_encounter_groups()` helper), `checkpoint_commit`/`upgrade_purchase`/`weapon_swap` (self-connected to Session's own signals), `death`, `restart_from_checkpoint`, `pause_start`/`pause_end`, `sc01_start`/`sc01_end(skipped)`, `completion`. New `tools/summarize_playtest.py` (python3 stdlib only) computes 07's report template fields from a log, including main-route successful-progress time (checkpoint-to-checkpoint active-time deltas minus branch time — a death/restart's discarded attempt is excluded for free since active time only reaches the next checkpoint's commit once, via whichever attempt actually succeeded) — verified against a hand-computed synthetic fixture (`tests/fixtures/telemetry_sample.jsonl`) both directly and through `tests/cases/test_m5_flow.gd`. New `tests/cases/test_m5_flow.gd` (48-50 checks; the exact count varies slightly with how many telemetry events a run happens to log) proves: Continue from a saved CP02 snapshot rebuilds the world correctly (collected gem and defeated enemy both absent, hero at CP02's own Respawn marker); an invalid primary save transparently recovers a valid backup with an honest message, and both-invalid shows a message pointing at New Game with no crash; pause genuinely stops hero movement and the active-time clock and resumes cleanly (T21 partial); the New Game confirmation path (shown only when a save exists, Cancel/Confirm both behave correctly); and Telemetry writes a parseable, correctly-ordered JSONL log for a short scripted run including a death followed by a pause-menu restart-from-checkpoint. A 110-frame/15fps windowed capture of the new `scenes/debug/m5b_demo.tscn` (a bespoke autopilot driving the REAL `Main`/`TitleScreen`/`PauseMenu` flow through real button calls and the real `journal` input action, not a scripted stand-in) was inspected: the title screen, real gameplay with the HUD after New Game, the pause menu's Journal view (objective + "1 undiscovered" artifact line), and the Settings view (all six controls) all render correctly with zero errors/warnings; three representative frames were sent to the user. A real (non-test) run of that same capture also produced a genuine `user://sunnyvale/playtests/*.jsonl` log with `run_start`/`area_enter`/`pause_start`/`pause_end` events that `tools/summarize_playtest.py` reads without error, confirming the whole pipeline end to end outside the test harness too. A 120-frame headless `--quit-after` launch of the real `res://scenes/main.tscn` (the project's own `run/main_scene`) produced zero errors/warnings. **Adversarial review pass (see session log below):** found and fixed 4 real M5-part-2-scope bugs — pressing pause (Escape) during SC01 skipped the scene and committed CP04 instead of suspending it (ADV-01, story-scenes.md "Pause suspends scene playback" vs. "skip"); Play again left the never-recreated HUD showing the ended run's weapon tag/Quickcycle pip (ADV-03); `summarize_playtest.py`'s main-route successful-progress time counted rolled-back death attempts and dropped the whole first (run-start-to-CP01) segment (ADV-02), and separately always reported 0s of pause time due to a `t_active`-freeze no-op (ADV-06); the title's New Game confirmation text promised the save would survive until the next save while `Main` actually deletes it immediately on confirm (ADV-05, fixed by correcting the text); a completed save's Continue showed "Active play time: 0:00" instead of the real total (ADV-09, needed a new `active_seconds` schema field). Re-verified: `tools/test.sh`/`FPS=30 tools/test.sh` both 34/34 cases passed; a 120-frame headless launch of `res://scenes/main.tscn` still produces zero errors. |
 | M6 Presentation | Verified | `tools/test.sh`/`FPS=30 tools/test.sh` both 36/36 cases passed (import + full suite); a 120-frame headless `--quit-after` launch of `res://scenes/main.tscn` produced zero errors; a 60-frame/30fps windowed capture of `res://scenes/main.tscn` produced zero errors/warnings. C11 hand-drawn 2D visuals now cover Hero (original procedural vector rig)/Resident/Clipper (derived from the approved z01/r01 concept PNGs), the Scrapjack pistol, effects, all world geometry/scenery/props, per-area parallax backdrops, and every UI screen (shared `c11_theme.tres`); a new `Audio` autoload plays all 34 synthesized SFX cues + 2 music loops, every one now with a call site. Full-route (`m3_route_demo.tscn`, 800 frames/8fps, ~97s bot run), combat (`m2_demo.tscn`), depot/bench/pad (`m4_demo.tscn`), SC01+completion (`m6_characters_demo.tscn`/`m5_demo.tscn`), resident-solo/clipper-solo, reduced-motion (`M6_REDUCED_MOTION=1`), muted-audio (`M6_MUTED=1`), and three window sizes (960×540/1280×720/2560×1080 via `m6_resolution_probe.tscn`) were all captured and reviewed (grayscale contact sheets + individual frames): silhouettes, warning triangles/health-charge bars, gems, and platform edges all stay readable with reduced motion and with audio muted; no foreground prop hides feet/landing edges/gems/attack cues. Real-time performance sampled during a windowed (non-Movie-Maker) full-route run on this MacBook Pro (Apple M1 Pro, 8 cores, 16GB, Compatibility/Metal renderer): 68 one-second samples, frame time min/avg/max = 4.05/7.05/12.66 ms (≈79-247 fps uncapped), comfortably inside the 60fps/16.6ms target throughout — a target for this one machine, not a universal minimum. See `reports/asset-inventory.md` for the full per-asset provenance table and the honest remaining production-art gap list, and the M6 integration session log entry below for the two real bugs found and fixed while wiring the three parallel passes together. **Adversarial review pass (see session log below, "M6 adversarial review fixes"):** found and fixed 12 real bugs (2 critical, 5 major, 5 minor/cheap) spanning the Clipper's exposed-motor visual/hitbox alignment, background-removal transparency holes in both derived sprites, the Resident's off-model warning pose, Clipper blade/eye readability, both warning triangles' contrast, Clipper/hero z-order, a stray "P01" tag on the held gun, tutorial/hint text contrast, quarantine scenery reading as platform geometry, a negative-wallet display, and a debug demo writing to the real playtest-log directory; rejected 2 findings as already-tracked/false positives; deferred the full audio-priority/ducking system and a from-scratch hero-rig redesign as out of scope for a visual-only pass. Re-verified: `tools/test.sh`/`FPS=30 tools/test.sh` both 36/36 cases passed; recaptured `m6_characters_demo.tscn` (1000 frames/60fps) shows the Clipper's exposed motor now centered on `RearHitZone`, the Clipper drawing over the hero when stalled, and both derived sprites free of background leaks. |
 | M7 Validation/export | Implemented; timing gate pending first-time playtests; Windows launch pending a Windows PC. (Playable, timing unverified: gates 1-5 verified, gate 6 and gate 7's Windows launch pending, gate 7's macOS half partially verified — see evidence.) | `tools/test.sh`/`FPS=30 tools/test.sh` both 40/40 cases passed (see session log). Functional matrix T01-T20 verified, T21 mechanically verified (its visual-readability half only partially verified, M6 captures only), and completion gates 1-5 verified — `reports/functional-matrix.md`. Export: `export_presets.cfg` (Windows Desktop x86_64 embedded-PCK; macOS universal, unsigned; both presets now also exclude `tests/*`/`scenes/debug/*` from the package — AUD-05) built via `--export-release`/`--export-debug`. The macOS **release** export (what a player receives) is verified to boot cleanly to the title screen with no errors; save/continue/complete outside the editor is verified only on the macOS **debug** export of the same preset and source, using a debug-build-only, argument-gated automation driver (`scripts/debug/m7_export_driver.gd`, confirmed inert in the release export) — real New Game -> real checkpoint save -> real Continue -> real completion screen, all in a throwaway save location, the real save untouched — the release .app itself was not separately hand-played through save/continue/complete. Windows build produced and file-type-confirmed but not launch-tested (no Wine on the verifying macOS host) — see `reports/export-report.md` for exact commands, sizes, and the Windows-PC steps to finish T22. Gate 6 (>=3 first-time playtests, 07's timing protocol) and T22-Windows/gate 7's Windows launch are both explicitly **pending**: no testers were available this session, this host has no Wine, and this report does not substitute an estimate for a measured result, per the task's own instruction. **Audit-fix pass (see session log below):** an independent audit of this M7 pass found and this session fixed a critical real bug — `tests/cases/test_m6_ui.gd` left `CheckpointService` pointed at the REAL default save dir after its own run, so every full-suite run since M6 silently deleted a real `checkpoint.json`/`checkpoint.bak.json` on this machine via `tests/run_tests.gd`'s own cleanup, contradicting README/CONVENTIONS' "tests never touch a real save" guarantee (AUD-01) — plus two minor verification-tooling/packaging bugs (AUD-05, AUD-06); re-verified with the full suite, a 40-second high-frequency poll of the real save dir showing no leak, and a re-export + re-verification of all three build artifacts. |
+| Revamp rebuild (C24) | Implemented and tested; playtests pending | 2026-09-29: rebuilt to the dark sci-fi revamp (C14–C24). `tools/test.sh` → 54/54 cases (new `test_revamp_keycard`, `test_m6_characters`); captured tours of all six areas pre- and post-lockdown inspected. See the last session-log entry. |
+| Lit-cutout test (C35) | Built, tested and approved by the user (2026-09-30) | 2026-09-30: `spike/lit_cutout/` — SE01 Night Guard as a lit cutout rig (painted parts + normal maps), smooth lamp/muzzle/baton-tell lighting, hand-keyed motion (Mixamo converter ready), ragdoll death, visible blood; Dave lit the same way at runtime. `tools/test.sh` → 55/55 (new `test_spike_lit_cutout`). No existing file changed. |
 
 ## Baseline and outstanding prerequisites
 
@@ -1726,3 +1728,722 @@ Checks actually run and outcomes: tools/test.sh and FPS=30 NOIMPORT=1 tools/test
   with no errors
 Remaining gates: unchanged — gate 6 (first-time playtests) and Windows launch pending
 ~~~
+
+~~~text
+Date / agent / milestone: 2026-09-27 / Claude Code (Sonnet 5) / post-M7 follow-up (controls help menu)
+Implemented behavior: new "Controls (F1)" help menu (user request), reachable from the Title screen's own
+  button and F1, and from gameplay via F1 opening the Pause menu directly on it (same _can_open() gating as
+  Journal). New reusable scenes/ui/controls_panel.tscn + scripts/ui/controls_panel.gd (class ControlsPanel):
+  a 9-row table built from a fixed ordered list, each row's binding rendered LIVE from InputMap (never
+  hardcoded key names, per interface-and-accessibility.md "Input icons follow current bindings") plus a
+  short spoiler-free Tips block. New `help` InputMap action (F1) added via scripts/tools/configure_project.gd.
+  Adversarial review of the initial pass found the table's ScrollContainer used a hardcoded
+  custom_minimum_size guess (340px) that silently clipped the last row's descenders at Settings' Normal
+  text size, and clipped 3 of 9 rows entirely at Large text size with no indication anything was missing
+  beyond a thin scrollbar. Fixed by measuring the Table's own real GridContainer minimum size at runtime
+  (`_resize_scroll_to_table()`, re-run off `_table.minimum_size_changed`) instead of guessing — this also
+  hides each host's own redundant outer title/message Label while Controls is showing (TitleScreen/
+  PauseMenu already did this for Controls' M-message line; extended to the title text too) to give the
+  table the shared C11 Panel's full ~460px of usable room. At Normal text size all 9 rows now render with
+  zero clipping/scrolling on both screens at both 1280x720 and 960x540 (confirmed by real windowed
+  screenshots, not just row-count arithmetic). At Large text size the table's real measured height (rows
+  scaled 1.25x) exceeds even that full budget once the header/Back button's own (also-scaled) room is
+  reserved — impossible to fit entirely within a 960x540-legible fixed 640x500 panel — so the Scroll is
+  capped to the safe remaining budget (HOST_BUDGET_HEIGHT minus overhead) rather than growing the whole
+  view past the Panel's own drawn edges (a real overflow bug hit and fixed during this same pass: an
+  uncapped version pushed Tips and the Back button below the panel border, floating over the background).
+  Large text now shows 6 of 9 rows fully, contained correctly inside the panel with a working, discoverable
+  scrollbar for the rest — a real physical-space trade-off of the shared panel's fixed, 960x540-constrained
+  size, not a bug. The reviewer's third finding (a faint background circle bleeding through the panel via
+  assets/ui/c11_theme.tres's bg_color alpha=0.97) was confirmed real but pre-existing (untouched by this
+  feature, present since the M0-M7 commit) and rejected as out of scope — a shared-theme opacity change
+  affecting every C11 panel deserves its own separately reviewed decision, not one bundled into this
+  feature.
+Files changed: scenes/ui/controls_panel.tscn (new), scripts/ui/controls_panel.gd (new),
+  scenes/debug/help_demo.tscn (new, capture demo — redirects CheckpointService to a throwaway dir, adds
+  HELP_TEXT_SIZE=large env var following the M6_REDUCED_MOTION/M6_MUTED pattern), scripts/debug/help_demo.gd
+  (new), scripts/tools/configure_project.gd (+help/F1 action), project.godot (regenerated, help action
+  added, every other action byte-identical), scenes/ui/title_screen.tscn + scripts/ui/title_screen.gd
+  ("Controls (F1)" button/view, outer title hidden while Controls shows), scenes/ui/pause.tscn +
+  scripts/ui/pause_menu.gd ("Controls" button/view + F1 direct-open, outer "Paused" title hidden while
+  Controls shows), tests/cases/test_help_controls.gd (new, 48 checks: every InputMap action has exactly one
+  row with the exact current binding, refresh() re-reads a rebind, both entry points open/close correctly
+  with focus restored, Settings text size scales the panel), tests/cases/test_help_regress_table_clip.gd
+  (new, 10 checks — locks in the Normal-text no-clipping contract via a fixed-size SubViewport, the same
+  technique test_m7_pause_and_resize.gd uses), tests/cases/test_help_regress_large_text_overflow.gd (new,
+  4 checks — locks in that the whole view, including Back, never renders past the host Panel's edges at
+  either text size).
+Checks actually run and outcomes: tools/test.sh and FPS=30 tools/test.sh both -> RESULT: 45/45 cases
+  passed (45 = the prior 43 + 2 new regression cases); a 120-frame headless --quit-after launch of
+  res://scenes/main.tscn produced zero errors; real windowed captures (--resolution 1280x720/960x540,
+  --fixed-fps 30 — this host needs --fixed-fps even for a plain windowed run, not just Movie Maker
+  captures) of scenes/debug/help_demo.tscn, both from the Title screen and from gameplay's F1->Pause path,
+  at both Settings text sizes, were inspected frame by frame: Normal text shows all 9 rows with no clipping
+  at both resolutions; Large text shows 6 rows cleanly contained (no overflow) with a working scrollbar at
+  both resolutions.
+Remaining errors / placeholders / unverified gates: unchanged — gate 6 (first-time playtests) and
+  T22-Windows/gate 7's Windows launch both remain pending. New, accepted trade-off: at Settings' Large text
+  size the Controls table needs scrolling to reach Journal/Skip story scene/Controls help — the shared
+  640x500 C11 Panel does not have room for all 9 rows at 1.25x font scale within a 960x540-legible size, so
+  this is treated as an inherent constraint rather than a bug; the Panel would need to grow past what fits
+  on a 960x540 window to eliminate it entirely.
+Design deviations and reasons: hiding the host's own outer title/message Label while the Controls view is
+  open (both Title screen and Pause menu) is a new UI decision beyond the original task literal ask,
+  needed to give the table enough room without growing the shared Panel past the 960x540 budget; the
+  Controls view's own "Controls" header already identifies the screen, so nothing is lost.
+Save/schema compatibility notes: none — no Session/CheckpointService schema field changed; the new `help`
+  InputMap action is a project-settings-only addition (Settings settings.json/checkpoint save format
+  unaffected).
+Next concrete action: unchanged from the prior entry — gate 6 (first-time playtests) and the Windows
+  launch test are the only things blocking a fully verified M7.
+~~~
+
+~~~text
+Date / agent / milestone: 2026-09-27 / Claude Code (Sonnet 5) / post-M7: Clipper readability
+Implemented behavior: fixed the confirmed playtest report ("clipper doesn't die when I shoot") and its
+  root cause (a prior session's own verification pass, tests/cases/test_clipper_real_level.gd, had already
+  isolated it precisely): in a02_gardens.tscn, E02/E04's stone Backstop1/2 sat on the FAR side of their
+  Clipper from the hero's approach, so the charge — which always locks toward the approaching hero — fired
+  AWAY from the stone and just braked at its 4H cap with no stall, ever, on a natural first approach
+  (E07/E09/E10/E11 were already correctly authored the other way and needed no change). Fix: moved
+  Backstop1/2 onto the hero's approach side (matching the already-shipped, already-tested E07/E10 pattern
+  exactly — the stone physically blocks the Clipper's line-of-sight raycast until the hero jumps over it as
+  ordinary terrain, and the SAME wall is what the charge then stalls against, from either side, once LoS
+  clears), moved the Clipper's own spawn/patrol range clear of the wall (4H-cap margin, 30-50px) AND clear
+  of the hero's jump-landing spot (>=192px/2H, test_m3_regress_route.gd's own LANDING_ENEMY_MIN), widened
+  each lane_rect/patrol range enough to stop patrol-direction jitter (test_m3_regress_encounters.gd), and
+  re-authored the R04/R05 (E02) and R16/R17 (E04) Route points so the route bot still crosses the
+  relocated wall correctly. Result (test_clipper_real_level.gd, all six, real level, real Route points):
+  every Clipper now stalls on the FIRST natural charge (E02/E04 stall after 267/272px of a 384px cap, 1.60s
+  window — comfortable for 3 base-pistol shots at 0.32s cadence) — no tuning change needed, wall_stall_time
+  stays 1.6s. Also implemented the M7 teaching pass this fix was paired with (03/02's rule unchanged
+  throughout — front always blocks, rear only damageable in STALL): (a) frontal "armored" feedback now
+  reads through SHAPE as well as color — a radiating spark burst + chevron glyph at the exact impact point
+  (clipper.gd) plus a brief shield-outline flash on the shell (clipper_visual.gd), alongside the existing
+  shell color-flash and bolt_blocked audio; (b) the one-time motor hint now fires after 2 ineffective
+  frontal hits (was 4, data/tuning/clipper.tres), reads "Armored! Make it crash into stone, then shoot the
+  motor on its back.", and stays up 4s (was 2.5s); (c) a new one-shot-per-run contextual prompt
+  ("Clippers are armored in front — let it crash into the stone planter.") shows the instant E02's own
+  EncounterGroup activates (new `activated` signal, encounter_group.gd) and never reappears after a
+  same-run death/respawn rebuild, via a new generic `Session.runtime_flags` live-only flag store (mirrors
+  the existing `cutscene_active` idiom exactly: reset only by `new_run()`/`load_from_snapshot()`) plumbed
+  through new optional `TutorialPrompt` exports (`trigger_node`, `once_per_run_key`, `auto_fade_time`) that
+  leave every EXISTING TutorialPrompt instance (a01_gate.tscn) byte-identical in behavior; (d) STALL now
+  draws a pulsing 4-bracket target ring around the exposed motor, a shrinking arc tracing the remaining
+  stall window, and two small spinning "stunned" stars above it (all frozen, not spinning, under
+  Settings.reduced_motion) — vanishing the instant STALL ends, since the whole block only draws while
+  `stalled` is true; (e) the specific backstop a Clipper's charge actually stalls against gets a one-time
+  subtle crack overlay (new `Block.cracked` flag, drawn only for `Kind.BACKSTOP`, a no-op on every other
+  kind/instance).
+Files changed: scenes/levels/areas/a02_gardens.tscn (Backstop1/2 relocated; E02/E04 Clipper position/
+  patrol_min_x/patrol_max_x and EncounterGroup lane_rect widened; Route R04/R05/R16/R17 repositioned;
+  Planter1/2 nudged to sit by the relocated stone; new TutorialPrompt_E02Clipper), scenes/levels/areas/
+  a03_roofs.tscn (E05's ApproachZone moved ~250px further onto Terrace4b — see Design deviations below),
+  scripts/actors/clipper.gd (hint text/threshold/display-time consts, front-hit impact-position tracking +
+  spark/chevron `_draw()`, stall_remaining fraction plumbed into `_update_visual_pose()`, crack-mark hookup
+  in `_enter_stall()`), scripts/actors/visuals/clipper_visual.gd (shell shield-flash, motor target-ring/
+  timer-arc/stunned-stars, `_reduced_motion()`), scripts/combat/clipper_front_hit_zone.gd (`blocked_hit`
+  now carries `hit_position`), scripts/combat/encounter_group.gd (new `activated` signal),
+  scripts/objects/tutorial_prompt.gd (`trigger_node`/`once_per_run_key`/`auto_fade_time`),
+  scripts/world/block.gd (`cracked` export + `_draw_stone_crack()`), scripts/session.gd (`runtime_flags`/
+  `get_runtime_flag()`/`set_runtime_flag()`), data/tuning/clipper.tres + scripts/tuning/clipper_tuning.gd
+  (frontal_hint_threshold 4 -> 2), CONVENTIONS.md (documented all of the above contracts),
+  tests/cases/test_clipper_teaching.gd (new, 36 checks: hint at exactly 2 hits and only once per group,
+  stall_remaining data live only during STALL, the wall actually hit gets cracked exactly once and no
+  other Block ever does, front/rear damage rules provably unchanged, the E02 prompt shows once per run and
+  does NOT reappear after a same-run area rebuild but DOES clear on a genuinely new run),
+  scripts/debug/clipper_e02_sequence_demo.gd + scenes/debug/clipper_e02_sequence_demo.tscn (new, capture-
+  only demo driving the hero through E02's own real Route points with a reactive dodge/aim/fire loop).
+  tests/cases/test_clipper_real_level.gd (from the prior verification-only session) needed no further
+  changes and is the test that now reads all-green.
+Checks actually run and outcomes: tools/test.sh -> RESULT: 47/47 cases passed; FPS=30 tools/test.sh ->
+  RESULT: 47/47 cases passed (both full-suite runs, after every change in this entry, including a
+  necessary intermediate re-run after each of the three iterations the E02/E04 fix went through — first
+  pass left the Clipper unreachable by walking a Route JUMP point INTO the relocated wall's own footprint,
+  second pass put the Clipper's spawn only 45px past the hero's jump-landing spot (test_m3_regress_route.gd
+  LANDING_ENEMY_MIN=192px) and its narrowed patrol leash jittering (test_m3_regress_encounters.gd), third
+  pass fixed both); test_clipper_real_level.gd run standalone confirms, per Clipper, on the real level with
+  the real Route points: L01-E02-R01-01 and L01-E04-R01-01 now both stall on charge #1 (267px/272px
+  traveled of the 384px cap, 1.60s stall window, 3/3 rear hits landed, DEFEATED), matching the already-
+  passing L01-E07/E09/E10/E11 (219-369px traveled, 0.95-1.60s windows); test_clipper_teaching.gd run
+  standalone -> 36/36 checks; a windowed capture (tools/capture.sh, res://scenes/debug/
+  clipper_e02_sequence_demo.tscn, 200 frames @15fps, written to the session scratchpad's captures/
+  clipper_improve/) was inspected frame by frame end to end: the E02 contextual tutorial prompt is legible
+  on natural approach, the windup warning triangle shows before the charge, the charge visibly slams into
+  the relocated stone, the stall's motor-hatch/target-ring/stunned-star cues are all clearly visible and
+  distinct from the pre-stall flush-cover motor, a visible crack appears on the stone block after the
+  stall, and the Clipper is defeated and removed from the scene.
+Remaining errors / placeholders / unverified gates: unchanged — gate 6 (first-time playtests) and
+  T22-Windows/gate 7's Windows launch both remain pending. New, non-blocking notes from this pass: the
+  capture demo's own simple (non-alignment-gated) reactive-fire loop needed two stall cycles to land all 3
+  rear hits in this particular run (imprecise aim in the THROWAWAY DEMO's own dodge/aim logic, not a rule
+  or tuning issue — test_clipper_real_level.gd's more carefully alignment-gated reactive AI kills every one
+  of the six Clippers within its very first stall window, confirmed above); the capture's dodge-first
+  approach never happens to throw an early frontal shot, so the new spark/chevron/shield-flash "armored"
+  feedback is proven correct by test_clipper_teaching.gd/test_m2_clipper.gd (state/timers) and by reading
+  the draw code, but was not itself captured on video this pass — a natural follow-up capture.
+Design deviations and reasons: the task brief's illustrative narrative ("the hero stands on the step... it
+  stalls with its rear motor facing AWAY from the hero... the hero drops/jumps over the STALLED Clipper")
+  was not implemented literally. Instead E02/E04 were brought in line with the exact pattern the OTHER four
+  Clippers already ship and already pass tests with: the stone sits on the hero's approach side and
+  physically blocks the Clipper's line-of-sight raycast (both eye-heights fall inside the wall's height
+  band) until the hero jumps over it as ordinary terrain; only then does the Clipper acquire and its charge
+  (which always locks toward wherever the hero currently is) travel back into the very wall the hero just
+  crossed, exposing the rear on the side the hero is already standing on — no separate "jump over the
+  Clipper's body" step needed. This was a deliberate choice to make all six lanes share one proven,
+  tested mechanic rather than inventing a second, divergent layout for only two of them; the existing
+  ObservationStep1/2 set dressing was left in place (still "in the same camera view" as the stone/jump per
+  02) but is not itself gameplay-load-bearing under this pattern — standing on it does not trigger a charge
+  (floor_band=64 rejects the ~120px height difference) — a minor, accepted divergence from the brief's
+  "waits on the step" phrasing, since the actual taught mechanic (walk in, jump the stone, shoot the
+  exposed rear) is what the new tutorial prompt and hint text both describe, and no test/rule requires the
+  step itself to be interactive.
+  Also fixed, found only because this fix's own A02 route-point timing shift exposed it (confirmed by
+  `git stash` bisection, not assumed): a03_roofs.tscn's E05 Resident `ApproachZone` sat only ~10px onto the
+  Terrace4b platform, immediately past a 170px gap-jump — `body_entered` could fire on whichever exact tick
+  the hero's sub-pixel position crossed that line, and with this fix's A02 timing changes that tick landed
+  while the hero's downward floor-probe still read "no flat floor behind" (test_m3_regress_route.gd's own
+  retreat-floor check, RETREAT_MIN=192px), intermittently in the sense that it depends deterministically on
+  upstream timing rather than being flaky run-to-run. Moved the zone ~250px further onto the platform for a
+  real, timing-independent margin. Unrelated to the Clipper rule/rewrite; called out here rather than
+  folded silently into the Clipper diff, since a03_roofs.tscn was already mid-edit (uncommitted) by another
+  session when this one started.
+Save/schema compatibility notes: none — no `Session.state`/`CheckpointService` persisted schema field
+  changed. The new `Session.runtime_flags` is deliberately live-only (like the existing `cutscene_active`),
+  never part of `default_state()`, so `CheckpointService.validate_snapshot()`'s whitelist needed no change.
+Next concrete action: unchanged — gate 6 (first-time playtests) and the Windows launch test are the only
+  things blocking a fully verified M7. A good next capture: deliberately fire frontally a couple of times
+  before dodging E02's charge, to also show the new spark/chevron/shield-flash cue on video (this pass's
+  capture only exercises the stall-side cues).
+~~~
+
+~~~text
+Date / agent / milestone: 2026-09-27 / Claude Code (Sonnet 5) / post-M7: Kenney integration part A
+  (audio, input-prompt icons, crosshair, particles/light masks) — verification/finalization pass
+Implemented behavior: this session did not author new integration code — that was three parallel
+  workflows (audio, UI, fx), each already done and reporting all-green before this pass started. This
+  pass's job was to run the import step once, run the full verified suite, headless-launch the game, and
+  capture/inspect real gameplay footage before signing part A off, plus write up the asset inventory. All
+  three passes' work was confirmed wired and correct: `scripts/audio/audio_director.gd`'s `SFX_SOURCES`
+  plays 44 curated Kenney `.ogg` files across 27 of 34 SFX cues (interface/impact/ui-audio/sci-fi packs),
+  keeping the 7 remaining cues + both music loops on the original synthesized `.wav` where no Kenney
+  file fit; `scripts/ui/controls_panel.gd` renders a Kenney input-prompt icon column (Keyboard & Mouse ->
+  Vector -> Outline, tinted warm charcoal) beside every row's existing binding text in the Controls panel;
+  `scripts/main.gd` swaps the OS mouse cursor to the Kenney crosshair-pack reticle during real gameplay
+  only (arrow on Title/paused/modal); `scripts/objects/scenery.gd` + `scripts/world/environment_state.gd`
+  give LAMP/BEACON props a soft additive light-mask glow (utility <-> examination retint, alarm pulse);
+  and a new `scripts/effects/kenney/kenney_puff.gd` one-shot particle helper is wired at 6 call sites
+  (muzzle flash, hero landing dust, gem/cache/checkpoint sparkle, resident defeat puff, pit-fall dust). All
+  copied Kenney files are CC0 1.0, staged under `assets/kenney/<pack>/` (never a whole pack) with each
+  pack's own `LICENSE.txt`. Per this task's concurrency rule, nothing Clipper-owned was touched
+  (`clipper.gd`/`clipper_visual.gd`/`clipper_front_hit_zone.gd`/`impact_spark.gd`/`tutorial_prompt.gd` +
+  their scenes, `a02_gardens.tscn`, `clipper.tres`, Clipper tests) — the Clipper's own clang/stall
+  particles and tutorial-prompt icons remain part B, still pending; 3 particle-pack/smoke-particles files
+  are pre-staged under `assets/kenney/particles/clipper_later/` for that later pass but not yet referenced
+  anywhere.
+Files changed (this pass only — see the three prior sessions' own log entries for the integration
+  diffs): `prototypes/sunnyvale-godot/reports/asset-inventory.md` (new §7 "Kenney CC0 asset integration",
+  documenting every wired file's source pack, CC0 status, and exact in-game use, plus the 3 staged/unwired
+  Clipper-later files and known gaps), this handoff entry.
+Checks actually run and outcomes: `godot --headless --path . --import` run once (clean, 75 Kenney assets
+  already had `.import` files from the prior passes, none needed re-importing); `tools/test.sh` ->
+  RESULT: 49/49 cases passed (including `test_kenney_ui.gd` 52 checks and `test_m65_kenney_fx.gd` 17
+  checks — both initially looked missing from a `tail`-truncated log and were re-confirmed with a
+  `--filter=kenney` run: 2/2 passed); `FPS=30 tools/test.sh` -> RESULT: 49/49 cases passed (full log
+  captured to a file this time, no truncation); a 120-frame headless `--quit-after` launch of
+  `res://scenes/main.tscn` produced zero errors beyond the expected one-line boot log message. Captured
+  and frame-by-frame inspected (~20 frames total): `res://scenes/debug/m3_route_demo.tscn`, 8 fps, 800
+  frames (long enough to cover the bot's full ~97s route end-to-end through "Sunnyvale complete.") — depot
+  utility lamps and quarantine examination lamps both read as soft warm/cyan ambient glow cones, not the
+  earlier flat debug-looking discs; the E02 Clipper's warning triangle, charge-into-stone, and post-stall
+  crack were all clearly visible and on-palette; nothing covered feet, edges, gems, or the interact/save
+  toasts. `res://scenes/debug/m2_demo.tscn` (Resident + Clipper combat course), 15 fps, 150 frames — hero
+  fire pose, Resident hit-flash, and the Clipper's charge/stall/crack sequence all read cleanly with no
+  clipping or oversized effects; the OS crosshair cursor itself isn't visible in any Movie Maker capture
+  (documented limitation from the UI pass's own report — `Viewport.get_texture()` doesn't capture the
+  compositor-drawn cursor), so that piece is verified via `test_kenney_ui.gd` and `Main.get_cursor_mode()`
+  instead, per that pass's own note.
+Remaining errors / placeholders / unverified gates: unchanged from the prior M7 entries — gate 6
+  (first-time playtests) and the Windows launch test remain pending. New, non-blocking notes from this
+  pass: `assets/kenney/README.md`'s own "Wiring note (next pass, not done here)" callouts for audio/
+  input-prompt-icons/crosshair are now stale (that wiring is done) but that file is owned by the curation/
+  staging workflow, not this pass, and was left unedited — reports/asset-inventory.md's new §7 is now the
+  up-to-date reference. Part B (Clipper clang/stall particles, tutorial-prompt icons) is explicitly not
+  started — see reports/asset-inventory.md §7.6.
+Design deviations and reasons: none — this was a verification/documentation pass only, no gameplay,
+  tuning, collision, ID, or save-format code was touched.
+Save/schema compatibility notes: none — no Session/CheckpointService schema field changed by any of the
+  three Kenney integration passes or by this verification pass; `Audio.play_sfx()`'s cue names and every
+  call site across the project are unchanged.
+Next concrete action: hand off part B (Clipper's own clang/dazed-star/stall-steam particles using the 3
+  pre-staged `assets/kenney/particles/clipper_later/` files, plus swapping `tutorial_prompt.gd`'s plain
+  text for a matching Kenney input-prompt icon) to the workflow that owns those Clipper-related files, once
+  it's no longer mid-edit; separately, gate 6 (first-time playtests) and the Windows launch test remain the
+  blockers for a fully verified M7.
+~~~
+
+~~~text
+Date / agent / milestone: 2026-09-27 / Claude Code (Sonnet 5) / post-M7: Clipper readability-pass review
+  fix ("clipper doesn't die when I shoot" follow-up — verifying/fixing the prior E02/E04 backstop +
+  teaching-cues pass)
+Implemented behavior: verified all 4 findings from an independent review of the prior Clipper session
+  (E02/E04 backstop relocation + STALL teaching cues) and fixed the 2 that were real; the Clipper rule
+  itself (front shell always blocks; rear motor damageable ONLY during the wall-stall; 3 motor hits;
+  1.6s wall_stall_time) was NOT touched. F1 (CRITICAL, confirmed) and F3 (CRITICAL, confirmed, same root
+  cause): `clipper.tscn`'s `Visual/Photo` Sprite2D is a CHILD of `Visual`, and a CanvasItem child draws
+  AFTER (on top of) its own parent's `_draw()` by default — the opposite of the intended "STALL overlay ON
+  TOP of the photo" / "spark on top of the body". Since the motor site and typical frontal-impact points
+  sit on OPAQUE photo pixels (only the eye-stalk/shear regions are erased/transparent in the source
+  texture), the photo was silently painting over BOTH the STALL motor-exposed cue (glow/hatch/ring/stars)
+  in `clipper_visual.gd` AND the frontal "armored" blocked-spark/chevron in `clipper.gd` — exactly matching
+  the original playtest report and confirmed here two ways: a full-frame color scan of a real E02
+  gameplay capture found zero `MOTOR_EXPOSED` (#d97a4a) pixels anywhere during an actual STALL, and an
+  isolated forced-STALL rig showed the cues render correctly ONLY once `Photo.visible` was set false. Fix:
+  `show_behind_parent = true` set on BOTH `Visual/Photo` (so it draws before `Visual`'s own `_draw()`,
+  i.e. underneath the shear/eye/motor overlay) AND on `Visual` itself (so the whole Visual+Photo subtree
+  draws before the Clipper root's own `_draw()` — the frontal spark and windup-warning triangle — keeping
+  those topmost too); this is a pure z-order fix, no collision/hit-zone/rule/tuning change. Re-verified
+  with an isolated forced-STALL+blocked-hit rig (motor glow/hatch/ring/stars AND the frontal spark now all
+  render correctly) and, more importantly, with a fresh real-gameplay capture of the actual E02 encounter
+  (`clipper_e02_sequence_demo.tscn`): a full-frame color scan now finds `MOTOR_EXPOSED` pixels in 8 of 200
+  frames during the real STALL, and the motor glow/exclamation core is clearly visible by eye in the
+  capture (previously zero, per the prior session's own report). F2 (CRITICAL, confirmed, harder to fix
+  than the review's own suggestion): `clipper.tscn`'s `HintLabel` (offset_top/bottom -108/-80) and
+  `clipper.gd`'s windup-warning-triangle draw (local y -102..-82) occupy nearly the same band. Moving only
+  the label's BOX up (tried -140/-112 first) was NOT enough: `HintLabel`'s `autowrap_mode=WORD` wraps
+  `Clipper.HINT_TEXT` into 3 lines at its 200px width, and a Godot `Label` does not clip vertically, so the
+  wrapped text overflows well past `offset_bottom` — a pixel-level capture of a forced-hint+forced-WINDUP
+  rig proved the -140/-112 attempt still had the triangle's glyph overlapping the tail of line 3. Moved to
+  -180/-152 instead and re-verified with the same rig + a pixel color scan: the wrapped text (screen rows
+  490-553 in that capture) and the triangle (rows ~570-604) now have a clean ~17px gap with zero
+  overlapping rows. F4 (correctly identified by the review, not a bug): L01-E07's real stall→kill window
+  is 0.95s (vs 1.60s for the other five Clippers, `test_clipper_real_level.gd`'s own natural-approach
+  numbers, unchanged by this pass) because its extra CentralStep hop eats into repositioning time — but 3
+  base-pistol shots at 0.32s cadence need only 0.64s back-to-back, so 0.95s still clears the plan's own
+  explicit re-tuning trigger ("tune stall length if three base shots cannot fit comfortably") with ~0.31s
+  to spare, and `killable=true` for E07 in the same test run. No tuning change made; `data/tuning/
+  clipper.tres`'s `wall_stall_time` stays 1.6s, matching the "no tuning change needed" call the prior
+  session already made. Deleted the temporary verification-only debug scenes/scripts this pass created
+  (`zorder_verify_demo`, `hint_overlap_verify_demo`) once each fix was confirmed by capture — neither is
+  part of the shipped project.
+Files changed: `prototypes/sunnyvale-godot/scenes/actors/clipper.tscn` (`show_behind_parent = true` on
+  `Visual` and on `Visual/Photo`; `HintLabel` offset_top/offset_bottom moved from -108/-80 to -180/-152),
+  `prototypes/sunnyvale-godot/scripts/actors/visuals/clipper_visual.gd` (header comment documenting the
+  z-order bug/fix, no logic change), `prototypes/sunnyvale-godot/scripts/actors/clipper.gd` (comment on
+  `_draw_warning()` documenting the hint-label-overlap bug/fix, no logic change), this handoff entry. No
+  test file needed a change — the existing `test_clipper_teaching.gd`/`test_m2_clipper.gd` only assert
+  `hint_label.visible`/`.text`, never its screen position, so both fixes are pure presentation/z-order and
+  needed no test updates.
+Checks actually run and outcomes: `tools/test.sh` -> RESULT: 49/49 cases passed; `FPS=30 tools/test.sh` ->
+  RESULT: 49/49 cases passed (both run twice, once right after the z-order fix and once more after the
+  final HintLabel offset, both times clean); a `--filter=clipper` run separately confirms
+  `test_clipper_real_level.gd` (59 checks: all six Clippers `killable=true`, E02/E04 stall on charge #1 at
+  267/272px of the 384px cap with a 1.60s window, E07 at 219px/0.95s window, E09/E10/E11 all 1.60s) and
+  `test_clipper_teaching.gd` (36 checks) both still pass unchanged. Visual fixes proven by capture, not by
+  the headless suite (per CONVENTIONS.md, "visual captures prove readability"): an isolated forced-STALL
+  rig and a forced-2-blocked-hits+WINDUP rig (both temporary, deleted after use) were captured via
+  `tools/capture.sh` and inspected both by eye and by direct pixel/color-region scans (see above); the real
+  `clipper_e02_sequence_demo.tscn` encounter was recaptured (200 frames/15fps) after the fix and a
+  full-frame `MOTOR_EXPOSED` color scan found the cue present during the real STALL (8/200 frames) where
+  the pre-fix capture (per the prior session's own report) found zero.
+Remaining errors / placeholders / unverified gates: unchanged — gate 6 (first-time playtests) and
+  T22-Windows/gate 7's Windows launch both remain pending. No new gaps introduced by this pass; the frontal
+  spark/chevron cue (previously only inferred, not captured, per the prior session's own "known gaps" note)
+  is now directly confirmed visible in the isolated rig capture.
+Design deviations and reasons: none — this was a bugfix/verification pass only; the Clipper rule (front
+  always blocks, rear only damageable in STALL, 3 motor hits, 1.6s stall) is byte-for-byte unchanged, and
+  `data/tuning/clipper.tres` was not touched.
+Save/schema compatibility notes: none — no Session/CheckpointService schema field changed; nothing here
+  touches `Session.runtime_flags` or any other persisted/live-only state.
+Next concrete action: unchanged — gate 6 (first-time playtests) and the Windows launch test remain the
+  blockers for a fully verified M7. A good next capture: deliberately fire 1-2 frontal shots against a real
+  encounter Clipper (not just the isolated rig used here) before it stalls, to confirm the frontal spark
+  also reads correctly at actual gameplay framing/scale.
+~~~
+
+~~~text
+Date / agent / milestone: 2026-09-27 / Claude Code (Sonnet 5) / post-M7: Kenney integration part A review
+  fix (independent review of the part A verification pass)
+Implemented behavior: verified 2 findings from an independent review of the Kenney part A pass and fixed
+  both. (1, MAJOR, confirmed) The gem/checkpoint pickup sparkle was effectively invisible at real gameplay
+  camera scale: `kenney_puff.gd`'s `gem_sparkle`/`gem_sparkle_cluster`/`checkpoint_sparkle` CPUParticles2D
+  configs used `scale_min/max` (0.08-0.20 of the 512px `star_04`/`star_05` source, ~41-102px) that,
+  combined with those two textures' own low peak alpha (~223/255 and ~213/255 of a mostly-transparent
+  512x512 canvas), rendered as only a handful of near-invisible pixels once actually placed at the real
+  GameCamera zoom (1.0) — reproduced directly by re-running `kenney_fx_demo.gd`'s `_gem_pickup()` sequence
+  and pixel-sampling the resulting screenshot for GOLD (0 matching pixels in the 1280x720 frame at a
+  diff<90 threshold, vs 2227 matching CREAM pixels in the same pass's `landing_dust` capture, proving dust
+  puffs DO read at this same scale/zoom and the detection method is valid). Fixed by raising all three
+  configs' `scale_min/max` ~2.7x and `alpha` to 0.95 (lifetime/amount/spread unchanged — still a short,
+  one-shot puff, well short of `dirt_03`'s/pit-dust's own footprint); re-verified with a fresh
+  `kenney_fx_demo.tscn` capture showing a clearly visible gold star burst at the hero on pickup, at the
+  same real-gameplay camera scale used for the original (failing) capture. (2, MINOR, confirmed)
+  `assets/kenney/README.md`'s own wiring-status callouts (audio, input-prompt icons, crosshair, light
+  masks, particles) were stale — each said wiring was "a separate, later pass... not done here" when the
+  prior three integration passes' code (confirmed here by direct read: `scripts/main.gd`'s
+  `Input.set_custom_mouse_cursor()`, `scripts/ui/controls_panel.gd`'s per-binding `TextureRect` icons,
+  `scripts/audio/audio_director.gd`'s `SFX_SOURCES`, `scripts/objects/scenery.gd`'s light-mask glows, and
+  `kenney_puff.gd`'s 6 wired call sites) already ships all of it, and the passing `test_kenney_ui.gd`/
+  `test_m65_kenney_fx.gd` suites already prove it. The top summary table's Particle Pack row also
+  miscounted "9" files where the actual total sourced from that pack is 8 (6 wired under
+  `assets/kenney/particle-pack/` + 2 of the 3 `clipper_later`-staged files, which are also sourced from
+  `particle-pack/star_0N.png` — the third `clipper_later` file is from Smoke Particles, counted
+  separately); `reports/asset-inventory.md`'s own §7 breakdown already tallied this correctly, so the
+  miscount was isolated to the README. Fixed by rewriting each section's wiring-status note to say "done"
+  (pointing at `reports/asset-inventory.md` §7 as the authoritative per-file reference, as that report's
+  own known-gaps note already suggested) and correcting the Particle Pack count to 8. Neither fix touched
+  gameplay, tuning, collision, IDs, save format, or any Clipper-owned file (`clipper.gd`/
+  `clipper_visual.gd`/`clipper_front_hit_zone.gd`/`impact_spark.gd`/`tutorial_prompt.gd` + their scenes,
+  `a02_gardens.tscn`, `clipper.tres`, Clipper tests — untouched, confirmed by `git status`/`git diff`
+  before and after this pass).
+Files changed: `prototypes/sunnyvale-godot/scripts/effects/kenney/kenney_puff.gd` (gem/checkpoint sparkle
+  scale + alpha bump, comment explaining why), `prototypes/sunnyvale-godot/assets/kenney/README.md`
+  (wiring-status notes corrected to "done" for audio/icons/crosshair/light-masks/particles, Particle Pack
+  file count 9 -> 8), `prototypes/sunnyvale-godot/reports/asset-inventory.md` (new §7.8 documenting both
+  fixes), this handoff entry.
+Checks actually run and outcomes: `NOIMPORT=1 tools/test.sh` -> RESULT: 49/49 cases passed (including
+  `test_m65_kenney_fx.gd` 17 checks); `NOIMPORT=1 FPS=30 tools/test.sh` -> RESULT: 49/49 cases passed. The
+  gem-sparkle visual fix was proven by capture, not the headless suite (no test asserts on-screen particle
+  pixels): a real, windowed run of `res://scenes/debug/kenney_fx_demo.tscn` was captured before and after
+  the scale/alpha change; the "before" capture (matching the review's own evidence) showed 0 GOLD-matching
+  pixels near the hero on pickup, the "after" capture shows a clearly visible gold star burst at the same
+  camera scale.
+Remaining errors / placeholders / unverified gates: unchanged — gate 6 (first-time playtests) and the
+  Windows launch test remain pending. Part B (Clipper clang/stall particles, tutorial-prompt icons) is
+  still not started, unaffected by this pass — see `reports/asset-inventory.md` §7.6.
+Design deviations and reasons: none — a particle-tuning + documentation fix only; no gameplay, tuning,
+  collision, ID, or save-format code was touched.
+Save/schema compatibility notes: none — no Session/CheckpointService schema field changed; `Audio.play_sfx()`
+  cue names and call sites are unchanged.
+Next concrete action: unchanged — gate 6 (first-time playtests) and the Windows launch test remain the
+  blockers for a fully verified M7; hand off part B once the concurrent Clipper workflow is no longer
+  mid-edit.
+~~~
+
+~~~text
+Date / agent / milestone: 2026-09-27 / Claude Code (Sonnet 5) / post-M7: Kenney integration part B
+  (Clipper clang/stall particles + readable input-icon prompts)
+Implemented behavior: wired the three `assets/kenney/particles/clipper_later/` files staged (not
+  referenced) by the earlier Kenney pass, and gave the tutorial prompts + Clipper 2-hit hint the same C11
+  panel material as `subtitle_panel.gd`/`toast_label.gd`, with inline Kenney key/mouse icons for prompts
+  that name a binding.
+  (1) Frontal clang: `clipper.gd::_on_front_blocked_hit()` now also calls
+  `KenneyPuff.spawn(&"clipper_spark", hit_position, ...)` — a short (0.18s), warm-white/amber
+  (`star_01_metal_spark.png`) burst at the exact impact point, additive to the EXISTING shape-based
+  chevron/shield-flash cues (unchanged). `kenney_puff.gd`'s `CONFIGS` gained an optional
+  `max_concurrent` field (only set for `clipper_spark`, cap 3) plus a static `_active_counts` tracker so
+  rapid fire can never flood the screen with overlapping bursts — every other kind is unaffected/uncapped.
+  (2) STALL venting: `clipper_visual.gd` gained two new `CPUParticles2D` children on `clipper.tscn`'s
+  `Visual` node — `StallSteam` (cream `whitePuff00_stall_steam.png`, looping) and `StallStars` (peach
+  `star_02_dazed_star.png`, 2 particles on `orbit_velocity` so they circle the motor), both positioned at
+  the same `MOTOR_LOCAL` anchor the existing hand-drawn hatch/ring/stunned-glyph already use, both
+  `show_behind_parent = true` (drawn UNDER `clipper_visual.gd`'s own `_draw()` — so the existing target
+  ring/timer arc/stunned-star glyph stay on top and stay readable, exactly like `Photo`). New public fields
+  `stall_effects_active`/`stall_static_visible` mirror which cue is live (the same "plain data a test can
+  read" idiom `stall_remaining` already established) — both flip off the instant `stalled` goes false
+  (RECOVERY) or `defeat_progress >= 0` (a defeat starts), never lingering. `Settings.reduced_motion` swaps
+  the two looping systems for one static, non-emitting `StallSteamStatic` sprite instead of hiding the cue
+  outright, matching the project's "never fully hidden" reduced-motion convention. `clipper.gd::_defeat()`
+  also fires two one-shot effects (`clipper_defeat_smoke`, `clipper_defeat_spark`) for "a small smoke puff
+  + a few spark bits".
+  (3) Readable prompts + icons: new `scripts/ui/input_icon_map.gd` (no `class_name`, reached by
+  `preload()` like every other M6/M6.5/M7-era helper here) pulls `controls_panel.gd`'s ORIGINAL
+  `KEY_ICON_FILES`/`MOUSE_ICON_FILES` table and its layout-aware `_key_label()`/`_mouse_label()` logic out
+  into one shared place (`icon_path_for_event()`, `tokens_for_action()`, `label_for_event()`, ...);
+  `controls_panel.gd` was refactored to call it instead of duplicating it (`test_help_controls.gd` and the
+  other two `test_help_regress_*` cases still pass unchanged, proving the refactor is behavior-preserving).
+  `tutorial_prompt.gd` gained `icon_actions: Array[StringName]` and `static_icon_before: String` exports:
+  it now resolves the CURRENT InputMap binding for each named action into a small `TextureRect` (falling
+  back to a bracketed text token, e.g. `[Q]`, for any binding this pack has no icon file for — "text
+  fallback if no icon exists" per the brief) via the SAME shared mapping. `tutorial_prompt.tscn` was
+  restructured from a single bare `Label` into `Panel` (PanelContainer, C11 cream/warm-charcoal stylebox,
+  the same material as `subtitle_panel.tscn`) > `Row` (HBoxContainer) > `Icons` (HBoxContainer) +
+  `TextLabel` (>= 22px at Normal text size, `Settings.scaled_font_size()`-scaled, `size_flags_horizontal =
+  EXPAND_FILL` so long text like the E02 line actually word-wraps across the panel's real width instead of
+  one word per line — a bug caught and fixed via capture, see below). Showing/hiding now toggles the whole
+  `Panel`'s visibility/modulate (was the lone `Label`'s) — the same "toggle the backing panel" idiom
+  `SubtitlePanel`/`ToastLabel` already use. `a01_gate.tscn`'s three prompts were updated to the new
+  icon-driven form (Move -> `[A][D]` "Move", Jump -> `[Space][W][↑]` "Jump", Aim+Fire -> a static
+  `mouse_move.svg` icon + `[LMB]` icon + "Aim + Fire" text) with per-instance `Panel` width overrides for
+  the extra icon columns; the E02 Clipper prompt (`a02_gardens.tscn`) and the Clipper's `HintLabel`
+  (neither names a single key, so neither got icons) got the same cream-panel/warm-charcoal/scaled-font
+  treatment, with the HintLabel's box enlarged and set to bottom-vertical-alignment so any text overflow
+  from a larger font runs AWAY from the windup-warning triangle's band, never into it. Positions were kept
+  (or, for the E02 prompt/HintLabel, moved further from the ground) so no prompt ever covers the hero, the
+  warning triangle, or a landing edge.
+Files changed: `prototypes/sunnyvale-godot/scripts/effects/kenney/kenney_puff.gd` (3 new CONFIGS kinds,
+  `max_concurrent`/`_active_counts` cap, `effect_kind` inspection field),
+  `prototypes/sunnyvale-godot/scripts/actors/clipper.gd` (spark/defeat-effect spawn calls, `HintLabel`
+  text-size scaling), `prototypes/sunnyvale-godot/scripts/actors/visuals/clipper_visual.gd` (StallSteam/
+  StallStars/StallSteamStatic wiring), `prototypes/sunnyvale-godot/scenes/actors/clipper.tscn` (the 3 new
+  Visual children, HintLabel restyle), `prototypes/sunnyvale-godot/scripts/ui/input_icon_map.gd` (new),
+  `prototypes/sunnyvale-godot/scripts/ui/controls_panel.gd` (refactored to use it),
+  `prototypes/sunnyvale-godot/scripts/objects/tutorial_prompt.gd` and
+  `prototypes/sunnyvale-godot/scenes/objects/tutorial_prompt.tscn` (icon/panel rework),
+  `prototypes/sunnyvale-godot/scenes/levels/areas/a01_gate.tscn` and `a02_gardens.tscn` (prompt
+  text/icon_actions/Panel overrides), `prototypes/sunnyvale-godot/scripts/debug/clipper_e02_sequence_demo.gd`
+  (a deliberate frontal volley overlaid on the existing walk-in, for capture), new
+  `prototypes/sunnyvale-godot/tests/cases/test_kenney_part_b.gd`, one existing test fixed
+  (`tests/cases/test_m65_kenney_fx.gd`'s 50-effects flood check now excludes kinds with `max_concurrent`
+  set — a capped kind being capped is the new feature working, not a silent drop; see that file's own
+  updated comment), `tests/cases/test_clipper_teaching.gd` (2 `prompt.get_node("Label")` lookups updated to
+  `get_node("Panel")`, matching `tutorial_prompt.tscn`'s new hierarchy — same visibility semantics),
+  `assets/kenney/README.md` and `reports/asset-inventory.md` (clipper_later files + tutorial-prompt icons
+  now documented as wired), this handoff entry. `scripts/objects/scenery.gd` was NOT touched (owned by a
+  separate concurrent session fixing A06's cloud-projector discs).
+Checks actually run and outcomes: `NOIMPORT=1 tools/test.sh` -> RESULT: 50/50 cases passed (was 48/49
+  before the `test_m65_kenney_fx.gd` fix above — the one pre-existing failure was this pass's own cap
+  feature interacting with that test's flood check, fixed, not a regression elsewhere); `NOIMPORT=1
+  FPS=30 tools/test.sh` -> RESULT: 50/50 cases passed. `test_kenney_part_b.gd` (36 checks) covers: a
+  blocked frontal hit never damages and its spark effect is capped at <= 3 concurrent and self-frees; the
+  STALL steam/dazed-star loop turns on exactly at STALL and off exactly at RECOVERY; it also turns off the
+  instant a defeat starts (one physics tick after the killing blow, matching `clipper.gd`'s own
+  presentation-only pose-push timing) while the defeat's own smoke+spark effects spawn and later self-free;
+  `Settings.reduced_motion` swaps the loop for the static puff and back; a `TutorialPrompt` resolves a real
+  icon for `jump`'s default Space binding and falls back to a bracketed `[Q]` text token after rebinding to
+  a key this pack has no icon for (InputMap restored after); prompt and hint text sizes are both >= 22px at
+  Normal and grow at Large. All existing Clipper tests (`test_clipper_teaching.gd` 36 checks,
+  `test_clipper_real_level.gd` 59 checks, `test_m2_clipper.gd` 25 checks,
+  `test_m2_regress_clipper_shell_gap.gd` 3 checks) pass unchanged — the Clipper rule/tuning/collision/state
+  machine timings were never touched, confirmed both by these tests and by a `git diff` review of
+  `data/tuning/clipper.tres` and `clipper.gd`'s state-machine functions (`_tick_patrol`/`_tick_windup`/
+  `_tick_charge_pre`/`_tick_charge_post`/`_enter_stall`/`_tick_stall`/`_enter_brake_recovery`/
+  `_tick_recovery` — all byte-for-byte unchanged apart from the additive spawn calls in
+  `_on_front_blocked_hit`/`_defeat`, which run after the existing state/damage logic and never influence
+  it). Visuals confirmed by capture (`tools/capture.sh`, not asserted by the headless suite): the extended
+  `clipper_e02_sequence_demo.tscn` (300 frames/15fps) shows the readable E02 prompt panel, a bright
+  shell-flash + spark on a deliberate frontal volley during the walk-in, the exposed motor's steam cloud +
+  orbiting dazed stars + target-ring/timer-arc all together and legible during STALL, and a smoke+spark
+  burst at the kill; `m3_a01_demo.tscn` (150 frames/15ffs) shows all three A01 prompts with correctly
+  resolved icons (`[A][←][D][→] Move`, `[Space][W][↑] Jump`, a mouse-move icon + `[LMB]` + "Aim + Fire") on
+  a legible cream panel at 1280x720. One real bug was caught THIS way, not by the headless suite: the
+  first capture of the E02 prompt wrapped its long sentence one word per line (the `TextLabel` inside the
+  new `HBoxContainer` had no `size_flags_horizontal`, so it sized to its narrowest child rather than the
+  panel's real width) — fixed by adding `size_flags_horizontal = EXPAND_FILL` and reconfirmed by a second
+  capture showing the intended two-line wrap.
+Remaining errors / placeholders / unverified gates: unchanged — gate 6 (first-time playtests) and the
+  Windows launch test remain pending. `scripts/objects/scenery.gd`'s `CLOUD_PROJECTOR` kind is being fixed
+  in a separate concurrent session, deliberately untouched here.
+Design deviations and reasons: the task brief's example prompt format "[mouse] Aim + [LMB] Fire" (icons
+  interleaved with their own words) was simplified to "icons, then the combined label" (`[mouse][LMB] Aim +
+  Fire`) — still names the current binding(s) with real icons and text right beside them, but avoids
+  building a second, more complex per-segment layout model for the one compound prompt that needs it.
+  Otherwise none — the Clipper rule/tuning/collision/IDs/save format are byte-for-byte unchanged; every
+  addition here is visual/presentation-only, following the same "presentation reads state, never writes it
+  back" split M6's `clipper_visual.gd` already established.
+Save/schema compatibility notes: none — no Session/CheckpointService schema field changed; `Audio.play_sfx()`
+  cue names, `Session.runtime_flags` keys, and every persisted field are untouched.
+Next concrete action: gate 6 (first-time playtests) and the Windows launch test remain the blockers for a
+  fully verified M7. The Kenney integration (parts A and B) is now complete end-to-end — every staged asset
+  in `assets/kenney/` is either wired or explicitly documented as a deliberate keep (the 5 synthesized SFX
+  cues, per `reports/asset-inventory.md` §1).
+~~~
+
+~~~text
+Date / agent / milestone: 2026-09-28 / Claude Code (Sonnet 5) / post-M7: Kenney part B review fixes
+Implemented behavior: verified all 3 findings from the Kenney part B code review end-to-end (never took the
+  review's own evidence on faith — reproduced each with a temporary scene/probe, deleted after use) and
+  fixed all 3; none were false positives.
+  (1) **hint-label-covers-hero (major, confirmed, fixed).** `clipper.tscn`'s 2-hit `HintLabel` was a plain
+  `Label` at a FIXED local offset under the Clipper itself — world-space, not screen-space — so it tracked
+  the CLIPPER's position, not the hero's. A hero standing/jumping near that offset (confirmed at Hero
+  tuning's own max jump-apex head height, ~250px above ground, well within the panel's local ±160px
+  x-extent — reproduced with a temporary scene, deleted after use, and a capture matching the review's own
+  evidence: only the hero's legs visible below an opaque panel) rendered directly behind it — a very
+  ordinary "walk up and mash fire into the shield" sequence, not an edge case. Fixed by moving the Label
+  under a new `HintLayer` `CanvasLayer` child of Clipper (`clipper.gd`'s `hint_label` now resolves
+  `$HintLayer/HintLabel`): a `CanvasLayer` ignores its parent's world transform entirely, so the hint now
+  renders as a fixed top-center screen toast (y 260-428, clear of the HUD's own Toast row at 82-120) —
+  its on-screen position no longer depends on either actor's world position at all, proven by a new
+  regression test (`test_clipper_teaching.gd::_test_hint_is_screen_anchored_never_tracks_clipper`, 4
+  checks: the label's parent is a `CanvasLayer`, and its `get_global_rect()` is identical before/after
+  triggering the hint AND after moving the Clipper 3000px away). Reconfirmed by a fresh capture at the
+  original bug's exact repro pose: the hero is now fully visible above the panel with a clean gap.
+  Residual, disclosed honestly: the panel is 94% opaque (not 100%) and, exactly like the HUD's own
+  pre-existing top-center Toast/top-right ObjectiveLabel, CAN still coincide on-screen with a hero at a
+  real jump's peak height depending on camera framing (confirmed in the E02 capture below, during the
+  backstop-clearing jump, the hero's hair/hat lightly grazes the panel's bottom border, translucent, for
+  that jump's peak instant only) — a fundamentally different, far less severe category (translucent,
+  fleeting, coincidental) than the original bug (opaque, guaranteed, sustained for the whole 4s hint
+  display at ordinary melee range). A fully pose-proof fix (e.g. dynamically repositioning around the
+  hero's live on-screen rect) was judged out of scope for this fix pass; not attempted.
+  (2) **space-icon-illegible-at-render-size (minor, confirmed, fixed).** `keyboard_space_outline.svg`
+  bakes the word "SPACE" as vector art into its 64x64 canvas; at this project's 26-28px icon render size
+  it reads as an illegible smudge (reconfirmed by zoomed capture, matching the review's own evidence),
+  unlike every single-glyph key icon (A/D/W/E/arrows) which stays crisp at the same size. Checked the
+  other short multi-letter icons the review flagged as "likely" affected (Esc/Tab/Enter/F1) against fresh
+  captures of the real Controls-help menu — all four stay legible at this size (2-3 letters, or a
+  pictogram for Enter), so only Space's table entry needed to change. Fixed by removing `KEY_SPACE` from
+  `input_icon_map.gd`'s `KEY_ICON_FILES`; every caller already falls back to plain text for a binding with
+  no icon file (the same mechanism used for any key this pack has no icon for at all), so Jump's row now
+  shows `[Space]` `[W]` `[↑]` instead of a blurry icon — confirmed by a fresh capture of both the A01 Jump
+  prompt and the Controls-help menu (title screen).
+  (3) **e02-capture-never-exercises-2hit-hint (minor, confirmed, fixed) — a capture/evidence gap, not a
+  gameplay bug.** `clipper_e02_sequence_demo.gd`'s own deliberate frontal volley against the real A02 E02
+  encounter only ever landed 1 blocked hit before WINDUP ended and CHARGE began (reproduced with a
+  temporary headless probe, deleted after use, that logs the Clipper's state/hit-count every frame). Root
+  cause: the scripted hop over the stone backstop (`R05_JumpBackstop1`) happens to occur DURING WINDUP,
+  and the demo's shared `jumping` branch unconditionally released fire for that jump's whole ~0.65s
+  airtime, eating almost the entire 0.8s WINDUP window. Fixed by keeping the deliberate frontal volley
+  active through that one hop specifically while `clipper.state` is still `PATROL`/`WINDUP` (the later
+  CHARGE-dodge jump is untouched, still releases fire as before); reverified with the same probe: 2 hits
+  now land at frames 100 and 115, a full 9 frames before CHARGE begins at frame 124 (was 1 hit landing 1
+  frame before CHARGE). Reconfirmed by a fresh capture: the real HintLabel now legibly appears mid-WINDUP
+  in this exact demo for the first time. No Clipper rule/tuning/state-machine timing changed — only this
+  debug capture demo's own input-driving logic.
+  `scripts/objects/scenery.gd` was NOT touched (owned by a separate concurrent session fixing A06's
+  cloud-projector discs, per the task brief).
+Files changed: `prototypes/sunnyvale-godot/scenes/actors/clipper.tscn` (HintLabel moved under a new
+  `HintLayer` CanvasLayer, screen-anchored offsets), `prototypes/sunnyvale-godot/scripts/actors/clipper.gd`
+  (`hint_label` onready path + doc comments updated for the new screen-anchored toast; stale
+  "-180..-152"/"-108..-80" offset comments corrected), `prototypes/sunnyvale-godot/scripts/ui/
+  input_icon_map.gd` (`KEY_SPACE` removed from `KEY_ICON_FILES`, doc comment explaining why),
+  `prototypes/sunnyvale-godot/scripts/debug/clipper_e02_sequence_demo.gd` (keep firing through the
+  backstop hop while still PATROL/WINDUP), `prototypes/sunnyvale-godot/tests/cases/test_clipper_teaching.gd`
+  (new `_test_hint_is_screen_anchored_never_tracks_clipper`, 4 checks), `prototypes/sunnyvale-godot/
+  assets/kenney/README.md` and `prototypes/sunnyvale-godot/reports/asset-inventory.md` (new §7.9
+  documenting all 3 fixes; Space's table row updated), this handoff entry. No temporary review/probe
+  scenes left behind (`kb_fix_hint_repro.tscn/.gd`, `test_probe_kb_fix_repro.gd`,
+  `test_probe_e02_timing.gd` were all deleted after use, matching the pre-existing pattern of this
+  review's own now-deleted `review_clipper_full_demo.tscn`/`test_probe_kb_e02_timing.gd`).
+Checks actually run and outcomes: `NOIMPORT=1 tools/test.sh` -> RESULT: 50/50 cases passed (including the
+  4 new hint-screen-anchoring checks); `NOIMPORT=1 FPS=30 tools/test.sh` -> RESULT: 50/50 cases passed.
+  Headless-launched `res://scenes/main.tscn` for 120 fixed-step frames (`--quit-after 120`): zero
+  errors/warnings. Visuals reconfirmed by fresh capture (`tools/capture.sh` + a runtime-screenshot capture
+  for the Controls menu, not asserted by the headless suite): a temporary repro scene at the exact
+  original bug pose shows the hero fully clear of the (now top-center) hint panel;
+  `clipper_e02_sequence_demo.tscn` now shows the real HintLabel appearing legibly mid-WINDUP (previously
+  never observed); the A01 Jump prompt and both the Title-screen and Pause-menu Controls-help views show
+  `[Space]` as text next to crisp `W`/`↑` icons instead of an illegible Space icon. All existing Clipper
+  tests (`test_clipper_teaching.gd` now 40 checks, `test_clipper_real_level.gd`, `test_m2_clipper.gd`,
+  `test_kenney_part_b.gd`) pass unchanged apart from the one new sub-test added above — the Clipper rule/
+  tuning/collision/state-machine timings were never touched (confirmed both by these tests and by `git
+  diff` review: `data/tuning/clipper.tres` and clipper.gd's state-machine functions carry no changes from
+  this pass beyond the `hint_label` path/comments above).
+Remaining errors / placeholders / unverified gates: unchanged — gate 6 (first-time playtests) and the
+  Windows launch test remain pending. The hint panel's residual "can coincide with a hero at real jump-peak
+  height, translucently, briefly" behavior (see above) is disclosed as a known, low-severity, HUD-typical
+  limitation, not re-opened as a new finding.
+Design deviations and reasons: none beyond the review's own suggested fixes — screen-anchoring the hint
+  (suggested option (c)) was chosen over clamping/repositioning in world-space (option (a)) or narrowing
+  the box (option (b)) since it removes the whole HAZARD CLASS rather than one instance of it, matching
+  how every other similar one-off toast in this project (`SubtitlePanel`, `Hud`'s own Toast) is already
+  built. The Space-icon fix used the review's own suggested option (fall back to bracketed text) rather
+  than enlarging the icon, since the project's existing icon-or-text-fallback mechanism already existed
+  and needed no new code path.
+Save/schema compatibility notes: none — no Session/CheckpointService schema field changed; `Audio.
+  play_sfx()` cue names, `Session.runtime_flags` keys, and every persisted field are untouched. The
+  Clipper rule/tuning/collision/IDs are byte-for-byte unchanged.
+Next concrete action: gate 6 (first-time playtests) and the Windows launch test remain the blockers for a
+  fully verified M7. Kenney part B is now review-clean (all 3 findings resolved, 0 rejected).
+~~~
+
+~~~text
+Date / agent / milestone: 2026-09-28 / Claude Code (Opus 5.5) / post-M7: Rook sprite pack
+Implemented behavior: the hero now uses the user-generated Rook sprite pack (ChatGPT, from
+  concept-art/h01-rook/rook-sprite-brief-for-chatgpt.md) instead of the M6 procedural rig: idle x2,
+  run x6, jump rise/fall, land, hurt, defeated, interact, plus a separate aiming arm on AimPivot.
+  tools/process_rook_sprites.py cleans generator alpha noise, normalises the 3-16% per-frame scale
+  drift, aligns feet (airborne frames by head height) and records per-frame shoulder pivots.
+Gameplay-visible change: AimPivot now sits on the current frame's shoulder (was a fixed point 35 px
+  above the feet) and the Scrapjack sits in the fist at arm's length, scaled 0.65; shots leave from
+  the pistol there. hero.gd now updates the visual before the aim pivot so the arm never lags the body.
+  Immunity tint softened (1.0/0.55/0.55 -> 1.0/0.86/0.8) for the detailed sprite.
+Files changed: concept-art/h01-rook/sprites-v1/* (source pack), tools/process_rook_sprites.py,
+  assets/characters/rook/*, scripts/actors/visuals/rook_frames.gd (generated),
+  scripts/actors/visuals/hero_visual.gd (rewritten), scripts/actors/hero.gd, scenes/actors/hero.tscn,
+  tests/cases/test_rook_sprite_rig.gd (new, 55 checks), scenes/debug/rook_rig_demo.tscn (+ script),
+  reports/asset-inventory.md §8
+Checks actually run and outcomes: tools/test.sh and FPS=30 tools/test.sh -> 52/52 cases passed;
+  headless boot of main 120 frames, no errors; close-up captures (aim right/up/left/down, run, jump,
+  land, hurt, defeated) and route captures inspected
+Remaining gaps: left-facing is mirrored (forelock/eyebrow flip); run cycle bobs ~15 px as drawn;
+  pistol is still the procedural drawing
+~~~
+
+~~~text
+Date / agent / milestone: 2026-09-28 / Claude Code (Opus 5.5) / post-M7 playtest fixes (user feedback)
+1) "When running fast the hero gets blurry": not the sprite art (1x captures show identical sharpness
+   standing vs running). Cause: 60 Hz physics vs the 120 Hz ProMotion display — the hero moved on every
+   other refresh while the camera moved every refresh. Fix: physics/common/physics_interpolation = true
+   (via scripts/tools/configure_project.gd), GameCamera follows on physics ticks
+   (process_callback = PHYSICS) so it is interpolated like the hero, and Hero.respawn_at() calls
+   reset_physics_interpolation() so teleports don't draw a slide. Needs confirmation on the 120 Hz
+   display (Movie Maker captures cannot show judder).
+2) "Hand points backwards when the mouse is behind the body": the body now always faces the aim side
+   (8 px deadzone); moving away from the aim backpedals with the run cycle reversed.
+   DESIGN DEVIATION (playtest-driven): G02 (design/01-core/player-controls.md) proposes "facing follows
+   deliberate aim while firing and movement otherwise"; the prototype now faces the aim at all times.
+   Camera look-ahead now follows the direction of travel (falls back to facing when still) so hazards
+   ahead stay previewed while backpedalling.
+Checks: tools/test.sh and FPS=30 tools/test.sh -> 52/52 (test_rook_sprite_rig.gd now 60 checks: facing,
+  backpedal order, interpolation + camera settings); backpedal close-up captured and inspected.
+~~~
+
+~~~text
+Date / agent / milestone: 2026-09-29 / Claude Code (Opus 5.5) + 4 helper agents / REVAMP REBUILD (C24)
+Why: the user replaced the story and look (design/decisions.md C14–C24): no zombies; evil corporation
+  Arcadia Dynamics, sentient AI Adam, rogue AI researcher Dave Harlan (28, he/him); microchips replace
+  gems; mysterious, a little scary, sci-fi (2D Metal Gear + Dangerous Dave references); no stealth.
+Implemented behavior:
+  - Scripted rename across 101 files: Resident->Staffer (cyborg, CY01 ids), gem->chip, artifact->evidence
+    (EF01 "Lockout Notice"), bench->workbench, core_console->core_node, care_capsule->med_patch,
+    EDEN->Adam, quarantine->lockdown, suburb->campus. Save schema 1->2 (old saves are rejected cleanly).
+  - Keycard (P19): `L01-KC01` on the A04 porch (main route, unmissable); `ExitWicket` stays locked (red
+    reader, "Clearance card required" toast) until held; HUD card icon; Session.take_keycard()/has_keycard();
+    CheckpointService whitelists `^L01-KC[0-9]{2}$`; rollback restores the card.
+  - SC01 is now the core-node uplink: drive plugged in, copy bar, lights dim, Adam: "Hello, Dr. Harlan. I
+    was told you'd been let go." / Dave: "Word gets around." / Adam: "I'm glad you came back. Please stay
+    where you are." -> copy stalls at 41%, lockdown, hatch opens. Same 19 s, same _finish_awakening().
+  - World (helper W): night campus — night sky, glass towers with lit windows, Arcadia emblem tower
+    landmark, "Sunny" smile holograms, fog bands, lit platform top edges, 54 extra lamps (a light near
+    every landing), PointLight2D lamps/beacons/depot fixtures, Dave's wrist light, lockdown lighting
+    (amber/red, slow pulses, steady under reduced motion), night overlay (vignette/grain, layer 5).
+  - Enemies (helper S): fully procedural cyborg Staffer (Link implant teal/amber/red-tell/dark), zombie
+    cutouts deleted (C23); Clipper night pass with lens rule; defeated Staffers stay slumped as scenery.
+  - Audio (helper A): gen_audio.py rewritten; campus/lockdown music loops; cyborg, chip, keycard, door,
+    uplink, lockdown and Adam-chime cues (40 cues, 16 synthesized); music loop-length bug fixed.
+  - UI: dark theme (c11_theme.tres restyled), night HUD, microchip icon, speaker-colored subtitles
+    (Adam teal, Dave orange), new title tagline, EF01 journal text, dark tutorial/hint panels.
+Checks actually run and outcomes: tools/test.sh -> 54/54 cases passed after integration; helper captures
+  of all six areas (pre/post lockdown, seams, reduced motion) and enemy state boards inspected.
+Incident: a helper's capture of scenes/debug/m3_a04_demo.tscn wrote a checkpoint.json into the REAL save
+  dir (that demo lacked the redirect). The file was moved out; no prior user save existed there (no
+  .bak). Fixed: m3_a04_demo.gd now redirects in _enter_tree().
+Remaining: first-time playtests (gate 6) and the Windows launch remain pending; exports are stale;
+  placeholder hero art is the old Rook sprite pack (reads as a young man in an orange jacket).
+~~~
+
+### 2026-09-30 — Enemy roster v3 docs and the lit-cutout test (C25–C35)
+
+- **User decisions (2026-09-29/30):** human enemies; easy-to-build but varied enemies designed around Godot's capabilities; enemy guns including futuristic ones; a mature game with visible blood; cyborg dogs; the approved 24-type roster (Thornwall confirmed as a faction; the Rivet Drone dropped); the Clipper removed entirely; Level 1 to be rebuilt from the ground up; garden-era names renamed; enemy art as a lit cutout rig with smooth realistic light, Mixamo motion and ragdoll deaths. Recorded as C25–C35 and P22–P23 in `design/decisions.md`; the docs were rewritten to match (concept, style guide, 43 art briefs in new folders, 12 level briefs with L2/L5/L6 renamed, all design system docs, campaign.json, manifest.json).
+- **Lit-cutout test** (`prototypes/sunnyvale-godot/spike/lit_cutout/`, self-contained; see its README):
+  - the guard is painted procedurally by `tools/spike/paint_night_guard.py` (placeholder art) with height-derived normal maps;
+  - `lit_part.gdshader` lights it through Godot 2D lights with a night ambient;
+  - the Level 1 lamp's stepped light is swapped at runtime for a smooth cone placed at the lamp head (normal-mapped light needs the light at its real position);
+  - Dave is lit the same way through auto normal maps (`tools/spike/make_normal_maps.py`) plus a muzzle-flash light.
+- **Ragdoll findings:**
+  - Godot 4.7.2's PinJoint2D angular limits did not constrain anything in probes, so joint limits are a damped spring torque in `ragdoll_part.gd`;
+  - snapping rotations fought the pins and pushed limbs through the floor;
+  - hands, feet and the head ride on their parent part (as separate bodies they twisted past any wrist, ankle or neck);
+  - bodies settle into still corpse sprites, and blood pools spread under them.
+- **Mixamo:** `tools/spike/mixamo_to_rig.py` (Blender) converts FBX clips to rig rotations; verified on synthetic Mixamo-named armatures only (no real Mixamo files on this machine; the user downloads them with their own Adobe account).
+- **Verified:** `tools/test.sh` → 55/55 cases; autoplay captures (`-- --autoplay`) reviewed at 1x and 2x zoom.
+- **User review (2026-09-30):** the user approved the look ("i really like this"); C35 is marked validated.
+- **Pending:** real Mixamo clips; final painted art; the C33 ground-up Level 1 rebuild.
+
+### 2026-09-30 — Cleanup ("remove unnecessary code and files")
+
+- **Removed:**
+  - `exports/`: 568 MB of stale, pre-revamp builds, gitignored and rebuildable.
+  - Two stale Claude Code worktrees under `.claude/worktrees/` and their merged branch.
+  - 14 one-off debug capture demos. Kept: the `m3_*` area and route demos, `m4`/`m5`/`m5b`/`m6_characters`/`m6_ui` demos, `m7_export_driver`, `route_bot`/`route_point` and `sample_area`.
+  - The Clipper's three unused reference images and `tools/derive_character_sprites.py`.
+  - 7 Kenney interface sounds the audio code no longer uses.
+  - The painter's preview images; they now go to a folder passed with `--preview`.
+  - `.DS_Store` clutter.
+- **How removals were made:** tracked files were removed with git (recoverable from history). Untracked files were moved to the session scratchpad instead of deleted.
+- **Restored:** `scripts/tools/configure_project.gd` was restored after a mistaken removal. CONVENTIONS names it as the way to regenerate `project.godot`'s input and display settings. It now includes the F1 help action and the night clear color, and rerunning it leaves `project.godot` unchanged (verified on a copy).
+- **Kept on purpose:** the Clipper, Staffer and their tests still run the current Level 1 build. They are replaced in the C33 ground-up rebuild.
+- **Verified:** `tools/test.sh` → 55/55; the main scene and the lit-cutout test launch headless with no errors.
+
