@@ -9,15 +9,17 @@ What is kept:
 | Asset | Status | Image | Notes |
 | --- | --- | --- | --- |
 | H01 hero sprite pack (Rook) | The user's generated sprites for the old hero, Rook. They are now **placeholder art for Dave Harlan** in the Godot prototype. Under C35 their frames also get normal maps, so Dave is lit like the enemies. | [sprites-v1](h01-rook/sprites-v1/) | [Generation prompt](h01-rook/generation-prompt.md) · [Sprite prompts](h01-rook/sprite-prompts.md) · [ChatGPT brief](h01-rook/rook-sprite-brief-for-chatgpt.md) *(pre-revamp; a Dave brief in the new look will replace it)* |
+| SE01 Night Guard look | **Approved by the user (2026-09-30):** "im ok with this". A lit concept of the light cyberpunk look (C36): lime neon trim, night campus, wet paving. It is a look reference, not the source painting; the rig parts are painted flat from it ([brief](../art-design/security/se01-night-guard.md), prompt 4). | [se01-night-guard-look-v1.webp](se01-night-guard/se01-night-guard-look-v1.webp) | Generated with ChatGPT from the look-test prompt |
+| SE01 Night Guard parts sheet | **In the game (2026-09-30).** The flat source painting, generated from the look reference with the brief's prompt 4 and imported by `prototypes/sunnyvale-godot/tools/art/import_parts_sheet.py`. | [se01-night-guard-parts-v1.webp](se01-night-guard/se01-night-guard-parts-v1.webp) | Transparent background, 11 parts |
 
-No enemy concept image is selected yet. New concept art is still needed in the new look for:
+New concept art is still needed in the new look for:
 - Dave, a 28-year-old AI researcher;
 - the enemy roster: Arcadia Security, Thornwall, the Linked, the cyborg dogs, Adam's machines and the Heirs;
 - the four mini-bosses;
 - the nine enemy guns;
 - Arcadia's campus at night.
 
-New enemy art follows the lit cutout pipeline (C35). Each enemy is one evenly lit, flat-color, side-view full-body painting, split into rig parts with a normal map for each part, then rigged with Mixamo motion and ragdoll deaths. Status: **confirmed and validated** (the lit Night Guard test next to Dave, approved 2026-09-30). A concept image is therefore a source painting for that pipeline, not a lit illustration.
+New enemy art follows the lit cutout pipeline (C35). Each enemy is one evenly lit, flat-color, side-view full-body painting, split into rig parts with a normal map for each part, then rigged with Mixamo motion and ragdoll deaths. Status: **confirmed and validated** (the lit Night Guard test next to Dave, approved 2026-09-30). A concept image is therefore either a **look reference**, a lit concept that sets the mood and design (C36), or a **source painting**, the flat, unlit parts sheet painted from an approved look reference for the rig.
 
 Use the [style guide](../art-design/style-guide.md) and the [art briefs](../art-design/README.md). The hand-drawn 2D base (C11) is amended by the lit cutout method (C35), with the dark sci-fi palette and mood (C15).
 

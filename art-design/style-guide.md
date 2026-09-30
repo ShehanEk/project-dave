@@ -20,6 +20,7 @@ Every enemy is a **lit cutout rig**: painted parts, lit by the engine.
 - **Motion:** Mixamo motion-capture clips, converted to the 2D rig. Tells, hits and openings must still read by pose and silhouette.
 - **Deaths:** ragdolls. The rig parts become physics bodies pushed by the killing shot, and the body stays as a static corpse. Machines and bosses burst into debris parts instead.
 - **Guns and blood:** guns are separate sprites on a hand socket, each with its own muzzle-flash light. Blood is never painted into the parts (see "Mature content and blood").
+- **Neon trim (C36):** the look is light cyberpunk. Each enemy type wears thin neon trim in its own color (piping, bands, edge strips or an underglow), painted as a flat bright stripe in that exact color with no glow; the engine makes it glow. See "Meaning is reserved" for its limits.
 - **Dave:** the hero keeps frame-based sprites (currently the Rook placeholders), and each frame gets a normal map too, so he is lit the same way.
 - **Out of scope:** pixel art, photorealistic painting, glossy chrome, photographic blur, airbrushed or strong gradients in the painted art, and any baked light. The realism is in the light and the proportions, not in the painting.
 
@@ -28,7 +29,7 @@ Every enemy is a **lit cutout rig**: painted parts, lit by the engine.
 Light is still the main tool, and it is now real light. Painted light pools, rim shapes and halo shapes are retired:
 - **Lamps and screens are lights.** Every lamp, screen, sign, status-LED strip, lens and muzzle flash that glows is a light in the engine, with a color, a smooth gradient light texture (a soft round or cone falloff, never a hard-edged band) and a **height** above the play plane, so the normal maps shade from the correct side.
 - **Light pools** on floors, walls and characters come from those lights. Do not paint lighter pool shapes into scenery or characters.
-- **Ambient:** deep navy-black, so unlit areas are dark but not empty. Outside every lamp a figure still reads by its dark outline and flat base color.
+- **Ambient:** deep navy-black, so unlit areas are dark but not empty. Outside every lamp a figure still reads by its dark outline and flat base color. Every character (Dave and the enemies) shares one night level of about 45% of its painted color, slightly cool, so skin tones and uniforms still read away from the lamps (2026-09-30).
 - **Muzzle flashes:** each gun has its own brief muzzle-flash light. Firearm flashes are ivory, and energy weapons flash blue-white like their shots. Rapid fire holds one glow and never strobes.
 - **Tells:** a tell is a large additive glow on the attacking part (see the tell and light rule). It is the brightest thing on that body.
 - **Glow:** soft additive halos surround lamps, lenses, screens and Link lights. There is no volumetric fog rendering; fog is drawn as flat, low-contrast bands.
@@ -56,6 +57,8 @@ Light is still the main tool, and it is now real light. Painted light pools, rim
 | Oil | #14181E | Machine oil, always with a #46566A sheen rim so it reads on dark floors |
 | Energy blue | #5AA9FF | The edge of energy shots and beams (plasma, arc, seeker, beam), always with a white core and a dark outline ring |
 | Tracer ivory | #F2EBD3 | Bullet tracers and firearm muzzle flashes, always with a dark outline. No casings |
+| Enemy neon: lime | #C6FF3D | The Night Guard's neon trim (C36) |
+| Enemy neon: magenta | #FF3DD5 | The Patrol Rover's neon trim (C36, proposed) |
 
 **Meaning is reserved:**
 - Red means danger now: the last 0.25 s of an attack tell, alarms and lockdowns. Blood is a darker red and never takes that role.
@@ -65,6 +68,7 @@ Light is still the main tool, and it is now real light. Painted light pools, rim
 - Gold means pickups.
 - Blood is red, oil is black and lymph is grey-rose. Blood never glows or pulses, never uses a tell color, and is never gold, violet, teal, amber or green.
 - Energy blue with a white core means an energy shot, and tracer ivory means a bullet. Shots are never gold, violet, amber, red, teal or green.
+- Enemy neon marks one enemy type each (C36): lime for the Night Guard, magenta for the Patrol Rover. It is thin, steady trim, always dimmer than any tell, never on the attacking part or a weak point, and it goes dark on death. The scenery never uses an enemy's neon color.
 
 Do not use these colors decoratively in ways that blur those meanings. Level briefs may add a few level-local environment hues (for example a dark coolant teal) as long as they stay clear of the reserved meanings.
 
