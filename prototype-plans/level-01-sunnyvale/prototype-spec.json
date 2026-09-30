@@ -1,15 +1,51 @@
 {
-  "schema_version": 1,
+  "schema_version": 3,
   "kind": "prototype_execution_plan_not_runtime_level_data",
   "project": "DEAD EDEN",
   "level": "L01",
-  "status": "planned_unimplemented_unplaytested",
+  "status": "implemented_unverified",
+  "revamp": {
+    "date": "2026-09-29",
+    "decisions": "C14-C24",
+    "milestone": "R1",
+    "summary": "Story, names, look and collectibles rebuilt to the new game (cyborg Staffers, microchips, evidence file EF01, the L01-KC01 keycard, Adam's core-node scene, night campus). Gameplay, tuning, timings, counts and encounter group IDs are unchanged; enemy IDs differ only by Z01 becoming CY01.",
+    "record": "09-progress-and-handoff.md (latest entry)",
+    "renamed_keys_in_schema_2": {
+      "residents": "staffers",
+      "gems": "chips",
+      "gem_drops": "chip_drops",
+      "resident_health": "staffer_health",
+      "artifact": "evidence",
+      "artifact_id": "evidence_id",
+      "artifact_mandatory": "evidence_mandatory",
+      "returned_present": "heirs_present",
+      "main_route_gems": "main_route_chips",
+      "main_route_gems_available_before_bench": "main_route_chips_available_before_workbench",
+      "optional_gems": "optional_chips",
+      "total_gems": "total_chips"
+    }
+  },
+  "rebuild": {
+    "date": "2026-09-30",
+    "decisions": "C25-C35",
+    "milestone": "R2",
+    "summary": "Level 1 rebuilt from the ground up around the approved roster: Night Guard SE01, Patrol Rover M01 (replaces the Clipper) and Linked Staffer LK01, drawn as lit cutout rigs with ragdoll deaths and visible blood. Encounter group IDs and area layouts are unchanged; every enemy entity ID changed, so the save schema is 3. A06 keeps its two rovers and gains a second Staffer (the plan had two Staffers and no rovers there). A Security PA line plays at the exit before the completion screen.",
+    "record": "09-progress-and-handoff.md (latest entry)",
+    "renamed_keys_in_schema_3": {
+      "clippers": "rovers",
+      "clipper_exposed_motor_health": "rover_battery_health"
+    },
+    "added_keys_in_schema_3": [
+      "night_guards",
+      "night_guard_health"
+    ]
+  },
   "engine": {
     "family": "Godot",
     "major": 4,
     "language": "GDScript",
     "renderer_proposal": "Compatibility",
-    "exact_version": null,
+    "exact_version": "4.7.2.stable.official.ed1daf0bf",
     "pin_version_at": "M0"
   },
   "build_path_from_repo_root": "prototypes/sunnyvale-godot",
@@ -34,31 +70,42 @@
       "W01"
     ],
     "enemy_types": [
-      "Z01",
-      "R01"
+      "SE01",
+      "M01",
+      "LK01"
     ],
     "boss_count": 0,
-    "returned_present": false,
+    "heirs_present": false,
+    "stealth_or_detection_systems": false,
+    "exit_keycards_required": 1,
     "new_gameplay_abilities": false
   },
   "prototype_only_elaborations": [
     "Extended beats within the six existing areas",
-    "Extra authored Resident and Clipper encounters",
+    "Extra authored Night Guard, Patrol Rover and Staffer encounters",
     "Recovery stations CP01 and CP02",
     "One optional same-type pistol swap at depot",
     "One service-walkway switch in A04"
   ],
   "economy": {
-    "main_route_gems": 45,
-    "main_route_gems_available_before_bench": 45,
-    "optional_gems": 20,
-    "total_gems": 65,
+    "main_route_chips": 45,
+    "main_route_chips_available_before_workbench": 45,
+    "optional_chips": 20,
+    "total_chips": 65,
     "quickcycle_price": 40,
     "purchasable_stages": [
       1
     ],
-    "artifact_id": "A01",
-    "artifact_mandatory": false
+    "evidence_id": "EF01",
+    "evidence_mandatory": false
+  },
+  "keycard": {
+    "id": "L01-KC01",
+    "pickup_entity_id": "L01-KC01-P",
+    "area": "L01-A04",
+    "opens": "L01-A06 exit wicket",
+    "chip_value": 0,
+    "mandatory_for_exit": true
   },
   "tuning": {
     "status": "proposed_unverified",
@@ -73,17 +120,19 @@
     "pistol_damage": 1,
     "pistol_base_interval_s": 0.32,
     "pistol_quickcycle_interval_s": 0.24,
-    "resident_health": 3,
-    "clipper_exposed_motor_health": 3
+    "night_guard_health": 3,
+    "staffer_health": 2,
+    "rover_battery_health": 3
   },
   "areas": [
     {
       "id": "L01-A01",
       "name": "Perimeter gate",
       "seconds": 75,
-      "residents": 0,
-      "clippers": 0,
-      "gems": 5,
+      "night_guards": 0,
+      "rovers": 0,
+      "staffers": 0,
+      "chips": 5,
       "small": 5,
       "clusters": 0,
       "cp": "CP00",
@@ -105,7 +154,7 @@
         },
         {
           "id": "L01-A01-B04",
-          "name": "Gem trail and open gate",
+          "name": "Chip trail and open gate",
           "target_seconds": 15
         }
       ]
@@ -114,21 +163,22 @@
       "id": "L01-A02",
       "name": "Front gardens",
       "seconds": 150,
-      "residents": 2,
-      "clippers": 2,
-      "gems": 10,
+      "night_guards": 2,
+      "rovers": 2,
+      "staffers": 0,
+      "chips": 10,
       "small": 5,
       "clusters": 1,
       "cp": "CP01",
       "beats": [
         {
           "id": "L01-A02-B01",
-          "name": "First Resident in isolation",
+          "name": "First Night Guard in isolation",
           "target_seconds": 30
         },
         {
           "id": "L01-A02-B02",
-          "name": "First Clipper beside stone planter",
+          "name": "First Patrol Rover beside stone planter",
           "target_seconds": 30
         },
         {
@@ -138,12 +188,12 @@
         },
         {
           "id": "L01-A02-B04",
-          "name": "Resident in the next yard",
+          "name": "Night Guard in the next court",
           "target_seconds": 25
         },
         {
           "id": "L01-A02-B05",
-          "name": "Second Clipper practice lane",
+          "name": "Second Patrol Rover practice lane",
           "target_seconds": 25
         },
         {
@@ -157,9 +207,10 @@
       "id": "L01-A03",
       "name": "Rooftop walk",
       "seconds": 135,
-      "residents": 2,
-      "clippers": 0,
-      "gems": 10,
+      "night_guards": 2,
+      "rovers": 0,
+      "staffers": 0,
+      "chips": 10,
       "small": 5,
       "clusters": 1,
       "cp": "CP02",
@@ -176,12 +227,12 @@
         },
         {
           "id": "L01-A03-B03",
-          "name": "Resident on broad far terrace",
+          "name": "Night Guard on broad far terrace",
           "target_seconds": 25
         },
         {
           "id": "L01-A03-B04",
-          "name": "Roof-height sequence and second Resident",
+          "name": "Roof-height sequence and second Night Guard",
           "target_seconds": 30
         },
         {
@@ -193,11 +244,12 @@
     },
     {
       "id": "L01-A04",
-      "name": "Neighborhood square",
+      "name": "Campus plaza",
       "seconds": 165,
-      "residents": 4,
-      "clippers": 2,
-      "gems": 20,
+      "night_guards": 4,
+      "rovers": 2,
+      "staffers": 0,
+      "chips": 20,
       "small": 10,
       "clusters": 2,
       "cp": "CP03",
@@ -214,12 +266,12 @@
         },
         {
           "id": "L01-A04-B03",
-          "name": "Raised flowerbed traversal",
+          "name": "Raised planter-bed traversal",
           "target_seconds": 20
         },
         {
           "id": "L01-A04-B04",
-          "name": "Two staggered Residents",
+          "name": "Two staggered Night Guards",
           "target_seconds": 25
         },
         {
@@ -234,35 +286,37 @@
         },
         {
           "id": "L01-A04-B07",
-          "name": "Quiet far porch and recovery station",
+          "name": "Quiet far porch: recovery station and keycard",
           "target_seconds": 25
         }
-      ]
+      ],
+      "keycard": "L01-KC01"
     },
     {
       "id": "L01-A05",
-      "name": "Maintenance depot",
+      "name": "Server depot",
       "seconds": 90,
-      "residents": 0,
-      "clippers": 0,
-      "gems": 0,
+      "night_guards": 0,
+      "rovers": 0,
+      "staffers": 0,
+      "chips": 0,
       "small": 0,
       "clusters": 0,
       "cp": "CP04",
       "beats": [
         {
           "id": "L01-A05-B01",
-          "name": "Workshop and mounted core",
+          "name": "Workbench and Adam's core node",
           "target_seconds": 15
         },
         {
           "id": "L01-A05-B02",
-          "name": "Release latch triggers EDEN",
+          "name": "Plug in: Adam answers",
           "target_seconds": 20
         },
         {
           "id": "L01-A05-B03",
-          "name": "Read transformed exit and save",
+          "name": "Read the lockdown exit and save",
           "target_seconds": 15
         },
         {
@@ -281,21 +335,22 @@
       "id": "L01-A06",
       "name": "Alarm exit",
       "seconds": 135,
-      "residents": 1,
-      "clippers": 2,
-      "gems": 0,
+      "night_guards": 0,
+      "rovers": 2,
+      "staffers": 2,
+      "chips": 0,
       "small": 0,
       "clusters": 0,
       "cp": "CP05",
       "beats": [
         {
           "id": "L01-A06-B01",
-          "name": "Preview quarantine rails",
+          "name": "Preview lockdown rails",
           "target_seconds": 25
         },
         {
           "id": "L01-A06-B02",
-          "name": "Familiar Clipper lane",
+          "name": "Familiar Patrol Rover lane and the first Staffer",
           "target_seconds": 25
         },
         {
@@ -305,104 +360,116 @@
         },
         {
           "id": "L01-A06-B04",
-          "name": "Final Resident and Clipper encounter",
+          "name": "Final Staffer and Patrol Rover encounter",
           "target_seconds": 35
         },
         {
           "id": "L01-A06-B05",
-          "name": "Service wicket and completion",
+          "name": "Service wicket, keycard and completion",
           "target_seconds": 25
         }
-      ]
+      ],
+      "requires_keycard": "L01-KC01"
     }
   ],
   "encounters": [
     {
       "id": "L01-E01",
       "beat_id": "L01-A02-B01",
-      "residents": 1,
-      "clippers": 0,
-      "gem_drops": 0,
+      "night_guards": 1,
+      "rovers": 0,
+      "staffers": 0,
+      "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E02",
       "beat_id": "L01-A02-B02",
-      "residents": 0,
-      "clippers": 1,
-      "gem_drops": 0,
+      "night_guards": 0,
+      "rovers": 1,
+      "staffers": 0,
+      "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E03",
       "beat_id": "L01-A02-B04",
-      "residents": 1,
-      "clippers": 0,
-      "gem_drops": 0,
+      "night_guards": 1,
+      "rovers": 0,
+      "staffers": 0,
+      "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E04",
       "beat_id": "L01-A02-B05",
-      "residents": 0,
-      "clippers": 1,
-      "gem_drops": 0,
+      "night_guards": 0,
+      "rovers": 1,
+      "staffers": 0,
+      "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E05",
       "beat_id": "L01-A03-B03",
-      "residents": 1,
-      "clippers": 0,
-      "gem_drops": 0,
+      "night_guards": 1,
+      "rovers": 0,
+      "staffers": 0,
+      "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E06",
       "beat_id": "L01-A03-B04",
-      "residents": 1,
-      "clippers": 0,
-      "gem_drops": 0,
+      "night_guards": 1,
+      "rovers": 0,
+      "staffers": 0,
+      "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E07",
       "beat_id": "L01-A04-B02",
-      "residents": 1,
-      "clippers": 1,
-      "gem_drops": 0,
+      "night_guards": 1,
+      "rovers": 1,
+      "staffers": 0,
+      "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E08",
       "beat_id": "L01-A04-B04",
-      "residents": 2,
-      "clippers": 0,
-      "gem_drops": 0,
+      "night_guards": 2,
+      "rovers": 0,
+      "staffers": 0,
+      "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E09",
       "beat_id": "L01-A04-B06",
-      "residents": 1,
-      "clippers": 1,
-      "gem_drops": 0,
+      "night_guards": 1,
+      "rovers": 1,
+      "staffers": 0,
+      "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E10",
       "beat_id": "L01-A06-B02",
-      "residents": 0,
-      "clippers": 1,
-      "gem_drops": 0,
+      "night_guards": 0,
+      "rovers": 1,
+      "staffers": 1,
+      "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
       "id": "L01-E11",
       "beat_id": "L01-A06-B04",
-      "residents": 1,
-      "clippers": 1,
-      "gem_drops": 0,
+      "night_guards": 0,
+      "rovers": 1,
+      "staffers": 1,
+      "chip_drops": 0,
       "max_simultaneous_attackers": 1
     }
   ],
@@ -410,8 +477,9 @@
     {
       "id": "L01-OPT01",
       "area": "L01-A02",
-      "artifact": "A01",
-      "gems": 0,
+      "evidence": "EF01",
+      "evidence_name": "Lockout Notice",
+      "chips": 0,
       "seconds": [
         45,
         60
@@ -420,8 +488,8 @@
     {
       "id": "L01-OPT02",
       "area": "L01-A03",
-      "artifact": null,
-      "gems": 20,
+      "evidence": null,
+      "chips": 20,
       "seconds": [
         45,
         60
@@ -438,7 +506,7 @@
     {
       "id": "CP01",
       "area": "L01-A02",
-      "trigger": "interact_safe_portrait_porch_station",
+      "trigger": "interact_safe_porch_station",
       "kind": "recovery"
     },
     {
@@ -456,13 +524,13 @@
     {
       "id": "CP04",
       "area": "L01-A05",
-      "trigger": "awakening_sequence_complete",
+      "trigger": "core_node_sequence_complete",
       "kind": "story_snapshot"
     },
     {
       "id": "CP05",
       "area": "L01-A06",
-      "trigger": "cross_service_wicket",
+      "trigger": "cross_service_wicket_with_keycard",
       "kind": "completion_snapshot"
     }
   ],
@@ -470,56 +538,57 @@
     {
       "id": "M0",
       "depends_on": [],
-      "status": "not_started"
+      "status": "verified"
     },
     {
       "id": "M1",
       "depends_on": [
         "M0"
       ],
-      "status": "not_started"
+      "status": "verified"
     },
     {
       "id": "M2",
       "depends_on": [
         "M1"
       ],
-      "status": "not_started"
+      "status": "verified"
     },
     {
       "id": "M3",
       "depends_on": [
         "M2"
       ],
-      "status": "not_started"
+      "status": "verified"
     },
     {
       "id": "M4",
       "depends_on": [
         "M3"
       ],
-      "status": "not_started"
+      "status": "verified"
     },
     {
       "id": "M5",
       "depends_on": [
         "M4"
       ],
-      "status": "not_started"
+      "status": "verified"
     },
     {
       "id": "M6",
       "depends_on": [
         "M5"
       ],
-      "status": "not_started"
+      "status": "verified"
     },
     {
       "id": "M7",
       "depends_on": [
         "M6"
       ],
-      "status": "not_started"
+      "status": "implemented_unverified",
+      "notes": "Playable, timing unverified. Functional matrix T01-T20 verified, T21 mechanically verified (visual readability half partially verified). Completion gates 1-5 verified. Gate 6 (>=3 first-time playtests) pending: no testers available this session. Gate 7 partially verified: macOS release export boots to title verified; save/continue/complete verified only on the macOS debug export of the same preset/source; Windows export built and file-type-confirmed but not launch-tested (T22-Windows pending, no Wine on the verifying host). See ../../prototypes/sunnyvale-godot/reports/functional-matrix.md and reports/export-report.md."
     }
   ],
   "owners": {

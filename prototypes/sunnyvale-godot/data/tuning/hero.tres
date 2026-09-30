@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="HeroTuning" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/tuning/hero_tuning.gd" id="1_hero"]
+
+[resource]
+script = ExtResource("1_hero")
+height_px = 96.0
+run_speed = 384.0
+jump_apex_h = 1.6
+jump_time_to_apex = 0.42
+coyote_time = 0.1
+jump_buffer_time = 0.12
+jump_cut_multiplier = 0.45
+ground_acceleration = 3600.0
+ground_deceleration = 4200.0
+air_acceleration = 2200.0
+air_deceleration = 1400.0
+fall_gravity_multiplier = 1.35
+damage_immunity_time = 1.0
+knockback_speed = 220.0
+knockback_up_speed = 170.0

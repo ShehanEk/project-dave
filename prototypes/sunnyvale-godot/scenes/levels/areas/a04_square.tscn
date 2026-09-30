@@ -1,0 +1,741 @@
+[gd_scene load_steps=18 format=3]
+
+[ext_resource type="Script" path="res://scripts/levels/area_root.gd" id="1_arearoot"]
+[ext_resource type="Script" path="res://scripts/world/block.gd" id="2_block"]
+[ext_resource type="PackedScene" path="res://scenes/objects/service_walkway.tscn" id="3_walkway"]
+[ext_resource type="PackedScene" path="res://scenes/objects/chip.tscn" id="4_chip"]
+[ext_resource type="PackedScene" path="res://scenes/objects/med_patch.tscn" id="5_capsule"]
+[ext_resource type="PackedScene" path="res://scenes/objects/route_switch.tscn" id="6_switch"]
+[ext_resource type="PackedScene" path="res://scenes/objects/recovery_station.tscn" id="7_station"]
+[ext_resource type="PackedScene" path="res://scenes/objects/scenery.tscn" id="9_scenery"]
+[ext_resource type="Script" path="res://scripts/combat/encounter_group.gd" id="10_group"]
+[ext_resource type="PackedScene" path="res://scenes/actors/night_guard.tscn" id="11_guard"]
+[ext_resource type="PackedScene" path="res://scenes/actors/patrol_rover.tscn" id="12_rover"]
+[ext_resource type="PackedScene" path="res://scenes/objects/beat_zone.tscn" id="13_beat"]
+[ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="14_routepoint"]
+[ext_resource type="PackedScene" path="res://scenes/objects/kill_plane.tscn" id="15_killplane"]
+[ext_resource type="Script" path="res://scripts/world/visuals/area_backdrop.gd" id="50_backdrop"]
+[ext_resource type="PackedScene" path="res://scenes/objects/keycard.tscn" id="51_keycard"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_approach"]
+size = Vector2(100, 900)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_a04kill"]
+size = Vector2(8600, 80)
+
+[node name="A04Square" type="Node2D"]
+script = ExtResource("1_arearoot")
+area_id = "L01-A04"
+width = 7800.0
+camera_top = -480.0
+camera_bottom = 460.0
+
+[node name="Background" type="Node2D" parent="."]
+
+[node name="Sky" type="Parallax2D" parent="Background"]
+script = ExtResource("50_backdrop")
+mode = 0
+tile_width = 7800.0
+horizon_y = 0.0
+
+[node name="Homes" type="Parallax2D" parent="Background"]
+script = ExtResource("50_backdrop")
+mode = 1
+tile_width = 7800.0
+horizon_y = 0.0
+
+[node name="Geometry" type="Node2D" parent="."]
+
+[node name="EntryFloor" type="StaticBody2D" parent="Geometry"]
+position = Vector2(0, 0)
+script = ExtResource("2_block")
+size = Vector2(500, 300)
+kind = 0
+
+[node name="SquareFloor" type="StaticBody2D" parent="Geometry"]
+position = Vector2(500, 96)
+script = ExtResource("2_block")
+size = Vector2(1500, 300)
+kind = 0
+
+[node name="CentralStep" type="StaticBody2D" parent="Geometry"]
+position = Vector2(1300, 56)
+script = ExtResource("2_block")
+size = Vector2(140, 40)
+kind = 1
+
+[node name="E07Backstop" type="StaticBody2D" parent="Geometry"]
+position = Vector2(1550, 24)
+script = ExtResource("2_block")
+size = Vector2(48, 72)
+kind = 4
+
+[node name="FB1" type="StaticBody2D" parent="Geometry"]
+position = Vector2(2150, 20)
+script = ExtResource("2_block")
+size = Vector2(200, 300)
+kind = 1
+
+[node name="FB2" type="StaticBody2D" parent="Geometry"]
+position = Vector2(2490, 96)
+script = ExtResource("2_block")
+size = Vector2(180, 300)
+kind = 1
+
+[node name="FB3" type="StaticBody2D" parent="Geometry"]
+position = Vector2(2800, 40)
+script = ExtResource("2_block")
+size = Vector2(200, 300)
+kind = 1
+
+[node name="FlowerbedCatch1" type="StaticBody2D" parent="Geometry"]
+position = Vector2(2000, 140)
+script = ExtResource("2_block")
+size = Vector2(150, 40)
+kind = 0
+
+[node name="FlowerbedCatch2" type="StaticBody2D" parent="Geometry"]
+position = Vector2(2350, 140)
+script = ExtResource("2_block")
+size = Vector2(140, 40)
+kind = 0
+
+[node name="FlowerbedCatch3" type="StaticBody2D" parent="Geometry"]
+position = Vector2(2670, 140)
+script = ExtResource("2_block")
+size = Vector2(130, 40)
+kind = 0
+
+[node name="FlowerbedCatch4" type="StaticBody2D" parent="Geometry"]
+position = Vector2(3000, 140)
+script = ExtResource("2_block")
+size = Vector2(120, 40)
+kind = 0
+
+[node name="B04Floor" type="StaticBody2D" parent="Geometry"]
+position = Vector2(3120, 96)
+script = ExtResource("2_block")
+size = Vector2(1080, 300)
+kind = 0
+
+[node name="PitFloor" type="StaticBody2D" parent="Geometry"]
+position = Vector2(4200, 300)
+script = ExtResource("2_block")
+size = Vector2(480, 120)
+kind = 0
+
+[node name="ChannelStep1" type="StaticBody2D" parent="Geometry"]
+position = Vector2(4340, 232)
+script = ExtResource("2_block")
+size = Vector2(140, 68)
+kind = 1
+
+[node name="ChannelStep2" type="StaticBody2D" parent="Geometry"]
+position = Vector2(4200, 164)
+script = ExtResource("2_block")
+size = Vector2(140, 68)
+kind = 1
+
+[node name="Walkway" parent="Geometry" instance=ExtResource("3_walkway")]
+position = Vector2(4200, 96)
+switch_id = "L01-SW01"
+width = 480.0
+thickness = 20.0
+
+[node name="B06Floor" type="StaticBody2D" parent="Geometry"]
+position = Vector2(4680, 96)
+script = ExtResource("2_block")
+size = Vector2(1600, 300)
+kind = 0
+
+[node name="E09Backstop" type="StaticBody2D" parent="Geometry"]
+position = Vector2(5350, 24)
+script = ExtResource("2_block")
+size = Vector2(48, 72)
+kind = 4
+
+[node name="AscentCatch1" type="StaticBody2D" parent="Geometry"]
+position = Vector2(6280, 140)
+script = ExtResource("2_block")
+size = Vector2(100, 40)
+kind = 0
+
+[node name="AscentStep1" type="StaticBody2D" parent="Geometry"]
+position = Vector2(6380, 48)
+script = ExtResource("2_block")
+size = Vector2(300, 300)
+kind = 0
+
+[node name="AscentCatch2" type="StaticBody2D" parent="Geometry"]
+position = Vector2(6680, 92)
+script = ExtResource("2_block")
+size = Vector2(90, 40)
+kind = 0
+
+[node name="Porch" type="StaticBody2D" parent="Geometry"]
+position = Vector2(6770, 0)
+script = ExtResource("2_block")
+size = Vector2(1030, 300)
+kind = 5
+
+[node name="Scenery" type="Node2D" parent="."]
+
+[node name="Fence" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(80, 0)
+kind = 1
+size = Vector2(200, 50)
+
+[node name="House" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(300, 0)
+kind = 0
+size = Vector2(160, 150)
+
+[node name="Fountain" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(950, 96)
+kind = 5
+size = Vector2(140, 110)
+
+[node name="Planter" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(1050, 96)
+kind = 7
+size = Vector2(70, 70)
+
+[node name="Shrub01" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(1900, 96)
+kind = 2
+size = Vector2(70, 70)
+
+[node name="Flower01" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(2250, 20)
+kind = 3
+size = Vector2(40, 90)
+
+[node name="Flower02" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(2900, 40)
+kind = 3
+size = Vector2(40, 90)
+
+[node name="Lamp" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(3500, 96)
+kind = 6
+size = Vector2(30, 140)
+
+[node name="Mailbox" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(4000, 96)
+kind = 8
+size = Vector2(40, 70)
+
+[node name="Rail" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(4160, 96)
+kind = 15
+size = Vector2(80, 60)
+
+[node name="Shrub02" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(4700, 96)
+kind = 2
+size = Vector2(70, 70)
+
+[node name="Planter02" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(5600, 96)
+kind = 7
+size = Vector2(70, 70)
+
+[node name="Fence02" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(6420, 48)
+kind = 1
+size = Vector2(180, 50)
+
+[node name="Portrait" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(6900, 0)
+kind = 9
+size = Vector2(90, 110)
+
+[node name="Breakfast" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(7150, 0)
+kind = 10
+size = Vector2(90, 60)
+
+[node name="DepotDoor" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(7700, 0)
+kind = 13
+size = Vector2(140, 190)
+
+[node name="Clock" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(7700, -190)
+kind = 4
+size = Vector2(140, 140)
+
+[node name="LandingLamp_Entry" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(440, 0)
+kind = 6
+size = Vector2(30, 150)
+
+[node name="LandingLamp_CentralStep" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(1370, 96)
+kind = 6
+size = Vector2(30, 150)
+
+[node name="LandingLamp_RoverLane" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(1700, 96)
+kind = 6
+size = Vector2(30, 160)
+
+[node name="LandingLamp_FB1" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(2185, 20)
+kind = 6
+size = Vector2(30, 130)
+
+[node name="LandingLamp_FB2" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(2640, 96)
+kind = 6
+size = Vector2(30, 140)
+
+[node name="LandingLamp_FB3" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(2960, 40)
+kind = 6
+size = Vector2(30, 130)
+
+[node name="LandingLamp_Switch" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(4060, 96)
+kind = 6
+size = Vector2(30, 150)
+
+[node name="LandingLamp_Channel" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(4410, 300)
+kind = 6
+size = Vector2(30, 170)
+
+[node name="LandingLamp_WalkwayExit" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(4760, 96)
+kind = 6
+size = Vector2(30, 150)
+
+[node name="LandingLamp_E09" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(5250, 96)
+kind = 6
+size = Vector2(30, 150)
+
+[node name="LandingLamp_E09Clipper" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(5850, 96)
+kind = 6
+size = Vector2(30, 150)
+
+[node name="LandingLamp_Ascent" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(6560, 48)
+kind = 6
+size = Vector2(30, 130)
+
+[node name="LandingLamp_GuardTray" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(7300, 0)
+kind = 6
+size = Vector2(30, 170)
+
+[node name="LandingLamp_DepotApproach" parent="Scenery" instance=ExtResource("9_scenery")]
+position = Vector2(7560, 0)
+kind = 6
+size = Vector2(30, 150)
+
+[node name="Entities" type="Node2D" parent="."]
+
+[node name="Chip_G001" parent="Entities" instance=ExtResource("4_chip")]
+position = Vector2(150, -20)
+entity_id = "L01-A04-G001"
+value = 1
+
+[node name="Chip_G002" parent="Entities" instance=ExtResource("4_chip")]
+position = Vector2(350, -20)
+entity_id = "L01-A04-G002"
+value = 1
+
+[node name="Chip_G003" parent="Entities" instance=ExtResource("4_chip")]
+position = Vector2(700, 76)
+entity_id = "L01-A04-G003"
+value = 1
+
+[node name="Chip_G004" parent="Entities" instance=ExtResource("4_chip")]
+position = Vector2(1470, 76)
+entity_id = "L01-A04-G004"
+value = 1
+
+[node name="Chip_G005" parent="Entities" instance=ExtResource("4_chip")]
+position = Vector2(2250, 0)
+entity_id = "L01-A04-G005"
+value = 1
+
+[node name="Chip_G006" parent="Entities" instance=ExtResource("4_chip")]
+position = Vector2(2580, 76)
+entity_id = "L01-A04-G006"
+value = 1
+
+[node name="Chip_G007" parent="Entities" instance=ExtResource("4_chip")]
+position = Vector2(2900, 20)
+entity_id = "L01-A04-G007"
+value = 1
+
+[node name="Chip_G008" parent="Entities" instance=ExtResource("4_chip")]
+position = Vector2(3500, 76)
+entity_id = "L01-A04-G008"
+value = 1
+
+[node name="ChipCluster_GC01" parent="Entities" instance=ExtResource("4_chip")]
+position = Vector2(3900, 76)
+entity_id = "L01-A04-GC01"
+value = 5
+
+[node name="Chip_G009" parent="Entities" instance=ExtResource("4_chip")]
+position = Vector2(4450, 76)
+entity_id = "L01-A04-G009"
+value = 1
+
+[node name="MedPatch_HS02" parent="Entities" instance=ExtResource("5_capsule")]
+position = Vector2(4750, 76)
+entity_id = "L01-HS02"
+heal = 2
+
+[node name="Chip_G010" parent="Entities" instance=ExtResource("4_chip")]
+position = Vector2(5300, 76)
+entity_id = "L01-A04-G010"
+value = 1
+
+[node name="ChipCluster_GC02" parent="Entities" instance=ExtResource("4_chip")]
+position = Vector2(5900, 76)
+entity_id = "L01-A04-GC02"
+value = 5
+
+[node name="RouteSwitch_SW01" parent="Entities" instance=ExtResource("6_switch")]
+position = Vector2(4130, 96)
+switch_id = "L01-SW01"
+
+[node name="RecoveryStation_CP03" parent="Entities" instance=ExtResource("7_station")]
+position = Vector2(7000, 0)
+checkpoint_id = "CP03"
+
+[node name="Keycard_KC01" parent="Entities" instance=ExtResource("51_keycard")]
+position = Vector2(7320, -34)
+entity_id = "L01-KC01-P"
+keycard_id = "L01-KC01"
+
+[node name="KillPlane" parent="Entities" instance=ExtResource("15_killplane")]
+position = Vector2(3900, 1400)
+damage = 0
+reset_target = NodePath("../../Markers/FailsafeReset")
+
+[node name="CollisionShape2D" parent="Entities/KillPlane"]
+shape = SubResource("RectangleShape2D_a04kill")
+
+[node name="Encounters" type="Node2D" parent="."]
+
+[node name="EncounterGroup_E07" type="Node2D" parent="Encounters"]
+position = Vector2(500, 0)
+script = ExtResource("10_group")
+group_id = "L01-E07"
+lane_rect = Rect2(0, -500, 1500, 900)
+reactivate_cooldown = 0.35
+
+[node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E07"]
+position = Vector2(60, 0)
+collision_layer = 0
+collision_mask = 2
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E07/ApproachZone"]
+shape = SubResource("RectangleShape2D_approach")
+
+[node name="NightGuard_SE01_01" parent="Encounters/EncounterGroup_E07" instance=ExtResource("11_guard")]
+position = Vector2(350, 96)
+entity_id = "L01-E07-SE01-01"
+
+[node name="PatrolRover_M01_01" parent="Encounters/EncounterGroup_E07" instance=ExtResource("12_rover")]
+position = Vector2(1450, 96)
+entity_id = "L01-E07-M01-01"
+patrol_min_x = 1810.0
+patrol_max_x = 1980.0
+
+[node name="EncounterGroup_E08" type="Node2D" parent="Encounters"]
+position = Vector2(3120, 0)
+script = ExtResource("10_group")
+group_id = "L01-E08"
+lane_rect = Rect2(0, -500, 780, 900)
+reactivate_cooldown = 0.35
+
+[node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E08"]
+position = Vector2(260, 0)
+collision_layer = 0
+collision_mask = 2
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E08/ApproachZone"]
+shape = SubResource("RectangleShape2D_approach")
+
+[node name="NightGuard_SE01_01" parent="Encounters/EncounterGroup_E08" instance=ExtResource("11_guard")]
+position = Vector2(400, 96)
+entity_id = "L01-E08-SE01-01"
+
+[node name="NightGuard_SE01_02" parent="Encounters/EncounterGroup_E08" instance=ExtResource("11_guard")]
+position = Vector2(650, 96)
+entity_id = "L01-E08-SE01-02"
+
+[node name="EncounterGroup_E09" type="Node2D" parent="Encounters"]
+position = Vector2(4680, 0)
+script = ExtResource("10_group")
+group_id = "L01-E09"
+lane_rect = Rect2(0, -500, 1600, 900)
+reactivate_cooldown = 0.35
+
+[node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E09"]
+position = Vector2(150, 0)
+collision_layer = 0
+collision_mask = 2
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E09/ApproachZone"]
+shape = SubResource("RectangleShape2D_approach")
+
+[node name="NightGuard_SE01_01" parent="Encounters/EncounterGroup_E09" instance=ExtResource("11_guard")]
+position = Vector2(400, 96)
+entity_id = "L01-E09-SE01-01"
+
+[node name="PatrolRover_M01_01" parent="Encounters/EncounterGroup_E09" instance=ExtResource("12_rover")]
+position = Vector2(1070, 96)
+entity_id = "L01-E09-M01-01"
+patrol_min_x = 5510.0
+patrol_max_x = 5780.0
+
+[node name="Beats" type="Node2D" parent="."]
+
+[node name="Beat_B01" parent="Beats" instance=ExtResource("13_beat")]
+position = Vector2(310, -150)
+beat_id = "L01-A04-B01"
+size = Vector2(380, 700)
+
+[node name="Beat_B02" parent="Beats" instance=ExtResource("13_beat")]
+position = Vector2(1250, -100)
+beat_id = "L01-A04-B02"
+size = Vector2(1500, 700)
+
+[node name="Beat_B03" parent="Beats" instance=ExtResource("13_beat")]
+position = Vector2(2560, -100)
+beat_id = "L01-A04-B03"
+size = Vector2(1120, 700)
+
+[node name="Beat_B04" parent="Beats" instance=ExtResource("13_beat")]
+position = Vector2(3660, -100)
+beat_id = "L01-A04-B04"
+size = Vector2(1080, 700)
+
+[node name="Beat_B05" parent="Beats" instance=ExtResource("13_beat")]
+position = Vector2(4440, 50)
+beat_id = "L01-A04-B05"
+size = Vector2(480, 850)
+
+[node name="Beat_B06" parent="Beats" instance=ExtResource("13_beat")]
+position = Vector2(5680, -100)
+beat_id = "L01-A04-B06"
+size = Vector2(2000, 700)
+
+[node name="Beat_B07" parent="Beats" instance=ExtResource("13_beat")]
+position = Vector2(7285, -100)
+beat_id = "L01-A04-B07"
+size = Vector2(1030, 700)
+
+[node name="Markers" type="Node2D" parent="."]
+
+[node name="FailsafeReset" type="Marker2D" parent="Markers"]
+position = Vector2(200, -4)
+
+[node name="Respawn_CP03" type="Marker2D" parent="Markers"]
+position = Vector2(7000, -4)
+
+[node name="Route" type="Node2D" parent="."]
+
+[node name="RP01_ToOverlookEdge" type="Marker2D" parent="Route"]
+position = Vector2(460, 0)
+script = ExtResource("14_routepoint")
+action = 0
+tolerance = 16.0
+
+[node name="RP02_PastGuard" type="Marker2D" parent="Route"]
+position = Vector2(1050, 0)
+script = ExtResource("14_routepoint")
+action = 0
+tolerance = 16.0
+
+[node name="RP03_HopCentralStep" type="Marker2D" parent="Route"]
+position = Vector2(1280, 0)
+script = ExtResource("14_routepoint")
+action = 1
+tolerance = 15.0
+hold_jump = 0.1
+
+[node name="RP04_AcrossStepTop" type="Marker2D" parent="Route"]
+position = Vector2(1420, 0)
+script = ExtResource("14_routepoint")
+action = 0
+tolerance = 14.0
+
+[node name="RP05_ApproachBackstop" type="Marker2D" parent="Route"]
+position = Vector2(1530, 0)
+script = ExtResource("14_routepoint")
+action = 0
+tolerance = 16.0
+
+[node name="RP06_HopBackstop" type="Marker2D" parent="Route"]
+position = Vector2(1530, 0)
+script = ExtResource("14_routepoint")
+action = 1
+tolerance = 15.0
+hold_jump = 0.25
+
+[node name="RP07_PastRover" type="Marker2D" parent="Route"]
+position = Vector2(1990, 0)
+script = ExtResource("14_routepoint")
+action = 0
+tolerance = 14.0
+
+[node name="RP08_JumpToFB1" type="Marker2D" parent="Route"]
+position = Vector2(2000, 0)
+script = ExtResource("14_routepoint")
+action = 1
+tolerance = 12.0
+hold_jump = 0.22
+
+[node name="RP09_AcrossFB1" type="Marker2D" parent="Route"]
+position = Vector2(2340, 0)
+script = ExtResource("14_routepoint")
+action = 0
+tolerance = 12.0
+
+[node name="RP10_JumpToFB2" type="Marker2D" parent="Route"]
+position = Vector2(2350, 0)
+script = ExtResource("14_routepoint")
+action = 1
+tolerance = 12.0
+hold_jump = 0.15
+
+[node name="RP11_AcrossFB2" type="Marker2D" parent="Route"]
+position = Vector2(2660, 0)
+script = ExtResource("14_routepoint")
+action = 0
+tolerance = 12.0
+
+[node name="RP12_JumpToFB3" type="Marker2D" parent="Route"]
+position = Vector2(2670, 0)
+script = ExtResource("14_routepoint")
+action = 1
+tolerance = 12.0
+hold_jump = 0.22
+
+[node name="RP13_AcrossFB3" type="Marker2D" parent="Route"]
+position = Vector2(2990, 0)
+script = ExtResource("14_routepoint")
+action = 0
+tolerance = 12.0
+
+[node name="RP14_JumpToB04" type="Marker2D" parent="Route"]
+position = Vector2(3000, 0)
+script = ExtResource("14_routepoint")
+action = 1
+tolerance = 12.0
+hold_jump = 0.15
+
+[node name="RP15_PastGuard1" type="Marker2D" parent="Route"]
+position = Vector2(3450, 0)
+script = ExtResource("14_routepoint")
+action = 0
+tolerance = 16.0
+
+[node name="RP16_PastGuard2" type="Marker2D" parent="Route"]
+position = Vector2(3900, 0)
+script = ExtResource("14_routepoint")
+action = 0
+tolerance = 16.0
+
+[node name="RP17_ToSwitch" type="Marker2D" parent="Route"]
+position = Vector2(4130, 0)
+script = ExtResource("14_routepoint")
+action = 0
+tolerance = 16.0
+
+[node name="RP18_PullSwitch" type="Marker2D" parent="Route"]
+position = Vector2(4130, 0)
+script = ExtResource("14_routepoint")
+action = 3
+tolerance = 16.0
+
+[node name="RP19_CrossWalkway" type="Marker2D" parent="Route"]
+position = Vector2(4450, 0)
+script = ExtResource("14_routepoint")
+action = 0
+tolerance = 16.0
+
+[node name="RP20_PastChannel" type="Marker2D" parent="Route"]
+position = Vector2(4750, 0)
+script = ExtResource("14_routepoint")
+action = 0
+tolerance = 16.0
+
+[node name="RP21_PastE09Guard" type="Marker2D" parent="Route"]
+position = Vector2(5250, 0)
+script = ExtResource("14_routepoint")
+action = 0
+tolerance = 16.0
+
+[node name="RP22_ApproachE09Backstop" type="Marker2D" parent="Route"]
+position = Vector2(5330, 0)
+script = ExtResource("14_routepoint")
+action = 0
+tolerance = 16.0
+
+[node name="RP23_HopE09Backstop" type="Marker2D" parent="Route"]
+position = Vector2(5330, 0)
+script = ExtResource("14_routepoint")
+action = 1
+tolerance = 15.0
+hold_jump = 0.25
+
+[node name="RP24_PastE09Rover" type="Marker2D" parent="Route"]
+position = Vector2(6250, 0)
+script = ExtResource("14_routepoint")
+action = 0
+tolerance = 16.0
+
+[node name="RP25_JumpToAscent" type="Marker2D" parent="Route"]
+position = Vector2(6280, 0)
+script = ExtResource("14_routepoint")
+action = 1
+tolerance = 12.0
+hold_jump = 0.22
+
+[node name="RP26_AcrossAscent" type="Marker2D" parent="Route"]
+position = Vector2(6670, 0)
+script = ExtResource("14_routepoint")
+action = 0
+tolerance = 12.0
+
+[node name="RP27_JumpToPorch" type="Marker2D" parent="Route"]
+position = Vector2(6680, 0)
+script = ExtResource("14_routepoint")
+action = 1
+tolerance = 12.0
+hold_jump = 0.2
+
+[node name="RP28_ToStation" type="Marker2D" parent="Route"]
+position = Vector2(7000, 0)
+script = ExtResource("14_routepoint")
+action = 0
+tolerance = 16.0
+
+[node name="RP29_UseStation" type="Marker2D" parent="Route"]
+position = Vector2(7000, 0)
+script = ExtResource("14_routepoint")
+action = 3
+tolerance = 16.0
+
+[node name="RP30_ToExit" type="Marker2D" parent="Route"]
+position = Vector2(7760, 0)
+script = ExtResource("14_routepoint")
+action = 0
+tolerance = 12.0

@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "project": "DEAD EDEN",
-  "updated": "2026-09-26",
+  "updated": "2026-09-29",
   "purpose": "Concept document index for AI agents; not engine data or validated balance.",
   "path_base": "repository root; dependency paths below are also repository-relative",
   "entry": "AI_START_HERE.md",
@@ -25,82 +25,576 @@
       9,
       12
     ],
-    "minimum_robot_varieties": 10,
-    "minimum_zombie_varieties": 10,
-    "primary_treasure": "gems",
+    "zombies_present": false,
+    "content": "Mature, not for kids (C28): combat is lethal, so enemies die and their bodies stay; blood is visible by material and there is no dismemberment for now (C29)",
+    "regular_enemy_types": 24,
+    "enemy_factions": [
+      "Arcadia Security",
+      "Thornwall",
+      "the Linked",
+      "cyborg dogs",
+      "Adam's machines",
+      "the Heirs"
+    ],
+    "enemy_roster_summary": "24 regular types in six factions plus 4 mini-bosses (C31); detailed behaviors, numbers and placement are proposed (P23). See the enemy_roster block below",
+    "human_enemies_present": true,
+    "cyborg_dogs_present": true,
+    "enemy_gun_kit_size": 9,
+    "shared_enemy_templates": "Five behavior templates (Brawler, Charger, Gunner, Drone, Turret) plus one boss base (C26)",
+    "clipper_present": false,
+    "primary_treasure": "microchips",
     "additional_treasure": [
-      "artifacts"
+      "evidence files (proposed P11; optional, journal-only)"
     ],
     "core_loop": [
       "explore",
       "fight",
-      "collect treasure",
+      "collect microchips",
       "overcome an obstacle",
       "reach a checkpoint",
       "upgrade"
     ],
-    "visual_style": "Hand-drawn 2D; clean outlines, flat painted colors, crisp cel shadows, layered backgrounds",
+    "visual_style": "Hand-drawn 2D rendering (C11): clean outlines, flat painted colors, layered backgrounds; dark sci-fi palette and mood (C15). Enemies use a lit cutout rig with smooth realistic engine lighting, Mixamo motion and ragdoll deaths (C35), amending C11's flat cel light bands: confirmed direction, validation test in progress",
     "gameplay_plane": "2D side-scrolling",
     "companion_present": false,
-    "player_party": "solo hero"
+    "player_party": "solo hero (Dave Harlan); no radio contact",
+    "story": "C14: an evil corporation built a sentient AI that secretly builds a weapon to wipe out humanity; the hero is a rogue AI researcher; enemies are Arcadia's human security, the Thornwall contractors, the Linked, cyborg dogs, Adam's machines and the Heirs (C25, C30, C31); no zombies",
+    "ai_name": "Adam",
+    "hero_name": "Dave Harlan",
+    "stealth_mechanics": false,
+    "references": [
+      "2D Metal Gear games",
+      "Dangerous Dave"
+    ],
+    "mood": "mysterious, a little scary, sci-fi and mature (not for kids, C28); deep darks and strong accents, never washed out",
+    "revamp_decisions": [
+      "C14",
+      "C15",
+      "C16",
+      "C17",
+      "C18",
+      "C19",
+      "C20",
+      "C21",
+      "C22",
+      "C23",
+      "C24",
+      "C25",
+      "C26",
+      "C27",
+      "C28",
+      "C29",
+      "C30",
+      "C31",
+      "C32",
+      "C33",
+      "C34",
+      "C35"
+    ],
+    "hero_profile": "Dave Harlan, a 28-year-old man (C22)"
   },
-  "selected_visual_references": [
+  "selected_visual_references": [],
+  "enemy_roster": {
+    "decision_refs": [
+      "C25",
+      "C26",
+      "C27",
+      "C30",
+      "C31",
+      "C32"
+    ],
+    "detail_proposal": "P23 (behaviors, numbers, gun profiles, fairness rules and per-level placement; proposed and untested)",
+    "owner": "dead-eden-concept.md",
+    "regular_types": 24,
+    "mini_boss_count": 4,
+    "shared_templates": [
+      "Brawler",
+      "Charger",
+      "Gunner",
+      "Drone",
+      "Turret"
+    ],
+    "boss_base": "one shared base for all four mini-bosses",
+    "factions": [
+      {
+        "id": "security",
+        "name": "Arcadia Security",
+        "kind": "human",
+        "acts": "1-2",
+        "note": "Campus contract security. The Rifleman is Arcadia's Response Team at L3 and a Thornwall man from L4 to L9.",
+        "types": [
+          {
+            "id": "SE01",
+            "name": "Night Guard",
+            "first_level": 1,
+            "brief": "art-design/security/se01-night-guard.md"
+          },
+          {
+            "id": "SE02",
+            "name": "Sidearm Guard",
+            "first_level": 2,
+            "brief": "art-design/security/se02-sidearm-guard.md"
+          },
+          {
+            "id": "SE03",
+            "name": "Riot Officer",
+            "first_level": 3,
+            "brief": "art-design/security/se03-riot-officer.md"
+          },
+          {
+            "id": "SE04",
+            "name": "Rifleman",
+            "first_level": 3,
+            "brief": "art-design/security/se04-rifleman.md"
+          }
+        ]
+      },
+      {
+        "id": "thornwall",
+        "name": "Thornwall",
+        "kind": "human",
+        "acts": "2-3",
+        "note": "Private military contractor on retainer; its orders change from guard to sanitize.",
+        "types": [
+          {
+            "id": "TW01",
+            "name": "Heavy Gunner",
+            "first_level": 5,
+            "brief": "art-design/thornwall/tw01-heavy-gunner.md"
+          },
+          {
+            "id": "TW02",
+            "name": "Grenadier",
+            "first_level": 5,
+            "brief": "art-design/thornwall/tw02-grenadier.md"
+          },
+          {
+            "id": "TW03",
+            "name": "Marksman",
+            "first_level": 6,
+            "brief": "art-design/thornwall/tw03-marksman.md"
+          }
+        ]
+      },
+      {
+        "id": "linked",
+        "name": "The Linked",
+        "kind": "people driven by Adam through the Link implant",
+        "acts": "1-4",
+        "note": "The Staffer first appears at the L1 alarm exit, after the core-node lockdown. The Linked Trooper is a captured Thornwall contractor.",
+        "types": [
+          {
+            "id": "LK01",
+            "name": "Staffer",
+            "first_level": 1,
+            "brief": "art-design/linked/lk01-staffer.md"
+          },
+          {
+            "id": "LK02",
+            "name": "Linked Lineman",
+            "first_level": 6,
+            "brief": "art-design/linked/lk02-linked-lineman.md"
+          },
+          {
+            "id": "LK03",
+            "name": "Linked Nurse",
+            "first_level": 7,
+            "brief": "art-design/linked/lk03-linked-nurse.md"
+          },
+          {
+            "id": "LK04",
+            "name": "Linked Trooper",
+            "first_level": 8,
+            "brief": "art-design/linked/lk04-linked-trooper.md"
+          }
+        ]
+      },
+      {
+        "id": "hounds",
+        "name": "Cyborg dogs",
+        "kind": "cyborg dogs (C30)",
+        "acts": "1-4",
+        "note": "The Hound is Arcadia K9 with a Night Guard handler in Act 1, Adam-driven in L7-L8 and Garden-built in L11. The Gun Hound is Thornwall K9 with a back-mounted assault rifle.",
+        "types": [
+          {
+            "id": "K01",
+            "name": "Hound",
+            "first_level": 2,
+            "brief": "art-design/hounds/k01-hound.md"
+          },
+          {
+            "id": "K02",
+            "name": "Gun Hound",
+            "first_level": 5,
+            "brief": "art-design/hounds/k02-gun-hound.md"
+          }
+        ]
+      },
+      {
+        "id": "machines",
+        "name": "Adam's machines",
+        "kind": "machines",
+        "acts": "1-4",
+        "note": "Arcadia's own machines driven by Adam, plus Garden-built machines (Pruner, Fitting Arm) and Garden-built variants of the Patrol Rover, Security Drone and Freight Loader in L10-L12.",
+        "types": [
+          {
+            "id": "M01",
+            "name": "Patrol Rover",
+            "first_level": 1,
+            "brief": "art-design/machines/m01-patrol-rover.md"
+          },
+          {
+            "id": "M02",
+            "name": "Security Drone",
+            "first_level": 2,
+            "brief": "art-design/machines/m02-security-drone.md"
+          },
+          {
+            "id": "M03",
+            "name": "Sentry Turret",
+            "first_level": 4,
+            "brief": "art-design/machines/m03-sentry-turret.md"
+          },
+          {
+            "id": "M04",
+            "name": "Freight Loader",
+            "first_level": 4,
+            "brief": "art-design/machines/m04-freight-loader.md"
+          },
+          {
+            "id": "M05",
+            "name": "Sanitizer",
+            "first_level": 7,
+            "brief": "art-design/machines/m05-sanitizer.md"
+          },
+          {
+            "id": "M06",
+            "name": "Orderly",
+            "first_level": 7,
+            "brief": "art-design/machines/m06-orderly.md"
+          },
+          {
+            "id": "M07",
+            "name": "Keeper Drone",
+            "first_level": 8,
+            "brief": "art-design/machines/m07-keeper-drone.md"
+          },
+          {
+            "id": "M08",
+            "name": "Pruner",
+            "first_level": 10,
+            "brief": "art-design/machines/m08-pruner.md"
+          },
+          {
+            "id": "M09",
+            "name": "Fitting Arm",
+            "first_level": 10,
+            "brief": "art-design/machines/m09-fitting-arm.md"
+          }
+        ]
+      },
+      {
+        "id": "heirs",
+        "name": "The Heirs",
+        "kind": "Adam's synthetic people",
+        "acts": "4",
+        "note": "Built in the Garden from staff minds copied in the Memory Orchard.",
+        "types": [
+          {
+            "id": "HE01",
+            "name": "Fitted Heir",
+            "first_level": 10,
+            "brief": "art-design/heirs/he01-fitted-heir.md"
+          },
+          {
+            "id": "HE02",
+            "name": "Warden",
+            "first_level": 11,
+            "brief": "art-design/heirs/he02-warden.md"
+          }
+        ]
+      }
+    ],
+    "mini_bosses": [
+      {
+        "id": "B01",
+        "name": "The Peacekeeper",
+        "level": 3,
+        "brief": "art-design/mini-bosses/b01-the-peacekeeper.md"
+      },
+      {
+        "id": "B02",
+        "name": "Howard Stroud",
+        "level": 6,
+        "brief": "art-design/mini-bosses/b02-howard-stroud.md",
+        "note": "Linked; he dies, speaking his own last words"
+      },
+      {
+        "id": "B03",
+        "name": "The Surgeon",
+        "level": 9,
+        "brief": "art-design/mini-bosses/b03-the-surgeon.md"
+      },
+      {
+        "id": "B04",
+        "name": "The Sower",
+        "level": 12,
+        "brief": "art-design/mini-bosses/b04-the-sower.md"
+      }
+    ],
+    "enemy_guns": [
+      {
+        "id": "EG01",
+        "name": "Pistol: AS-9 Civic smart pistol",
+        "first_level": 2,
+        "futuristic": false,
+        "brief": "art-design/enemy-guns/eg01-pistol.md"
+      },
+      {
+        "id": "EG02",
+        "name": "Assault rifle: AR-7 Warrant",
+        "first_level": 3,
+        "futuristic": false,
+        "brief": "art-design/enemy-guns/eg02-assault-rifle.md"
+      },
+      {
+        "id": "EG03",
+        "name": "Machine gun: HG-40 Thresher rotary",
+        "first_level": 3,
+        "futuristic": false,
+        "brief": "art-design/enemy-guns/eg03-machine-gun.md"
+      },
+      {
+        "id": "EG04",
+        "name": "Frag launcher: GL-6",
+        "first_level": 5,
+        "futuristic": false,
+        "brief": "art-design/enemy-guns/eg04-frag-launcher.md"
+      },
+      {
+        "id": "EG05",
+        "name": "Rail rifle: RX-2 Needle",
+        "first_level": 6,
+        "futuristic": true,
+        "brief": "art-design/enemy-guns/eg05-rail-rifle.md"
+      },
+      {
+        "id": "EG06",
+        "name": "Arc caster: Groundline",
+        "first_level": 6,
+        "futuristic": true,
+        "brief": "art-design/enemy-guns/eg06-arc-caster.md"
+      },
+      {
+        "id": "EG07",
+        "name": "Plasma gun: Lumen",
+        "first_level": 8,
+        "futuristic": false,
+        "brief": "art-design/enemy-guns/eg07-plasma-gun.md"
+      },
+      {
+        "id": "EG08",
+        "name": "Seeker: Keeper's Lantern round",
+        "first_level": 8,
+        "futuristic": true,
+        "brief": "art-design/enemy-guns/eg08-seeker.md"
+      },
+      {
+        "id": "EG09",
+        "name": "Cutter beam: Garden pruning laser",
+        "first_level": 9,
+        "futuristic": true,
+        "brief": "art-design/enemy-guns/eg09-cutter-beam.md"
+      }
+    ],
+    "protected_people": {
+      "hit_zone": "none: shots pass through and they cannot be hurt",
+      "people": [
+        {
+          "name": "Arcadia's founder",
+          "level": 11
+        },
+        {
+          "name": "The staff held in the clinic",
+          "levels": "7-9"
+        },
+        {
+          "id": "NPC01",
+          "name": "Harmless Sleepwalker (non-combat NPC)",
+          "first_level": 7,
+          "brief": "art-design/npcs/npc01-sleepwalker.md"
+        },
+        {
+          "name": "Arcadia's executives",
+          "note": "story only"
+        }
+      ]
+    }
+  },
+  "levels": [
     {
-      "asset_id": "R01",
-      "name": "Clipper",
-      "selected_direction": "B — Sturdy retro machine, hand-drawn 2D",
-      "selection_record": "concept-art/r01-clipper/SELECTED.md",
-      "image": "concept-art/r01-clipper/r01-clipper-2d-v1.png",
-      "canonical_brief": "art-design/robots/r01-clipper.md",
-      "status": "user_confirmed_visual_reference",
-      "decision_ref": "C11",
-      "production_assets_ready": false
+      "level": 1,
+      "act": 1,
+      "name": "Welcome to Sunnyvale",
+      "brief": "level-design/l01-welcome-to-sunnyvale.md",
+      "new_weapon": "Scrapjack Pistol (carried at entry)",
+      "mini_boss": null,
+      "new_enemy_types": [
+        "Night Guard",
+        "Patrol Rover",
+        "Staffer (alarm exit only)"
+      ]
     },
     {
-      "asset_id": "Z01",
-      "name": "Resident",
-      "selected_direction": "Hand-drawn 2D Resident",
-      "selection_record": "concept-art/z01-resident/SELECTED.md",
-      "image": "concept-art/z01-resident/z01-resident-2d-v1.png",
-      "canonical_brief": "art-design/zombies/z01-resident.md",
-      "status": "user_confirmed_visual_reference",
-      "decision_ref": "C11",
-      "production_assets_ready": false
+      "level": 2,
+      "act": 1,
+      "name": "Curfew",
+      "brief": "level-design/l02-curfew.md",
+      "new_weapon": "Boom Broom",
+      "mini_boss": null,
+      "new_enemy_types": [
+        "Sidearm Guard",
+        "Security Drone",
+        "Hound (with a Night Guard handler)"
+      ]
     },
     {
-      "asset_id": "L01-A02",
-      "name": "Front gardens",
-      "selected_direction": "Hand-drawn 2D Sunnyvale",
-      "selection_record": "concept-art/l01-sunnyvale/README.md",
-      "image": "concept-art/l01-sunnyvale/l01-a02-front-gardens-2d-v1.png",
-      "canonical_brief": "level-design/l01-welcome-to-sunnyvale.md",
-      "status": "user_confirmed_visual_reference",
-      "decision_ref": "C11",
-      "production_assets_ready": false
+      "level": 3,
+      "act": 1,
+      "name": "Parade of Progress",
+      "brief": "level-design/l03-parade-of-progress.md",
+      "new_weapon": null,
+      "mini_boss": "The Peacekeeper",
+      "new_enemy_types": [
+        "Riot Officer",
+        "Rifleman (Arcadia Response Team)"
+      ]
     },
     {
-      "asset_id": "L01-A04",
-      "name": "Neighborhood square",
-      "selected_direction": "Hand-drawn 2D Sunnyvale",
-      "selection_record": "concept-art/l01-sunnyvale/README.md",
-      "image": "concept-art/l01-sunnyvale/l01-a04-neighborhood-square-2d-v1.png",
-      "canonical_brief": "level-design/l01-welcome-to-sunnyvale.md",
-      "status": "user_confirmed_visual_reference",
-      "decision_ref": "C11",
-      "production_assets_ready": false
+      "level": 4,
+      "act": 2,
+      "name": "Roots and Rivets",
+      "brief": "level-design/l04-roots-and-rivets.md",
+      "new_weapon": "Arc Welder",
+      "mini_boss": null,
+      "new_enemy_types": [
+        "Sentry Turret",
+        "Freight Loader"
+      ],
+      "note": "Thornwall Riflemen appear from here"
     },
     {
-      "asset_id": "L01-A06",
-      "name": "Quarantine exit",
-      "selected_direction": "Hand-drawn 2D Sunnyvale",
-      "selection_record": "concept-art/l01-sunnyvale/README.md",
-      "image": "concept-art/l01-sunnyvale/l01-a06-quarantine-exit-2d-v1.png",
-      "canonical_brief": "level-design/l01-welcome-to-sunnyvale.md",
-      "status": "user_confirmed_visual_reference",
-      "decision_ref": "C11",
-      "production_assets_ready": false
+      "level": 5,
+      "act": 2,
+      "name": "Test Subjects",
+      "brief": "level-design/l05-test-subjects.md",
+      "new_weapon": "Seedlobber",
+      "mini_boss": null,
+      "new_enemy_types": [
+        "Heavy Gunner",
+        "Grenadier",
+        "Gun Hound"
+      ]
+    },
+    {
+      "level": 6,
+      "act": 2,
+      "name": "Cold Storage",
+      "brief": "level-design/l06-cold-storage.md",
+      "new_weapon": "Graviton Tether",
+      "mini_boss": "Howard Stroud",
+      "new_enemy_types": [
+        "Marksman",
+        "Linked Lineman"
+      ]
+    },
+    {
+      "level": 7,
+      "act": 3,
+      "name": "Please Remain Still",
+      "brief": "level-design/l07-please-remain-still.md",
+      "new_weapon": null,
+      "mini_boss": null,
+      "new_enemy_types": [
+        "Linked Nurse",
+        "Sanitizer",
+        "Orderly"
+      ]
+    },
+    {
+      "level": 8,
+      "act": 3,
+      "name": "The Memory Orchard",
+      "brief": "level-design/l08-the-memory-orchard.md",
+      "new_weapon": null,
+      "mini_boss": null,
+      "new_enemy_types": [
+        "Linked Trooper",
+        "Keeper Drone"
+      ]
+    },
+    {
+      "level": 9,
+      "act": 3,
+      "name": "Discharge Denied",
+      "brief": "level-design/l09-discharge-denied.md",
+      "new_weapon": null,
+      "mini_boss": "The Surgeon",
+      "new_enemy_types": [],
+      "note": "The test level: no new enemy types"
+    },
+    {
+      "level": 10,
+      "act": 4,
+      "name": "Upgrade Day",
+      "brief": "level-design/l10-upgrade-day.md",
+      "new_weapon": null,
+      "mini_boss": null,
+      "new_enemy_types": [
+        "Fitted Heir",
+        "Pruner",
+        "Fitting Arm"
+      ]
+    },
+    {
+      "level": 11,
+      "act": 4,
+      "name": "The First Patient",
+      "brief": "level-design/l11-the-first-patient.md",
+      "new_weapon": null,
+      "mini_boss": null,
+      "new_enemy_types": [
+        "Warden"
+      ]
+    },
+    {
+      "level": 12,
+      "act": 4,
+      "name": "The Heart of Adam",
+      "brief": "level-design/l12-the-heart-of-adam.md",
+      "new_weapon": null,
+      "mini_boss": "The Sower",
+      "new_enemy_types": []
     }
   ],
+  "art_briefs": {
+    "index": "art-design/README.md",
+    "style_guide": "art-design/style-guide.md",
+    "total": 43,
+    "briefs_per_folder": {
+      "art-design/security/": 4,
+      "art-design/thornwall/": 3,
+      "art-design/linked/": 4,
+      "art-design/hounds/": 2,
+      "art-design/machines/": 9,
+      "art-design/heirs/": 2,
+      "art-design/npcs/": 1,
+      "art-design/mini-bosses/": 4,
+      "art-design/enemy-guns/": 9,
+      "art-design/weapons/": 5
+    },
+    "enemy_art_method": "Lit cutout rig (C35): painted parts plus normal maps, smooth realistic engine lighting, Mixamo motion, ragdoll deaths. Confirmed direction, validation test in progress."
+  },
   "sections": [
     {
       "id": "01-core",
@@ -162,16 +656,23 @@
       "path": "design/01-core/loop-and-design-pillars.md",
       "title": "Core loop and design pillars",
       "status": "proposed_details_with_confirmed_and_established_constraints",
-      "owns": "The player rhythm, intended experience, content boundaries, and pacing rules.",
+      "owns": "The player rhythm, intended experience, mature-content boundaries, keycard exits and pacing rules.",
       "decision_refs": [
         "C01",
         "C02",
-        "C03",
+        "C19",
         "C04",
         "C05",
         "C06",
         "P01",
-        "C12"
+        "C12",
+        "C14",
+        "C15",
+        "C25",
+        "C28",
+        "C29",
+        "C35",
+        "P23"
       ],
       "dependencies": [
         "core-gameplay.md",
@@ -184,11 +685,16 @@
       "path": "design/01-core/player-controls.md",
       "title": "Player movement, aiming, and action rules",
       "status": "proposed_details_with_confirmed_and_established_constraints",
-      "owns": "Input actions, jump behavior, aiming, action priorities, and movement exclusions.",
+      "owns": "Input actions, jump behavior (no crouch), aiming, action priorities, half knockback from enemy shots and movement exclusions.",
       "decision_refs": [
         "C04",
         "C05",
-        "P02"
+        "P02",
+        "C14",
+        "C15",
+        "C27",
+        "C35",
+        "P23"
       ],
       "dependencies": [
         "design/01-core/weapon-swaps.md",
@@ -201,13 +707,17 @@
       "path": "design/01-core/weapon-swaps.md",
       "title": "One carried weapon and world pickups",
       "status": "proposed_details_with_confirmed_and_established_constraints",
-      "owns": "The precise ground-swap interaction, weapon state, boundaries, and save behavior.",
+      "owns": "The precise ground-swap interaction, weapon state, boundaries, and save behavior. Enemy guns are never pickups.",
       "decision_refs": [
         "C04",
         "C05",
         "C06",
         "P03",
-        "P08"
+        "P08",
+        "C14",
+        "C15",
+        "C27",
+        "C35"
       ],
       "dependencies": [
         "design/03-progression/ammunition-and-resupply.md",
@@ -220,11 +730,18 @@
       "path": "design/01-core/camera-and-feedback.md",
       "title": "Camera, readability, and moment-to-moment feedback",
       "status": "proposed_details_with_confirmed_and_established_constraints",
-      "owns": "Gameplay camera behavior and the visual language for danger, surfaces, targets, and rewards.",
+      "owns": "Gameplay camera behavior and the visual language for danger, hits, blood, engine lighting, surfaces, targets, and rewards in dark scenes, with reduced-flash rules.",
       "decision_refs": [
         "P02",
         "P04",
-        "P16"
+        "P16",
+        "C14",
+        "C15",
+        "C27",
+        "C28",
+        "C29",
+        "C35",
+        "P23"
       ],
       "dependencies": [
         "design/01-core/player-controls.md",
@@ -235,13 +752,19 @@
     {
       "id": "H01",
       "path": "design/02-characters/hero.md",
-      "title": "Hero — Rook Venn (working proposal)",
+      "title": "Hero — Dave Harlan",
       "status": "proposed_details_with_confirmed_and_established_constraints",
-      "owns": "Proposed protagonist identity, motivation, silhouette, personality, and sprite reference.",
+      "owns": "The protagonist's identity, motivation, personality, appearance and sprite requirements.",
       "decision_refs": [
         "C04",
         "P05",
-        "C12"
+        "C12",
+        "C14",
+        "C15",
+        "C25",
+        "C28",
+        "C29",
+        "C35"
       ],
       "dependencies": [
         "design/05-presentation/story-scenes.md",
@@ -260,7 +783,12 @@
         "C05",
         "P07",
         "P08",
-        "C12"
+        "C12",
+        "C14",
+        "C15",
+        "C28",
+        "C29",
+        "C35"
       ],
       "dependencies": [
         "design/03-progression/ammunition-and-resupply.md",
@@ -278,7 +806,12 @@
         "C04",
         "C05",
         "C06",
-        "P09"
+        "P09",
+        "C14",
+        "C15",
+        "C34",
+        "C35",
+        "P22"
       ],
       "dependencies": [
         "design/03-progression/upgrades-and-ownership.md",
@@ -290,17 +823,22 @@
     {
       "id": "S03",
       "path": "design/03-progression/treasure-economy.md",
-      "title": "Gems, rewards, and upgrade economy",
+      "title": "Microchips, rewards, and upgrade economy",
       "status": "proposed_details_with_confirmed_and_established_constraints",
-      "owns": "Defines treasure values, spending, a twelve-level budget, and safeguards against farming.",
+      "owns": "Defines hand-placed microchip values (enemies drop nothing), spending, a twelve-level budget, and safeguards against farming.",
       "decision_refs": [
         "C02",
-        "C03",
-        "P10"
+        "C19",
+        "P10",
+        "C14",
+        "C15",
+        "C28",
+        "C35",
+        "P23"
       ],
       "dependencies": [
         "design/03-progression/upgrades-and-ownership.md",
-        "design/03-progression/artifact-catalog.md",
+        "design/03-progression/evidence-files.md",
         "design/03-progression/health-and-checkpoints.md"
       ]
     },
@@ -309,14 +847,19 @@
       "path": "design/03-progression/upgrades-and-ownership.md",
       "title": "Upgrade stages and ownership",
       "status": "proposed_details_with_confirmed_and_established_constraints",
-      "owns": "Keeps all fifteen established upgrades and proposes ownership across copies of a weapon type.",
+      "owns": "Keeps all fifteen established upgrades (five renamed under C34) and proposes ownership across copies of a weapon type.",
       "decision_refs": [
         "C04",
         "C05",
         "C06",
         "P08",
         "P10",
-        "C12"
+        "C12",
+        "C14",
+        "C15",
+        "C34",
+        "C35",
+        "P22"
       ],
       "dependencies": [
         "design/03-progression/treasure-economy.md",
@@ -327,14 +870,19 @@
     },
     {
       "id": "S05",
-      "path": "design/03-progression/artifact-catalog.md",
-      "title": "Artifacts and discovery catalog",
+      "path": "design/03-progression/evidence-files.md",
+      "title": "Evidence files",
       "status": "proposed_details_with_confirmed_and_established_constraints",
-      "owns": "Proposes twelve optional lore artifacts, with appearance, placement intent, and narrative limits.",
+      "owns": "Proposes twelve optional evidence files, one per level, including the Peacekeeper's export contract and Thornwall's invoice, with content, placement intent, and narrative limits.",
       "decision_refs": [
-        "C03",
-        "E01",
-        "P11"
+        "C19",
+        "C14",
+        "P11",
+        "C15",
+        "C28",
+        "C31",
+        "C35",
+        "P23"
       ],
       "dependencies": [
         "design/03-progression/treasure-economy.md",
@@ -348,11 +896,18 @@
       "path": "design/04-world/factions-and-friendly-fire.md",
       "title": "Factions, targeting, and friendly fire",
       "status": "proposed_details_with_confirmed_and_established_constraints",
-      "owns": "Defines hostility, protected characters, mechanical repair, and the physical limits of Returned conversion.",
+      "owns": "Defines Arcadia Security, Thornwall, Adam's machines, the Linked, cyborg dogs and the Heirs; who is hostile, protected people, and enemy-on-enemy limits (no infection or conversion).",
       "decision_refs": [
-        "E01",
+        "C14",
         "E02",
-        "P12"
+        "P12",
+        "C15",
+        "C25",
+        "C28",
+        "C30",
+        "C31",
+        "C35",
+        "P23"
       ],
       "dependencies": [
         "design/04-world/status-and-enemy-states.md",
@@ -365,12 +920,21 @@
       "path": "design/04-world/status-and-enemy-states.md",
       "title": "Enemy states, status effects, and capture rules",
       "status": "proposed_details_with_confirmed_and_established_constraints",
-      "owns": "Standardizes warnings, armor, interruptibility, status limits, and tether target classes.",
+      "owns": "Standardizes the five behavior templates, tells, armor, interruptibility, lethal deaths, blood, ragdolls and corpses, status limits and tether capture classes.",
       "decision_refs": [
         "C04",
         "E02",
         "P12",
-        "P13"
+        "P13",
+        "C14",
+        "C15",
+        "C26",
+        "C28",
+        "C29",
+        "C30",
+        "C31",
+        "C35",
+        "P23"
       ],
       "dependencies": [
         "design/04-world/factions-and-friendly-fire.md",
@@ -384,12 +948,18 @@
       "path": "design/04-world/objects-and-hazards.md",
       "title": "Environmental objects and hazards",
       "status": "proposed_details_with_confirmed_and_established_constraints",
-      "owns": "An object catalog describing appearance, allowed interactions, reset behavior, and route safeguards.",
+      "owns": "An object catalog covering appearance, allowed interactions, reset behavior, keycard doors, lockdown objects, the low and high cover kit and route safeguards, with dark-scene readability rules.",
       "decision_refs": [
-        "C03",
+        "C19",
         "C04",
         "C05",
-        "P13"
+        "P13",
+        "C14",
+        "C15",
+        "C28",
+        "C29",
+        "C35",
+        "P23"
       ],
       "dependencies": [
         "design/01-core/player-controls.md",
@@ -403,13 +973,22 @@
       "path": "design/04-world/encounter-and-boss-fairness.md",
       "title": "Encounter planning and boss fairness",
       "status": "proposed_details_with_confirmed_and_established_constraints",
-      "owns": "Defines escalating encounter composition and checks every boss against the available single weapons.",
+      "owns": "Defines fairness rules and screen caps for enemy guns, escalating encounter composition, lockdown events inside fights, and checks every boss against the available single weapons.",
       "decision_refs": [
         "C04",
         "C06",
         "C07",
         "E02",
-        "P13"
+        "P13",
+        "C14",
+        "C15",
+        "C25",
+        "C26",
+        "C27",
+        "C28",
+        "C31",
+        "C35",
+        "P23"
       ],
       "dependencies": [
         "design/04-world/status-and-enemy-states.md",
@@ -423,13 +1002,20 @@
       "path": "design/05-presentation/story-scenes.md",
       "title": "Story scenes and campaign continuity",
       "status": "proposed_details_with_confirmed_and_established_constraints",
-      "owns": "A twelve-level solo scene plan, with detailed opening, reveal, and ending treatments.",
+      "owns": "A twelve-level solo scene plan, with detailed treatments of the opening, the turn to lethal force, the dead-man-switch reveal and the ending, and the rationed aftermath scenes.",
       "decision_refs": [
-        "E01",
+        "C14",
         "C07",
         "P05",
         "P14",
-        "C12"
+        "C12",
+        "C15",
+        "C25",
+        "C28",
+        "C29",
+        "C31",
+        "C35",
+        "P23"
       ],
       "dependencies": [
         "design/05-presentation/dialogue-and-writing.md",
@@ -443,12 +1029,18 @@
       "path": "design/05-presentation/dialogue-and-writing.md",
       "title": "Dialogue, voices, and writing direction",
       "status": "proposed_details_with_confirmed_and_established_constraints",
-      "owns": "Defines character voices, sample lines, humor limits, and delivery rules.",
+      "owns": "Defines voices for Adam, Dave, Arcadia, the guards and Thornwall, the Linked and the machines, plus barks, profanity limits, sample lines, humor limits and delivery rules.",
       "decision_refs": [
-        "E01",
+        "C14",
         "P05",
         "P14",
-        "C12"
+        "C12",
+        "C15",
+        "C25",
+        "C28",
+        "C29",
+        "C35",
+        "P23"
       ],
       "dependencies": [
         "design/05-presentation/story-scenes.md",
@@ -461,12 +1053,17 @@
       "path": "design/05-presentation/interface-and-accessibility.md",
       "title": "Interface and accessibility direction",
       "status": "proposed_details_with_confirmed_and_established_constraints",
-      "owns": "Defines the one-weapon HUD, swap and upgrade screens, journal, and adjustable presentation.",
+      "owns": "Defines the one-weapon HUD, microchip counter, keycard indicator, swap and upgrade screens, the evidence-file journal, the Blood setting and adjustable presentation, including dark-scene accessibility options.",
       "decision_refs": [
-        "C03",
+        "C19",
         "C04",
         "C05",
-        "P15"
+        "P15",
+        "C14",
+        "C15",
+        "C28",
+        "C29",
+        "C35"
       ],
       "dependencies": [
         "design/01-core/weapon-swaps.md",
@@ -480,10 +1077,16 @@
       "path": "design/05-presentation/audio-direction.md",
       "title": "Sound and music direction",
       "status": "proposed_details_with_confirmed_and_established_constraints",
-      "owns": "Defines act moods, weapon identities, attack cues, mix priorities, and an audio asset handoff.",
+      "owns": "Defines act moods, weapon and enemy-gun identities, attack cues, restrained wet impacts, Adam's voice and Link chirps, mix priorities and an audio asset handoff.",
       "decision_refs": [
-        "E01",
-        "P16"
+        "C14",
+        "P16",
+        "C15",
+        "C27",
+        "C28",
+        "C29",
+        "C35",
+        "P23"
       ],
       "dependencies": [
         "design/05-presentation/dialogue-and-writing.md",
@@ -554,9 +1157,27 @@
         "W04"
       ],
       "additional_references": [
-        "art-design/robots/",
-        "art-design/zombies/",
-        "art-design/returned/"
+        "art-design/security/",
+        "art-design/thornwall/",
+        "art-design/linked/",
+        "art-design/hounds/",
+        "art-design/machines/",
+        "art-design/heirs/",
+        "art-design/npcs/",
+        "art-design/mini-bosses/"
+      ]
+    },
+    {
+      "task": "enemy_guns",
+      "document_ids": [
+        "W04",
+        "W02",
+        "W01",
+        "N04"
+      ],
+      "additional_references": [
+        "art-design/enemy-guns/",
+        "dead-eden-concept.md"
       ]
     },
     {
@@ -607,7 +1228,7 @@
   "legacy_owners": [
     {
       "path": "dead-eden-concept.md",
-      "owns": "Broad lore and roster overview"
+      "owns": "Broad lore, the enemy roster and enemy gun overview, and the four mini-boss identities"
     },
     {
       "path": "core-gameplay.md",
@@ -615,7 +1236,7 @@
     },
     {
       "path": "art-design/README.md",
-      "owns": "Index to visual geometry, named appearances, and individual art prompts"
+      "owns": "Index to visual geometry, named appearances, and individual art prompts (43 briefs)"
     },
     {
       "path": "level-design/README.md",
@@ -627,17 +1248,23 @@
     }
   ],
   "visual_direction": {
-    "decision_ref": "C11",
-    "status": "confirmed",
+    "decision_ref": [
+      "C11",
+      "C15",
+      "P21",
+      "C35"
+    ],
+    "status": "rendering confirmed (C11); dark sci-fi palette and mood confirmed (C15); palette tokens proposed (P21); enemy art method confirmed as direction (C35), validation test in progress",
     "guide": "art-design/style-guide.md",
     "gallery": "concept-art/README.md",
+    "current_selection": "None. The Clipper selection (C10) ended when the Clipper was removed (C32); the zombie and old daytime concept art was deleted (C23); the hero's placeholder sprite pack is not a selection",
     "unpictured_asset_appearances": "proposed until individually selected",
-    "sprite_animation_pipeline": "undecided"
+    "sprite_animation_pipeline": "Lit cutout rig: painted parts plus normal maps, Mixamo clips converted to the 2D rig, ragdoll deaths (C35). A test build of one lit Night Guard is in progress."
   },
   "prototype_plans": [
     {
       "id": "L01-PROTOTYPE",
-      "status": "planning_complete_implementation_not_started",
+      "status": "to_be_rebuilt_from_the_ground_up_around_the_C31_roster",
       "decision_ref": "C13",
       "engine": "Godot",
       "duration_target_minutes": [
@@ -648,7 +1275,12 @@
       "specification": "prototype-plans/level-01-sunnyvale/prototype-spec.json",
       "progress": "prototype-plans/level-01-sunnyvale/09-progress-and-handoff.md",
       "implementation_path": "prototypes/sunnyvale-godot",
-      "implementation_requested_in_current_task": false
+      "implementation_requested_in_current_task": false,
+      "note": "C33: rebuild the Level 1 prototype from the ground up around the new roster (Night Guard, Patrol Rover, Staffers at the alarm exit only), after the lit-cutout test on one Night Guard (C35). The current build is the C14-C24 revamp (disabled-not-killed Staffers and the Clipper) and is superseded on enemies.",
+      "later_decisions": [
+        "C24",
+        "C33"
+      ]
     }
   ]
 }

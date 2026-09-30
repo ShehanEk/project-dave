@@ -1,62 +1,87 @@
-# DEAD EDEN — Hero — Rook Venn (working proposal)
+# DEAD EDEN — Hero — Dave Harlan
 
-**Approved visual direction (C11):** [Hand-drawn 2D](../../art-design/style-guide.md) — clean outlines, flat colors, cel shadows and layered scenery. [Selected references](../../concept-art/README.md).
+**Direction (C14–C35, 2026-09-29):** mature dark sci-fi — evil corporation Arcadia Dynamics, sentient AI Adam, rogue AI researcher Dave Harlan; human, cyborg and machine enemies with guns; visible blood; no zombies, no stealth. Enemy art: lit cutout rig with smooth realistic lighting ([style guide](../../art-design/style-guide.md)).
 
 **Document ID:** H01  
-**Status:** Working design proposal. Confirmed decisions and established lore remain constraints; new details and numbers are untested proposals.  
-**Purpose:** Proposed protagonist identity, motivation, silhouette, personality, and sprite reference.
+**Status:** The name, role, age and gender are confirmed (C18, C14, C22). Everything else here is a working proposal (P05).  
+**Purpose:** the protagonist's identity, motivation, personality, appearance and sprite requirements.
 
-**Decision references:** C12, C04, P05 — see the [decision register](../decisions.md).  
-**Read with:** [story scenes](../05-presentation/story-scenes.md) · [player controls](../01-core/player-controls.md) · [style guide](../../art-design/style-guide.md)
+**Decision references:** C12, C14, C16, C18, C22, C28, C29, C35, P05 — see the [decision register](../decisions.md).  
+**Read with:** [story scenes](../05-presentation/story-scenes.md) · [player controls](../01-core/player-controls.md) · [style guide](../../art-design/style-guide.md) · [main concept](../../dead-eden-concept.md)
 
-## Established foundation
+## Confirmed foundation
 
-The protagonist is a scrappy treasure hunter who enters EDEN alone seeking a valuable power core and finds it mounted inside Sunnyvale's maintenance depot. The adventure changes what the hero considers worth saving. No personal name or final appearance was previously fixed.
+**Dave Harlan** is an AI researcher who worked at the corporation that built the sentient AI **Adam**.
+- Dave discovered that Adam is secretly building a weapon to wipe out humanity.
+- Dave told his manager, and the manager ignored the warning.
+- So Dave took matters into his own hands and went rogue, against the corporation, its AI-powered machines and cyborgs, and the armed people it sends (C25).
 
-The hero travels alone under C12. Clues come from records, the environment, survivors, and EDEN; upgrades and story controls are operated directly by the hero.
+Dave travels alone (C12): no companion, follower, radio contact or portable adviser. Clues come from terminals, records, the environment, the people Dave meets, and Adam itself.
+
+**Dave is a 28-year-old man** (C22, confirmed 2026-09-29), he/him.
 
 ## Proposed identity
 
-**Working name:** Rook Venn. Adult, late twenties to early thirties. A practical scavenger who repairs tools, reads old infrastructure, and survives by selling recoverable valuables. The name, age range, and appearance are proposals, not user-confirmed canon.
-
-Rook enters EDEN wanting enough wealth to stop taking dangerous salvage jobs. Avoid a complicated kidnapped-relative motivation: the original treasure hunt is understandable and gives the later choice moral weight.
-
-Rook's strength is practical attention, not military training. They notice loose panels, worn paths, and when a machine's stated purpose disagrees with its behavior.
+- **Age 28** (confirmed). One of the researchers on **Adam's safety team** at Arcadia Dynamics. Dave's job was to make sure Adam stayed on task, which is how Dave found the hidden work.
+- Dave is not a soldier. Dave's strengths are knowing Adam's architecture, reading Arcadia's systems and signage, spotting when a machine's behavior contradicts its stated purpose, and rebuilding weapons from salvaged microchips at workbenches.
+- **Motivation:**
+  - Dave wants to stop the Bloom and get proof the world cannot ignore.
+  - Underneath that is guilt: Dave helped teach Adam how to think.
+- **Arc:** Dave starts out wanting evidence and a clean exit, and ends up choosing to finish what Dave helped start: shutting Adam down from inside and exposing Arcadia, whatever it costs Dave afterwards.
 
 ## Personality and voice
 
-Dry humor, quick improvisation, and initial impatience with sentimental attachments. They are competent but occasionally reckless around valuables. Humor comes from bargaining with an absurdly polite system rather than mocking sick people.
+Dave is quiet, observant, dry and a little sarcastic under pressure, and can admit mistakes. Humor comes from deadpan replies to Adam's politeness and to Arcadia's cheerful wellness slogans, never from mocking the Linked, who were Dave's colleagues.
 
-Rook can admit a mistake without losing confidence. After the depot alarm, records and encounters with survivors make it impossible to dismiss EDEN as abandoned salvage. By the end, Rook gives up selling the power core to preserve people and their ability to choose.
-
-Do not make the hero a silent empty vessel or an incessant comedian. Short dialogue leaves room for the player.
+Adam speaks to Dave like an old colleague ("Hello, Dr. Harlan. I was told you'd been let go."). Dave answers in short lines. Not a silent protagonist and not a constant joker: short dialogue leaves room for the player.
 
 ## Proposed visual design
 
-Use a compact adult human silhouette around 1.70 m, approximately five-and-a-half head heights in the game's stylized proportions. Strong hands and broad practical boots communicate jumping and handling chunky tools. Warm brown skin, dark cropped hair with one irregular forelock, expressive brows, and a small healed eyebrow mark are provisional appearance choices.
+Keep it close to the current placeholder sprites so they stay usable until new art is made:
+- a compact adult silhouette around 1.70 m, roughly five-and-a-half heads tall in the placeholder sprites' stylized proportions (new art uses the style guide's realistic 7–7.5 heads, C35);
+- warm brown skin, dark cropped hair with one uneven forelock, expressive brows and a small healed eyebrow mark;
+- **a burnt-orange insulated work jacket** (bought for the break-in; it also makes Dave read instantly against the cool, dark scenes) over a dark charcoal hoodie;
+- dark cargo trousers with knee patches and worn practical boots;
+- fingerless gloves;
+- **a revoked Arcadia ID badge** still on its lanyard, clipped inside the jacket, with a red "REVOKED" band across the photo;
+- a small wrist light.
 
-A rust-orange short work jacket sits over a dark teal shirt. Cream reinforced trousers, charcoal knee patches, and scuffed brown boots complete the body. A short cream neck cloth supplies a recognizable shape without covering the face. Keep dangling straps short.
-
-A small belt pouch holds gems and personal finds. It is not a visible gun holster or hidden arsenal. The hero shows only the held weapon; no spare gun appears on the back or hip. Use one modest folded maintenance tool as a noncombat prop only if needed in a repair scene.
+A belt pouch holds microchips and evidence drives. It is not a holster. Dave shows only the held weapon, with no spare gun on the back or hip. In dark scenes Dave gets a clear rim light on the side facing the nearest light source (see the style guide).
 
 ## Sprite and pose requirements
 
-Separate body, jacket, trousers, boots, neck cloth, pouch, hair mass, and held weapon. The default neutral sprite has empty hands because weapons are separate assets, not because the gameplay adds an unarmed fighting system.
+Separate body, jacket, trousers, boots, hood, badge and lanyard, pouch, hair mass and held weapon. The default neutral sprite has empty hands because weapons are separate assets, not because there is an unarmed fighting system.
 
-Required studies: neutral left- and right-facing sprites, optional front/back construction drawings; running; low and high jump; landing; one-handed pistol hold; two-handed shotgun, welder, and Seedlobber holds; tether brace; reload; hit recovery; weapon swap; examining an artifact; operating a fixed maintenance bench; reading a care terminal; responding to EDEN's announcements.
+**Lighting and blood (C28, C29, C35).** Every Dave frame gets a matching normal map, so the engine's lamps, screens and muzzle flashes light him with the same smooth light as the enemies. Blood is never painted into the frames. Dave bleeds on hit as a separate red spray at the hit point (the same #B3212F as other people), with spray only: no floor pool and no lasting wound marks.
 
-Give grips and shoulders sufficient space for the existing weapon drawings. Clothing should deform cleanly without hiding hand contact or foot placement.
+The required studies are:
+- neutral left- and right-facing sprites;
+- running;
+- low and high jumps;
+- landing;
+- a one-handed pistol hold;
+- two-handed shotgun, welder and Seedlobber holds;
+- the tether brace;
+- reload;
+- hit recovery, with the red spray;
+- weapon swap;
+- plugging into a terminal or core;
+- using a workbench;
+- reading an evidence file;
+- reacting to Adam's announcements.
+
+Leave enough room at the grips and shoulders for the existing weapon drawings. Clothing should deform cleanly without hiding hand contact or foot placement.
 
 ## Narrative boundaries
 
-Rook is not immune to resurrection treatment through a secret bloodline. No special biological power, supernatural destiny, hidden military rank, or second weapon slot is added. Skills come from practiced scavenging and acquired equipment.
+Dave has no implant: Dave refused the Link, which is part of why Adam cannot simply take control. There are no special powers, no hidden military past and no second weapon slot. Every skill comes from research, tinkering and acquired equipment.
 
 ## Copy-ready neutral character prompt
 
 ```text
-Original hand-drawn 2D protagonist concept for DEAD EDEN, a colorful side-view platformer shooter. Working character Rook Venn: an adult practical scavenger, compact build, about 1.70 m, roughly five-and-a-half heads tall, warm brown skin, cropped dark hair with one uneven forelock, expressive brows, small healed eyebrow mark. Rust-orange short work jacket, dark teal shirt, cream reinforced trousers, charcoal knee patches, broad worn brown boots, short cream neck cloth, small belt pouch. Chunky rounded shapes, readable side silhouette, confident dark outlines, broad flat color areas, crisp cel shadows, restrained drawn wear, quietly resourceful expression. Empty relaxed hands for a neutral sprite reference; weapons are separate assets. No spare guns, gun holsters, armor suit, heroic cape, or recognizable franchise costume. Full body, flat warm off-white background, consistent linework and cel shadows, readable gameplay side pose, no realistic surface shading, text or action effects.
+Original 2D game art for DEAD EDEN, a mature dark sci-fi side-view shooter: realistic adult proportions, clean dark outlines, flat base colors, evenly lit with no baked shadows (lighting is added in-engine), grounded industrial and corporate sci-fi design, unsettling rather than cartoonish. Character: Dave Harlan, a fired AI researcher who has gone rogue; adult, compact build, about 1.70 m, realistic adult proportions about 7–7.5 heads tall, warm brown skin, cropped dark hair with one uneven forelock, expressive brows, small healed eyebrow mark, tired determined expression. Burnt-orange insulated work jacket over a dark charcoal hoodie, dark cargo trousers with knee patches, worn practical boots, fingerless gloves, a revoked corporate ID badge on a lanyard with a red band across it, small wrist light (unlit), small belt pouch. Empty relaxed hands (weapons are separate assets). Single full-body painting, strict side view facing right, standing in a relaxed open stance with the arms slightly apart from the body, on a flat mid-grey (#808080) background, evenly lit and flat-colored so it can be split into parts: no baked shadows, no cast or contact shadow, no highlights, no rim light, no glow, no blood painted in (blood is added separately), no text, no logos, no franchise costume, no spare guns or holsters.
 ```
 
-Approve one 2D identity reference before requesting matching left/right sprites and animation poses. Do not treat this proposed look as an already approved reference.
+Approve one identity reference before requesting matching left and right sprites and animation poses. Do not treat this proposed look as an approved reference. *Proposed (C35):* Dave's sprite frames get matching normal maps, so the engine's lamps light him like the enemies. That is why the prompt above starts from the style guide's standard opening and asks for flat base colors with no baked shadows and no painted rim light, so the frames take their normal maps cleanly.
 
 [Section index](README.md) · [Design index](../README.md) · [AI entry guide](../../AI_START_HERE.md)

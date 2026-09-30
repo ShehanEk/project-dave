@@ -1,16 +1,16 @@
 # 07 — Acceptance and playtesting
 
-**Approved visual direction (C11):** [Hand-drawn 2D](../../art-design/style-guide.md). [Selected references](../../concept-art/l01-sunnyvale/README.md).
+**Visual direction (C11, C15, C35):** [hand-drawn 2D in a dark night-campus palette, painted flat and lit in the engine](../../art-design/style-guide.md). Revamped 2026-09-29 (C14–C24) and rebuilt 2026-09-30 (C33); there are no selected scene images for the new look.
 
 ## Completion gates
 
 A complete prototype must launch, finish, preserve the confirmed rules, and meet the measured duration target. A working editor scene alone is not a finished deliverable.
 
 1. No parser errors, missing required resources, or blocking runtime errors.
-2. All six areas in order; two enemy types; one carried pistol; no companion or boss.
-3. Fair stage-0 completion with zero optional gems, no artifact, and no purchase.
-4. Coherent checkpoint, swap, purchase, and story persistence.
-5. Readable chosen 2D direction with any remaining art placeholders explicitly listed.
+2. All six areas in order; three enemy types (Night Guard, Patrol Rover, Staffer); one carried pistol; no companion, boss or stealth system.
+3. Fair stage-0 completion with zero optional chips, no evidence file, and no purchase (the main-route keycard is still needed to leave).
+4. Coherent checkpoint, swap, purchase, keycard and story persistence.
+5. Readable chosen 2D direction in the night palette, with any remaining art placeholders explicitly listed.
 6. First-playthrough timing evidence satisfies the protocol below.
 7. Windows test export launches and matches the verified editor route.
 
@@ -18,30 +18,31 @@ A complete prototype must launch, finish, preserve the confirmed rules, and meet
 
 | ID | Scenario | Pass condition |
 | --- | --- | --- |
-| T01 | New Game | Six health, zero gems, stage 0, one held W01-P01, core installed, EDEN asleep, CP00 |
+| T01 | New Game | Six health, zero chips, stage 0, one held W01-P01, core node installed, Adam quiet (awakening_done false), CP00 |
 | T02 | Movement course | Variable jump, grace/buffer, low ceiling, and platform carry work without extra abilities |
-| T03 | Wall / enemy shots | Solid walls block; Resident body hits damage; Clipper frontal hits show blocked feedback |
-| T04 | Resident | Every lunge warns; one attack deals at most one health during immunity |
-| T05 | Clipper | Charge stays grounded and straight; backstop exposes rear; three base hits fit a fair opening |
+| T03 | Wall / enemy shots | Solid walls block; Night Guard and Staffer body hits damage and bleed (no green HIT spark); Patrol Rover frontal hits show blocked feedback |
+| T04 | Night Guard and Staffer | Every swing or lunge warns; one attack deals at most one health during immunity |
+| T05 | Patrol Rover | Charge stays grounded and straight; a backstop stall exposes the rear battery; three base hits fit a fair opening |
 | T06 | Mixed lane | At most two enemies active; only one windup/active attacker; usable retreat remains |
 | T07 | Roof fall | Recovery lane reaches the route by normal jumps; no damage, trap, or forced fight |
 | T08 | SW01 | Walkway extends once; repeated use/reload cannot retract it under the hero |
-| T09 | Main treasure | 45 available before bench; ignoring some/all never blocks a route |
-| T10 | Optional routes | Welcome Key and separate 20-value cache reachable without new abilities |
+| T09 | Main treasure | 45 chips available before the workbench; ignoring some/all never blocks a route |
+| T10 | Optional routes | Lockout Notice (EF01) and separate 20-chip cache reachable without new abilities |
 | T11 | Rollback | Save, collect treasure, take damage, defeat enemy, then die: restore one consistent snapshot |
-| T12 | Care / station | Full-health capsule remains; station heals and saves without respawning rewards/enemies |
+| T12 | Med-patch / station | Full-health med-patch remains; station heals and saves without respawning rewards/enemies |
 | T13 | Same-type swap | Confirm exchanges two existing IDs; cancel changes neither; swap-back yields no third instance |
-| T14 | Upgrade | 40 gems deducted once; stage 1 fitted and saved; refusal/insufficient funds/repeat buy changes nothing |
+| T14 | Upgrade | 40 chips deducted once; stage 1 fitted and saved; refusal/insufficient funds/repeat buy changes nothing |
 | T15 | Post-upgrade swap | Incoming pistol receives earned stage 1 without a second purchase or extra equipment |
-| T16 | SC01 normal / skip | Same objective, installed core, open hatch, awakening state, and CP04; no duplicate event |
-| T17 | Resume after awakening | Quarantine geometry already settled; no blocked spawn, surprise damage, or replayed latch |
-| T18 | Zero-upgrade finish | Base pistol and normal movement finish A06; no gem or artifact gate |
+| T16 | SC01 normal / skip | Same objective, installed core node, open hatch, Adam-answered/lockdown state, and CP04; no duplicate event |
+| T17 | Resume after the depot event | Lockdown geometry already settled; no blocked spawn, surprise damage, or replayed copy scene |
+| T18 | Zero-upgrade finish | Base pistol and normal movement finish A06 with the main-route keycard; no chip or evidence gate |
 | T19 | Save failure / invalid save | No partial purchase; valid backup or clear recovery option; no half-loaded world |
-| T20 | Completion / replay | Found-gem total is independent of wallet spend; fresh run resets all run progress |
+| T20 | Completion / replay | The Security PA line plays and the completion screen opens 3.2 s later; found-chip total is independent of wallet spend; fresh run resets all run progress |
 | T21 | Pause / subtitles / resize | Gameplay stops while paused; text and warnings remain readable; input resumes correctly |
 | T22 | Export | Local Windows build starts, saves, continues, and completes outside the editor |
+| T23 | Keycard exit | A new run starts without the card; the A06 wicket refuses entry without L01-KC01 (harmless "Clearance card required" message, no completion, no damage); the card is collected on the A04 main route; a committed card never duplicates and survives CP04; a card taken after the last checkpoint returns on death; the wicket opens and completes with the card; no softlock |
 
-Automate the high-value state contracts in a small Godot test harness: (a) snapshot restoration/no duplicate IDs, (b) upgrade transaction including failed persistence, and (c) SC01 skip/resume equivalence. Run gameplay/visual checks manually. Do not create a large testing framework before a playable route exists.
+Automate the high-value state contracts in a small Godot test harness: (a) snapshot restoration/no duplicate IDs, (b) upgrade transaction including failed persistence, and (c) SC01 skip/resume equivalence. Run gameplay/visual checks manually. Do not create a large testing framework before a playable route exists. T01–T22 were verified before the revamp; T23 and the revamp's re-verification are recorded in [09](09-progress-and-handoff.md) and `reports/functional-matrix.md`. The C33 rebuild replaced the enemies behind T03–T06 and their tests; the full suite ran 56/56 on 2026-09-30 (09's latest entry), and the matrix's results are still those of M7 and the revamp unless a row says otherwise.
 
 ## Timing protocol
 
@@ -51,10 +52,10 @@ Log:
 - active session time, pause/menu/long reading time, loading, and completion;
 - time spent in each area and optional branch;
 - failed-attempt time and retry counts;
-- collected gems, upgrade purchase, artifact discovery;
+- collected chips, upgrade purchase, evidence-file discovery;
 - confusion points, missed warnings, damage sources, and places that felt repetitive.
 
-**Successful-progress main-route time** includes only the main-route intervals retained through successful checkpoint progression. Exclude intervals later rolled back by death/restart, optional branch intervals, pause/loading, and extended menu reading. Keep the raw first-completion active time alongside it so retry frustration is visible. Brief ordinary story/bench use can remain in the planned budget; required noninteractive/interface delay stays below 60 seconds.
+**Successful-progress main-route time** includes only the main-route intervals retained through successful checkpoint progression. Exclude intervals later rolled back by death/restart, optional branch intervals, pause/loading, and extended menu reading. Keep the raw first-completion active time alongside it so retry frustration is visible. Brief ordinary story/workbench use can remain in the planned budget; required noninteractive/interface delay stays below 60 seconds.
 
 **Minimum duration pass:** all three initial first-time main-route measures fall between 600 and 900 seconds, with a preferred median near 720–840 seconds. If testing five or more, require at least 80% within that band and a median within it; investigate each outlier rather than hiding it. A very fast experienced replay is recorded separately and is not a reason to add a timer gate.
 
@@ -62,9 +63,11 @@ If the timing gate fails, use 01's area-by-area adjustments and retest with fres
 
 ## Readability and performance
 
-Record test PC, resolution, engine build, and graphics mode. Aim for stable 60 fps on that machine, with a responsive 30 fps fallback check; these are targets, not guaranteed requirements for every computer. Check the square and quarantine transition for spikes. Inspect at normal game scale with muted audio, grayscale screenshots, and reduced shake/background motion.
+Record test PC, resolution, engine build, and graphics mode. Aim for stable 60 fps on that machine, with a responsive 30 fps fallback check; these are targets, not guaranteed requirements for every computer. Check the plaza and the lockdown transition for spikes. Inspect at normal game scale with muted audio, grayscale screenshots, and reduced shake/background motion.
 
-Capture at least: first Resident warning, Clipper stall, rooftop recovery, mixed square lane, depot bench, and transformed exit. Screenshots demonstrate composition; only a playthrough verifies traversal and controls.
+The night look adds these checks to every capture: a light near every landing; platform tops lit or rim-lit; every character keeps a readable silhouette against the dark; darkness and blood never hide a tell, a ledge or a pickup; the reserved colors keep their meaning (red attack or locked, amber warning, teal at rest or unlocked, gold pickups); alarms and strobes are slow, at most three flashes per second, with no full-screen flashes; and the reduced-motion setting is honored.
+
+Capture at least: first Night Guard warning, Patrol Rover stall, first Staffer walk-out at the alarm exit, rooftop recovery, mixed plaza lane, depot workbench, and the lockdown exit. Screenshots demonstrate composition; only a playthrough verifies traversal and controls.
 
 ## Report template
 
@@ -77,7 +80,7 @@ Raw active first-completion time:
 Pause/loading/extended reading:
 Deaths and retry overhead:
 Area times:
-Gems found / wallet / upgrade / artifact:
+Chips found / wallet / upgrade / evidence:
 Functional failures:
 Confusion or dull sections:
 Machine / resolution / observed performance:

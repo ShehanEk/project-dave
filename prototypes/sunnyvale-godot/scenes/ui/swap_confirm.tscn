@@ -1,0 +1,52 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/swap_confirm.gd" id="1_swap_confirm"]
+[ext_resource type="Theme" path="res://assets/ui/c11_theme.tres" id="2_theme"]
+
+[node name="SwapConfirm" type="CanvasLayer"]
+script = ExtResource("1_swap_confirm")
+
+[node name="Dim" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.35)
+mouse_filter = 2
+
+[node name="Panel" type="Panel" parent="."]
+theme = ExtResource("2_theme")
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -230.0
+offset_top = -90.0
+offset_right = 230.0
+offset_bottom = 90.0
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+offset_left = 20.0
+offset_top = 16.0
+offset_right = 440.0
+offset_bottom = 164.0
+theme_override_constants/separation = 16
+
+[node name="TitleLabel" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.247, 0.878, 0.816, 1)
+theme_override_font_sizes/font_size = 24
+autowrap_mode = 2
+text = "Swap held P01 for pad P02?"
+
+[node name="HBox" type="HBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ConfirmButton" type="Button" parent="Panel/VBox/HBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Confirm"
+
+[node name="DeclineButton" type="Button" parent="Panel/VBox/HBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Cancel"
