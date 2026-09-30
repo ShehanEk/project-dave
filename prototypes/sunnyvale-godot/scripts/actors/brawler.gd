@@ -60,6 +60,10 @@ var _group: EncounterGroup = null
 var _area_root: Node2D = null
 var _tell_light: PointLight2D
 var _hand_glows: Array[Sprite2D] = []
+var _holding: bool = false
+var _stagger_t: float = 0.0
+var _stagger_cd: float = 0.0
+var _hit_anim: bool = false
 var _rng := RandomNumberGenerator.new()
 
 @onready var hit_zone: HitZone = $HitZone
@@ -155,6 +159,8 @@ func _physics_process(delta: float) -> void:
 	if state == State.DEFEATED:
 		return
 	_state_timer += delta
+	_stagger_t = maxf(0.0, _stagger_t - delta)
+	_stagger_cd = maxf(0.0, _stagger_cd - delta)
 	_apply_gravity(delta)
 	match state:
 		State.DORMANT:
@@ -163,9 +169,15 @@ func _physics_process(delta: float) -> void:
 				_enter(State.APPROACH)
 				_notice()
 		State.PATROL:
-			_tick_patrol()
+			if _stagger_t > 0.0:
+				velocity.x = 0.0
+			else:
+				_tick_patrol()
 		State.APPROACH:
-			_tick_approach()
+			if _stagger_t > 0.0:
+				velocity.x = 0.0
+			else:
+				_tick_approach()
 		State.WINDUP:
 			velocity.x = 0.0
 			if _state_timer >= tuning.windup_time:
@@ -245,8 +257,24 @@ func _tick_approach() -> void:
 		return
 	var dir: int = 1 if dx > 0.0 else -1
 	facing = dir
-	if same_floor and _can_step(dir):
+	var moving: bool = same_floor and _can_step(dir)
+	if moving:
 		velocity.x = dir * tuning.approach_speed()
+	_set_holding(not moving)
+
+
+## An approach that can't go on (the lane's edge, a ledge, a wall, Dave on
+## another floor) holds its ground in the idle pose, facing Dave, instead of
+## walking in place.
+func _set_holding(on: bool) -> void:
+	if on == _holding:
+		return
+	_holding = on
+	if anim == null or state != State.APPROACH:
+		return
+	var c: String = tuning.clip_idle if on else tuning.clip_stalk
+	if anim.clips.has(c) or anim.has_mocap(c):
+		anim.play(c, false, 0.2)
 
 
 ## One walking step toward `dir` keeps the feet on floor, clear of walls and
@@ -269,7 +297,7 @@ func _tick_strike(delta: float) -> void:
 		if _state_timer >= tuning.lunge_time or _lunge_traveled >= tuning.lunge_distance():
 			_enter(State.RECOVERY)
 	else:
-		var stepping: bool = _state_timer < 0.12 and _floor_ahead(_strike_dir) and not _wall_ahead(_strike_dir)
+		var stepping: bool = _state_timer < 0.12 and _can_step(_strike_dir)
 		velocity.x = _strike_dir * tuning.swing_step_speed if stepping else 0.0
 		attack_box.active = _state_timer >= tuning.swing_active_from and _state_timer <= tuning.swing_active_to
 		if _state_timer >= tuning.swing_time:
@@ -280,6 +308,8 @@ func _enter(s: State) -> void:
 	var was := state
 	state = s
 	_state_timer = 0.0
+	_holding = false
+	_hit_anim = false
 	if was == State.DORMANT and tuning.link_joint != "":
 		# Adam takes the body over: the Link light steadies with a chirp.
 		_play_sfx(&"link_chirp")
@@ -352,6 +382,24 @@ func _on_hit(damage: int, hit_position: Vector2, direction: Vector2) -> void:
 		_bark(tuning.voice_hurt)
 	if health <= 0:
 		_defeat(hit_position, direction)
+		return
+	_flinch()
+
+
+## The hit flinch: never during the windup or the swing (a hit never
+## interrupts an attack); in the recovery it plays without changing the
+## timing; walking, he also stops for a moment, at most once per cooldown.
+func _flinch() -> void:
+	if anim == null or tuning.clip_hit == "" or not (anim.clips.has(tuning.clip_hit) or anim.has_mocap(tuning.clip_hit)):
+		return
+	if state == State.WINDUP or state == State.STRIKE or _stagger_cd > 0.0:
+		return
+	anim.play(tuning.clip_hit, true, 0.05)
+	_hit_anim = true
+	_stagger_cd = tuning.hit_stagger_cooldown
+	if state == State.PATROL or state == State.APPROACH:
+		_stagger_t = tuning.hit_stagger_time
+		velocity.x = 0.0
 
 
 func _defeat(hit_position: Vector2, direction: Vector2) -> void:
@@ -431,6 +479,15 @@ func _update_presentation(delta: float) -> void:
 		return
 	rig.facing = facing
 	var moving: bool = absf(velocity.x) > 4.0
+	if _hit_anim:
+		anim.speed = 1.0
+		if anim.is_finished() and _stagger_t <= 0.0:
+			_hit_anim = false
+			_holding = false
+			_play_state_clip(0.2)
+		rig.apply_pose(anim.advance(delta))
+		_update_lights(delta)
+		return
 	match state:
 		State.PATROL:
 			anim.speed = absf(velocity.x) / 70.0 if moving else 1.0
@@ -442,6 +499,10 @@ func _update_presentation(delta: float) -> void:
 		_:
 			anim.speed = 1.0
 	rig.apply_pose(anim.advance(delta))
+	_update_lights(delta)
+
+
+func _update_lights(delta: float) -> void:
 	# The tell: amber, then red for the last red_time; its light falls on the
 	# brawler's own arm and face (and on the hero, up close).
 	var energy := 0.0

@@ -399,7 +399,7 @@ offset_bottom = 0.0
 [node name="EncounterGroup_E01" type="Node2D" parent="Encounters"]
 script = ExtResource("8_group")
 group_id = "L01-E01"
-lane_rect = Rect2(620, -400, 500, 800)
+lane_rect = Rect2(0, -400, 1120, 800)
 
 [node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E01"]
 position = Vector2(650, 0)

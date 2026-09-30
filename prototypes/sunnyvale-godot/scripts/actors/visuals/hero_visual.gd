@@ -35,9 +35,11 @@ const SceneryDrawScript := preload("res://scripts/world/scenery_draw.gd")
 const LIT_SHADER := preload("res://assets/shaders/lit_part.gdshader")
 const NORMAL_DIR := "res://assets/characters/rook/normals/"
 const SPEC_PATH := NORMAL_DIR + "dave_spec.png"
-## Rook's unlit night level (the shader's `ambient`) and how far a light just
-## past an edge still grazes it (`wrap`).
-const AMBIENT := Vector3(0.3, 0.3, 0.36)
+## Rook's unlit night level (the shader's `ambient`), shared by every lit
+## character (cutout_rig.gd DEFAULT_AMBIENT) so skin tones and painted colors
+## still read away from the lamps, and how far a light just past an edge
+## still grazes it (`wrap`).
+const AMBIENT := Vector3(0.45, 0.45, 0.54)
 const WRAP := 0.3
 ## Lit characters sit on light masks 1 (the world's lights) and 2 (the
 ## moonlight).

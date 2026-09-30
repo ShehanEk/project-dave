@@ -42,6 +42,7 @@ func run() -> void:
 	await _test_swing_warning_window_and_cost()
 	await _test_no_damage_from_overlap_during_windup()
 	await _test_hit_never_interrupts_windup_or_swing()
+	await _test_flinch_while_walking_in()
 
 
 func _test_swing_warning_window_and_cost() -> void:
@@ -125,6 +126,7 @@ func _test_hit_never_interrupts_windup_or_swing() -> void:
 	await physics_frames(1)
 	check(guard.state == Brawler.State.WINDUP and guard._state_timer > t_before,
 			"a hit during the windup neither cancels nor restarts it")
+	check(guard.anim.clip == guard.tuning.clip_windup, "and he doesn't flinch out of the windup pose")
 	for i in 60:
 		if guard.state == Brawler.State.STRIKE:
 			break
@@ -134,6 +136,46 @@ func _test_hit_never_interrupts_windup_or_swing() -> void:
 	await physics_frames(1)
 	check(is_instance_valid(guard) and guard.state == Brawler.State.STRIKE, "a hit during the swing does not cancel it")
 
+	hero.queue_free()
+	if is_instance_valid(guard):
+		guard.queue_free()
+	floor_b.queue_free()
+	await physics_frames(2)
+
+
+## A shot that lands while he walks in plays the Mixamo hit flinch and stops
+## him for a moment; a second shot inside the cooldown doesn't stop him again
+## (rapid fire can't pin him), and he walks on and swings.
+func _test_flinch_while_walking_in() -> void:
+	Session.new_run()
+	var floor_b := _make_floor()
+	var hero := _make_hero(300.0)
+	hero.debug_invulnerable = true
+	var guard := await _make_guard(700.0)
+	for i in 60:
+		if guard.state == Brawler.State.APPROACH and absf(guard.velocity.x) > 1.0:
+			break
+		await physics_frames(1)
+	check(guard.state == Brawler.State.APPROACH, "setup: he is walking in")
+	var hit_at := guard.global_position + Vector2(0.0, -60.0)
+	guard.hit_zone.take_hit(1, hit_at, Vector2.RIGHT)
+	await physics_frames(1)
+	check(guard.anim.clip == guard.tuning.clip_hit, "a shot while he walks in plays the hit flinch (clip %s)" % guard.anim.clip)
+	var x0 := guard.global_position.x
+	await physics_frames(int(guard.tuning.hit_stagger_time * 60.0) - 4)
+	check(absf(guard.global_position.x - x0) < 1.0, "he stops for the flinch")
+	guard.hit_zone.take_hit(1, hit_at, Vector2.RIGHT)
+	await physics_frames(12)
+	check(absf(guard.global_position.x - x0) > 4.0, "a second shot inside the cooldown doesn't stop him again")
+	var swung := false
+	for i in 240:
+		await physics_frames(1)
+		if not is_instance_valid(guard):
+			break
+		if guard.state == Brawler.State.WINDUP:
+			swung = true
+			break
+	check(swung, "he walks on and winds up his swing")
 	hero.queue_free()
 	if is_instance_valid(guard):
 		guard.queue_free()

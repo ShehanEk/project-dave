@@ -181,7 +181,7 @@ func _test_lit_with_normal_maps() -> void:
 				"%s uses the lit-part shader" % sprite.name)
 		check_eq(sprite.light_mask, 3, "%s is on light masks 1 | 2 (world lights and the moon rim)" % sprite.name)
 		var ambient: Vector3 = mat.get_shader_parameter("ambient")
-		check(ambient.x > 0.2 and ambient.x < 0.4, "%s has a dim night ambient (about 0.3)" % sprite.name)
+		check(ambient.x > 0.35 and ambient.x < 0.55, "%s has the characters' night ambient (about 0.45)" % sprite.name)
 		check(float(mat.get_shader_parameter("wrap")) > 0.0, "%s wraps its light a little" % sprite.name)
 		check(mat.get_shader_parameter("spec_atlas") != null, "%s always has a spec map (never a bare sampler)" % sprite.name)
 	check(body.material != arm.material, "the body and the arm have their own materials (their own normal maps)")

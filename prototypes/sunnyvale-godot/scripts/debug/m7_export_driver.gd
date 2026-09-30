@@ -243,15 +243,7 @@ func _run_continue() -> void:
 	var elapsed := 0.0
 	while elapsed < COMPLETION_TIMEOUT:
 		if completed_box[0]:
-			# Give the completion screen one more frame to actually draw
-			# before anything reads pixels off it / the process exits.
-			await get_tree().process_frame
-			await get_tree().process_frame
-			var screen := get_tree().root.find_child("CompletionScreen", true, false)
-			print("[M7DRIVER] completion screen present=", screen != null)
-			_log_session_state("post-completion")
-			print("[M7DRIVER] DONE ok")
-			get_tree().quit(0)
+			await _finish_completion()
 			return
 		await get_tree().process_frame
 		elapsed += get_process_delta_time()
@@ -259,12 +251,21 @@ func _run_continue() -> void:
 	# `await` right as `elapsed` crosses the timeout, so recheck once before
 	# giving up rather than reporting a same-frame finish as a timeout.
 	if completed_box[0]:
-		await get_tree().process_frame
-		await get_tree().process_frame
-		var screen := get_tree().root.find_child("CompletionScreen", true, false)
-		print("[M7DRIVER] completion screen present=", screen != null)
-		_log_session_state("post-completion")
-		print("[M7DRIVER] DONE ok")
-		get_tree().quit(0)
+		await _finish_completion()
 		return
 	_fail("level_completed never fired within %.0fs" % COMPLETION_TIMEOUT)
+
+
+## The Security PA line plays at the wicket first; the completion screen
+## opens LevelDirector.PA_BEAT later. Wait for it, then prove it is showing.
+func _finish_completion() -> void:
+	await get_tree().create_timer(LevelDirector.PA_BEAT + 0.5).timeout
+	await get_tree().process_frame
+	var screen := get_tree().root.find_child("CompletionScreen", true, false)
+	print("[M7DRIVER] completion screen present=", screen != null)
+	_log_session_state("post-completion")
+	if screen == null:
+		_fail("the completion screen never opened after the PA line")
+		return
+	print("[M7DRIVER] DONE ok")
+	get_tree().quit(0)

@@ -15,8 +15,11 @@ extends Node2D
 const LitShader := preload("res://assets/shaders/lit_part.gdshader")
 const FAR_TINT := Color(0.74, 0.75, 0.8)
 const DEFAULT_SOLE_POINTS: Array[Vector2] = [Vector2(-3.9, 5.2), Vector2(4.0, 5.2), Vector2(12.6, 5.2)]
-## The night: how bright a part is with no light on it.
-const DEFAULT_AMBIENT := Color(0.17, 0.19, 0.25)
+## The night: how bright a part is with no light on it (about 45%). The same
+## level as Dave (hero_visual.gd AMBIENT), so a painted color, a skin tone
+## above all, reads the same on every character and still reads away from the
+## lamps; a bluer, darker night turned warm skin muddy brown.
+const DEFAULT_AMBIENT := Color(0.45, 0.45, 0.54)
 
 @export_file("*.json") var rig_path: String = ""
 
