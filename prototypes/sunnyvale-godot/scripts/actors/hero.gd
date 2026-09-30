@@ -28,6 +28,8 @@ var _immune_timer: float = 0.0
 var _knockback: Vector2 = Vector2.ZERO
 var _died_emitted: bool = false
 var _is_firing: bool = false
+var _move_dir: int = 0
+var _aim_face_timer: float = 0.0
 var _jumped_this_frame: bool = false
 
 ## M6.5 Kenney integration pass: seconds spent with `_was_on_floor` false,
@@ -47,6 +49,11 @@ const LAND_SQUASH_TIME := 0.12
 ## Horizontal distance (px) from the hero within which the aim no longer
 ## flips the facing (cursor straight above/below).
 const FACING_DEADZONE := 8.0
+## Seconds the body keeps facing the aim after the last shot, so tapping fire
+## while running away doesn't spin him round between shots.
+const FIRE_FACING_HOLD := 0.4
+## The gun's rest angle (rad, below level) while he runs away from the aim.
+const ARM_REST_DROP := 0.35
 const HIT_POSE_TIME := 0.2
 const INTERACT_POSE_TIME := 0.35
 var _stride_phase: float = 0.0
@@ -134,7 +141,7 @@ func _physics_process(delta: float) -> void:
 	_jump_buffer_timer = maxf(0.0, _jump_buffer_timer - delta)
 	_was_on_floor = is_on_floor()
 
-	_update_facing()
+	_update_facing(delta)
 	_update_immunity(delta)
 	# Visual first: it picks this tick's sprite frame, and AimPivot then
 	# snaps to that frame's shoulder (no one-tick lag between arm and body).
@@ -207,6 +214,7 @@ func _handle_horizontal(delta: float) -> void:
 			dir -= 1.0
 		if Input.is_action_pressed("move_right"):
 			dir += 1.0
+	_move_dir = int(dir)
 
 	var target_speed := dir * tuning.run_speed
 	var accel: float
@@ -227,13 +235,20 @@ func _apply_knockback_decay(delta: float) -> void:
 	_knockback = _knockback.move_toward(Vector2.ZERO, 900.0 * delta)
 
 
-## The body always faces the side the aim is on, so the gun arm never twists
-## back across the body; moving away from the aim backpedals (the run cycle
-## plays in reverse — see _update_visual_pose). Playtest change 2026-09-28:
-## G02 proposed "facing follows aim while firing and movement otherwise",
-## which left the arm pointing backwards whenever the mouse was behind a
-## moving hero. Within FACING_DEADZONE of straight up/down the facing holds.
-func _update_facing() -> void:
+## Running faces the way he runs; standing still, or shooting (and for
+## FIRE_FACING_HOLD after the last shot), faces the aim, so shooting while
+## backing off backpedals (the run cycle plays in reverse — see
+## _update_visual_pose). While he runs away from the aim the gun rests
+## pointing ahead (_update_aim_pivot), never backwards across his body.
+## Playtest 2026-09-30 ("going backward, he should face that way"); this is
+## G02's rule plus the rest pose that fixes the 2026-09-28 "hand points
+## backwards" report. Within FACING_DEADZONE of straight up/down the aim
+## holds the facing.
+func _update_facing(delta: float) -> void:
+	_aim_face_timer = FIRE_FACING_HOLD if _is_firing else maxf(0.0, _aim_face_timer - delta)
+	if _move_dir != 0 and _aim_face_timer <= 0.0:
+		facing = _move_dir
+		return
 	var dx := get_current_aim().x - global_position.x
 	if absf(dx) > FACING_DEADZONE:
 		facing = 1 if dx > 0.0 else -1
@@ -264,7 +279,11 @@ func _update_aim_pivot() -> void:
 	if visual and visual.has_method("shoulder_offset"):
 		aim_pivot.position = visual.shoulder_offset()
 	var to_aim := get_current_aim() - aim_pivot.global_position
-	if to_aim.length() > 0.5:
+	if to_aim.x * facing < -FACING_DEADZONE:
+		# Aim behind him while he runs the other way: the gun rests ahead.
+		aim_pivot.rotation = ARM_REST_DROP if facing > 0 else PI - ARM_REST_DROP
+		aim_pivot.scale.y = float(facing)
+	elif to_aim.length() > 0.5:
 		aim_pivot.rotation = to_aim.angle()
 		aim_pivot.scale.y = 1.0 if to_aim.x >= 0.0 else -1.0
 
