@@ -18,7 +18,6 @@ extends Node2D
 ## `Settings.reduced_motion` the same way scripts/effects/impact_spark.gd
 ## does: fewer particles and less travel distance, never fully hidden.
 
-const TEX_MUZZLE := preload("res://assets/kenney/particle-pack/muzzle_02.png")
 const TEX_DIRT_SMALL := preload("res://assets/kenney/particle-pack/dirt_01.png")
 const TEX_DIRT_BIG := preload("res://assets/kenney/particle-pack/dirt_03.png")
 const TEX_STAR := preload("res://assets/kenney/particle-pack/star_04.png")
@@ -49,11 +48,6 @@ const WARM_SPARK := Color("#f4d9a0")
 ## is px/s^2 (a small negative y drifts a puff gently upward instead of
 ## falling, per particle).
 const CONFIGS := {
-	&"muzzle_flash": {
-		"texture": TEX_MUZZLE, "color": AMBER, "amount": 5, "lifetime": 0.10,
-		"spread": 16.0, "speed_min": 60.0, "speed_max": 120.0,
-		"scale_min": 0.10, "scale_max": 0.16, "gravity": Vector2.ZERO, "alpha": 0.85,
-	},
 	&"landing_dust": {
 		"texture": TEX_DIRT_SMALL, "color": CREAM, "amount": 5, "lifetime": 0.30,
 		"spread": 50.0, "speed_min": 20.0, "speed_max": 55.0,

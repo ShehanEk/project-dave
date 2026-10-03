@@ -418,6 +418,7 @@ func _defeat(hit_position: Vector2, direction: Vector2) -> void:
 	if entity_id != "" and Session:
 		Session.mark_defeated(entity_id)
 	_play_sfx(tuning.sfx_defeat)
+	GameFeel.kill(self)
 	var host := _effect_host()
 	if rig != null:
 		# Dead: the neon trim (C36), a Staffer's Link light and any tell glow

@@ -463,6 +463,7 @@ func _defeat(hit_position: Vector2 = Vector2.INF, direction: Vector2 = Vector2.Z
 	if entity_id != "" and Session:
 		Session.mark_defeated(entity_id)
 	Audio.play_sfx(&"rover_destroyed", global_position)
+	GameFeel.kill(self)
 	var host := _effect_host()
 	var centre := global_position + Vector2(0.0, -HEIGHT * 0.5)
 	KenneyPuff.spawn(&"machine_smoke", centre, host)

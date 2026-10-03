@@ -32,7 +32,7 @@ extends TestCase
 ##      bit 2, the characters' bit (the Compatibility renderer ignores that
 ##      mask for directional lights, so it also washes the world; see
 ##      night_lighting.gd).
-##  11. A shot flashes a short warm light at the muzzle that frees itself.
+##  11. A shot flares the muzzle's one warm light, which then fades.
 ##
 ## Never touches a real save (no Session.commit()/CheckpointService write in
 ## this case at all, so no throwaway-dir redirect is needed — matches the
@@ -403,6 +403,8 @@ func _test_moonlight_scene() -> void:
 
 # --- 11. a shot flashes a warm light at the muzzle ---------------------------------
 
+## C37: one light lives on the muzzle; a shot flares it and it fades, and it
+## is the same light shot after shot (rapid fire never piles up lights).
 func _test_muzzle_flash_light() -> void:
 	var base_reduced: bool = Settings.get_reduced_motion()
 	Settings.set_reduced_motion(false)
@@ -416,10 +418,10 @@ func _test_muzzle_flash_light() -> void:
 	holder.add_child(hero)
 	await physics_frames(2)
 	var gun: Scrapjack = hero.get_node("AimPivot/Scrapjack")
-	check(_flash_lights().is_empty(), "no muzzle flash light before the first shot")
+	check(_lit_flash_lights().is_empty(), "no muzzle flash light before the first shot")
 	gun._try_fire()
-	var flashes := _flash_lights()
-	check_eq(flashes.size(), 1, "one shot adds exactly one muzzle flash light")
+	var flashes := _lit_flash_lights()
+	check_eq(flashes.size(), 1, "a shot lights exactly one muzzle flash light")
 	if flashes.size() == 1:
 		var f: PointLight2D = flashes[0]
 		check(f.color.is_equal_approx(Color("#FFE4BD")), "the flash is warm ivory (#FFE4BD)")
@@ -428,22 +430,27 @@ func _test_muzzle_flash_light() -> void:
 		check(f.global_position.distance_to(gun.get_muzzle_global_position()) < 1.0, "the flash sits at the muzzle")
 		check_eq(f.texture, SceneryDraw.smooth_disc_texture(), "the flash is a smooth disc")
 		await seconds(0.3)
-		check(not is_instance_valid(f), "the flash frees itself well within a third of a second")
-	check(_flash_lights().is_empty(), "no flash lights are left behind")
+		check(not f.visible or f.energy < 0.01, "the flash fades out well within a third of a second")
+		gun._cooldown = 0.0
+		gun._try_fire()
+		check_eq(_flash_lights().size(), 1, "the next shot reuses the same light")
 	# Reduced motion halves the flash rather than removing the light.
 	Settings.set_reduced_motion(true)
 	await seconds(0.5)
 	gun._try_fire()
-	var soft := _flash_lights()
+	var soft := _lit_flash_lights()
 	check_eq(soft.size(), 1, "the flash still shows under reduced motion")
 	if soft.size() == 1:
 		check(soft[0].energy < 1.5 and soft[0].energy > 0.0, "and is softer (energy %.2f)" % soft[0].energy)
-	# A gun freed mid-flash leaves nothing dangling: the flash outlives it.
-	await seconds(0.3)
 	holder.queue_free()
 	await physics_frames(2)
+	check(_flash_lights().is_empty(), "the light goes with the gun")
 	Settings.set_reduced_motion(base_reduced)
 	Session.new_run()
+
+
+func _lit_flash_lights() -> Array:
+	return _flash_lights().filter(func(l): return l.visible and l.energy > 0.001)
 
 
 func _flash_lights() -> Array:

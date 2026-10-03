@@ -14,6 +14,13 @@ extends Camera2D
 		_apply_limits()
 
 var _look_ahead: float = 0.0
+## Shooting feel (C37, GameFeel): a kick that springs back and a decaying
+## shake, applied as the camera's offset so the follow itself is untouched.
+var _kick: Vector2 = Vector2.ZERO
+var _shake: float = 0.0
+var _shake_rng := RandomNumberGenerator.new()
+const KICK_RETURN := 18.0
+const SHAKE_DECAY := 14.0
 
 
 func _ready() -> void:
@@ -46,6 +53,9 @@ func set_world_limits(rect: Rect2) -> void:
 ## boot) so the view doesn't visibly pan across the level to catch up.
 func reset_position() -> void:
 	_look_ahead = 0.0
+	_kick = Vector2.ZERO
+	_shake = 0.0
+	offset = Vector2.ZERO
 	if target:
 		global_position = target.global_position
 	reset_smoothing()
@@ -64,3 +74,24 @@ func _physics_process(delta: float) -> void:
 	_look_ahead = lerpf(_look_ahead, dir * look_ahead_distance,
 			clampf(look_ahead_catchup * delta, 0.0, 1.0))
 	global_position = target.global_position + Vector2(_look_ahead, 0.0)
+	_update_feel(delta)
+
+
+## Kicks the view by `v` px; it springs back over a few frames.
+func kick(v: Vector2) -> void:
+	_kick += v
+	_kick = _kick.limit_length(6.0)
+
+
+## Shakes the view with a peak of `amount` px, decaying quickly.
+func shake(amount: float) -> void:
+	_shake = maxf(_shake, amount)
+
+
+func _update_feel(delta: float) -> void:
+	_kick = _kick.lerp(Vector2.ZERO, clampf(KICK_RETURN * delta, 0.0, 1.0))
+	_shake = maxf(0.0, _shake - _shake * SHAKE_DECAY * delta - 0.5 * delta)
+	var jitter := Vector2.ZERO
+	if _shake > 0.05:
+		jitter = Vector2(_shake_rng.randf_range(-1.0, 1.0), _shake_rng.randf_range(-1.0, 1.0)) * _shake
+	offset = _kick + jitter

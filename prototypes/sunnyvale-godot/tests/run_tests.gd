@@ -39,6 +39,11 @@ func _run() -> void:
 	# that even for a case this file doesn't know about yet.
 	var real_dir_fingerprint := _fingerprint_default_save_dir()
 
+	# The shooting hit-pause (C37) nearly stops game time for a moment; off
+	# here so frame-counted timings stay exact (test_shooting_feel.gd turns
+	# it on for its own check).
+	load("res://scripts/effects/game_feel.gd").hit_pause_enabled = false
+
 	var files := Array(DirAccess.get_files_at(CASES_DIR))
 	files = files.filter(func(f): return f.begins_with("test_") and f.ends_with(".gd"))
 	files.sort()

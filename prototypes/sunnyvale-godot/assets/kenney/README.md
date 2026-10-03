@@ -181,7 +181,6 @@ by `EnvironmentState`/`AlarmVisuals` per the style guide.
 
 | File | Intended use |
 | --- | --- |
-| `muzzle_02.png` | Pistol muzzle flash |
 | `dirt_01.png` | Hero landing dust puff |
 | `star_04.png` | Gem pickup sparkle |
 | `star_05.png` | Checkpoint-save sparkle (soft glow, distinct from chip's sharp sparkle) |
@@ -190,14 +189,15 @@ by `EnvironmentState`/`AlarmVisuals` per the style guide.
 **Wiring status: done.** `scripts/effects/kenney/kenney_puff.gd` is a single
 reusable one-shot `CPUParticles2D` wrapper (a `kind` -> config table, see its
 own doc comment) that every call site reaches through a plain `preload()` +
-its static `spawn()` function: muzzle flash at `scrapjack.gd`'s muzzle point,
-landing/pit dust at `hero.gd`/`pit_hazard.gd`, chip/cache sparkle at
+its static `spawn()` function: landing/pit dust at `hero.gd`/`pit_hazard.gd`, chip/cache sparkle at
 `chip.gd`/`chip_cache.gd`, and checkpoint sparkle at `recovery_station.gd`. All respect
 `Settings.reduced_motion` (fewer particles, less travel, never fully hidden)
 and are tinted to the Sunnyvale palette per the style guide. The C33 rebuild
 removed the `defeat_puff` kind and its `smoke_02.png`: the old Staffer's
 `_defeat()` was its only caller, and people now die into ragdolls and blood
-instead of a smoke puff.
+instead of a smoke puff. The C37 shooting pass removed the `muzzle_flash` kind
+and its `muzzle_02.png`: tinted ivory it read as a white cloud, and the
+Scrapjack's drawn ivory starburst and muzzle light now make the flash.
 
 ### Machine particles (`assets/kenney/particles/machines/`)
 

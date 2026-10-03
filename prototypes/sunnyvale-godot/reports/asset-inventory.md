@@ -521,16 +521,17 @@ additive `PointLight2D`s with stepped textures (`scenery_draw.gd`).
 
 `particle-pack`, **Transparent** variant, tinted, capped under ~0.5s, halved
 amount/speed under `Settings.reduced_motion`. Status:
-**usable-in-prototype**. Wired at 6 call sites: `scrapjack.gd` (muzzle
-flash), `hero.gd` (landing dust, gated to a real fall/jump), `chip.gd`
+**usable-in-prototype**. Wired at 5 call sites: `hero.gd` (landing dust, gated to a real fall/jump), `chip.gd`
 (pickup sparkle), `chip_cache.gd` (cache-open sparkle), `recovery_station.gd`
 (checkpoint-save sparkle) and `pit_hazard.gd` (pit-fall dust). The seventh,
 the old `staffer.gd`'s defeat puff, went in C33, and the rebuild removed its
-`defeat_puff` kind and `smoke_02.png` with it.
+`defeat_puff` kind and `smoke_02.png` with it, and the C37 shooting pass
+removed the `muzzle_flash` kind and `muzzle_02.png` (the gun draws its own
+ivory flash).
 
 | Pack | Source | CC0 | Files used |
 | --- | --- | --- | --- |
-| Particle Pack | https://kenney.nl/assets/particle-pack | Yes | `muzzle_02` (muzzle flash), `dirt_01` (landing dust), `dirt_03` (pit-fall dust), `star_04` (chip/cache sparkle), `star_05` (checkpoint sparkle) (5) |
+| Particle Pack | https://kenney.nl/assets/particle-pack | Yes | `dirt_01` (landing dust), `dirt_03` (pit-fall dust), `star_04` (chip/cache sparkle), `star_05` (checkpoint sparkle) (4) |
 
 ### 7.6 Machine particles (M7 Kenney part B, 2026-09-27; moved and rewired in C33)
 

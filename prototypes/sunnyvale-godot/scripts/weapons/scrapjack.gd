@@ -38,23 +38,25 @@ const LOWER_FILL := Color("#dcceaf")     # aged-cream lower frame
 const STEEL_FILL := Color("#424a4d")     # dark steel (muzzle ring, fasteners)
 const GRIP_FILL := Color("#438f88")      # teal wrap
 const QUICKCYCLE_FILL := Color("#a9714a")  # copper flywheel cover
-const AMBER := Color("#e8b65a")          # amber indicator / muzzle flash
 
-## M6.5 Kenney integration pass (assets/kenney/README.md section 5): a small
-## particle-pack burst that augments (never replaces) the drawn amber flash
-## in `_draw()` below. No class_name on the puff script (see its own doc
-## comment) — reached through this plain preload + its static `spawn()`.
-const KenneyPuff := preload("res://scripts/effects/kenney/kenney_puff.gd")
-
-## C35 lit cutouts: each shot also flashes a short, smooth light at the
-## muzzle (see `_flash_muzzle_light()`), warm ivory like every muzzle flash in
-## the kit, so Dave and anyone near him are lit, through their normal maps,
-## from the muzzle's real position and height.
+## C35 lit cutouts: each shot also flashes a smooth light at the muzzle,
+## warm ivory like every firearm flash, so Dave and anyone near him are lit,
+## through their normal maps, from the muzzle's real position and height.
+## C37: one light, held at the muzzle; each shot flares it and it fades over
+## FLASH_TIME, but while the trigger is held it never drops below
+## HOLD_ENERGY between shots, so rapid fire holds one glow and never strobes.
 const FLASH_COLOR := Color("#FFE4BD")
 const FLASH_TIME := 0.07
 const FLASH_ENERGY := 2.4
+const HOLD_ENERGY := 0.8
 const FLASH_HEIGHT := 26.0
 const FLASH_RADIUS := 140.0
+## The drawn flash at the muzzle (C37): tracer ivory with a white core.
+const FLASH_IVORY := Color("#F2EBD3")
+const FLASH_CORE := Color("#FFFDF4")
+
+var _muzzle_light: PointLight2D
+var _since_shot: float = 999.0
 
 
 func _ready() -> void:
@@ -85,10 +87,13 @@ func _physics_process(delta: float) -> void:
 		_hero = get_parent().get_parent()  # AimPivot -> Hero
 	_cooldown = maxf(0.0, _cooldown - delta)
 	_recoil_timer = maxf(0.0, _recoil_timer - delta)
+	_since_shot += delta
 
 	var input_ok: bool = _hero == null or _hero.input_enabled
-	if input_ok and Input.is_action_pressed("fire") and _cooldown <= 0.0:
+	var firing: bool = input_ok and Input.is_action_pressed("fire")
+	if firing and _cooldown <= 0.0:
 		_try_fire()
+	_update_muzzle_light(delta, firing)
 	queue_redraw()
 
 
@@ -117,8 +122,7 @@ func _try_fire() -> void:
 	if audio:
 		audio.play_sfx(&"pistol_fire_quick" if _current_stage() >= 1 else &"pistol_fire",
 				_muzzle.global_position)
-	KenneyPuff.spawn(&"muzzle_flash", _muzzle.global_position, _spawn_container())
-	_flash_muzzle_light(_muzzle.global_position)
+	_flash_muzzle_light()
 
 	var pivot: Node2D = get_parent()
 	var shoulder: Vector2 = pivot.global_position
@@ -148,8 +152,12 @@ func _try_fire() -> void:
 			if resolved_hit and collider.bleeds:
 				# Same rule as ScrapBolt: the target shows its own blood and
 				# plays its own hit sound, so no spark here.
+				GameFeel.hit_pause()
 				return
+		if resolved_hit:
+			GameFeel.hit_pause()
 		var spark := ImpactSpark.new()
+		spark.dir = forward
 		spark.color = ScrapBolt.HIT_COLOR if resolved_hit else ScrapBolt.BLOCK_COLOR
 		spark.shape = ImpactSpark.Shape.HIT if resolved_hit else ImpactSpark.Shape.BLOCKED
 		spark.global_position = block.position
@@ -163,6 +171,7 @@ func _try_fire() -> void:
 	bolt.setup(muzzle_pos, forward, tuning)
 
 	_recoil_timer = tuning.recoil_recovery_time
+	GameFeel.shot(self, forward)
 	fired.emit()
 
 
@@ -205,8 +214,17 @@ func _draw() -> void:
 	draw_circle(o + Vector2(22, 0), 5.5, OUTLINE, false, 2.0)
 
 	if held and _recoil_timer > 0.0 and tuning and tuning.recoil_recovery_time > 0.0:
+		# The muzzle flash (C37): an ivory starburst with a white core,
+		# longest along the shot, shrinking as the recoil settles.
 		var flash_k: float = _recoil_timer / tuning.recoil_recovery_time
-		draw_circle(o + Vector2(28, 0), (2.5 + 2.5 * flash_k) * motion_scale, AMBER)  # small muzzle flash
+		var f := (0.6 + 0.6 * flash_k) * motion_scale
+		var c := o + Vector2(28, 0)
+		var star := PackedVector2Array([
+			c + Vector2(12, 0) * f, c + Vector2(3, 2.5) * f, c + Vector2(4, 6) * f, c + Vector2(-1, 3) * f,
+			c + Vector2(-2, 0) * f, c + Vector2(-1, -3) * f, c + Vector2(4, -6) * f, c + Vector2(3, -2.5) * f,
+		])
+		draw_colored_polygon(star, Color(FLASH_IVORY, 0.9))
+		draw_circle(c + Vector2(1.5, 0) * f, 2.6 * f, FLASH_CORE)
 
 	# AD-07 fix: this used to draw unconditionally, which put the tag on the
 	# hero's chest in every gameplay frame (held is true for the one instance
@@ -239,22 +257,32 @@ func get_muzzle_global_position() -> Vector2:
 	return _muzzle.global_position
 
 
-## A brief smooth point light at the muzzle. It lives under the same
-## container as the bolts and sparks (not under this weapon), so it outlives a
-## freed gun and is freed with the scene; it fades over FLASH_TIME and frees
-## itself. It never moves, so it is drawn uninterpolated. Halved under
-## reduced motion, like the drawn flash.
-func _flash_muzzle_light(at: Vector2) -> void:
+## The muzzle light: one smooth point light on the muzzle, made on the first
+## shot. A shot flares it (halved under reduced motion); it fades over
+## FLASH_TIME, holding HOLD_ENERGY between shots while the trigger is held.
+func _flash_muzzle_light() -> void:
 	var settings := get_node_or_null("/root/Settings")
 	var k: float = 0.5 if (settings and settings.get_reduced_motion()) else 1.0
-	var light := SceneryDraw.make_light(_spawn_container(), SceneryDraw.smooth_disc_texture(),
-			Vector2.ZERO, FLASH_RADIUS, FLASH_COLOR, FLASH_ENERGY * k, FLASH_HEIGHT)
-	light.name = "MuzzleFlashLight"
-	light.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
-	light.global_position = at
-	var tween := light.create_tween()
-	tween.tween_property(light, "energy", 0.0, FLASH_TIME)
-	tween.tween_callback(light.queue_free)
+	if _muzzle_light == null:
+		_muzzle_light = SceneryDraw.make_light(_muzzle, SceneryDraw.smooth_disc_texture(),
+				Vector2.ZERO, FLASH_RADIUS, FLASH_COLOR, 0.0, FLASH_HEIGHT)
+		_muzzle_light.name = "MuzzleFlashLight"
+	_muzzle_light.energy = FLASH_ENERGY * k
+	_muzzle_light.visible = true
+	_since_shot = 0.0
+
+
+func _update_muzzle_light(delta: float, firing: bool) -> void:
+	if _muzzle_light == null:
+		return
+	var settings := get_node_or_null("/root/Settings")
+	var k: float = 0.5 if (settings and settings.get_reduced_motion()) else 1.0
+	# Held while the trigger is down and the next shot is due.
+	var hold: bool = firing and _since_shot <= tuning.interval_for_stage(_current_stage()) + 0.05
+	var floor_e: float = HOLD_ENERGY * k if hold else 0.0
+	var e := move_toward(_muzzle_light.energy, floor_e, FLASH_ENERGY * k / FLASH_TIME * delta)
+	_muzzle_light.energy = maxf(e, floor_e)
+	_muzzle_light.visible = _muzzle_light.energy > 0.001
 
 
 ## Parent for spawned bolts/sparks (ENG-05): the current scene when one is
