@@ -101,6 +101,7 @@ func run() -> void:
 	await _test_wall_between()
 	await _test_dance_either_side()
 	await _test_back_and_forth_across_the_lane_edge()
+	await _test_two_guards_take_turns()
 
 
 ## The real L01-E01 layout: Dave starts the fight at the approach zone and
@@ -271,6 +272,50 @@ func _test_back_and_forth_across_the_lane_edge() -> void:
 			windups_in = _stats.windups
 	_check_basics("in and out across his lane edge", true)
 	check(windups_in >= 1, "he swings whenever Dave steps back into reach (%d windups)" % windups_in)
+	_target.queue_free()
+	group.queue_free()
+	floor_b.queue_free()
+	await physics_frames(2)
+
+
+## Two guards in one encounter with Dave between them, in reach of both: the
+## group lets one swing at a time, and the one waiting his turn stands in
+## his idle pose rather than running in place (playtest 2026-10-04), then
+## gets his own swing.
+func _test_two_guards_take_turns() -> void:
+	var floor_b := _block(0, FLOOR_Y, 2000, 200)
+	var group := EncounterGroup.new()
+	group.lane_rect = Rect2(600, FLOOR_Y - 400, 800, 800)
+	add_child(group)
+	var guards: Array[Brawler] = []
+	for x in [900.0, 1060.0]:
+		var g: Brawler = load("res://scenes/actors/night_guard.tscn").instantiate()
+		group.add_child(g)
+		g.global_position = Vector2(x, FLOOR_Y)
+		guards.append(g)
+	await physics_frames(2)
+	group.is_active = true
+	_target = _make_target(980.0)
+	var prev_x := [guards[0].global_position.x, guards[1].global_position.x]
+	var run := [0, 0]
+	var longest := [0, 0]
+	var windups := [0, 0]
+	for i in 600:
+		await physics_frames(1)
+		for k in 2:
+			var g: Brawler = guards[k]
+			var moving_clip: bool = g.anim.clip == g.tuning.clip_walk or g.anim.clip == g.tuning.clip_stalk
+			if moving_clip and absf(g.global_position.x - prev_x[k]) < 0.05:
+				run[k] += 1
+				longest[k] = maxi(longest[k], run[k])
+			else:
+				run[k] = 0
+			prev_x[k] = g.global_position.x
+			if g.state == Brawler.State.WINDUP and g._state_timer <= FRAME * 1.5:
+				windups[k] += 1
+	for k in 2:
+		check(longest[k] <= 3, "guard %d never runs in place while he waits his turn (longest run %d frames)" % [k + 1, longest[k]])
+	check(windups[0] >= 1 and windups[1] >= 1, "both guards get their swings in turn (%d and %d windups)" % [windups[0], windups[1]])
 	_target.queue_free()
 	group.queue_free()
 	floor_b.queue_free()

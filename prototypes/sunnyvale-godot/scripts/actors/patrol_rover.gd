@@ -26,7 +26,9 @@ const Lights := preload("res://scripts/actors/lit/lights.gd")
 enum State { PATROL, WINDUP, CHARGE, STALL, RECOVERY, DEFEATED }
 
 const H := 96.0
-const WIDTH := 64.0
+## The imported machine (2026-10-03) is a long, low patrol car: the body
+## box spans the chassis, and the bumper reaches its front edge.
+const WIDTH := 92.0
 const HEIGHT := 48.0
 const HALF_WIDTH := WIDTH * 0.5
 const HIT_FLASH_TIME := 0.15
@@ -38,7 +40,9 @@ const VOICE_NOTICE := "Please remain where you are. You are not authorized."
 const VOICE_WINDUP := "Speed limit override accepted."
 ## Red for the last part of the windup (roster tell rule).
 const RED_TIME := 0.25
-const WHEEL_RADIUS := 9.0
+const WHEEL_RADIUS := 11.0
+## The hatch hinges at its front edge: opening swings its rear end up.
+const HATCH_OPEN := 1.1
 ## Speed (px/s) the wreck's parts are thrown apart at.
 const DEBRIS_SPREAD := 220.0
 
@@ -48,6 +52,9 @@ const HIT_FLASH := Color("#f4d78a")
 const AMBER := Color("#FFB02E")
 const ALARM := Color("#FF3B4E")
 const TEAL := Color("#3FE0D0")
+## Its type's neon (C36): the flank strip glows from the rig, and this
+## light casts the underglow on the floor beneath it.
+const NEON := Color("#FF3DD5")
 
 @export var tuning: ChargerTuning
 @export var entity_id: String = ""
@@ -80,6 +87,7 @@ var _hatch_open: float = 0.0
 var _group: EncounterGroup = null
 var _area_root: Node2D = null
 var _tell_light: PointLight2D
+var _underglow: PointLight2D
 ## Local-space point of the most recent blocked frontal hit, valid only
 ## while _shell_hit_flash_timer > 0 (the deflection spark draws there).
 var _shell_hit_flash_local_pos: Vector2 = Vector2.ZERO
@@ -177,6 +185,19 @@ func _build_visual() -> void:
 	else:
 		rig.add_child(_tell_light)
 		_tell_light.position = Vector2(0.0, -HEIGHT)
+	# The magenta underglow: a flat pool on the floor under the chassis,
+	# steady and dimmer than the tell.
+	_underglow = PointLight2D.new()
+	_underglow.name = "Underglow"
+	_underglow.texture = Lights.soft_disc()
+	_underglow.texture_scale = 0.9
+	_underglow.scale = Vector2(1.5, 0.45)
+	_underglow.position = Vector2(0.0, -3.0)
+	_underglow.height = 4.0
+	_underglow.energy = 0.55
+	_underglow.color = NEON
+	_underglow.blend_mode = Light2D.BLEND_MODE_ADD
+	add_child(_underglow)
 
 
 ## A rig joint by its role in rig.json, falling back to the joint's name.
@@ -383,8 +404,8 @@ func _wall_ahead(dir: int) -> bool:
 
 func _update_zone_positions() -> void:
 	var f := float(facing)
-	front_hit_zone.position = Vector2(f * (HALF_WIDTH - 6.0), -HEIGHT * 0.55)
-	rear_hit_zone.position = Vector2(-f * (HALF_WIDTH - 8.0), -HEIGHT * 0.55)
+	front_hit_zone.position = Vector2(f * (HALF_WIDTH - 10.0), -HEIGHT * 0.55)
+	rear_hit_zone.position = Vector2(-f * (HALF_WIDTH - 12.0), -HEIGHT * 0.55)
 	# Fixed at the body's centre: Front/Rear mirror around x = 0 as facing
 	# flips, so the gap between them is always this same strip.
 	shell_hit_zone.position = Vector2(0.0, -HEIGHT * 0.55)
@@ -447,11 +468,13 @@ func _defeat(hit_position: Vector2 = Vector2.INF, direction: Vector2 = Vector2.Z
 	KenneyPuff.spawn(&"machine_smoke", centre, host)
 	KenneyPuff.spawn(&"machine_spark", centre, host)
 	if rig != null:
-		# Dead: the lightbar and the battery go dark on the wreck.
+		# Dead: the lightbar, the battery, the sensor lens and the neon go
+		# dark on the wreck.
 		for role in ["lightbar", "battery"]:
 			var j := _part(role)
 			if j != "":
 				rig.set_emissive(j, Color.BLACK, 0.0)
+		rig.body_material.set_shader_parameter("emissive_energy", 0.0)
 		rig.set_flash(0.0)
 		var wreck := Ragdoll.new()
 		wreck.name = "Wreck_" + (entity_id if entity_id != "" else name)
@@ -526,15 +549,12 @@ func _update_presentation(delta: float) -> void:
 	if chassis != "":
 		pose[chassis] = tilt
 	pose["root"] = bob
-	var dome := _part("dome")
-	if dome != "":
-		pose[dome] = 0.0 if (calm or state != State.PATROL) else sin(_anim_t * 1.4) * 0.12
 	# The rear hatch swings open for the stall, exposing the battery.
 	var hatch_target := 1.0 if state == State.STALL else 0.0
 	_hatch_open = move_toward(_hatch_open, hatch_target, delta / 0.2)
 	var hatch := _part("hatch")
 	if hatch != "":
-		pose[hatch] = -1.25 * _hatch_open * _hatch_open * (3.0 - 2.0 * _hatch_open)
+		pose[hatch] = HATCH_OPEN * _hatch_open * _hatch_open * (3.0 - 2.0 * _hatch_open)
 	rig.apply_pose(pose)
 	# Lightbar (lens-light rule): dim amber on patrol, full amber once it has
 	# seen the hero, amber then red through the windup, red on the charge.

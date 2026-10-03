@@ -15,6 +15,7 @@ python3 tools/art/paint_patrol_rover.py    # M01 Patrol Rover  -> assets/charact
 python3 tools/art/paint_blood.py           # blood decals      -> assets/effects/blood/
 python3 tools/art/make_normal_maps.py      # Dave's Rook frames -> assets/characters/rook/normals/
 python3 tools/art/import_parts_sheet.py night_guard   # a generated parts sheet -> assets/characters/lit/night_guard/
+python3 tools/art/import_parts_sheet.py patrol_rover  # a generated parts sheet -> assets/characters/lit/patrol_rover/
 ```
 
 Add `--preview DIR` to a rig painter to also write `DIR/<name>_preview.png`: each preview pose at 3x, then gameplay size (1x, shown enlarged), 2x, mirrored, and a flat silhouette. The previews are a software copy of the shader under a lamp, a muzzle flash and the moon rim. Write them outside the project (for example `/tmp/art-previews`).
@@ -30,10 +31,10 @@ After changing art, re-import it:
 | File | What |
 | --- | --- |
 | `lit_rig_common.py` | The shared core: `Part` (paint flat colour, materials, emissive masks and a height field in a part's own frame), geometry helpers, blur and an exact distance transform, downsampling, atlas packing, normal encoding, the `rig.json` writer and the software preview |
-| `import_parts_sheet.py` | Imports a generated parts sheet (the brief's "Image prompt 4") as a rig: finds each part, scales the sheet to the gameplay height, reads the skeleton off joint anchors marked in its `SHEETS` table, and writes the atlas, normal and spec maps (the enemy's exact neon color becomes the glow mask) and `rig.json`. The Night Guard's art comes from here since 2026-09-30 |
+| `import_parts_sheet.py` | Imports a generated parts sheet (the brief's "Image prompt 4") as a rig: finds each part, scales the sheet to the gameplay height, reads the skeleton off joint anchors marked in its `SHEETS` table, and writes the atlas, normal and spec maps (the enemy's exact neon color becomes the glow mask) and `rig.json`. A machine (the rover) is assembled instead: each part's pivot is placed on the chassis, parts can be rotated or scaled to fit, and the scale comes from its length; a flat grey background is flood-filled away. `--preview DIR` writes the assembled rest pose. The Night Guard's art comes from here since 2026-09-30, the Patrol Rover's since 2026-10-03 |
 | `paint_night_guard.py` | The lit-cutout test's procedural guard. Superseded by the imported sheet; running it overwrites the Night Guard with the placeholder |
 | `paint_staffer.py` | The Linked night-shift employee: the guard's joints minus `baton` |
-| `paint_patrol_rover.py` | The wheeled security robot: rigid parts that fly apart as debris |
+| `paint_patrol_rover.py` | The lit-cutout test's procedural rover. Superseded by the imported sheet; running it overwrites the Patrol Rover with the placeholder |
 | `paint_blood.py` | Wound marks, the floor pool, the spray droplet and the flat helpers used by `scripts/effects/blood.gd` |
 | `make_normal_maps.py` | Normal maps from the silhouette and painted detail of every PNG in `assets/characters/rook/`, plus `dave_spec.png` |
 | `build_guard_mocap.py` | Turns the Night Guard's converted Mixamo clips (Idle, Walking, Running, Bash, Hit Reaction; downloaded 2026-09-30) into his game clips in `assets/characters/lit/night_guard/mocap/`: gaits timed so the feet don't slide at his speeds, the Bash split into windup, swing and recover and retimed to his tuning (its wind-up arm rebuilt to rise in front and hold overhead, since the capture's swing round behind him flattens to a windmill), and a fast hit flinch. The mocap overrides the hand-keyed clips of the same name |

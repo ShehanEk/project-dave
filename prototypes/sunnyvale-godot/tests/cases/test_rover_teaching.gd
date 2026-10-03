@@ -185,12 +185,12 @@ func _test_stall_cues_only_during_stall() -> void:
 	# The hatch takes 0.2 s to swing open; give it 0.3 s.
 	await seconds(0.3)
 	check(rover.state == PatrolRover.State.STALL, "still stalled 0.3 s in")
-	check(_hatch_angle(rover) < -1.0, "the rear hatch swings open once STALL starts (angle %.2f)" % _hatch_angle(rover))
+	check(absf(_hatch_angle(rover)) > 1.0, "the rear hatch swings open once STALL starts (angle %.2f)" % _hatch_angle(rover))
 	check(_battery_glow(rover) > 1.0, "the battery core glows brighter while stalled (glow %.2f)" % _battery_glow(rover))
 
 	await physics_frames(int(rover.tuning.wall_stall_time * 60.0 * 0.4))
 	check(rover.state == PatrolRover.State.STALL, "still stalled well into the window")
-	check(_hatch_angle(rover) < -1.0, "the hatch stays open through the stall window (angle %.2f)" % _hatch_angle(rover))
+	check(absf(_hatch_angle(rover)) > 1.0, "the hatch stays open through the stall window (angle %.2f)" % _hatch_angle(rover))
 
 	frame = 0
 	while rover.state == PatrolRover.State.STALL and frame < 180:

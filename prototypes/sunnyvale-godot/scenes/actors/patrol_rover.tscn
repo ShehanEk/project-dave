@@ -7,16 +7,16 @@
 [ext_resource type="Script" path="res://scripts/combat/attack_box.gd" id="5_attackbox"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
-size = Vector2(64, 48)
+size = Vector2(92, 48)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_front"]
-size = Vector2(24, 40)
+size = Vector2(36, 40)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rear"]
-size = Vector2(20, 32)
+size = Vector2(30, 32)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_shell"]
-size = Vector2(30, 40)
+size = Vector2(46, 40)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_attack"]
 size = Vector2(16, 40)

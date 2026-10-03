@@ -242,9 +242,8 @@ func _notice() -> void:
 func _tick_approach() -> void:
 	velocity.x = 0.0
 	var hero := _get_hero()
-	if hero == null:
-		return
-	if _group != null and not _group.is_active:
+	if hero == null or (_group != null and not _group.is_active):
+		_set_holding(true)
 		return
 	var dx: float = hero.global_position.x - global_position.x
 	var same_floor: bool = absf(hero.global_position.y - global_position.y) <= tuning.floor_band
@@ -254,6 +253,10 @@ func _tick_approach() -> void:
 		if can_attack:
 			_strike_dir = facing
 			_enter(State.WINDUP)
+		else:
+			# In reach but another enemy in the group holds the attack
+			# token: he waits his turn standing, not running in place.
+			_set_holding(true)
 		return
 	var dir: int = 1 if dx > 0.0 else -1
 	facing = dir
@@ -264,8 +267,8 @@ func _tick_approach() -> void:
 
 
 ## An approach that can't go on (the lane's edge, a ledge, a wall, Dave on
-## another floor) holds its ground in the idle pose, facing Dave, instead of
-## walking in place.
+## another floor, waiting for the group's attack token) holds its ground in
+## the idle pose, facing Dave, instead of walking in place.
 func _set_holding(on: bool) -> void:
 	if on == _holding:
 		return
@@ -417,6 +420,11 @@ func _defeat(hit_position: Vector2, direction: Vector2) -> void:
 	_play_sfx(tuning.sfx_defeat)
 	var host := _effect_host()
 	if rig != null:
+		# Dead: the neon trim (C36), a Staffer's Link light and any tell glow
+		# go dark on the body.
+		rig.body_material.set_shader_parameter("emissive_energy", 0.0)
+		if tuning.tell_emissive:
+			rig.set_emissive(tuning.tell_joint, Color.BLACK, 0.0)
 		var rd := Ragdoll.new()
 		rd.name = "Body_" + (entity_id if entity_id != "" else name)
 		rd.z_index = z_index
