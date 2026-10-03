@@ -63,6 +63,7 @@ func _on_body_entered(body: Node) -> void:
 			remove_child(_toast)
 			parent.add_child(_toast)
 			_toast.global_position = at
+			_toast.reset_physics_interpolation()
 			_toast.show_message(toast_text)
 		queue_free()
 

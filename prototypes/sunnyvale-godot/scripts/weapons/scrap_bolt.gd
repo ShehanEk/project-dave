@@ -26,6 +26,9 @@ func setup(start: Vector2, dir: Vector2, weapon_tuning: WeaponTuning) -> void:
 	direction = dir.normalized() if dir.length() > 0.001 else Vector2.RIGHT
 	tuning = weapon_tuning
 	rotation = direction.angle()
+	# Spawned at the world origin then moved here: without this reset,
+	# physics interpolation draws its first frame partway from the origin.
+	reset_physics_interpolation()
 
 
 func _physics_process(delta: float) -> void:

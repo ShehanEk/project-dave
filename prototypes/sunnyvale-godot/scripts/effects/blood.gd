@@ -73,6 +73,8 @@ static func spray(host: Node, pos: Vector2, dir: Vector2, heavy: bool = false) -
 	p.z_index = 2
 	host.add_child(p)
 	p.global_position = pos
+	# Placed after entering the tree: no interpolated first frame from the origin.
+	p.reset_physics_interpolation()
 	p.emitting = true
 	_free_later(p, 1.2)
 	if not enabled:
@@ -83,6 +85,7 @@ static func spray(host: Node, pos: Vector2, dir: Vector2, heavy: bool = false) -
 	back.initial_velocity_max = 90.0
 	host.add_child(back)
 	back.global_position = pos
+	back.reset_physics_interpolation()
 	back.emitting = true
 	_free_later(back, 1.2)
 	var floor_y = _floor_below(host, pos)
@@ -120,6 +123,7 @@ static func _splat(host, at: Vector2) -> void:
 	s.z_index = -1
 	host.add_child(s)
 	s.global_position = at + Vector2(0.0, -1.4)
+	s.reset_physics_interpolation()
 	_track(s)
 
 
@@ -188,6 +192,7 @@ static func _spread(host: Node, near: Vector2, width_px: float, tint: Color) -> 
 	s.modulate = tint
 	host.add_child(s)
 	s.global_position = Vector2(near.x, float(floor_y) - 2.9)
+	s.reset_physics_interpolation()
 	# The pool texture is drawn at 3x: scale = wanted world size / texture size.
 	var full := width_px / float(pool_tex.get_width())
 	s.scale = Vector2(full * 0.12, 0.18)

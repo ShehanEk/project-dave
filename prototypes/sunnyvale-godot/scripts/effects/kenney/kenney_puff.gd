@@ -161,6 +161,9 @@ static func spawn(kind: StringName, at: Vector2, host: Node) -> void:
 	var fx: Node2D = scene.instantiate()
 	host.add_child(fx)
 	fx.global_position = at
+	# Physics interpolation (on since 2026-09-28) would otherwise draw this
+	# first frame partway from the world origin, where it entered the tree.
+	fx.reset_physics_interpolation()
 	fx._counted_kind = counted_kind
 	fx._configure(kind)
 
