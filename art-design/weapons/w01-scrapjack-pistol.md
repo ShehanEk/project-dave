@@ -7,6 +7,10 @@
 **First appearance:** Level 1\
 **Design status:** Confirmed 2D rendering style (C11) and dark sci-fi mood (C15); C35 amends the rendering to flat paint lit in the engine (confirmed direction, validated by the approved lit-cutout test (2026-09-30)). The palette tokens (P21) and this asset's appearance and lore details are proposed. Dimensions are provisional art proportions, not engine specifications.
 
+## Visual reference status
+
+**Look chosen (2026-10-04):** [w01-scrapjack-look-v1.webp](../../concept-art/w01-scrapjack/w01-scrapjack-look-v1.webp), a lit concept with the C37 look. It is a look reference, not the source painting: the parts are painted flat from it with prompt 4 below, and the engine adds the light. It places two things differently from this brief, and the parts sheet follows the concept: the scrap feed window sits in the rust-red upper housing, and the battery cell is slung under the copper barrel ahead of the guard, piped to the coils. **Parts sheet in the game (2026-10-04):** [w01-scrapjack-parts-v1.webp](../../concept-art/w01-scrapjack/w01-scrapjack-parts-v1.webp), imported with `tools/art/import_parts_sheet.py scrapjack` as a lit rig of four parts (frame, upper housing, barrel, battery cell), about 26 px from grip to muzzle. Dave's fist wraps the grip; on each shot the upper housing and the barrel snap back together, the copper coils flash hot and cool, and the teal charge light dips and recovers.
+
 ## Identity and role
 
 Dave's dependable precision sidearm: a homemade coil pistol built from lab scrap after the lockout, visually personal and improvised rather than issued by Arcadia. Hand-wound copper coils, a taped grip and a salvaged Arcadia battery cell with a teal charge light make up its look, and it fires compacted scrap bolts. It is the weapon Dave starts with, for reliable, accurate shooting while running and jumping.
@@ -188,11 +192,11 @@ Create stage 3 of the approved DEAD EDEN Scrapjack Pistol weapon, using the atta
 Attach the approved look reference. This turns the lit concept into the flat source painting, already split into the gun's parts. Save it as a PNG for import: the coil bands get their own part so the engine can make them glow at each shot, and the teal charge light becomes a steady glow.
 
 ```text
-Using the attached approved Scrapjack concept as the exact design reference, paint a 2D cutout-rig parts sheet of the same pistol for a side-view game. Same gun, same shapes, same proportions and same details (the rust-red upper housing with its fastener heads and top seam, the pale grey lower frame, the side feed window, the taped slanted grip, the trigger guard, the copper coil bands, the steel muzzle ring, the battery cell with its teal light and blank serial patch, the small sight): not a redesign. The reference is lit at night; this sheet is not. Convert it to flat, evenly lit base colors and remove the lamp light, reflections and shadows.
+Using the attached approved Scrapjack concept as the exact design reference, paint a 2D cutout-rig parts sheet of the same pistol for a side-view game. Same gun, same shapes, same proportions and same details (the rust-red upper housing with its fastener heads, scrap feed window and small sight, the pale grey lower frame with its trigger guard, the taped slanted grip, the copper coil barrel with its steel bands and muzzle ring, the battery cell under the barrel with its strap, teal light, blank serial patch and two small pipes up to the coils): not a redesign. Keep the rust and wear as flat painted marks. The reference is lit at night; this sheet is not. Convert it to flat, evenly lit base colors and remove the lamp light, reflections and shadows.
 
 Style: flat base colors, evenly lit. No shadows, no highlights, no rim light, no gradients, no glow. Paint the copper coils as flat copper with no hot glow, and the charge light as a flat teal disc.
 
-Color: keep every color at its exact hex value at full strength. Do not lighten, fade, desaturate or grey out the image. The grip tape and muzzle ring are near-black, the housing is a strong rust red, and the lower frame is the lightest large area.
+Color: keep every color at its exact hex value at full strength. Do not lighten, fade, desaturate or grey out the image. The grip tape is near-black, the steel bands and muzzle ring are mid-dark steel, the housing is a strong rust red, and the lower frame is the lightest large area.
 
 Outlines: crisp near-black (#0B0D10), about 4-6 px on the outer contour and 2 px inside.
 
@@ -201,10 +205,10 @@ Background: transparent. If transparency is not possible, a flat solid mid-grey 
 Layout: a landscape canvas. Draw each part below as a separate, complete piece, as seen in the side view with the muzzle pointing right, all at the same scale (the assembled pistol would be about 900 px long). Leave at least 60 px of empty space between parts; no part may touch or overlap another. No labels, text, numbers, grid lines, frames or drop shadows.
 
 Parts, exactly these, once each:
-1. Frame: the pale grey lower frame with the taped slanted grip, the trigger guard and the side feed window, with no upper housing, no muzzle housing and no battery cell attached. Paint it complete where the other parts will cover it.
-2. Upper housing: the rust-red top block with its three fastener heads, top service seam and small sight, alone; its bottom edge extends a little so it overlaps the frame.
-3. Muzzle housing: the short round barrel housing with its two copper coil bands and the dark steel muzzle ring at its right end; its left end extends a little so it tucks under the upper housing.
-4. Battery cell: the gunmetal cell in its scrap strap, with the flat teal charge light and the blank serial patch.
+1. Frame: the pale grey lower frame with the taped slanted grip and the trigger guard (trigger inside), with no upper housing, no barrel and no battery cell attached. Paint it complete where the other parts will cover it.
+2. Upper housing: the rust-red top block with its fastener heads, the scrap feed window full of dark scrap, and the small sight, alone; its bottom edge extends a little so it overlaps the frame.
+3. Barrel: the round barrel with its two copper coil sections between steel bands and the steel muzzle ring at its right end; its left end extends a little so it tucks under the upper housing.
+4. Battery cell: the gunmetal cell in its scrap strap, with the flat teal charge light, the blank serial patch and the two short pipes that run up to the barrel.
 
 Palette: rust red #B5533A; lab-casing grey #C4CAD0; dark steel #56626C; copper #D9884A; tape charcoal #2B3138 with frayed edges #8B96A0; battery gunmetal #59636D; teal charge light #3FE0D0. No text or logos, no hand, no bullets, no muzzle flash.
 ```
