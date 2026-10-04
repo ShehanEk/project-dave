@@ -38,8 +38,7 @@ After changing art, re-import it:
 | `paint_patrol_rover.py` | The lit-cutout test's procedural rover. Superseded by the imported sheet; running it overwrites the Patrol Rover with the placeholder |
 | `paint_blood.py` | Wound marks, the floor pool, the spray droplet and the flat helpers used by `scripts/effects/blood.gd` |
 | `make_normal_maps.py` | Normal maps from the silhouette and painted detail of every PNG in `assets/characters/rook/`, plus `dave_spec.png` |
-| `build_guard_mocap.py` | Turns the Night Guard's converted Mixamo clips (Idle, Walking, Running, Bash, Hit Reaction; downloaded 2026-09-30) into his game clips in `assets/characters/lit/night_guard/mocap/`: gaits timed so the feet don't slide at his speeds, the Bash split into windup, swing and recover and retimed to his tuning (its wind-up arm rebuilt to rise in front and hold overhead, since the capture's swing round behind him flattens to a windmill), and a fast hit flinch. The mocap overrides the hand-keyed clips of the same name |
-| `mixamo_to_rig.py`, `make_test_armature.py` | Mixamo FBX clip → per-joint rotations for the human rigs (Blender); see [README-mixamo.md](README-mixamo.md) |
+| `mixamo_to_rig.py`, `make_test_armature.py` | Mixamo FBX clip → per-joint rotations for the human rigs (Blender); see [README-mixamo.md](README-mixamo.md). No enemy uses converted clips now: the Night Guard is hand-keyed (C38), and his builder `build_guard_mocap.py` was deleted |
 
 ## Texture conventions
 

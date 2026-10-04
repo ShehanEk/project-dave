@@ -143,7 +143,7 @@ func _test_hit_never_interrupts_windup_or_swing() -> void:
 	await physics_frames(2)
 
 
-## A shot that lands while he walks in plays the Mixamo hit flinch and stops
+## A shot that lands while he walks in plays the hit flinch and stops
 ## him for a moment; a second shot inside the cooldown doesn't stop him again
 ## (rapid fire can't pin him), and he walks on and swings.
 func _test_flinch_while_walking_in() -> void:

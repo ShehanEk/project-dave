@@ -267,11 +267,10 @@ column names the script that owns the drawing.
   the Patrol Rover and the Staffer are procedural placeholder rigs (§1) built
   to their written briefs only. They have not been reviewed against a
   selected picture, and final painted art is future work.
-- **Enemy motion is hand-keyed placeholder clips.** Real Mixamo clips are not
-  in the project: the converter (`tools/art/mixamo_to_rig.py`) has been
-  verified only on synthetic Mixamo-named armatures, since no real Mixamo
-  files exist on this machine (the user downloads them with their own Adobe
-  account).
+- **Enemy motion is hand-keyed.** The Night Guard ran on converted Mixamo
+  clips from 2026-09-30 to 2026-10-04; they flattened badly onto the side-on
+  rig, so the user chose all hand-keyed motion (C38) and the clips were
+  deleted. The Staffer's clips are hand-keyed placeholders.
 - **No new concept art for the night campus.** The three daytime scene
   keyframes were deleted (C23), so the night look is built from the level
   brief and style guide alone, and no picture has been selected for it.

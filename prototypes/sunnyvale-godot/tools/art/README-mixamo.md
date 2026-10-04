@@ -1,5 +1,7 @@
 # Mixamo clip -> 2D rig keyframes
 
+**Unused (C38, 2026-10-05):** every enemy is hand-keyed for the side view; motion capture flattened badly onto the side-on cutouts. This converter is kept for reference only.
+
 `mixamo_to_rig.py` turns a Mixamo FBX clip into per-frame local joint rotations for the
 side-view cutout rig (15 joints) plus hip root motion. It is a Blender script (tested on
 Blender 5.2.2, bundled FBX importer). `make_test_armature.py` builds a synthetic

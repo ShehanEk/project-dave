@@ -260,4 +260,4 @@ session-log entry. `tools/test.sh` passes 56/56 cases (56 files in
 rebuilt placements, but their measurements (M7 test counts, RouteBot traversal
 times, export sizes and driver output) are still those of the pre-revamp M7
 build and are labelled as such. Not done: first-time playtests (gate 6), the
-Windows launch, final painted enemy art and real Mixamo clips.
+Windows launch and final painted art for the Staffer.
