@@ -15,10 +15,11 @@ mask, so the engine makes it glow.
 A character ("human") stands on its feet and its scale comes from its height.
 A machine is assembled instead: every part's pivot is placed on the chassis
 (sheet pixels of the chassis), parts may be rotated or scaled to fit the
-assembly, and the scale comes from its overall length. A sheet on a flat grey
-background has the background flood-filled away from the corners. Run from
-the project root:
-  python3 tools/art/import_parts_sheet.py night_guard|patrol_rover [--preview DIR]
+assembly, and the scale comes from its overall length. A prop (a gun) is
+assembled the same way around the point where the hand holds it, which
+becomes the rig's origin. A sheet on a flat grey background has the
+background flood-filled away from the corners. Run from the project root:
+  python3 tools/art/import_parts_sheet.py night_guard|patrol_rover|scrapjack [--preview DIR]
 """
 import json
 import os
@@ -85,6 +86,28 @@ SHEETS = {
             "hatch": {"at": (900, 780), "pivot": (1048, 725), "place": (468, 158), "rotate": 7.6,
                       "scale": (1.0, 0.86)},
             "battery": {"at": (450, 850), "pivot": (547, 900), "place": (300, 176), "scale": (0.5, 0.5)},
+        },
+    },
+    # A prop: parts placed on the frame (the frame's sheet pixels); `origin`
+    # is where Dave's hand holds the grip. The copper glow counts only inside
+    # `glow_boxes` (the coils), so the painted rust spots never glow.
+    "scrapjack": {
+        "sheet": "concept-art/w01-scrapjack/w01-scrapjack-parts-v1.webp",
+        "rig_name": "W01 Scrapjack",
+        "kind": "prop",
+        "length": 26.0,           # back of the grip to the muzzle, world px
+        "texture_scale": 8,
+        "atlas_width": 512,
+        "origin": (230, 330),
+        "glow": [((3, 204, 200), 1.0)],                 # the teal charge light
+        "parts": {
+            "frame": {"at": (600, 200), "pivot": (230, 330), "place": (230, 330), "z": 1, "mass": 1.0},
+            "barrel": {"at": (220, 790), "pivot": (176, 793), "place": (975, 162), "z": 2, "mass": 1.0,
+                       "muzzle": (705, 793),
+                       "glow": [((201, 122, 65), 1.0)], "glow_boxes": [(255, 670, 400, 915), (430, 670, 560, 915)]},
+            "upper": {"at": (800, 300), "pivot": (725, 375), "place": (185, 178), "z": 3, "mass": 1.0},
+            "battery": {"at": (1200, 800), "pivot": (845, 700), "place": (668, 280), "z": 4, "mass": 1.0,
+                        "scale": (0.68, 0.68), "light": (1000, 828)},
         },
     },
 }
@@ -296,6 +319,8 @@ def main():
     preview = args[args.index("--preview") + 1] if "--preview" in args else None
     if cfg.get("kind") == "machine":
         data, out_dir = build_machine(name, cfg)
+    elif cfg.get("kind") == "prop":
+        data, out_dir = build_prop(name, cfg)
     else:
         data, out_dir = build_human(name, cfg)
     with open(os.path.join(out_dir, "rig.json"), "w") as f:
@@ -480,6 +505,97 @@ def build_machine(name, cfg):
         "source": cfg["sheet"],
     }
     print("battery %dx%d px world" % (bat[0].shape[1] * s, bat[0].shape[0] * s))
+    return data, out_dir
+
+
+def build_prop(name, cfg):
+    """A small rigid prop (a gun): every part hangs off the first one at its
+    `place`, and the rig's origin is `origin` (where the hand holds it)."""
+    sheet, lab = load_sheet(cfg)
+    P = cfg["parts"]
+    T = cfg["texture_scale"]
+    names = list(P)
+    fitted = {}
+    for pname in names:
+        pc = P[pname]
+        crop, x0, y0 = part_crop(sheet, lab, pc["at"])
+        pivot = np.array([pc["pivot"][0] - x0, pc["pivot"][1] - y0], float)
+        crop, pivot, fwd = fit_part(crop, pivot, pc.get("rotate", 0.0), pc.get("scale", (1.0, 1.0)))
+        fitted[pname] = (crop, pivot, (lambda f, ox, oy: lambda pt: f((pt[0] - ox, pt[1] - oy)))(fwd, x0, y0))
+
+    # The scale: from the back of the grip to the muzzle.
+    root = names[0]
+    _rc, rp, _rf = fitted[root]
+    back = P[root]["place"][0] - rp[0]
+    _bc, bp, bf = fitted["barrel"]
+    front = P["barrel"]["place"][0] + (bf(P["barrel"]["muzzle"])[0] - bp[0])
+    s = cfg["length"] / (front - back)
+    k = s * T
+    print("scale %.4f world px per sheet px (%.0f px sheet length)" % (s, front - back))
+
+    results = {}
+    for pname in names:
+        crop, pivot, f = fitted[pname]
+        pc = P[pname]
+        base = cfg.get("glow", [])
+        if pc.get("glow_boxes"):
+            # The part's own glow colours count only inside its boxes.
+            res = cut(crop, pivot, k, base)
+            lit = cut(crop, pivot, k, pc.get("glow", []) + base)
+            mask = np.zeros(res["alpha"].shape, bool)
+            for bx0, by0, bx1, by1 in pc["glow_boxes"]:
+                a = f((bx0, by0)) * k
+                b = f((bx1, by1)) * k
+                xa, xb = sorted((int(a[0]), int(b[0])))
+                ya, yb = sorted((int(a[1]), int(b[1])))
+                mask[max(0, ya):yb, max(0, xa):xb] = True
+            res["spec"][mask] = lit["spec"][mask]
+            results[pname] = res
+        else:
+            results[pname] = cut(crop, pivot, k, pc.get("glow", []) + base)
+    rects, out_dir = write_atlas(results, name, cfg.get("atlas_width", 256))
+
+    origin = cfg["origin"]
+    root_place = P[root]["place"]
+
+    def placed(pname):
+        ref = origin if pname == root else root_place
+        pl = P[pname]["place"]
+        return [round((pl[0] - ref[0]) * s, 2), round((pl[1] - ref[1]) * s, 2)]
+
+    def local(pname, pt):
+        _c, pivot, f = fitted[pname]
+        q = f(pt)
+        return [round((q[0] - pivot[0]) * s, 2), round((q[1] - pivot[1]) * s, 2)]
+
+    def collider(pname):
+        a = results[pname]["alpha"] > 0.5
+        ys, xs = np.nonzero(a)
+        px, py = results[pname]["pivot"]
+        x0, x1 = (xs.min() - px) / T, (xs.max() + 1 - px) / T
+        y0, y1 = (ys.min() - py) / T, (ys.max() + 1 - py) / T
+        cx, cy, hw, hh = (x0 + x1) / 2, (y0 + y1) / 2, (x1 - x0) / 2, (y1 - y0) / 2
+        r = 0.85 * min(hw, hh)
+        if hw >= hh:
+            return {"type": "capsule", "a": [round(cx - hw + r, 2), round(cy, 2)],
+                    "b": [round(cx + hw - r, 2), round(cy, 2)], "r": round(r, 2)}
+        return {"type": "capsule", "a": [round(cx, 2), round(cy - hh + r, 2)],
+                "b": [round(cx, 2), round(cy + hh - r, 2)], "r": round(r, 2)}
+
+    data = {
+        "name": cfg["rig_name"], "kind": "prop", "texture_scale": T,
+        "albedo": "albedo.png", "normal": "normal.png", "spec": "spec.png",
+        "ground_lock": False,
+        "parts": {n: {"rect": rects[n], "pivot": results[n]["pivot"]} for n in results},
+        "joints": [{"name": n, "part": n, "parent": "" if n == root else root, "pos": placed(n),
+                    "z": P[n]["z"], "far": False, "collider": collider(n), "mass": P[n]["mass"],
+                    "limit": None, "rest_dir": 0, "role": n} for n in names],
+        "sockets": {
+            "muzzle": {"joint": "barrel", "pos": local("barrel", P["barrel"]["muzzle"])},
+            "charge_light": {"joint": "battery", "pos": local("battery", P["battery"]["light"])},
+        },
+        "source": cfg["sheet"],
+    }
     return data, out_dir
 
 

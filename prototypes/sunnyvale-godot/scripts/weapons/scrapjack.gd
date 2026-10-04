@@ -58,12 +58,34 @@ const FLASH_CORE := Color("#FFFDF4")
 var _muzzle_light: PointLight2D
 var _since_shot: float = 999.0
 
+## The painted gun (C37): the user's generated parts sheet as a lit cutout
+## rig (tools/art/import_parts_sheet.py scrapjack), its origin where Dave's
+## fist holds the grip. Falls back to the drawn placeholder without it.
+const RIG_PATH := "res://assets/characters/lit/scrapjack/rig.json"
+const CutoutRig := preload("res://scripts/actors/lit/cutout_rig.gd")
+## Where the fist holds the grip, in this node's space (hero.tscn scales
+## the node by 0.65; the rig is scaled back so it keeps its imported size).
+const GRIP_LOCAL := Vector2(2.0, 3.0)
+## How far the upper housing and the barrel (one sliding block, so no gap
+## opens between them) snap back on a shot, world px.
+const SLIDE_BACK := 1.2
+## The coils glow hot on a shot and cool over COIL_COOL seconds.
+const COIL_HOT := Color("#FF8A3D")
+const COIL_IDLE := 0.12
+const COIL_SHOT := 1.6
+const COIL_COOL := 0.28
+const CHARGE_TEAL := Color("#3FE0D0")
+var rig: Node2D
+var _slide_rest: Dictionary = {}   # joint -> rest position
+var _heat: float = 0.0
+
 
 func _ready() -> void:
 	if tuning == null:
 		tuning = load("res://data/tuning/w01_scrapjack.tres")
 	if bolt_scene == null:
 		bolt_scene = load("res://scenes/weapons/scrap_bolt.tscn")
+	_build_rig()
 	# Fixed scene shape is Hero > AimPivot > Scrapjack; resolved lazily
 	# (not here) since child _ready() runs before the Hero's own _ready().
 
@@ -94,7 +116,51 @@ func _physics_process(delta: float) -> void:
 	if firing and _cooldown <= 0.0:
 		_try_fire()
 	_update_muzzle_light(delta, firing)
+	_update_rig(delta)
 	queue_redraw()
+
+
+func _build_rig() -> void:
+	if not ResourceLoader.exists(RIG_PATH):
+		return
+	rig = CutoutRig.new()
+	rig.name = "Rig"
+	rig.rig_path = RIG_PATH
+	add_child(rig)
+	move_child(rig, 0)
+	rig.position = GRIP_LOCAL
+	# Under the arm (hero_visual.gd adds it after this gun), so Dave's fist
+	# wraps the grip; the parts keep their own order inside the rig.
+	rig.z_index = -8
+	var s := 1.0 / maxf(absf(scale.x), 0.001)
+	rig.scale = Vector2(s, s)
+	for j in ["upper", "barrel"]:
+		if rig.joints.has(j):
+			_slide_rest[j] = rig.joints[j].position
+	# The muzzle marker follows the painted barrel's muzzle.
+	var sock: Dictionary = rig.sockets.get("muzzle", {})
+	if not sock.is_empty() and rig.joints.has(sock["joint"]):
+		var j: Node2D = rig.joints[sock["joint"]]
+		_muzzle.position = rig.position + (j.position + sock["pos"]) * s
+	_update_rig(0.0)
+
+
+## Recoil, the slide and the glows on the painted gun.
+func _update_rig(delta: float) -> void:
+	if rig == null:
+		return
+	_heat = maxf(0.0, _heat - delta / COIL_COOL)
+	var settings := get_node_or_null("/root/Settings")
+	var motion_scale: float = 0.5 if (settings and settings.get_reduced_motion()) else 1.0
+	var k: float = 0.0
+	if held and tuning and tuning.recoil_recovery_time > 0.0:
+		k = _recoil_timer / tuning.recoil_recovery_time
+	rig.position = GRIP_LOCAL + Vector2(-tuning.recoil_distance * motion_scale * k if tuning else 0.0, 0.0)
+	for j in _slide_rest:
+		rig.joints[j].position = _slide_rest[j] + Vector2(-SLIDE_BACK * k, 0.0)
+	rig.set_emissive("barrel", COIL_HOT, COIL_IDLE + COIL_SHOT * _heat * _heat)
+	# The charge light dips at a shot, then recovers.
+	rig.set_emissive("battery", CHARGE_TEAL, 1.3 - 0.7 * _heat)
 
 
 func _current_stage() -> int:
@@ -171,6 +237,7 @@ func _try_fire() -> void:
 	bolt.setup(muzzle_pos, forward, tuning)
 
 	_recoil_timer = tuning.recoil_recovery_time
+	_heat = 1.0
 	GameFeel.shot(self, forward)
 	fired.emit()
 
@@ -200,6 +267,16 @@ func _draw() -> void:
 	# never sweeps back far enough from AimPivot (hero.tscn, well below the
 	# head) to cross the head circle (R1-01: was clipping across the face at
 	# up-angled and even neutral aim).
+	if rig == null:
+		_draw_placeholder(o)
+
+	if held and _recoil_timer > 0.0 and tuning and tuning.recoil_recovery_time > 0.0:
+		_draw_flash(o, motion_scale)
+	_draw_tag(o)
+
+
+## The drawn gun, kept for when the painted rig is missing.
+func _draw_placeholder(o: Vector2) -> void:
 	var housing := Rect2(o + Vector2(-5, -8), Vector2(26, 16))
 	draw_rect(Rect2(o + Vector2(-5, 0), Vector2(26, 8)), LOWER_FILL)    # lower cream frame
 	draw_rect(Rect2(o + Vector2(-5, -8), Vector2(26, 8)), UPPER_FILL)   # upper rust-red housing
@@ -213,19 +290,22 @@ func _draw() -> void:
 	draw_rect(Rect2(o + Vector2(-8, -9), Vector2(5, 6)), OUTLINE, false, 1.5)
 	draw_circle(o + Vector2(22, 0), 5.5, OUTLINE, false, 2.0)
 
-	if held and _recoil_timer > 0.0 and tuning and tuning.recoil_recovery_time > 0.0:
-		# The muzzle flash (C37): an ivory starburst with a white core,
-		# longest along the shot, shrinking as the recoil settles.
-		var flash_k: float = _recoil_timer / tuning.recoil_recovery_time
-		var f := (0.6 + 0.6 * flash_k) * motion_scale
-		var c := o + Vector2(28, 0)
-		var star := PackedVector2Array([
-			c + Vector2(12, 0) * f, c + Vector2(3, 2.5) * f, c + Vector2(4, 6) * f, c + Vector2(-1, 3) * f,
-			c + Vector2(-2, 0) * f, c + Vector2(-1, -3) * f, c + Vector2(4, -6) * f, c + Vector2(3, -2.5) * f,
-		])
-		draw_colored_polygon(star, Color(FLASH_IVORY, 0.9))
-		draw_circle(c + Vector2(1.5, 0) * f, 2.6 * f, FLASH_CORE)
 
+## The muzzle flash (C37): an ivory starburst with a white core just past
+## the muzzle, longest along the shot, shrinking as the recoil settles.
+func _draw_flash(o: Vector2, motion_scale: float) -> void:
+	var flash_k: float = _recoil_timer / tuning.recoil_recovery_time
+	var f := (0.6 + 0.6 * flash_k) * motion_scale
+	var c := o + _muzzle.position + Vector2(6, 0)
+	var star := PackedVector2Array([
+		c + Vector2(12, 0) * f, c + Vector2(3, 2.5) * f, c + Vector2(4, 6) * f, c + Vector2(-1, 3) * f,
+		c + Vector2(-2, 0) * f, c + Vector2(-1, -3) * f, c + Vector2(4, -6) * f, c + Vector2(3, -2.5) * f,
+	])
+	draw_colored_polygon(star, Color(FLASH_IVORY, 0.9))
+	draw_circle(c + Vector2(1.5, 0) * f, 2.6 * f, FLASH_CORE)
+
+
+func _draw_tag(o: Vector2) -> void:
 	# AD-07 fix: this used to draw unconditionally, which put the tag on the
 	# hero's chest in every gameplay frame (held is true for the one instance
 	# actually mounted on the hero) — it duplicated the HUD's own weapon tag

@@ -14,6 +14,7 @@ func run() -> void:
 	await _test_camera_kick_and_kill_shake()
 	await _test_hit_pause()
 	await _test_impact_shapes()
+	await _test_painted_gun()
 
 
 func _hero_with_camera() -> Array:
@@ -127,3 +128,40 @@ func _test_impact_shapes() -> void:
 	check(not blocked._chips.is_empty() and not hit._chips.is_empty(), "both throw scrap chips")
 	await seconds(0.6)
 	check(not is_instance_valid(blocked) and not is_instance_valid(hit), "impacts free themselves within about half a second")
+
+
+## The painted Scrapjack (the user's parts sheet as a lit rig): it builds on
+## the hero, the muzzle sits at the barrel's tip, a shot heats the copper
+## coils and they cool again, and the upper housing and the barrel slide
+## back together, so no gap opens between them.
+func _test_painted_gun() -> void:
+	var made := await _hero_with_camera()
+	var hero: Hero = made[0]
+	var gun: Scrapjack = hero.get_node("AimPivot/Scrapjack")
+	check(gun.rig != null, "the Scrapjack wears its painted rig")
+	if gun.rig == null:
+		for n in made:
+			n.queue_free()
+		return
+	for part in ["frame", "upper", "barrel", "battery"]:
+		check(gun.rig.joints.has(part), "the gun rig has its %s" % part)
+	var barrel: Node2D = gun.rig.joints["barrel"]
+	var muzzle_x: float = gun.to_local(gun.get_muzzle_global_position()).x
+	var barrel_x: float = gun.to_local(barrel.global_position).x
+	check(muzzle_x > barrel_x + 4.0, "the muzzle sits at the front of the barrel")
+	var mat: ShaderMaterial = gun.rig.joint_material("barrel")
+	var idle: float = mat.get_shader_parameter("emissive_energy")
+	gun._try_fire()
+	await physics_frames(1)
+	var hot: float = mat.get_shader_parameter("emissive_energy")
+	var gap0: float = gun.rig.joints["barrel"].position.x - gun.rig.joints["upper"].position.x
+	var slid: float = gun.rig.joints["upper"].position.x - gun._slide_rest["upper"].x
+	check(hot > idle + 0.5, "a shot heats the coils (glow %.2f -> %.2f)" % [idle, hot])
+	check(slid < -0.3, "the upper housing snaps back on a shot (%.2f px)" % slid)
+	var rest_gap: float = gun._slide_rest["barrel"].x - gun._slide_rest["upper"].x
+	check(absf(gap0 - rest_gap) < 0.01, "the barrel slides with the housing, so no gap opens")
+	await seconds(0.5)
+	check(absf(mat.get_shader_parameter("emissive_energy") - idle) < 0.05, "and the coils cool again")
+	for n in made:
+		n.queue_free()
+	await physics_frames(2)

@@ -1,0 +1,186 @@
+{
+ "name": "W01 Scrapjack",
+ "kind": "prop",
+ "texture_scale": 8,
+ "albedo": "albedo.png",
+ "normal": "normal.png",
+ "spec": "spec.png",
+ "ground_lock": false,
+ "parts": {
+  "frame": {
+   "rect": [
+    4,
+    4,
+    97,
+    72
+   ],
+   "pivot": [
+    29.0,
+    31.8
+   ]
+  },
+  "barrel": {
+   "rect": [
+    225,
+    4,
+    76,
+    38
+   ],
+   "pivot": [
+    0.6,
+    18.8
+   ]
+  },
+  "upper": {
+   "rect": [
+    105,
+    4,
+    116,
+    49
+   ],
+   "pivot": [
+    1.5,
+    38.9
+   ]
+  },
+  "battery": {
+   "rect": [
+    305,
+    4,
+    65,
+    27
+   ],
+   "pivot": [
+    0.6,
+    4.4
+   ]
+  }
+ },
+ "joints": [
+  {
+   "name": "frame",
+   "part": "frame",
+   "parent": "",
+   "pos": [
+    0.0,
+    0.0
+   ],
+   "z": 1,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.22,
+     0.53
+    ],
+    "b": [
+     4.66,
+     0.53
+    ],
+    "r": 3.72
+   },
+   "mass": 1.0,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "frame"
+  },
+  {
+   "name": "barrel",
+   "part": "barrel",
+   "parent": "frame",
+   "pos": [
+    13.09,
+    -2.95
+   ],
+   "z": 2,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     1.96,
+     0.02
+    ],
+    "b": [
+     7.39,
+     0.02
+    ],
+    "r": 1.91
+   },
+   "mass": 1.0,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "barrel"
+  },
+  {
+   "name": "upper",
+   "part": "upper",
+   "parent": "frame",
+   "pos": [
+    -0.79,
+    -2.67
+   ],
+   "z": 3,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     2.43,
+     -1.8
+    ],
+    "b": [
+     11.69,
+     -1.8
+    ],
+    "r": 2.5
+   },
+   "mass": 1.0,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "upper"
+  },
+  {
+   "name": "battery",
+   "part": "battery",
+   "parent": "frame",
+   "pos": [
+    7.69,
+    -0.88
+   ],
+   "z": 4,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     1.38,
+     1.14
+    ],
+    "b": [
+     6.6,
+     1.14
+    ],
+    "r": 1.33
+   },
+   "mass": 1.0,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "battery"
+  }
+ ],
+ "sockets": {
+  "muzzle": {
+   "joint": "barrel",
+   "pos": [
+    9.29,
+    0.0
+   ]
+  },
+  "charge_light": {
+   "joint": "battery",
+   "pos": [
+    1.85,
+    1.53
+   ]
+  }
+ },
+ "source": "concept-art/w01-scrapjack/w01-scrapjack-parts-v1.webp"
+}

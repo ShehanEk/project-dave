@@ -108,8 +108,9 @@ func _resolve(outcome: StringName, at: Vector2, bled: bool = false) -> void:
 func _draw() -> void:
 	if _spent:
 		return
-	# The streak grows out of the muzzle, then keeps its length.
-	var tail := -minf(TRAIL, _traveled + 6.0)
+	# The streak grows out of the muzzle (never back over the gun), then
+	# keeps its length.
+	var tail := -minf(TRAIL, _traveled)
 	var head := 5.0
 	var outline := PackedVector2Array([
 		Vector2(head + 1.5, 0.0), Vector2(head - 2.0, 2.8), Vector2(tail, 1.2),
