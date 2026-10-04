@@ -2,8 +2,10 @@ class_name GameCamera
 extends Camera2D
 ## Independent Camera2D (NOT a child of the hero) that follows an assigned
 ## target with light smoothing and a small look-ahead toward its facing
-## direction. Zoom 1 at 1280x720 keeps the H=96 hero at 96/720 = 1/7.5
-## screen height, close to the ~1/8 target (recorded in 09).
+## direction. Zoom 1.2 at 1280x720 shows the H=96 hero at about 1/6.25 of
+## the screen height (playtest 2026-10-04: zoom 1, at 1/7.5, read too far
+## out). It still shows 533 px each side of the hero, past the 520 px a guard
+## or Staffer notices him from, and the look-ahead shows 90 px more ahead.
 
 @export var target: Node2D
 @export var look_ahead_distance: float = 90.0
@@ -13,6 +15,7 @@ extends Camera2D
 		world_limits = v
 		_apply_limits()
 
+@export var zoom_level: float = 1.2
 var _look_ahead: float = 0.0
 ## Shooting feel (C37, GameFeel): a kick that springs back and a decaying
 ## shake, applied as the camera's offset so the follow itself is untouched.
@@ -30,7 +33,7 @@ func _ready() -> void:
 	process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS
 	position_smoothing_enabled = true
 	position_smoothing_speed = 6.0
-	zoom = Vector2.ONE
+	zoom = Vector2(zoom_level, zoom_level)
 	_apply_limits()
 	make_current()
 	if target:

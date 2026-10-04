@@ -112,6 +112,7 @@ func _test_smoothing_settings() -> void:
 	var cam: Camera2D = load("res://scenes/actors/game_camera.tscn").instantiate()
 	add_child(cam)
 	check_eq(cam.process_callback, Camera2D.CAMERA2D_PROCESS_PHYSICS, "camera follows on physics ticks")
+	check(is_equal_approx(cam.zoom.x, 1.2), "the camera is zoomed in to 1.2 (playtest 2026-10-04)")
 	cam.queue_free()
 
 
