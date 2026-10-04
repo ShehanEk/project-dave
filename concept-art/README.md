@@ -23,7 +23,7 @@ New concept art is still needed in the new look for:
 - the nine enemy guns;
 - Arcadia's campus at night.
 
-New enemy art follows the lit cutout pipeline (C35). Each enemy is one evenly lit, flat-color, side-view full-body painting, split into rig parts with a normal map for each part, then rigged with Mixamo motion and ragdoll deaths. Status: **confirmed and validated** (the lit Night Guard test next to Dave, approved 2026-09-30). A concept image is therefore either a **look reference**, a lit concept that sets the mood and design (C36), or a **source painting**, the flat, unlit parts sheet painted from an approved look reference for the rig.
+New enemy art follows the lit cutout pipeline (C35). Each enemy is one evenly lit, flat-color, side-view full-body painting, split into rig parts with a normal map for each part, then rigged with hand-keyed motion (C38) and ragdoll deaths. Status: **confirmed and validated** (the lit Night Guard test next to Dave, approved 2026-09-30). A concept image is therefore either a **look reference**, a lit concept that sets the mood and design (C36), or a **source painting**, the flat, unlit parts sheet painted from an approved look reference for the rig.
 
 Use the [style guide](../art-design/style-guide.md) and the [art briefs](../art-design/README.md). The hand-drawn 2D base (C11) is amended by the lit cutout method (C35), with the dark sci-fi palette and mood (C15).
 

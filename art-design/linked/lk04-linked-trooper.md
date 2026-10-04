@@ -77,7 +77,7 @@ The vent after the shot is the opening: the weapon lowered, the body still, the 
 
 **Fluid:** human blood (Blood #B3212F, drying to #8A1A26), drawn by the engine: a spray at the hit point, wound marks attached to the hit part and floor pools. The Linked also throw white implant sparks at the port. Blood anchors sit on the head, chest, belly, near upper arm and near thigh.
 
-**Motion and death:** Mixamo clips converted to the rig: a rifle idle held perfectly still, a rifle walk, a locked-arm aim and a hit flinch. Hand-key the raise and the vent where no clip fits. Death is a ragdoll pushed by the killing shot, the carbine drops as a prop (never a pickup), and the port light goes dark. The body then stays as a static corpse, restored after a death or Continue.
+**Motion and death:** hand-keyed on the rig for the side view (C38): a rifle idle held perfectly still, a rifle walk, a locked-arm aim and a hit flinch, plus the raise and the vent. Death is a ragdoll pushed by the killing shot, the carbine drops as a prop (never a pickup), and the port light goes dark. The body then stays as a static corpse, restored after a death or Continue.
 
 Plan the blood, the tell glows, the muzzle flashes, the implant lights and every other effect as separate layers, never painted into the parts. These are the intended rig components, not a finished rig: the lit Night Guard test settles the tool, the pivots and the clip retargeting.
 
@@ -139,7 +139,7 @@ Using the attached approved Linked Trooper reference, draw one clear full-body 2
 - Split the approved painting into the rig parts above, with hidden overlap under every joint and the far limbs painted complete. Make a matching normal map for every part (green = up, same size and layout) and check the lit result under a moving lamp.
 - Check both facings in the lit test, so the mirrored parts still take light from the lamp's side. The cut patch, the hip pouch, the chinstrap and the plate must read correctly flipped.
 - Check the silhouette and the readability at gameplay size in the engine, in grayscale and against near-black backgrounds, next to the other people types: the Rifleman (helmet and carbine), the Staffer (slouch and bare head) and the Warden (an Heir with a palm emitter). The Trooper reads by the bare plated head and the perfectly still stance. The tell must read by pose and glow with the night overlay on.
-- Convert the Mixamo clips (still rifle idle, rifle walk, locked-arm aim, hit flinch) to the rig and hand-key the tell pose where no clip fits. Check that the plate stays a small flat shape and that the port point reads at gameplay size.
+- Hand-key each move (still rifle idle, rifle walk, locked-arm aim, hit flinch) for the side view (C38). Check that the plate stays a small flat shape and that the port point reads at gameplay size.
 - Keep blood, tell glows, muzzle flashes, implant lights and effects as separate layers. A concept painting is not a finished rig, atlas or validated animation.
 
 See [shared style guide](../style-guide.md) and [asset index](../README.md).

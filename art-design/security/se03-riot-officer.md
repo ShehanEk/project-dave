@@ -75,7 +75,7 @@ The lowered shield after the bash is the opening. A jump over the shield or a fl
 
 **Fluid:** human blood (Blood #B3212F, drying to #8A1A26), drawn by the engine: a spray at the hit point, wound marks attached to the hit part and floor pools. Blood anchors sit on the head, chest, belly, near upper arm and near thigh; a bolt stopped by the shield draws no blood. No implant sparks.
 
-**Motion and death:** Mixamo clips converted to the rig: a walk with the shield arm held forward, a crouch, a shoulder-charge bash and a hit stagger. Hand-key the planted-shield windup and the lowered-shield recovery where no clip fits. Death is a ragdoll pushed by the killing shot, and the shield falls away as a prop. The body then stays as a static corpse, restored after a death or Continue.
+**Motion and death:** hand-keyed on the rig for the side view (C38): a walk with the shield arm held forward, a crouch, a shoulder-charge bash and a hit stagger, plus the planted-shield windup and the lowered-shield recovery. Death is a ragdoll pushed by the killing shot, and the shield falls away as a prop. The body then stays as a static corpse, restored after a death or Continue.
 
 Plan the blood, the tell glows, the muzzle flashes, the implant lights and every other effect as separate layers, never painted into the parts. These are the intended rig components, not a finished rig: the lit Night Guard test settles the tool, the pivots and the clip retargeting.
 
@@ -137,7 +137,7 @@ Using the attached approved Riot Officer reference, draw one clear full-body 2D 
 - Split the approved painting into the rig parts above, with hidden overlap under every joint and the far limbs painted complete. Make a matching normal map for every part (green = up, same size and layout) and check the lit result under a moving lamp.
 - Check both facings in the lit test, so the mirrored parts still take light from the lamp's side. The shield and the maul must read correctly flipped, and the shield's three-quarter turn must hold up mirrored.
 - Check the silhouette and the readability at gameplay size in the engine, in grayscale and against near-black backgrounds, next to the other people types: the Rifleman (helmet and carbine), the Heavy Gunner (drum pack) and the Night Guard (cap and baton). The Riot Officer reads by the shield slab and the helmet dome. The tell must read by pose and glow with the night overlay on.
-- Convert the Mixamo clips (shield walk, crouch, shoulder-charge bash, hit stagger) to the rig and hand-key the tell pose where no clip fits. Check that the shield-down pose clearly exposes the head and chest, and that the raised shield reads as a wall from the side.
+- Hand-key each move (shield walk, crouch, shoulder-charge bash, hit stagger) for the side view (C38). Check that the shield-down pose clearly exposes the head and chest, and that the raised shield reads as a wall from the side.
 - Keep blood, tell glows, muzzle flashes, implant lights and effects as separate layers. A concept painting is not a finished rig, atlas or validated animation.
 
 See [shared style guide](../style-guide.md) and [asset index](../README.md).

@@ -67,7 +67,7 @@ The magazine swap after the second burst: the gun tilts up on its mount arm, the
 - **Normal maps:** one per part, green = up, as K01; taped edges and buckles get shallow relief.
 - **Sockets:** the gun socket is the cradle at the end of the mount arm. The [EG02](../enemy-guns/eg02-assault-rifle.md) sprite mounts there at its grip origin, the point the gun rotates about, with its own muzzle-flash light. Its muzzle marker sits at the muzzle lamp, about 0.5 m (0.3 H) above the floor in the planted pose. Spark points at each plate.
 - **Fluid:** red blood, as K01: a separate spray, wound marks and floor pools. Plates throw white sparks.
-- **Motion and death:** hand-keyed on the rigid parts, since Mixamo has no dog clips *(proposed)*. On death the parts become physics bodies (a ragdoll, still joined at their pivots, with no dismemberment), the legs twitch for about 1 s, and the rifle and mount arm fall away as a static prop, never a pickup. The body stays as a static corpse.
+- **Motion and death:** hand-keyed on the rigid parts, like every enemy (C38). On death the parts become physics bodies (a ragdoll, still joined at their pivots, with no dismemberment), the legs twitch for about 1 s, and the rifle and mount arm fall away as a static prop, never a pickup. The body stays as a static corpse.
 
 Plan overlapping drawing layers and visible pivots for the rig. Keep blood, sparks, oil, glows, muzzle flashes, projectiles, attack trails, warning overlays, impacts and environmental props separate from the character. The cutout method is confirmed direction, validated by the approved lit-cutout test (2026-09-30) (C35); frame counts, timing and export remain later production choices.
 

@@ -71,7 +71,7 @@ The low pass: the drone dips to head height with the lantern swinging below it. 
 - **Normal maps:** one per part, green = up: the spindle curve, the brim ring, pewter fittings, cage bars, the soft bump of the frosted glass, the port ring's rim.
 - **Sockets:** no gun socket. The seeker ([EG08](../enemy-guns/eg08-seeker.md)) launches from the lantern port: its muzzle marker sits at the port's center, and the round leaves along the port's axis before turning toward its heading. Light sockets at the status lens (small, steady) and the lantern and port (large tell glow). Spark points at the pod and brim; an oil drip point under the pod.
 - **Fluid:** white sparks and black oil, never blood.
-- **Motion and death:** hand-keyed on the rigid parts (Mixamo clips are humanoid) *(proposed)*. On death it bursts into debris parts: the lantern cage and glass (glass shards), crook, brim ring, fins and pod halves become physics bodies pushed by the killing shot, then settle as a static wreck with a dark oil stain.
+- **Motion and death:** hand-keyed on the rigid parts, like every enemy (C38). On death it bursts into debris parts: the lantern cage and glass (glass shards), crook, brim ring, fins and pod halves become physics bodies pushed by the killing shot, then settle as a static wreck with a dark oil stain.
 
 Plan overlapping drawing layers and visible pivots for the rig. Keep blood, sparks, oil, glows, muzzle flashes, projectiles, attack trails, warning overlays, impacts and environmental props separate from the character. The cutout method is confirmed direction, validated by the approved lit-cutout test (2026-09-30) (C35); frame counts, timing and export remain later production choices.
 

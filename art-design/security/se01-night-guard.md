@@ -11,7 +11,7 @@
 
 **Look approved (2026-09-30):** [se01-night-guard-look-v1.webp](../../concept-art/se01-night-guard/se01-night-guard-look-v1.webp), a lit concept of the light cyberpunk look with his lime neon trim (C36). It is a look reference, not the source painting: the rig parts are painted flat from it with prompt 4 below, and the engine adds the light. **Parts sheet in the game (2026-09-30):** [se01-night-guard-parts-v1.webp](../../concept-art/se01-night-guard/se01-night-guard-parts-v1.webp), imported with `tools/art/import_parts_sheet.py`.
 
-The lit cutout test build (C35) uses this asset: one Night Guard, painted flat, cut into rig parts, given normal maps, lit by the engine next to Dave, moved by Mixamo clips and killed as a ragdoll. The user approved that look on 2026-09-30, so the method is *confirmed and validated*; this brief's appearance details stay proposed until the final painting. The [style guide](../style-guide.md) defines the pipeline. For scale, the test puts the guard next to Dave's placeholder sprites ([h01-rook](../../concept-art/h01-rook/)), so keep the two at a believable relative size.
+The lit cutout test build (C35) uses this asset: one Night Guard, painted flat, cut into rig parts, given normal maps, lit by the engine next to Dave, moved by Mixamo clips (since replaced by hand-keyed motion, C38) and killed as a ragdoll. The user approved that look on 2026-09-30, so the method is *confirmed and validated*; this brief's appearance details stay proposed until the final painting. The [style guide](../style-guide.md) defines the pipeline. For scale, the test puts the guard next to Dave's placeholder sprites ([h01-rook](../../concept-art/h01-rook/)), so keep the two at a believable relative size.
 
 ## Identity and role
 
@@ -81,7 +81,7 @@ The winded pause after the swing is the opening, and it must be long and obvious
 
 **Fluid:** human blood (Blood #B3212F, drying to #8A1A26): a spray at the hit point, wound marks attached to the hit part and floor pools, all drawn by the engine. Blood anchors sit on the head, chest, belly, near upper arm and near thigh. No implant sparks, since he is not Linked.
 
-**Motion and death:** Mixamo clips converted to the rig: a patrol idle, a walk, a run or jog, an overhead melee swing, and a hit flinch. Hand-key the raised-baton windup and the hands-on-knees winded pose where no clip fits. Death is a ragdoll: the parts become physics bodies pushed by the killing shot, and the cap and baton fly loose (the baton lands as a prop). The body then stays as a static corpse, restored after a death or Continue.
+**Motion and death:** hand-keyed on the rig for the side view (C38: motion capture flattened badly onto the cutouts): a patrol idle, a walk, a baton-ready approach, the windup with the baton rising in front and over his head, the overhead swing, the hunched winded recovery and a hit flinch (head snaps back, he rocks back a step). Death is a ragdoll: the parts become physics bodies pushed by the killing shot, and the cap and baton fly loose (the baton lands as a prop). The body then stays as a static corpse, restored after a death or Continue.
 
 Plan the blood, the tell glows, the muzzle flashes, the implant lights and every other effect as separate layers, never painted into the parts. These are the intended rig components, not a finished rig: the lit Night Guard test settles the tool, the pivots and the clip retargeting.
 
@@ -178,7 +178,7 @@ Palette: skin #B58968; Arcadia grey jacket #4B5663; pale grey shirt #C7CED5; tro
 - Split the approved painting into the rig parts above, with hidden overlap under every joint and the far limbs painted complete. Make a matching normal map for every part (green = up, same size and layout) and check the lit result under a moving lamp.
 - Check both facings in the lit test, so the mirrored parts still take light from the lamp's side. The baton hand, radio and sleeve patch must read correctly flipped.
 - Check the silhouette and the readability at gameplay size in the engine, in grayscale and against near-black backgrounds, next to the other people types: the Sidearm Guard (bare head, vest, two-hand stance), the Riot Officer (helmet and shield) and the Rifleman (helmet and carbine). The Night Guard reads by the cap brim, the heavy torso and the long rod. The tell must read by pose and glow with the night overlay on.
-- Convert the Mixamo clips (patrol idle, walk, run, overhead melee swing, hit flinch) to the rig and hand-key the tell pose where no clip fits. Check that the winded pause is long enough to read before the next swing.
+- Hand-key each move for the side view (C38). Check that the winded pause is long enough to read before the next swing.
 - Keep blood, tell glows, muzzle flashes, implant lights and effects as separate layers. A concept painting is not a finished rig, atlas or validated animation.
 
 See [shared style guide](../style-guide.md) and [asset index](../README.md).

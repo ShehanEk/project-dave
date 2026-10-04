@@ -74,7 +74,7 @@ There is no opening, because it is not a target: it has no hit zone, and shots p
 
 **Fluid:** none: it has no hit zone and is never hurt, so it has no blood anchors, sparks or pools.
 
-**Motion and death:** Mixamo clips converted to the rig: an idle, a slow careful walk, a door-open reach, a cart push, a crouch-and-cover flinch and a sit-down. Hand-key the confused pause where no clip fits. It has no hit clip, no death and no ragdoll, since it cannot be hurt or killed.
+**Motion and death:** hand-keyed on the rig for the side view (C38): an idle, a slow careful walk, a door-open reach, a cart push, a crouch-and-cover flinch and a sit-down, plus the confused pause. It has no hit clip, no death and no ragdoll, since it cannot be hurt or killed.
 
 Plan the blood, the tell glows, the muzzle flashes, the implant lights and every other effect as separate layers, never painted into the parts. These are the intended rig components, not a finished rig: the lit Night Guard test settles the tool, the pivots and the clip retargeting.
 
@@ -136,7 +136,7 @@ Using the attached approved Sleepwalker reference, draw one clear full-body 2D a
 - Split the approved painting into the rig parts above, with hidden overlap under every joint and the far limbs painted complete. Make a matching normal map for every part (green = up, same size and layout) and check the lit result under a moving lamp.
 - Check both facings in the lit test, so the mirrored parts still take light from the lamp's side. The key ring, the bracer and the lanyard must read correctly flipped.
 - Check the silhouette and the readability at gameplay size in the engine, in grayscale and against near-black backgrounds, next to the other people types: the Staffer (slouch, no coat), the Linked Nurse (scrub cap and tray) and the Fitted Heir (pale ceramic). The Sleepwalker reads by the long belted coat and the composed stance. The tell must read by pose and glow with the night overlay on.
-- Convert the Mixamo clips (idle, slow careful walk, door-open reach, cart push, crouch-and-cover flinch, sit-down) to the rig and hand-key the tell pose where no clip fits. Check that the steady teal light reads as harmless next to a driven Linked person's amber point.
+- Hand-key each move (idle, slow careful walk, door-open reach, cart push, crouch-and-cover flinch, sit-down) for the side view (C38). Check that the steady teal light reads as harmless next to a driven Linked person's amber point.
 - Keep blood, tell glows, muzzle flashes, implant lights and effects as separate layers. A concept painting is not a finished rig, atlas or validated animation.
 
 See [shared style guide](../style-guide.md) and [asset index](../README.md).

@@ -78,7 +78,7 @@ The refill is the opening: head down, hands busy at the tray, rooted. The tray h
 
 **Fluid:** human blood (Blood #B3212F, drying to #8A1A26), drawn by the engine: a spray at the hit point, wound marks attached to the hit part and floor pools. The Linked also throw white implant sparks at the port. Blood anchors sit on the head, chest, belly, near upper arm and near thigh. The stain overlay is a separate layer of dried blood and never reacts to hits.
 
-**Motion and death:** Mixamo clips converted to the rig: a slow steady walk, an underhand toss and a hit flinch. Hand-key the tray tip and the refill where no clip fits. Death is a ragdoll pushed by the killing shot, the tray drops as a prop, and the port light goes dark. The body then stays as a static corpse, restored after a death or Continue.
+**Motion and death:** hand-keyed on the rig for the side view (C38): a slow steady walk, an underhand toss and a hit flinch, plus the tray tip and the refill. Death is a ragdoll pushed by the killing shot, the tray drops as a prop, and the port light goes dark. The body then stays as a static corpse, restored after a death or Continue.
 
 Plan the blood, the tell glows, the muzzle flashes, the implant lights and every other effect as separate layers, never painted into the parts. These are the intended rig components, not a finished rig: the lit Night Guard test settles the tool, the pivots and the clip retargeting.
 
@@ -140,7 +140,7 @@ Using the attached approved Linked Nurse reference, draw one clear full-body 2D 
 - Split the approved painting into the rig parts above, with hidden overlap under every joint and the far limbs painted complete. Make a matching normal map for every part (green = up, same size and layout) and check the lit result under a moving lamp.
 - Check both facings in the lit test, so the mirrored parts still take light from the lamp's side. The tray hand, the sleeve stain overlay and the lanyard must read correctly flipped.
 - Check the silhouette and the readability at gameplay size in the engine, in grayscale and against near-black backgrounds, next to the other people types: the Staffer (bare head and slouch), the Linked Lineman (hard hat and pack) and the Sidearm Guard (bare head, vest and two-hand stance). The Nurse reads by the scrub cap, the slim build and the flat tray line. The tell must read by pose and glow with the night overlay on.
-- Convert the Mixamo clips (slow steady walk, underhand toss, hit flinch) to the rig and hand-key the tell pose where no clip fits. Check that the tray stays a readable flat bar at gameplay size and that the stain overlay tracks the tunic.
+- Hand-key each move (slow steady walk, underhand toss, hit flinch) for the side view (C38). Check that the tray stays a readable flat bar at gameplay size and that the stain overlay tracks the tunic.
 - Keep blood, tell glows, muzzle flashes, implant lights and effects as separate layers. A concept painting is not a finished rig, atlas or validated animation.
 
 See [shared style guide](../style-guide.md) and [asset index](../README.md).

@@ -72,7 +72,7 @@ The stall at the end of the run is the opening: the rear hatch lifts and the pow
 - **Normal maps:** one per part, green = up: hazard-stencil relief on the panels, mast rails, tubular guard, fork edges, solid-tire tread, gauge strip.
 - **Sockets:** no gun socket. Light sockets at the sensor lens (small, steady), the beacon (large tell glow) and the power unit (teal). Spark points at the forks and hatch; an oil drip point under the chassis.
 - **Fluid:** white sparks and black oil, never blood.
-- **Motion and death:** hand-keyed on the rigid parts (Mixamo clips are humanoid) *(proposed)*. On death it bursts into debris parts: the forks and carriage, guard, beacon, horn, hatch, wheels and panels become physics bodies pushed by the killing shot, then settle as a static wreck with a dark oil stain.
+- **Motion and death:** hand-keyed on the rigid parts, like every enemy (C38). On death it bursts into debris parts: the forks and carriage, guard, beacon, horn, hatch, wheels and panels become physics bodies pushed by the killing shot, then settle as a static wreck with a dark oil stain.
 
 Plan overlapping drawing layers and visible pivots for the rig. Keep blood, sparks, oil, glows, muzzle flashes, projectiles, attack trails, warning overlays, impacts and environmental props separate from the character. The cutout method is confirmed direction, validated by the approved lit-cutout test (2026-09-30) (C35); frame counts, timing and export remain later production choices.
 

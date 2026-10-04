@@ -17,7 +17,7 @@ Every enemy is a **lit cutout rig**: painted parts, lit by the engine.
 - **Normal maps:** every part has a matching normal map (green = up) that carries its form and small detail: seams, fasteners, cloth folds, ceramic, rubber and steel. Suggest materials through flat color plus the normal map, not painted reflections.
 - **Engine light:** the engine's lamps, screens and each gun's muzzle flash light the parts with **smooth, realistic light**: each light has a smooth gradient texture and a height above the play plane (see "Light, in the engine"). This replaces C11's flat, hard-edged three-band light pools and crisp cel shadows.
 - **Proportions:** realistic adult proportions, about 7–7.5 heads tall, with grounded gear. Simplify small bolts, cables and folds so shapes stay chunky and readable at gameplay size; the normal map carries the fine detail.
-- **Motion:** Mixamo motion-capture clips, converted to the 2D rig. Tells, hits and openings must still read by pose and silhouette.
+- **Motion:** hand-keyed on the rig for the side view (C38). Motion capture was tried on the Night Guard and dropped: its 3D twist and foreshortening flatten into odd poses on side-on cutouts. Tells, hits and openings read by pose and silhouette.
 - **Deaths:** ragdolls. The rig parts become physics bodies pushed by the killing shot, and the body stays as a static corpse. Machines and bosses burst into debris parts instead.
 - **Guns and blood:** guns are separate sprites on a hand socket, each with its own muzzle-flash light. Blood is never painted into the parts (see "Mature content and blood").
 - **Neon trim (C36):** the look is light cyberpunk. Each enemy type wears thin neon trim in its own color (piping, bands, edge strips or an underglow), painted as a flat bright stripe in that exact color with no glow; the engine makes it glow. See "Meaning is reserved" for its limits.
@@ -152,7 +152,7 @@ The lit cutout pipeline (C35), in order:
 3. **Normal maps:** a matching normal map for every part (green = up), with the same size and layout as the part. The painted part stays flat, so the normal map does all the shaping. Guns and Dave's frames get normal maps too.
 4. **Atlas:** pack the parts and their normal maps into an atlas, with identical layouts for both.
 5. **Rig:** assemble the 2D rig with bone pivots and the gun socket, the place where the muzzle flash and shots start. Check both facings.
-6. **Mixamo poses:** drive the rig with Mixamo clips converted to the 2D rig: idle, walk or run, attack, hit and recovery, as the brief requires. Keep threats and weak-point openings readable through pose, movement and the reserved tell colors, and hand-key a tell pose where no clip fits.
+6. **Hand-keyed poses:** pose the rig for the side view (C38): idle, walk or run, attack, hit and recovery, as the brief requires. Keep threats and weak-point openings readable through pose, movement and the reserved tell colors.
 7. **Ragdoll and debris:** a death turns the parts into physics bodies pushed by the killing shot, and the body then stays as a static corpse. Machines and bosses burst into the debris parts their brief lists.
 8. **Contact checks:** compare weapon grips, feet on platforms, closed and open parts and collision poses in the engine, under night lighting.
 
@@ -198,6 +198,6 @@ Then ask for a single evenly lit, flat-color, side-view full-body painting on a 
 
 Keep each selected PNG with its selection record and current continuation prompt. Store only selected concept images in the repository. Do not label a new exploration as selected without a user decision.
 
-The zombie Resident art, the old daytime Sunnyvale scenes (C23) and the Clipper's concept art (C32) were deleted; the tracked files remain in git history only. No enemy painting is selected yet, and the lit Night Guard test (C35) comes first. The final enemy paintings and the real Mixamo clips are still to come. Sprite resolution, atlas layout, the rig tool, the clip retargeting method, frame budgets, whether scenery modules get normal maps, and the export pipeline remain future choices, to be settled by that test.
+The zombie Resident art, the old daytime Sunnyvale scenes (C23) and the Clipper's concept art (C32) were deleted; the tracked files remain in git history only. No enemy painting is selected yet, and the lit Night Guard test (C35) comes first. The final enemy paintings are still to come. Sprite resolution, atlas layout, the rig tool, the clip retargeting method, frame budgets, whether scenery modules get normal maps, and the export pipeline remain future choices, to be settled by that test.
 
 [AI entry guide](../AI_START_HERE.md) · [Art brief index](README.md) · [Level guide](../level-design/design-guide.md)

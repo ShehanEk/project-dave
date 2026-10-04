@@ -163,7 +163,7 @@ Arcadia's defense division makes the guns, so they look like sleek Arcadia-made 
 
 ### Built from shared templates (C26)
 
-Enemies must be easy to build, never boring, and designed around Godot's built-in capabilities. All 24 types are built from **five shared behavior templates**, Brawler, Charger, Gunner, Drone and Turret, and the four mini-bosses share one boss base. Variety comes from look, sound, numbers and attack shape, with at most one small twist per enemy, not from new systems. Enemy art is a lit cutout rig with Mixamo motion and ragdoll deaths (C35; confirmed direction, validated by the approved lit-cutout test (2026-09-30)).
+Enemies must be easy to build, never boring, and designed around Godot's built-in capabilities. All 24 types are built from **five shared behavior templates**, Brawler, Charger, Gunner, Drone and Turret, and the four mini-bosses share one boss base. Variety comes from look, sound, numbers and attack shape, with at most one small twist per enemy, not from new systems. Enemy art is a lit cutout rig with hand-keyed motion (C38) and ragdoll deaths (C35; confirmed direction, validated by the approved lit-cutout test (2026-09-30)).
 
 ## Weapons
 

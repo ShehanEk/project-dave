@@ -54,7 +54,7 @@ Arcadia Dynamics sells **Adam** to the world as the mind that will "fix the plan
 
 Each brief describes appearance, palette, proportions, abilities, movement, rig parts, normal maps and sockets, and consistency rules. It includes copy-ready image prompts for a neutral design, a directional sprite study and action studies, all starting from the [style guide's](art-design/style-guide.md) standard dark sci-fi prompt opening. Enemy-gun briefs describe each gun's futuristic look, muzzle-flash light and projectile, and weapon briefs also describe all three cumulative upgrade appearances.
 
-There is no current visual selection: the Clipper's selected design ended when the Clipper was removed (C32). Enemy art is a lit cutout rig (painted parts plus normal maps) with smooth realistic engine lighting, Mixamo motion and ragdoll deaths (C35): confirmed direction, validated by the approved lit-cutout test (2026-09-30), with one lit Night Guard being built to check the look. New concept art for Dave, the enemies, the mini-bosses and the night campus still needs to be generated and chosen.
+There is no current visual selection: the Clipper's selected design ended when the Clipper was removed (C32). Enemy art is a lit cutout rig (painted parts plus normal maps) with smooth realistic engine lighting, hand-keyed motion (C38) and ragdoll deaths (C35): confirmed direction, validated by the approved lit-cutout test (2026-09-30), with one lit Night Guard being built to check the look. New concept art for Dave, the enemies, the mini-bosses and the night campus still needs to be generated and chosen.
 
 ## Files
 

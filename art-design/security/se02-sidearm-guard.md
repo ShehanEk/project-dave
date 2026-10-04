@@ -79,7 +79,7 @@ Racking the slide is the opening: he is rooted, head down, both hands on the pis
 
 **Fluid:** human blood (Blood #B3212F, drying to #8A1A26), drawn by the engine: a spray at the hit point, wound marks attached to the hit part and floor pools. Blood anchors sit on the head, chest, belly, near upper arm and near thigh. No implant sparks.
 
-**Motion and death:** Mixamo clips converted to the rig: a pistol idle, a pistol walk, a short retreating run, a two-hand aim, and a hit flinch. Hand-key the slide rack and the ledge-aim arm angles where no clip fits. Death is a ragdoll pushed by the killing shot, and the pistol drops as a prop, never a pickup. The body then stays as a static corpse, restored after a death or Continue.
+**Motion and death:** hand-keyed on the rig for the side view (C38): a pistol idle, a pistol walk, a short retreating run, a two-hand aim, and a hit flinch, plus the slide rack and the ledge-aim arm angles. Death is a ragdoll pushed by the killing shot, and the pistol drops as a prop, never a pickup. The body then stays as a static corpse, restored after a death or Continue.
 
 Plan the blood, the tell glows, the muzzle flashes, the implant lights and every other effect as separate layers, never painted into the parts. These are the intended rig components, not a finished rig: the lit Night Guard test settles the tool, the pivots and the clip retargeting.
 
@@ -141,7 +141,7 @@ Using the attached approved Sidearm Guard reference, draw one clear full-body 2D
 - Split the approved painting into the rig parts above, with hidden overlap under every joint and the far limbs painted complete. Make a matching normal map for every part (green = up, same size and layout) and check the lit result under a moving lamp.
 - Check both facings in the lit test, so the mirrored parts still take light from the lamp's side. The holster, vest patch and earpiece cable must read correctly flipped.
 - Check the silhouette and the readability at gameplay size in the engine, in grayscale and against near-black backgrounds, next to the other people types: the Night Guard (cap and long baton), the Riot Officer (helmet and shield) and the Rifleman (helmet and carbine). The Sidearm Guard reads by the bare head, the vest collar and the extended two-hand pose. The tell must read by pose and glow with the night overlay on.
-- Convert the Mixamo clips (pistol idle, walk and retreating run, two-hand aim, hit flinch) to the rig and hand-key the tell pose where no clip fits. Check that the pistol sits at about 0.5 H in the fire pose, and that the ledge aim reaches both the down and the up angle without a gap at the shoulder.
+- Hand-key each move (pistol idle, walk and retreating run, two-hand aim, hit flinch) for the side view (C38). Check that the pistol sits at about 0.5 H in the fire pose, and that the ledge aim reaches both the down and the up angle without a gap at the shoulder.
 - Keep blood, tell glows, muzzle flashes, implant lights and effects as separate layers. A concept painting is not a finished rig, atlas or validated animation.
 
 See [shared style guide](../style-guide.md) and [asset index](../README.md).

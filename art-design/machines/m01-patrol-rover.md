@@ -81,7 +81,7 @@ The stall after a wall hit is the opening. The rear battery hatch pops open on i
 - **Normal maps:** one per part, green = up: a smooth dome curve, a padded bulge on the bumper, shallow panel grooves and bolt heads on the shell, tread relief on the tires.
 - **Sockets:** no gun socket. Light sockets at the dome lens (small, steady), the lightbar (large tell glow) and the battery (teal). Spark points at the bumper, hatch and dome; an oil drip point under the chassis.
 - **Fluid:** white sparks and black oil, never blood.
-- **Motion and death:** hand-keyed on the rigid parts (Mixamo clips are humanoid) *(proposed)*. On death the machine bursts into debris parts: the dome, lightbar, hatch lid, bumper, four wheels, battery block and the two shell halves become physics bodies pushed by the killing shot, then settle as a static wreck with a dark oil stain.
+- **Motion and death:** hand-keyed on the rigid parts, like every enemy (C38). On death the machine bursts into debris parts: the dome, lightbar, hatch lid, bumper, four wheels, battery block and the two shell halves become physics bodies pushed by the killing shot, then settle as a static wreck with a dark oil stain.
 
 Plan overlapping drawing layers and visible pivots for the rig. Keep blood, sparks, oil, glows, muzzle flashes, projectiles, attack trails, warning overlays, impacts and environmental props separate from the character. The cutout method is confirmed direction, validated by the approved lit-cutout test (2026-09-30) (C35); frame counts, timing and export remain later production choices.
 

@@ -68,7 +68,7 @@ The vented motor on the robot's back, reached when the Orderly stalls against a 
 - **Normal maps:** one per part, green = up: padded rails and mattress, the soft folds of the bag, strap webbing, wheel tread, shallow panel seams and vent slats on the shell.
 - **Sockets:** no gun socket. Light sockets at the eye lenses (small, steady), the beacon (large tell glow), the motor vents (teal) and the reverse lamp. Spark points at the motor and joints; an oil drip point under the robot.
 - **Fluid:** white sparks and black oil, never blood.
-- **Motion and death:** hand-keyed on the rigid parts (Mixamo clips are humanoid) *(proposed)*. On death it bursts into debris parts: the robot's head, torso and limbs, the motor, the scoop lip and the wheels become physics bodies pushed by the killing shot, and the sealed bag slides off the deck and stays closed. The stretcher and robot settle as a static wreck with a dark oil stain.
+- **Motion and death:** hand-keyed on the rigid parts, like every enemy (C38). On death it bursts into debris parts: the robot's head, torso and limbs, the motor, the scoop lip and the wheels become physics bodies pushed by the killing shot, and the sealed bag slides off the deck and stays closed. The stretcher and robot settle as a static wreck with a dark oil stain.
 
 Plan overlapping drawing layers and visible pivots for the rig. Keep blood, sparks, oil, glows, muzzle flashes, projectiles, attack trails, warning overlays, impacts and environmental props separate from the character. The cutout method is confirmed direction, validated by the approved lit-cutout test (2026-09-30) (C35); frame counts, timing and export remain later production choices.
 
