@@ -14,6 +14,12 @@ const BOX := Color("#1C2A3A")
 const RIM := Color(0.36, 0.45, 0.56, 0.55)
 const LEVER_OFF := Color("#FFB02E")
 const LEVER_ON := Color("#3FE0D0")
+## The painted pixel-art look (objects sheet): the lever up while off, down
+## once pulled, drawn through ObjectSkins; the code-drawn post and lever below
+## stay as the fallback. The matching symbol floats above either.
+const ObjectSkins := preload("res://scripts/world/object_skins.gd")
+const UP_PIECE := "lever_up"
+const DOWN_PIECE := "lever_down"
 
 @export var switch_id: String = "L01-SW01"
 
@@ -21,6 +27,19 @@ const LEVER_ON := Color("#3FE0D0")
 func _init() -> void:
 	super()
 	prompt = "Pull lever"
+
+
+func _ready() -> void:
+	if painted_piece() != "":
+		ObjectSkins.make_crisp(self)
+
+
+## The ObjectSkins piece this lever draws now (up or down), or "" for the
+## code-drawn look.
+func painted_piece() -> String:
+	if not ObjectSkins.has_pieces([UP_PIECE, DOWN_PIECE]):
+		return ""
+	return DOWN_PIECE if _is_on() else UP_PIECE
 
 
 func interact(hero: Node) -> void:
@@ -44,6 +63,11 @@ func _is_on() -> bool:
 
 func _draw() -> void:
 	var on := _is_on()
+	var painted := painted_piece()
+	if painted != "":
+		ObjectSkins.draw(self, painted)
+		SceneryDraw.draw_switch_symbol(self, Vector2(0.0, -84.0), on)
+		return
 	var lever_col: Color = LEVER_ON if on else LEVER_OFF
 	draw_rect(Rect2(Vector2(-9.0, -5.0), Vector2(18.0, 5.0)), BOX)
 	draw_rect(Rect2(Vector2(-9.0, -5.0), Vector2(18.0, 5.0)), OUTLINE, false, 1.5)

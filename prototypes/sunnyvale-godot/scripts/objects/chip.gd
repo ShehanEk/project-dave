@@ -19,6 +19,13 @@ const CLUSTER_VALUE := 5
 ## this plain preload + its static `spawn()`.
 const KenneyPuff := preload("res://scripts/effects/kenney/kenney_puff.gd")
 
+## The painted pixel-art look (objects2 sheet), drawn through PickupSkins; the
+## code-drawn chip below stays as the fallback. The glint grows to the painted
+## chip's size (30 world px; the five-chip cluster is 66).
+const PickupSkins := preload("res://scripts/world/pickup_skins.gd")
+const PAINTED_GLINT := 18.0
+const PAINTED_GLINT_CLUSTER := 36.0
+
 @export var entity_id: String = ""
 @export var value: int = 1
 
@@ -35,7 +42,15 @@ func _ready() -> void:
 		queue_free()
 		return
 	body_entered.connect(_on_body_entered)
+	if painted_piece() != "":
+		PickupSkins.make_crisp(self)
 	queue_redraw()
+
+
+## The PickupSkins piece this chip draws, or "" for the code-drawn look.
+func painted_piece() -> String:
+	var piece := "chip_cluster" if _is_cluster() else "chip"
+	return piece if PickupSkins.has_piece(piece) else ""
 
 
 func _on_body_entered(body: Node) -> void:
@@ -52,6 +67,11 @@ func _is_cluster() -> bool:
 
 
 func _draw() -> void:
+	var piece := painted_piece()
+	if piece != "":
+		draw_circle(Vector2.ZERO, PAINTED_GLINT_CLUSTER if _is_cluster() else PAINTED_GLINT, GLINT)
+		PickupSkins.draw_centred(self, piece)
+		return
 	draw_circle(Vector2.ZERO, 22.0 if _is_cluster() else 16.0, GLINT)
 	if _is_cluster():
 		_draw_chip(Vector2(-8.0, 3.0), 10.0)

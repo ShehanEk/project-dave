@@ -9,6 +9,12 @@ const OUTLINE := Color("#07090F")
 const SHELL := Color("#D8E2EC")
 const CROSS := Color("#3FE0D0")
 const GLOW := Color(0.25, 0.88, 0.82, 0.18)
+## The painted pixel-art look (objects2 sheet), drawn through PickupSkins; the
+## code-drawn patch below stays as the fallback. The glow grows to the painted
+## patch's size (36 world px).
+const PickupSkins := preload("res://scripts/world/pickup_skins.gd")
+const PIECE := "med_patch"
+const PAINTED_GLOW := 27.0
 
 @export var entity_id: String = ""
 @export var heal: int = 2
@@ -26,7 +32,14 @@ func _ready() -> void:
 		queue_free()
 		return
 	body_entered.connect(_on_body_entered)
+	if painted_piece() != "":
+		PickupSkins.make_crisp(self)
 	queue_redraw()
+
+
+## The PickupSkins piece this patch draws, or "" for the code-drawn look.
+func painted_piece() -> String:
+	return PIECE if PickupSkins.has_piece(PIECE) else ""
 
 
 func _on_body_entered(body: Node) -> void:
@@ -42,6 +55,10 @@ func _on_body_entered(body: Node) -> void:
 ## A med-patch (revamp name for the care capsule): a pale adhesive patch
 ## with a teal plus. Deliberately not red — red is reserved for danger.
 func _draw() -> void:
+	if painted_piece() != "":
+		draw_circle(Vector2.ZERO, PAINTED_GLOW, GLOW)
+		PickupSkins.draw_centred(self, PIECE)
+		return
 	draw_circle(Vector2.ZERO, 22.0, GLOW)
 	var patch := Rect2(Vector2(-15.0, -12.0), Vector2(30.0, 24.0))
 	draw_rect(patch, SHELL)

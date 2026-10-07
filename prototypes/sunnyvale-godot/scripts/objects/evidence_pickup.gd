@@ -11,6 +11,12 @@ const SLEEVE := Color(0.62, 0.78, 0.86, 0.35)
 const BAND := Color("#07090F")
 const TEXT_LINE := Color("#2E3B4E")
 const GLOW := Color(0.25, 0.88, 0.82, 0.16)
+## The painted pixel-art look (objects2 sheet), drawn through PickupSkins; the
+## code-drawn memo below stays as the fallback. The glow grows to the painted
+## folder's size (39 x 51 world px).
+const PickupSkins := preload("res://scripts/world/pickup_skins.gd")
+const PIECE := "evidence_folder"
+const PAINTED_GLOW := 34.0
 
 @export var evidence_id: String = "EF01"
 @export var toast_text: String = "Evidence file: Lockout Notice"
@@ -23,7 +29,14 @@ var _collected: bool = false
 func _ready() -> void:
 	if Session and Session.has_evidence(evidence_id):
 		_collected = true
+	if painted_piece() != "":
+		PickupSkins.make_crisp(self)
 	queue_redraw()
+
+
+## The PickupSkins piece this file draws, or "" for the code-drawn look.
+func painted_piece() -> String:
+	return PIECE if PickupSkins.has_piece(PIECE) else ""
 
 
 func can_interact(_hero: Node) -> bool:
@@ -50,6 +63,10 @@ func interact(hero: Node) -> void:
 ## Reads as a document, not another pickup, at gameplay size and in grayscale.
 func _draw() -> void:
 	if _collected:
+		return
+	if painted_piece() != "":
+		draw_circle(Vector2.ZERO, PAINTED_GLOW, GLOW)
+		PickupSkins.draw_centred(self, PIECE)
 		return
 	draw_circle(Vector2.ZERO, 22.0, GLOW)
 	var page := Rect2(Vector2(-11.0, -15.0), Vector2(22.0, 30.0))

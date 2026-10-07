@@ -50,6 +50,18 @@ const ALARM_RED := Color("#FF3B4E")
 const AMBER := Color("#FFB02E")
 const SCREEN_OFF := Color("#0E1726")
 const DRIVE := Color("#FFD166")
+## The painted pixel-art look (objects sheet): the calm teal core and the
+## alarm amber one, drawn through ObjectSkins; the code-drawn cabinet below
+## stays as the fallback. Points are art px from the piece's top-left corner.
+const ObjectSkins := preload("res://scripts/world/object_skins.gd")
+const CALM_PIECE := "core_calm"
+const ALARM_PIECE := "core_alarm"
+const DIM_PAINT := Color(0.5, 0.55, 0.66)
+## The maintenance port (where Dave's drive plugs in) and the copy bar's
+## frame (above it, on the housing under the glass column), per piece.
+const PORT_ART := {"core_calm": Vector2(34.0, 74.5), "core_alarm": Vector2(35.0, 76.5)}
+const BAR_ART := {"core_calm": Vector2(24.0, 61.0), "core_alarm": Vector2(25.0, 63.0)}
+const BAR_SIZE := Vector2(30.0, 5.0)
 
 ## Total watch-through: 3.5 (copy) + 2.0 (lights dim) + 4.0/2.0/3.5 (the
 ## three subtitle lines) + 4.0 (lockdown, held so it reads before control
@@ -85,6 +97,8 @@ func _init() -> void:
 
 
 func _ready() -> void:
+	if painted_piece() != "":
+		ObjectSkins.make_crisp(self)
 	if Session and Session.get_story("awakening_done"):
 		_phase = "awake"
 		_copy = COPY_STALL
@@ -92,6 +106,14 @@ func _ready() -> void:
 	_reduced_motion = settings != null and settings.get_reduced_motion()
 	set_process(not _reduced_motion)
 	queue_redraw()
+
+
+## The ObjectSkins piece this core draws now (the alarm one once the
+## lockdown is on, `_phase == "awake"`), or "" for the code-drawn look.
+func painted_piece() -> String:
+	if not ObjectSkins.has_pieces([CALM_PIECE, ALARM_PIECE]):
+		return ""
+	return ALARM_PIECE if _phase == "awake" else CALM_PIECE
 
 
 func _process(delta: float) -> void:
@@ -246,7 +268,37 @@ func _get_subtitles() -> Node:
 	return tree.get_first_node_in_group("subtitle_panel") if tree else null
 
 
+func _draw_painted(piece: String) -> void:
+	# The painted core shimmers like the code-drawn one (still under reduced
+	# motion), dims while the lights drop, and turns alarm amber with the
+	# lockdown; the copy bar and Dave's drive are drawn on its housing.
+	var lockdown := piece == ALARM_PIECE
+	var dim := _phase == "dimmed" or _phase == "answered"
+	var k := 1.0
+	if not _reduced_motion and not dim:
+		k = 0.88 + 0.12 * sin(_t * 2.2)
+	var tint := Color(k, k, k)
+	if dim:
+		tint = DIM_PAINT
+	ObjectSkins.draw(self, piece, tint)
+	if _phase == "idle":
+		return
+	var bar := Rect2(ObjectSkins.at(piece, BAR_ART[piece]), BAR_SIZE)
+	var bar_color := AMBER if (dim or lockdown) else CORE_TEAL
+	draw_rect(bar.grow(2.0), OUTLINE)
+	draw_rect(Rect2(bar.position, Vector2(bar.size.x * _copy, bar.size.y)), bar_color)
+	draw_rect(bar, Color(bar_color, 0.5), false, 1.0)
+	var port := ObjectSkins.at(piece, PORT_ART[piece])
+	var drive := Rect2(port + Vector2(-4.0, -14.0), Vector2(8.0, 16.0))
+	draw_rect(drive, DRIVE)
+	draw_rect(drive, OUTLINE, false, 1.0)
+
+
 func _draw() -> void:
+	var painted := painted_piece()
+	if painted != "":
+		_draw_painted(painted)
+		return
 	# A tall server cabinet behind glass: dark steel frame, teal light moving
 	# through the racks (Adam at rest), a maintenance port with Dave's drive,
 	# and a small status screen with the copy bar. Lockdown swaps the teal

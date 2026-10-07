@@ -24,6 +24,13 @@ const RIM := Color(0.36, 0.45, 0.56, 0.55)
 ## own doc comment) — reached through this plain preload + its static
 ## `spawn()`.
 const KenneyPuff := preload("res://scripts/effects/kenney/kenney_puff.gd")
+## The painted pixel-art look (objects sheet): lamp off / lamp on, drawn
+## through ObjectSkins; the code-drawn look below stays as the fallback.
+const ObjectSkins := preload("res://scripts/world/object_skins.gd")
+## The painted lamp's centre, art px from the piece's top-left corner.
+const LAMP_ART := Vector2(24.0, 7.5)
+## Where the code-drawn lamp sits (the checkpoint sparkle and glow).
+const LAMP_CODE := Vector2(0.0, -72.0)
 
 @export var checkpoint_id: String = "CP01"
 
@@ -33,6 +40,42 @@ const KenneyPuff := preload("res://scripts/effects/kenney/kenney_puff.gd")
 func _init() -> void:
 	super()
 	prompt = "Save"
+
+
+func _ready() -> void:
+	if painted_piece() != "":
+		ObjectSkins.make_crisp(self)
+	if Session:
+		Session.checkpoint_committed.connect(_on_checkpoint_committed)
+
+
+func _exit_tree() -> void:
+	if Session and Session.checkpoint_committed.is_connected(_on_checkpoint_committed):
+		Session.checkpoint_committed.disconnect(_on_checkpoint_committed)
+
+
+## The lamp turns on or off as the active checkpoint changes.
+func _on_checkpoint_committed(_id: String) -> void:
+	queue_redraw()
+
+
+## True while this is the active checkpoint (its lamp is lit).
+func is_lit() -> bool:
+	return Session != null and Session.state.get("checkpoint_id", "") == checkpoint_id
+
+
+## The ObjectSkins piece this station draws now (lamp lit or not), or "" for
+## the code-drawn look.
+func painted_piece() -> String:
+	if not ObjectSkins.has_pieces(["recovery_station_off", "recovery_station_on"]):
+		return ""
+	return "recovery_station_on" if is_lit() else "recovery_station_off"
+
+
+## Where the lamp is, relative to the station's foot.
+func lamp_position() -> Vector2:
+	var piece := painted_piece()
+	return ObjectSkins.at(piece, LAMP_ART) if piece != "" else LAMP_CODE
 
 
 func get_prompt() -> String:
@@ -50,7 +93,8 @@ func interact(hero: Node) -> void:
 				"Save failed — progress since the last checkpoint is kept in memory only")
 	if ok:
 		var host := get_tree().current_scene if get_tree().current_scene else get_tree().root
-		KenneyPuff.spawn(&"checkpoint_sparkle", global_position + Vector2(0.0, -72.0), host)
+		KenneyPuff.spawn(&"checkpoint_sparkle", to_global(lamp_position()), host)
+	queue_redraw()
 
 
 ## A safe maintenance station: a squat steel cabinet with a status screen
@@ -58,7 +102,16 @@ func interact(hero: Node) -> void:
 ## readable as "lit = this is the active checkpoint" through both a
 ## brighter fill AND drawn rays (never color alone).
 func _draw() -> void:
-	var lit: bool = Session != null and Session.state.get("checkpoint_id", "") == checkpoint_id
+	var lit := is_lit()
+	var piece := painted_piece()
+	if piece != "":
+		ObjectSkins.draw(self, piece)
+		if lit:
+			# The glow stays smooth over the crisp pixels.
+			var lamp := lamp_position()
+			draw_circle(lamp, 28.0, Color(LAMP_ON, 0.1))
+			draw_circle(lamp, 20.0, Color(LAMP_ON, 0.12))
+		return
 	var cabinet := Rect2(Vector2(-16.0, -40.0), Vector2(32.0, 40.0))
 	if lit:
 		draw_circle(Vector2(0.0, -72.0), 28.0, Color(LAMP_ON, 0.1))

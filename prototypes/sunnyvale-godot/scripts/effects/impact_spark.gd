@@ -14,10 +14,18 @@ extends Node2D
 ##
 ## Respects Settings.reduced_motion: the same shapes and colors, smaller,
 ## fewer and shorter, never a missing or recolored cue.
+##
+## Pixel art (Sheet 9): when the bullet-impact strip exists, the burst is that
+## animation (scripts/effects/pixel_fx.gd) tinted with `color`, in place of the
+## drawn disc, ring, sparks and chips, and the two shapes stay apart by
+## geometry: HIT is the whole radial burst, BLOCKED only the half of it that
+## glances back toward the shooter. The sparks and chips below are still
+## worked out (the fallback and what the tests read) but not simulated or drawn.
 
 enum Shape { HIT, BLOCKED }
 
 const Lights := preload("res://scripts/actors/lit/lights.gd")
+const PixelFx := preload("res://scripts/effects/pixel_fx.gd")
 const OUTLINE := Color("#0B0D10")
 const CHIP := Color("#3A3F45")
 const SPARK_TIME := 0.22
@@ -35,6 +43,7 @@ var _scale: float = 1.0
 var _sparks: Array = []   # [pos, vel]
 var _chips: Array = []    # [pos, vel, angle, spin, size]
 var _light: PointLight2D
+var _pixel: Sprite2D   # the pixel-art burst, when its strip exists
 
 
 func _ready() -> void:
@@ -65,10 +74,21 @@ func _ready() -> void:
 	_light.height = 14.0
 	_light.blend_mode = Light2D.BLEND_MODE_ADD
 	add_child(_light)
+	var half := Vector2i.ZERO
+	if shape == Shape.BLOCKED:
+		half = Vector2i(int(signf(back.x)), 0) if absf(back.x) >= absf(back.y) else Vector2i(0, int(signf(back.y)))
+	_pixel = PixelFx.spawn("bullet_impact", global_position, self, {"tint": color, "half": half})
+	if _pixel != null:
+		life = _pixel.total_time() + 0.03
 
 
 func _process(delta: float) -> void:
 	_t += delta
+	if _pixel != null:
+		_light.energy = maxf(0.0, _light.energy - delta * 10.0)
+		if _t >= life:
+			queue_free()
+		return
 	for s in _sparks:
 		s[1].y += GRAVITY * delta
 		s[0] += s[1] * delta
@@ -83,6 +103,8 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
+	if _pixel != null:
+		return
 	var k: float = clampf(_t / SPARK_TIME, 0.0, 1.0)
 	if shape == Shape.HIT:
 		# The white-hot flash: a filled disc that shrinks away fast.
