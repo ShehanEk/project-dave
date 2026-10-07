@@ -225,7 +225,7 @@ value (health outside 1..MAX_HEALTH, wallet outside 0..MAX_WALLET=65, an
 upgrade stage above `MAX_WEAPON_STAGE`=1), a non-whitelisted id string (this
 is what stops a scene path or stray node-ref-shaped string from a tampered
 file — evidence ids must match `EF##`, keycard ids `L01-KC##`, checkpoint ids
-`CP00`-`CP05` or `UPG01`, and every other id `L01` followed by uppercase/digit
+`CP00`-`CP07` or `UPG01`, and every other id `L01` followed by uppercase/digit
 segments), a top-level field outside `ALLOWED_TOP_KEYS`, or
 `equipped_weapon`/`world_weapons` not accounting for EXACTLY the two known
 weapon instances (`WEAPON_INSTANCES`), each exactly once, on a known pad
@@ -510,30 +510,130 @@ burnt orange so the hero reads against the cool darks.
   scanlines, and, once `awakening_done`, a slow alarm-red pulse at the screen
   edges (well under one cycle a second, never a flash). Reduced motion drops
   the grain and scanlines and holds the pulse steady.
+- **Painted backdrop layers (C39, Sheet 5):** `scripts/world/visuals/area_backdrop.gd`
+  (one per area and mode, attached to a `Parallax2D`) draws the user's
+  pixel-art strips, reduced by `tools/art/import_pixel_layer.py` to
+  `assets/environment/sunnyvale/{far,campus,depot}.png` and drawn with nearest
+  filtering at `FAR_ART_PX` (1.5 world px per art pixel), each layer clipped to
+  its own area span; the code-drawn look stays as the fallback when a PNG is
+  missing. The depot (`mode = DEPOT`, A05) draws `depot.png` (615 x 205 art px,
+  about 308 world px tall, 2.9 repeats across the 2700 px area) as a static
+  back wall: its bottom stands on the floor line, its top tucks behind the
+  ceiling block, it is sampled by global x on the shared art-pixel grid, and a
+  child canvas `Wall` (`show_behind_parent`) carries the nearest filter and
+  repeat so the haze shafts and fixture lights stay smooth. It replaces the
+  code-drawn back wall, racks, cables, floor strip and blinking rack LEDs
+  (`_racks`/`_cables` stay empty, no animated canvas, `clear_zones` is only for
+  the fallback); the ceiling fixtures (state-driven lit/dark/red banks), their
+  haze, the real `PointLight2D`s and the building-end jambs are kept. Tint: a
+  mild cool multiply (`DEPOT_TINT`), and a red-leaning one in lockdown
+  (`DEPOT_LOCKDOWN_TINT`, faded in over the banks' stagger on the live SC01
+  moment) on top of `EnvironmentState`'s `modulate`.
+- **Foreground** (`scripts/world/visuals/foreground_layer.gd`, a plain
+  `Node2D` named `Foreground` in A01, A02, A03, A04 and A06, NOT the depot; no
+  `class_name`; `tile_width` = the area's width): a sparse row of near-black
+  silhouettes (`assets/environment/sunnyvale/foreground/`, 14 pieces cut by
+  `import_pixel_sheet.py foreground`: five hedges, two railings, two benches,
+  two bollards, three grass tufts, with a faint cool rim on their tops) along
+  the BOTTOM EDGE OF THE SCREEN, in front of the play plane. The sheet is a
+  bag of pieces, not a strip, so the script composes the row itself
+  (`layout()`, static, seeded by the area id): wide irregular gaps (about 75%
+  empty), never the same piece or kind twice in a row, a mirrored piece now
+  and then, a margin at each end. It draws on its own generated `CanvasLayer`
+  (`LAYER` 3: above the world, below the night overlay at 5 and the HUD at 15),
+  so it is screen-anchored (never over Dave's feet: he is at least 75 world px
+  above the bottom edge everywhere), never lit by the world's lamps and
+  untouched by the lockdown wash (it just stays dark). Pieces are drawn
+  nearest-filtered, `ART_WORLD` 2.5 world px per art pixel = exactly 3 screen
+  px at zoom 1.2 (`pixel_scale()` rounds to whole screen px for any zoom), at
+  whole-pixel screen positions, so no art pixel ever changes width. It slides
+  at `PARALLAX` 1.5 times the camera's motion, read from the viewport's canvas
+  transform at draw time (like the campus layer; `Parallax2D.scroll_scale`
+  cannot be used, see `area_backdrop.gd`): a piece's position `u` is in
+  "foreground space", and each area owns `PARALLAX` x its global x span, so
+  rows of neighbouring areas meet without a gap or an overlap and the depot
+  has none. `_process` only reads the camera while the view is off the area
+  (the canvas is hidden then); a missing PNG leaves its piece out, and with
+  none the layer draws and processes nothing.
+  `tests/cases/test_pixel_foreground.gd` checks all of this.
 - **Readability rules:** a light near every landing; platform tops lit or
   rim-lit; every character keeps a readable silhouette against the dark;
   darkness and blood never hide a tell, a ledge or a pickup.
 - **Motion and flashes:** honor `Settings.reduced_motion`; alarms and strobes
   stay slow (at most 3 flashes per second) and never flash the whole screen.
+- **Pixel-art effects (Sheet 9):** the muzzle flash, impact sparks, landing
+  dust, Patrol Rover wreck, checkpoint sparkle and chip glint are the user's
+  animation strips (`assets/effects/pixel/`, cut by
+  `tools/art/import_pixel_effects.py`), played once by `scripts/effects/pixel_fx.gd`
+  (no `class_name`; preload it by path): `PixelFx.spawn(effect, at, host, opts)`
+  adds a one-shot `Sprite2D` (nearest filter, additive for flashes, sparks and
+  glints, plain alpha for dust and smoke, `px` world px per art pixel and z per
+  effect in its `FX` table) that frees itself after the last frame, and returns
+  null when the strip is missing (`has_fx()` false), so the old smooth effect
+  stays the fallback. `KenneyPuff.spawn()` stays the single door for puffs: a
+  kind with a `PIXEL` entry plays its strips inside the same one puff node
+  (counts, `effect_kind`, caps and lifetimes unchanged; the particles stay
+  silent); `ImpactSpark` and `Scrapjack` call PixelFx directly (the muzzle flash
+  is a child of the muzzle, so it turns and flips with the aim; an impact keeps
+  HIT whole and BLOCKED as the back half, so the shapes still differ without
+  colour). Reduced Motion plays a smaller frame set per effect and dims the
+  additive ones, never hides the cue.
 - **No stealth (C16):** lens and Link lights are readability cues, not
   detection states; there are no vision cones, alert icons or hiding.
 
 ## Lit cutouts (C35, the C33 rebuild)
 
-Every enemy is a lit cutout rig, and Dave's frames are lit the same way. A rig
+Every enemy is a lit cutout rig, and so is Dave (since 2026-10-07). A rig
 is presentation only: no collision and no gameplay state live in it.
 
-- **Rigs:** `assets/characters/lit/<night_guard|staffer|patrol_rover>/` holds
+- **Rigs:** `assets/characters/lit/<night_guard|staffer|patrol_rover|scrapjack|dave>/` holds
   `albedo.png`, `normal.png`, `spec.png` and `rig.json`. The Night Guard has 16
-  parts, the Staffer 15 and the Patrol Rover 10 (a machine rig: chassis, dome,
-  lightbar, bumper, hatch, battery and four wheels). `tools/art/README.md`
-  documents the format. The art is procedural placeholder art.
+  parts, the Staffer 17 (the guard's 15 body joints minus the baton, plus the
+  Link port on the head and the ID lanyard on the torso), Dave 17 (the same 15
+  plus the hood and the badge lanyard on the torso) and the Patrol Rover 10
+  (a machine rig: chassis, dome, lightbar, bumper, hatch, battery and four
+  wheels). `tools/art/README.md` documents the format. The Night Guard, the
+  Staffer, the Patrol Rover and the Scrapjack are imported from generated parts
+  sheets (`tools/art/import_parts_sheet.py`), and Dave since 2026-10-07; `paint_staffer.py` still rebuilds
+  the old smooth procedural Staffer into the same folder.
+- **Pixel-art rigs (2026-10-06):** a rig whose `rig.json` has `"pixel_art":
+  true` (and `pixel_world` 1.5, one art pixel in world px) is a character
+  painted as pixel art to match the pixel backgrounds: the Night Guard first,
+  then the Staffer (65 art px, 97 world px; its neon trim is electric blue
+  #4D8DFF; `tests/cases/test_pixel_staffer.gd`), then the Patrol Rover (a machine:
+  62 art px = 93 world px long, the smooth rover's 92; neon magenta #FF3DD5, amber
+  #C98A2B, teal #3FE0D0; `tests/cases/test_pixel_rover.gd`; the old smooth art
+  rebuilds with `import_parts_sheet.py patrol_rover_smooth`), then the Scrapjack
+  (Dave's gun, a prop rig of four parts: frame, upper, barrel, battery; 24 art px =
+  36 world px long, the smooth gun's 26 plus 38% because the sheet is far too fine
+  to read at 26; its origin is the grip where the fist is, `GRIP_LOCAL` in
+  `scrapjack.gd`, and its muzzle socket is 30 world px from it; copper #D9884A
+  coils glow per shot, teal #3FE0D0 charge light; `tests/cases/test_pixel_scrapjack.gd`;
+  the smooth gun rebuilds with `import_parts_sheet.py scrapjack_smooth`), then Dave
+  (the hero, `assets/characters/lit/dave/`, 64 art px = 96 world px; no neon and
+  nothing emissive; `tests/cases/test_pixel_dave.gd`; see **Dave** below). `cutout_rig.gd` draws such a rig with nearest
+  filtering (the normal and spec maps stay filtered, so lamps light smoothly),
+  poses every joint in rotation steps of about one art pixel at its tip (1.5 to
+  5 degrees), and rounds the pelvis offset to whole art pixels (its soles are
+  within half an art pixel of the floor; a test that checks "feet on the floor"
+  allows `0.5 * pixel_world`); the rig's world position is not snapped. A
+  smooth rig is untouched. An enemy's tuning `tell_offset` must be the rig's
+  `tell` socket (the Staffer, with no baton: its `grip_near` socket; its two
+  hand glows sit at `grip_near` / `grip_far`; the Rover has no `tell_offset`: its
+  tell light is built on the lightbar's `tell` socket). A pixel rig's root sits
+  on whole art pixels, so the Rover's patrol bounce and windup shake are one art
+  pixel (`patrol_rover.gd`), and its wheels are round at every angle (a
+  symmetrised 14 x 14 art) so they spin without wobbling. The Scrapjack is not
+  posed: its turn is the aim pivot's own (continuous, nearest-sampled, never
+  stepped), and `scrapjack.gd` moves the arm's kick and the housing and barrel's
+  slide in whole art pixels when the rig is `pixel_art`. Recipe: `tools/art/README.md`,
+  "Pixel rigs" and "Pixel props"; test: `tests/cases/test_pixel_chars.gd`.
 - **Shader:** `assets/shaders/lit_part.gdshader` (normal-mapped, with specular
   and emissive maps), shared by every part.
 - **Code:** `scripts/actors/lit/`: `cutout_rig.gd` (builds a rig from its
   `rig.json`), `rig_animator.gd` (plays clips; a converted Mixamo clip of the
-  same name replaces a hand-keyed one), `clips_night_guard.gd` and
-  `clips_staffer.gd` (the hand-keyed clips), `ragdoll.gd` and `ragdoll_part.gd`
+  same name replaces a hand-keyed one), `clips_night_guard.gd`,
+  `clips_staffer.gd` and `clips_dave.gd` (the hand-keyed clips), `ragdoll.gd` and `ragdoll_part.gd`
   (a death turns the parts into physics bodies) and `lights.gd` (small smooth
   light textures for tells). Blood is `scripts/effects/blood.gd` with
   `assets/effects/blood/` (wound marks, a floor pool, a spray drop, and an oil
@@ -542,9 +642,25 @@ is presentation only: no collision and no gameplay state live in it.
   until the area is rebuilt, settles into a corpse and leaves a blood pool. A
   `PatrolRover` bursts into loose debris that settles in an oil pool, never
   blood.
-- **Dave:** each Rook frame has a normal map in
-  `assets/characters/rook/normals/` (made by `tools/art/make_normal_maps.py`),
-  used in `scripts/actors/visuals/hero_visual.gd`.
+- **Dave:** a pixel-art human rig (`import_parts_sheet.py dave`: 17 joints, the
+  guard's 15 minus the baton plus `hood` and `lanyard` on the torso, the revoked
+  badge hanging from the lanyard), drawn and posed by
+  `scripts/actors/visuals/hero_rig_visual.gd` (the Visual in `hero.tscn`; it
+  extends `hero_visual.gd` and keeps its API: `update_pose()`,
+  `shoulder_offset()`, `aim_pivot`, `facing`) with the clips in
+  `clips_dave.gd` (idle, run sampled by the stride phase, jump_rise,
+  jump_fall, land, hurt, interact, defeated: a keyed drop to one knee, not a
+  ragdoll; a respawn stands him straight back up). The Scrapjack stays on
+  `AimPivot` at scale 1 (grip 35.5 px from the shoulder, muzzle on the aim
+  line); every physics tick, after `hero.gd` has turned `AimPivot`
+  (`process_physics_priority` 100), the near arm is solved as a two-bone
+  chain in the rig's rotation steps so the fist holds the gun's grip (within
+  an art pixel) at any aim, either facing. The gun is drawn between the near
+  upper arm (z 7) and the near forearm and fist (z 10). The wrist light rides
+  on the forearm's cuff. When `assets/characters/lit/dave/rig.json` is
+  missing, the Visual falls back to the Rook frames (each with a normal map in
+  `assets/characters/rook/normals/`, made by `tools/art/make_normal_maps.py`;
+  `hero_visual.gd`), with the gun in that arm's fist.
 - **Moonlight:** `scenes/world/night_lighting.tscn` (one faint, cool
   `DirectionalLight2D`, `scripts/world/night_lighting.gd`) is instanced by
   `LevelDirector` beside the night overlay. It is meant as a rim on characters
@@ -564,8 +680,9 @@ is presentation only: no collision and no gameplay state live in it.
   Children: `Hurtbox` (Area2D, layer 4, owner = hero), `InteractSensor`
   (Area2D, mask 6), and, since the night pass, a small `WristLight`
   (`PointLight2D`) under `AimPivot`. Hero never contains story logic. The hero is Dave
-  Harlan; his art is the placeholder Rook sprite pack
-  (`scripts/actors/visuals/hero_visual.gd`, `rook_frames.gd`).
+  Harlan; his art is the pixel-art rig drawn by `Visual`
+  (`scripts/actors/visuals/hero_rig_visual.gd`, since 2026-10-07; the placeholder Rook
+  sprite pack, `hero_visual.gd` and `rook_frames.gd`, is its fallback).
 - **HitZone** (`scripts/combat/hit_zone.gd`): Area2D on layer 5.
   `take_hit(damage, hit_position, direction) -> &"hit" | &"blocked"`. Owner
   listens to its `hit` signal. `blocks = true` gives blocked feedback.
@@ -588,6 +705,38 @@ is presentation only: no collision and no gameplay state live in it.
   charge stalls against a block; only `Kind.BACKSTOP` actually draws the
   crack overlay, so setting it on any other kind is a harmless no-op — never
   touches collision/size/position.
+  Pixel-art terrain (C39): where its painted piece exists, a block draws it
+  through `scripts/world/terrain_skins.gd` (GROUND/PORCH walkway, PLATFORM
+  planter ledge, ROOF green-roof slab, BACKSTOP stone planter or, in A03, the
+  rooftop AC unit, WALL garden wall); the piece's lit edge sits on the
+  block's top, end caps stay, the middle repeats in phase with global x, and
+  same-skinned blocks that meet skip their caps (group `"terrain_block"`).
+  The walkway is the wet-paving strip (`assets/environment/sunnyvale/paving/`,
+  `import_pixel_sheet.py paving`): its whole width is the repeat, between
+  1-pixel outline caps that only a lone block's ends show, and a brick wall
+  strip of the same sheet is the dimmed face under it (and under tall planter
+  beds), `FACE_DEPTH` (one wall period) deep, then the `DEEP` shadow. The
+  code-drawn look stays as the fallback and for the depot (A05).
+- **Decal** (`scripts/world/decal.gd`, a plain `Node2D`, no `class_name`;
+  scenes reference it by script path): a painted ground detail from the
+  details sheet (Sheet 8: `assets/environment/sunnyvale/details/`,
+  `import_pixel_sheet.py details`; `piece` is one of `puddle_a/b/c`,
+  `crack_a/b`, `grate`, `leaves`, `cable`, `vent`, `hose`, `box`; `flip`
+  mirrors it, `tint` multiplies it). Bottom-centre on its origin, drawn
+  nearest-filtered at 1.5 world px per art pixel; `has_piece()` is false
+  (and it draws nothing) when the PNG is missing. Every area scene has a
+  `Decals` node right after `Geometry` (so the decals draw over the walkway
+  blocks, all at z 0, and under `Entities`, `Encounters` and Dave; `Scenery`
+  is behind at z -10) with 8 to 14 static decals: purely visual, no collision,
+  no group. Flat pieces (puddles, cracks, grate, leaves, cable, vent) sit in
+  the walkway's paving face, their origin 0 to 27 px under the block's top
+  (30 on the depot's steel plate), so the lit walkable edge stays clear;
+  the box and hose stand on the top. Keep every decal 70 px from a pickup,
+  station, lever, wicket, hatch, core node, workbench, pad, pit, enemy start
+  or marker, and off gaps and steps. Puddles and leaves are outdoor only (A05
+  has none), grates, cables and vents belong in the plaza (A04) and depot
+  (A05), and the whole level has at most two boxes and two hoses.
+  `tests/cases/test_pixel_decals.gd` checks all of this.
 - **Enemies** (group `"enemy"`): exported `entity_id` such as
   `L01-E07-M01-01`; `queue_free()` in `_ready()` if `Session.is_defeated`.
   Call `Session.mark_defeated(entity_id)` once on death. No chip drops. The
@@ -609,7 +758,11 @@ is presentation only: no collision and no gameplay state live in it.
 - **EncounterGroup** (Node2D, enemies as descendants): `group_id`
   (`L01-E07`), lane bounds, visible-approach activation;
   `request_attack_token(enemy) -> bool`, `release_attack_token(enemy)`. At most
-  one windup/active attacker per group. An enemy with no EncounterGroup
+  `max_attackers` windup/active attackers per group (one by default; two in
+  the A06 lockdown fights, C41). `wait_for_trigger` groups sleep until
+  `activate()` (the exit wicket's hold-out); `share_tokens_with` makes a
+  group draw from another group's token pool; `claim_voice()` lets only one
+  of a group's enemies bark at a time. An enemy with no EncounterGroup
   ancestor may attack freely (isolated test scenes only). Signal `activated`
   (M7 readability) fires exactly once, the moment an `ApproachZone` entry
   flips `is_active` true (never for a group that starts already active) —
@@ -627,10 +780,12 @@ Exactly as `02-area-blueprints.md` / `04-godot-architecture.md`: areas
 the chip ids predates the microchip rename and is kept so ids, saves and tests
 stay stable), evidence file `EF01` (pickup entity `L01-OPT01-A01`), keycard
 `L01-KC01` (pickup entity `L01-KC01-P`), med-patches `L01-HS01`…, checkpoints
-`CP00`…`CP05`, switch `L01-SW01`, workbench `L01-UPG01`, weapon instances
-`L01-W01-P01`/`P02` (pad `L01-A05-PAD01`), core node `L01-SC01`. The
-workbench's own checkpoint id is `"UPG01"` (not one of `CP00`-`CP05`) —
-`CheckpointService` whitelists it alongside the `CP0[0-5]` pattern.
+`CP00`…`CP07` (CP06 mid-plaza and CP07 in the wicket yard were added by the
+C41 fun pass, numbered after the original six), switch `L01-SW01`, workbench
+`L01-UPG01`, weapon instances `L01-W01-P01`/`P02` (pad `L01-A05-PAD01`), core
+node `L01-SC01`. The workbench's own checkpoint id is `"UPG01"` (not one of
+`CP00`-`CP07`) — `CheckpointService` whitelists it alongside the `CP0[0-7]`
+pattern.
 
 ## Areas and route bot
 
@@ -761,8 +916,14 @@ mask 2; `Interactable` subclasses are layer 6 (hero's `InteractSensor` masks
   plays `keycard_denied` (rate-limited by a 1.6s cooldown), emits
   `wicket_denied`, and never ends the level or damages the hero. Entry with
   the card plays `door_unlock`, emits `wicket_reached` once, and joins group
-  `"exit_wicket"`. `LevelDirector._on_wicket_reached()` owns everything that
-  follows: CP05, the final objective, `Session.level_completed`, permanently
+  `"exit_wicket"`. C41 hold-out: with `override_time` > 0 (16 s in A06) the
+  gate is a solid bar (layer 1) and the card instead starts the override
+  (`override_started`, a progress bar over the gate), waking
+  `override_groups` at once and `reinforcement_groups` after
+  `reinforcement_delay`; when it finishes (`override_finished`) the bar drops
+  and `wicket_reached` fires as soon as the hero is in the wicket. A death
+  rebuilds the area, so it restarts from the card swipe.
+  `LevelDirector._on_wicket_reached()` owns everything that follows: CP05, the final objective, `Session.level_completed`, permanently
   disabling `hero.input_enabled`, the Security PA line (`PA_SPEAKER`,
   `PA_LINE`: "All teams: lethal force is authorized. Harlan is armed.", shown
   once on the subtitle panel) and `scenes/ui/completion.tscn`, which opens
@@ -781,7 +942,8 @@ mask 2; `Interactable` subclasses are layer 6 (hero's `InteractSensor` masks
   one-way latch). `is_extended()` for tests.
 - `pit_hazard.tscn` (`PitHazard`, `Area2D` mask 2): `damage`, `size`; child
   `Marker2D "Reset"`. Hero entry -> `hero.fall_to(Reset.global_position,
-  damage)`.
+  damage)`. Its trigger is resized to `size` per instance (the A03 roof gaps,
+  C41, are long strips).
 - `kill_plane.tscn` (`KillPlane`, `Area2D` mask 2): `damage` (0 default),
   `reset_target` (`NodePath` to a `Marker2D`). Bug-guard safety net far
   below geometry.
@@ -800,12 +962,80 @@ mask 2; `Interactable` subclasses are layer 6 (hero's `InteractSensor` masks
   also fades it after that many seconds even if `action` is never pressed.
   E02's Patrol Rover prompt (`TutorialPrompt_E02Rover` in `a02_gardens.tscn`,
   key `e02_rover_intro`, text "Rovers are armored in front. Let it crash into
-  the stone planter.") uses all three, with an empty `action`.
+  the stone planter.") uses all three, with an empty `action`. Pixel UI:
+  `icon_actions` show the pixel key caps (several actions interleaved by
+  binding index, so Move reads A D ← →), `static_icon_before` takes
+  "mouse_aim" (or the old "mouse_move.svg"), the panel is the pixel tag frame
+  and stays centred on its authored centre when the caps make it wider.
 - `scenery.tscn` (`Scenery`): non-colliding `_draw()` prop; `kind` (an
   append-only enum, never reorder existing values — `Scenery.Kind` in
   `scripts/objects/scenery.gd` is the authoritative list), `size`, `text`
   (SIGN only); drawn in the night-campus palette above. `z_index` keeps it
-  behind actors.
+  behind actors. Pixel-art props (C42): outside the depot, LAMP, FENCE, RAIL,
+  SHRUB, FLOWER, PLANTER, MAILBOX, BENCH and BOLLARD draw their painted piece
+  through `scripts/world/prop_skins.gd` (`painted_piece()`), nearest-filtered
+  while their glow sprites and lights stay smooth: a lamp's pole repeats to
+  `size.y` and its light sits at the lens; railings and guide rails repeat
+  whole bays to about `size.x`; the rest draw at their own size, bottom-centred.
+  The buildings sheet (HOUSE booth, GATE, FOUNTAIN pool, DEPOT_DOOR and `AnnexDoor*` nodes, CLOCK landmark whose pylon repeats to the ground) draws at its own size too, ignoring `size`.
+  The code-drawn look stays as the fallback and for the depot (A05).
+  Pixel signs (Sheet 10, the depot too): a SIGN's `text` is set in the pixel
+  font (`scripts/world/pixel_font.gd`, the atlas and `font.json` that
+  `tools/art/import_pixel_font.py` cuts from the font sheet; no `class_name`,
+  `PixelFont.has_font()` false without the PNG) at 1 or 2 art pixels per font
+  pixel (never fractional), wrapped onto two lines at a space if it has to be,
+  on one of the buildings sheet's three sign panels
+  (`scripts/world/sign_skins.gd`, `painted_sign()`): the panel's end caps stay
+  and its plain column and row repeat to the board's size, a board is never
+  wider than `size.x`, and `sign_tint()` (teal, green for an exit sign, the
+  lockdown colour) tints the text and, by a hue shift, the panel's frame. A
+  CLOUD_PROJECTOR's hologram text uses the same font and the painted projector
+  hangs under it, upside down, its lens at the cone's apex; the hologram,
+  chevrons and flicker stay code-drawn. A node that draws the font needs
+  nearest filtering (`_ready()` sets it). A character the font lacks, or a
+  missing PNG, keeps the code-drawn board and UI font. The wall terminal (PANEL)
+  is still code-drawn.
+- Pixel-art interactive objects (objects sheet): the recovery station
+  (lamp off, lamp on), workbench, weapon pad, core node (calm teal, alarm
+  amber), emergency hatch (closed, open), exit wicket (barred with an amber
+  reader, open with a teal reader, shut by the striped bar) and route switch
+  (lever up, lever down) draw their painted piece through
+  `scripts/world/object_skins.gd` everywhere, the depot too. Each script has a
+  `painted_piece()` (the piece for its current state, `""` when a PNG is
+  missing, which keeps its code-drawn look as the fallback) and sets nearest
+  filtering on itself (`ObjectSkins.make_crisp()`, which keeps a `Toast` label
+  smooth); smooth glows (the lit station lamp, the reader, the workbench
+  lamp) draw over the crisp pixels at the painted lamp or lens. Pieces draw at
+  1.5 world px per art pixel, 2 x 2 art pixels per generated pixel (like the
+  buildings), standing bottom-centre on the origin; the lever plate keeps
+  its place between states (`ObjectSkins.ANCHORS`) and the hatch repeats a
+  band of its middle rows (`BANDS`) to come close to its solid's `size.y`.
+  Collision shapes, interaction areas, exports and signals are unchanged, so a
+  piece can be wider or shorter than its area. The station also redraws on
+  `Session.checkpoint_committed`, so its lamp follows the active checkpoint.
+- Pixel-art pickups and walkway pieces (objects2 sheet, imported with
+  `tools/art/import_pixel_sheet.py objects2`, 2 x 2 art pixels per generated
+  pixel like the buildings): `Chip` (chip and five-chip cluster), `Keycard`,
+  `MedPatch`, `EvidencePickup`, `ChipCache`, `PracticeTarget`, `ServiceWalkway`,
+  `MovingPlatform` and `PitHazard` draw their piece through
+  `scripts/world/pickup_skins.gd` everywhere, the depot too, with the same
+  `painted_piece()` / nearest-filter / code-drawn-fallback idiom (its sibling
+  for the first sheet is `object_skins.gd`). A pickup is drawn centred on its
+  origin (the cache stands on it), its glow, halo and bob unchanged except
+  that the halo grows to the painted size and the keycard's bob moves in whole
+  art pixels; the cache opened is the dimmed piece, its padlock painted over
+  with plate and its lid lifted; the target's origin is the board's centre
+  (the hit zone), its pole repeats down to the floor line, and a hit washes
+  the board cold white instead of swelling it. The three sized pieces stretch
+  without scaling a pixel (`PickupSkins.LAYOUTS`, `draw_sized()`): the
+  walkway's grating and the pit cover's stripes repeat sideways in phase with
+  the world x (the platform's plain plate repeats around its middle light),
+  end caps stay, a taller pit repeats its stripe rows shifted along so the
+  diagonals carry on, and a pit shorter than the piece (54 px) is drawn as
+  tall as the piece. The platform's plate gets a code-drawn cold-white lit
+  edge (the sheet's plate has a dark top) and soft glows on its three lights;
+  the track and end stops stay code-drawn. Collision shapes, `size`, `width`
+  and `thickness` exports, signals and groups are unchanged.
 - `environment_state.gd` (`EnvironmentState`, plain `Node2D`, no scene of its
   own — one instance per area that needs it, e.g. A05/A06): the story-driven
   night/lockdown look (SC01). Reacts LIVE to
@@ -836,6 +1066,47 @@ and pale text; the file name is unchanged), 20-28px text at 1280x720, mouse
 `pause` action). Every one of these only reads/calls `Session` — never edits
 `state` directly.
 
+Pixel UI (Sheets 11 and 12, 2026-10-07; `tools/art/import_pixel_ui.py` ->
+`assets/ui/pixel/`, helper `scripts/ui/pixel_ui.gd`, no `class_name`, preload
+it; test `tests/cases/test_pixel_ui.gd`):
+- **Scale:** 1 UI pixel = `PixelUi.SCALE` (3) canvas px on the 1280x720 canvas
+  (HUD, menus); in-world UI (tutorial prompts, the hero's interact prompt,
+  objects' toasts) uses 3 world px, the objects' and buildings' own pixel; the
+  Controls table's key caps are 2 px per UI pixel (its 9 rows must fit the
+  panel unscrolled), at both text sizes. Pixel things only ever scale by whole
+  numbers.
+- **Theme:** `c11_theme.tres` keeps its name and type names; its panels,
+  buttons (normal/hover/pressed/disabled), focus brackets (expand 6 px outside
+  the control), slider (track, fill, knob), CheckButton/CheckBox icons (with
+  empty button styles), OptionButton arrow, PopupMenu, VScrollBar and
+  HSeparator are `StyleBoxTexture` nine-slices of the `x3/` frames (3x copies;
+  a StyleBox draws its corners 1 texel : 1 px), margins on whole UI pixels.
+- **Filtering:** every pixel texture is a `CanvasTexture` with
+  `texture_filter` NEAREST around the PNG (`PixelUi.crisp()`, and in the
+  theme), so it stays crisp on any node while text keeps the node's own
+  filter; nodes never need NEAREST for the frames. A Label in the pixel font
+  does set NEAREST on itself (`PixelUi.use_font()`).
+- **Pixel font rule:** the Sheet 10 font has capitals only, so only short caps
+  labels use it: the HUD weapon tag and wallet (`PixelUi.font()`, a bitmap
+  `FontFile` built from the sign font with a baked dark outline; a Label's
+  font size / 7 rounds to whole px per font pixel: 3 at Normal, 4 at Large)
+  and the key-cap letters. Sentences, the objective, toasts, captions,
+  buttons and headings stay in the UI font.
+- **Key caps:** `input_icon_map.gd` turns a binding into a pixel icon through
+  `PixelUi.key_cap(key_label)` (the layout-aware label in dark ink on the
+  blank or wide cap, the arrow glyphs on a cap, up to `MAX_CAP_CHARS` 5) or
+  the mouse pieces; a key with no cap (";", "Semicolon" headless) or a missing
+  PNG is a text token, as before.
+- **Fallback:** `PixelUi.texture()` is null when a PNG is missing (tests:
+  `PixelUi.use_dir()`); the HUD icons keep their code-drawn look, labels the
+  outlined UI font, key caps their text, toasts and prompts their flat
+  plates. The theme itself has no runtime fallback (its `x3/` PNGs are project
+  files, always exported).
+- **Accessibility:** lit/dark and full/empty pieces differ in luminance, not
+  only hue (the readiness light is about 9:1 against its dark piece); text
+  on the opaque navy panel fill is at least as contrasted as on the old 96%
+  plate.
+
 - `controls_panel.tscn` (`ControlsPanel`, `VBoxContainer`): the reusable
   "Controls" help view — a two-column table of every gameplay action's
   CURRENT binding, generated at runtime from `InputMap` (never hardcoded key
@@ -854,8 +1125,11 @@ and pale text; the file name is unchanged), 20-28px text at 1280x720, mouse
   text-size scaling internally (a host's own text-size sweep must skip
   recursing into a `ControlsPanel` child, `if child is ControlsPanel:
   continue`, so the same Label is never scaled twice).
-- `hud.tscn` (`Hud`, `CanvasLayer`): six health segments, the held weapon's
-  tag + Quickcycle pip + a fire-readiness dot (polls the held `Scrapjack`'s
+- `hud.tscn` (`Hud`, `CanvasLayer`): six health segments (pixel pieces,
+  `scripts/ui/pixel_icon.gd`; a lost one flashes pale for `HIT_FLASH_TIME`),
+  the held weapon's slot (`weapon_icon.gd`: the pixel slot frame round the
+  pixel Scrapjack) and tag + Quickcycle pip + a fire-readiness light (lit/dark
+  pixel pieces; polls the held `Scrapjack`'s
   `is_ready()`), the microchip wallet ("Chips: N", with a chip icon from
   `scripts/ui/chip_icon.gd`), a small clearance-card icon
   (`scripts/ui/keycard_icon.gd`) shown once `L01-KC01` is held, current
@@ -899,6 +1173,27 @@ and pale text; the file name is unchanged), 20-28px text at 1280x720, mouse
   back to a good backup already satisfies "offer the backup"; only when
   BOTH are invalid does it show an honest message and point at New Game (a
   schema-1 or schema-2 save counts as invalid).
+  **Look (2026-10-07):** pixel title art. A full-rect `Backdrop` `TextureRect`
+  (`assets/ui/pixel/title_backdrop.png`, 1280x720, `STRETCH_KEEP_ASPECT_COVERED`,
+  linear filtered, over a plain dark `Background` that shows if the art is
+  missing) and the `Logo` `TextureRect` (`title_logo.png`, 150x33 texels,
+  nearest filtered) at the biggest whole-number scale that fits (5x = 750x165
+  on the 1280x720 base canvas, `logo_scale`), top right over the calm sky; the
+  `Tagline` under it and the menu `Panel` under that (400 wide, as tall as its
+  content, `self_modulate` alpha 0.9 so the backdrop shows). The composition is
+  laid out against a 1280x720 "stage" centred in the window (`_layout()`,
+  re-run on `resized`), so a wider or taller window just shows more or less
+  backdrop. The Controls view hides the logo and tagline and takes a solid
+  640x500 panel (`CONTROLS_RECT`). `TitleLabel` (text `DEAD EDEN`) stays in
+  the tree and in `_text_size_bases`, hidden behind the logo (the logo's
+  `accessibility_name` is `DEAD EDEN`); it is what shows if the logo is
+  missing. `logo_path`/`backdrop_path` can be pointed elsewhere before
+  `add_child()` (the missing-art test). A teal `Glow` (additive radial
+  gradient, no shader) over the tower's emblem breathes slowly and holds still
+  under Settings' reduced motion. The `MessageLabel` moved under the buttons
+  and only shows when it has text. Node paths used by tests and the M7 driver
+  (`Panel/VBox/...`) are unchanged. Re-run
+  `python3 tools/art/import_title_art.py` to rebuild the two PNGs.
 - `pause.tscn` (`PauseMenu`, `CanvasLayer`, M5 part 2): Resume, Journal,
   Controls (help/controls-menu follow-up — same `ControlsPanel` the title
   screen uses), Settings, Restart from checkpoint, Quit to title. Added once

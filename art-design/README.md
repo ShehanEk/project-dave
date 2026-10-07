@@ -129,6 +129,10 @@ The shared kit of nine. Any enemy can carry any gun, and each gun is a separate 
 
 - [NPC01 — Sleepwalker](npcs/npc01-sleepwalker.md) — Staff with failing implants who repeat old routines. Harmless and protected: no combat, no hit zone, never a target.
 
+## Environment
+
+- [Sunnyvale play plane](environment/sunnyvale-play-plane.md) — the review of Level 1's props, terrain and objects against the pixel-art backgrounds (C39), with the ChatGPT prompts for the sheets that repaint them, the sign lettering and the characters. The terrain (Sheet 1) and the street furniture (Sheet 2, C42) are in the game.
+
 ## Suggested review order
 
 1. **Night Guard first.** It is the test subject for the lit cutout rig (C35). Judge the smooth light, the proportions, the hand-keyed motion and the ragdoll death on him before anything else is painted, next to Dave (the [hero brief](../design/02-characters/hero.md)), whose frames get normal maps too.

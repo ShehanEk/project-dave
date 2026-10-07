@@ -36,6 +36,10 @@ Light is still the main tool, and it is now real light. Painted light pools, rim
 - **Shadow:** no shadows are painted into the art. Any shadow the engine adds stays soft and low-contrast. Darkness is a composition tool, not an excuse to hide gameplay.
 - **Readability:** **put a light near every landing.** Tells stay readable in the dark and in a lamp's glare, and **darkness never hides a tell, a ledge or a pickup.** Check every tell and every platform edge in an engine capture with the night overlay on.
 
+## Color scheme (C40)
+
+Complementary: **cool blue against warm orange**. About 85% of a scene is the cool side: Night, Navy, Steel and Slate, with Arcadia teal as its bright accent. About 15% is the warm complement: Dave's burnt-orange jacket and warm light sources (interior windows, uplights, warm lamps) in Window warm, so warmth pulls the eye to Dave and to light. Window warm stays softer and less saturated than Hazard amber, so the most saturated warm on screen is always a tell. Other hues are small reserved accents only (gold pickups, signal green, energy blue, the enemy neons), never fills.
+
 ## Palette tokens (proposed)
 
 | Token | Hex | Use |
@@ -51,6 +55,7 @@ Light is still the main tool, and it is now real light. Painted light pools, rim
 | Microchip gold | #FFD166 | Microchip pickups and glints |
 | Signal green | #4DE38A | Exit signs, server status LEDs, 'safe' indicator lights (Acts 2–3). Never a tell or pickup |
 | Dave orange | warm burnt orange | Dave's jacket, so the hero reads instantly against cool darks |
+| Window warm | #E8A35C | The warm complement in the scenery (C40): lit office interiors, uplights on trees, warm lamp glow. Softer than Hazard amber; never a tell |
 | Blood | #B3212F | Wet blood of people, the Linked and dogs, with two or three pale-pink highlight drops and a lighter wet rim on pools |
 | Dried blood | #8A1A26 | Pools and wound marks once dry. Never darker: darker reds vanish against the night palette |
 | Heir lymph | #A88A8C | The Heirs' grey-rose synthetic lymph. Drips only, at 80% alpha |
@@ -159,6 +164,8 @@ The lit cutout pipeline (C35), in order:
 Generate one painting per request when multi-pose sheets produce inconsistent anatomy. A finished painting does not settle the rig, the pivots or the clip retargeting. The lit Night Guard test is where those get proven, and its result sets the method for every other enemy.
 
 ## Environment layers and camera
+
+**Pixel art (C39):** environments are pixel art, matching the user's night-campus concept: chunky readable pixels, warm lit interiors, uplit trees, teal Arcadia accents and wet reflective paving. The game must look good at 4K, so pixels stay fine: generate at the largest size with 2x2-pixel blocks; the importer reduces each layer to about two texels per generated pixel, so every layer's pixels match in size, and the game draws it with nearest filtering at 1.5 world px per art pixel (about 5 screen px at 4K), scrolled in whole art pixels. No smooth gradients inside a layer; the engine adds the lights. The characters and the gun stay smooth painted cutouts for now. One exception (C42): the street furniture keeps the finer pixels it was generated with (half the background's), because at the background's pixel size it came out too big next to Dave.
 
 Use a fixed side-oriented 2D gameplay camera. Compose scenery as separate foreground, playable, background and effect layers. Overlap, darker and lower-contrast backgrounds and optional parallax suggest depth. The hero, enemies, pickups and collision route stay on one action plane.
 
