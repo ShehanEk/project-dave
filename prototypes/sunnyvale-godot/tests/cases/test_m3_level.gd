@@ -14,22 +14,29 @@ const BEATS_PER_AREA: Array[int] = [4, 6, 5, 7, 5, 5]  # -> 32 total
 ## apart by their scene. Rovers are the M01 Patrol Rover (the old Clipper).
 const NIGHT_GUARD_SCENE := "res://scenes/actors/night_guard.tscn"
 const STAFFER_SCENE := "res://scenes/actors/staffer.tscn"
+## C41 (the fun pass): 15 EncounterGroups (E01..E16 minus E12, which does not
+## exist) fielding 29 enemies — 12 Night Guards, 9 Staffers, 8 Patrol Rovers.
 const EXPECTED_ENCOUNTERS := {
 	"L01-E01": {"guards": 1, "staffers": 0, "rovers": 0},
 	"L01-E02": {"guards": 0, "staffers": 0, "rovers": 1},
 	"L01-E03": {"guards": 1, "staffers": 0, "rovers": 0},
 	"L01-E04": {"guards": 0, "staffers": 0, "rovers": 1},
-	"L01-E05": {"guards": 1, "staffers": 0, "rovers": 0},
-	"L01-E06": {"guards": 1, "staffers": 0, "rovers": 0},
+	"L01-E05": {"guards": 1, "staffers": 0, "rovers": 1},
+	"L01-E06": {"guards": 2, "staffers": 0, "rovers": 0},
 	"L01-E07": {"guards": 1, "staffers": 0, "rovers": 1},
-	"L01-E08": {"guards": 2, "staffers": 0, "rovers": 0},
-	"L01-E09": {"guards": 1, "staffers": 0, "rovers": 1},
-	"L01-E10": {"guards": 0, "staffers": 1, "rovers": 1},
-	"L01-E11": {"guards": 0, "staffers": 1, "rovers": 1},
+	"L01-E08": {"guards": 2, "staffers": 0, "rovers": 1},
+	"L01-E09": {"guards": 2, "staffers": 0, "rovers": 1},
+	"L01-E10": {"guards": 0, "staffers": 2, "rovers": 1},
+	"L01-E11": {"guards": 1, "staffers": 1, "rovers": 1},
+	"L01-E13": {"guards": 0, "staffers": 2, "rovers": 0},
+	"L01-E14": {"guards": 1, "staffers": 0, "rovers": 0},
+	"L01-E15": {"guards": 0, "staffers": 2, "rovers": 0},
+	"L01-E16": {"guards": 0, "staffers": 2, "rovers": 0},
 }
-const EXPECTED_GUARDS_TOTAL := 8
-const EXPECTED_STAFFERS_TOTAL := 2
-const EXPECTED_ROVERS_TOTAL := 6
+const EXPECTED_GROUP_COUNT := 15
+const EXPECTED_GUARDS_TOTAL := 12
+const EXPECTED_STAFFERS_TOTAL := 9
+const EXPECTED_ROVERS_TOTAL := 8
 const EXPECTED_MAIN_CHIP_VALUE := 45
 const EXPECTED_CACHE_VALUE := 20
 ## Spawn/respawn markers commonly sit a few px above their floor by design
@@ -46,6 +53,7 @@ func run() -> void:
 	await _test_full_main_route()
 	await _test_optional_branches()
 	await _test_death_rebuild()
+	await _test_extra_checkpoints()
 
 
 # --- (a) instantiation + seams ------------------------------------------------
@@ -110,11 +118,12 @@ func _test_population_counts() -> void:
 	check(actual_beats == expected_beats,
 			"beat ids match exactly, in area/route order\n  got:  %s\n  want: %s" % [actual_beats, expected_beats])
 
-	# 11 EncounterGroups with exact Night Guard/Staffer/Rover counts.
+	# 15 EncounterGroups with exact Night Guard/Staffer/Rover counts.
 	var groups := {}
 	for area in level.areas:
 		_collect_encounter_groups(area.get_node_or_null("Encounters"), groups)
-	check(groups.size() == 11, "level has exactly 11 EncounterGroups (got %d: %s)" % [groups.size(), groups.keys()])
+	check(groups.size() == EXPECTED_GROUP_COUNT,
+			"level has exactly %d EncounterGroups (got %d: %s)" % [EXPECTED_GROUP_COUNT, groups.size(), groups.keys()])
 	var guards_total := 0
 	var staffers_total := 0
 	var rovers_total := 0
@@ -187,8 +196,9 @@ func _test_population_counts() -> void:
 	for area in level.areas:
 		_collect_typed(area, stations, pads, switches, walkways)
 		wickets += _count_in_group(area, "exit_wicket")
-	check(stations.size() == 3 and stations.has("CP01") and stations.has("CP02") and stations.has("CP03"),
-			"recovery stations CP01, CP02, CP03 are each present exactly once (got %s)" % [stations.keys()])
+	check(stations.size() == 5 and stations.has("CP01") and stations.has("CP02") and stations.has("CP03")
+			and stations.has("CP06") and stations.has("CP07"),
+			"recovery stations CP01, CP02, CP03, CP06, CP07 are each present exactly once (got %s)" % [stations.keys()])
 	check(pads.has("L01-A05-PAD01"), "weapon pad L01-A05-PAD01 is present")
 	check(Session.weapon_on_pad("L01-A05-PAD01") == "L01-W01-P02",
 			"L01-A05-PAD01 holds the resting weapon L01-W01-P02 (Session)")
@@ -391,3 +401,34 @@ func _test_death_rebuild() -> void:
 
 	level.queue_free()
 	await physics_frames(2)
+
+
+# --- (f) C41's extra stations: CP06 (A04) and CP07 (A06) ------------------------
+
+func _test_extra_checkpoints() -> void:
+	for pair in [["CP06", 3], ["CP07", 5]]:
+		var cp: String = pair[0]
+		Session.new_run()
+		var level: LevelDirector = load(LEVEL_01).instantiate()
+		add_child(level)
+		await physics_frames(3)
+		var area: AreaRoot = level.areas[pair[1]]
+		var station: RecoveryStation = area.get_node("Entities/RecoveryStation_" + cp)
+		station.interact(level.hero)
+		await physics_frames(2)
+		check(Session.state["checkpoint_id"] == cp, "using the %s station commits %s (got %s)" % [cp, cp, Session.state["checkpoint_id"]])
+		check(CheckpointService.validate_snapshot(Session.state.duplicate(true)).ok,
+				"a save at %s passes the checkpoint whitelist" % cp)
+
+		level.hero.take_damage(999, level.hero.global_position)
+		await physics_frames(4)
+		check(Session.state["checkpoint_id"] == cp, "death after using %s keeps checkpoint_id at %s (got %s)" % [cp, cp, Session.state["checkpoint_id"]])
+		# The death rebuilds every area, so look the area up again.
+		area = level.areas[pair[1]]
+		var respawn := area.get_marker("Respawn_" + cp)
+		check(respawn != null and level.hero.global_position.distance_to(respawn.global_position) < SPAWN_POSITION_TOLERANCE_PX,
+				"death after %s respawns the hero at %s's Respawn_%s (got %s want %s)" % [cp, area.area_id, cp,
+						level.hero.global_position, respawn.global_position if respawn else Vector2.ZERO])
+		check(level.hero.input_enabled, "hero input is re-enabled after the %s rebuild" % cp)
+		level.queue_free()
+		await physics_frames(2)

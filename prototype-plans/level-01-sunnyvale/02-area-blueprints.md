@@ -70,7 +70,7 @@ All enemy counts below are the total placed population, not simultaneous waves. 
 
 **Entry and silhouette:** Three broad roof terraces (green roofs on low glass-and-steel office wings) with a visible service lane below. The campus landmark remains the navigation cue. Enter from normal porch steps.
 
-**Traversal:** First demonstrate a moving maintenance platform over shallow recovery ground. Keep its travel path and both boarding ledges visible. Missing it returns via the service lane and stepped ledges in about 15–20 seconds, without a mandatory fight or damage. The far terrace's Night Guard E05 stands at least 2H beyond the landing. B04 combines a short static roof sequence with E06 on another broad landing; E05 must not chase into that group.
+**Traversal:** First demonstrate a moving maintenance platform over shallow recovery ground. Keep its travel path and both boarding ledges visible. Missing it returns via the service lane and stepped ledges in about 15–20 seconds, without a mandatory fight or damage. **C41:** the service lane now ends under Terrace3 (x 1880); past it the roofs have real gaps (RoofPit_S1–S9), and a fall costs one health and returns Dave to the roof he jumped from. The street returns only for the final drop (x 6650). E05 adds a Patrol Rover on the long roof, which stalls against a rooftop AC unit at the roof's near end, and E06 is two guards on the summit roof, kept clear of CP02. The far terrace's Night Guard E05 stands at least 2H beyond the landing. B04 combines a short static roof sequence with E06 on another broad landing; E05 must not chase into that group.
 
 **Rewards:** Five loose small chips and one five-value cluster on the main roof path. OPT02 begins after the first safe landing and uses ordinary roof steps to a separate 20-chip cache in a roof alcove; rejoin before the final descent. No evidence file is hidden inside this cache. The optional branch is visible from the route.
 
@@ -102,7 +102,7 @@ All enemy counts below are the total placed population, not simultaneous waves. 
 
 **Keycard:** The level's clearance keycard, L01-KC01 (pickup entity L01-KC01-P), sits on the quiet far porch just past the CP03 recovery station, on the route to the depot door: a white card with a teal stripe, a contact pickup with a slow teal glint. It has no chip value, is not an evidence file, and opens only the A06 exit wicket (P19). It saves with the next checkpoint commit: a player who takes the card can use the station again to commit it, CP04 commits it in any case, and a card taken after the last checkpoint returns to its spot on death, which is on the route.
 
-**Recovery:** HS02 before E09 restores two health if needed. CP03 on the quiet far porch commits before the depot. Keep the final fight away from the checkpoint activation zone.
+**Recovery:** HS02 before E09 restores two health if needed. CP03 on the quiet far porch commits before the depot. **C41:** CP06, a new station at the start of the B04 floor, saves between E07 and E08; E08 adds a Patrol Rover that charges Dave and stalls against a planter wall behind him, and E09 adds a second guard who arrives late from the far end. Keep the final fight away from the checkpoint activation zone.
 
 **Exit:** Unlocked depot doorway beneath the landmark. It does not require all enemies dead, 40 chips, the evidence file, or the keycard.
 
@@ -156,6 +156,8 @@ Normal scene treatment is approximately 19 seconds and skippable. Brief subtitle
 
 **Deviation from the level brief (deliberate).** The [campaign brief](../../level-design/l01-welcome-to-sunnyvale.md) puts two Staffers and no rovers at the alarm exit. This plan keeps A06's two Patrol Rovers and adds the second Staffer, because A06's stone backstops exist only for the rovers and its final rover encounter is the level's "use what you learned" test. A06 therefore has 2 Staffers and 2 Patrol Rovers.
 
+**C41 (the lockdown changes the exit):** two staffers stand dormant by the path outside the depot and wake as soon as Dave steps out of the depot (E13: its approach zone now spans the first 560 px, so they wake with Dave about 250 px from the nearer one, 2026-10-06 playtest note: "some enemies not attacking"); E10 sends two staffers out of the annex door with its Rover; a guard waits across the B03 hazard pit (E14); and E11 adds a guard. These lockdown fights let two enemies attack at once. CP07 saves in the wicket yard. The wicket is a hold-out: the card starts a 16-second lockdown override behind a shut gate, the yard's slumped staffers wake (E15), two more wake 7 seconds in (E16, sharing E15's two attack tokens), and the gate opens when the override finishes.
+
 **Recovery and reward:** HS03 before E11 offers two health. A marked low hazard drop in B03 may test the one-health pit return; its reset foothold is fixed and free of enemy attacks. Zero health uses CP04 or the later complete workbench/purchase snapshot. No chips or new equipment are necessary here.
 
 **Exit:** The service wicket is the level's keycard door. Its card reader is locked until the hero holds L01-KC01 and shows its unlocked state once the card is held. Entering without the card gives a harmless "Clearance card required" message and never ends the level. With the card, crossing the wicket commits CP05 and fires the level-ended signal at once. A Security PA line (speaker "Security PA", not Adam) then plays once as a subtitle: "All teams: lethal force is authorized. Harlan is armed." (`LevelDirector.PA_LINE`). The completion screen opens 3.2 s later (`LevelDirector.PA_BEAT`). Display time, chips found out of 65, evidence file found, and upgrade obtained. Chips found is a collection total, distinct from the wallet after spending. Offer replay/new run and quit; no Level 2 scene is required.
@@ -170,12 +172,18 @@ Enemy instances use E##-SE01-nn (Night Guard), E##-M01-nn (Patrol Rover) or E##-
 | L01-E02 | L01-A02-B02 | 0 | 1 | 0 | `L01-E02-M01-01` |
 | L01-E03 | L01-A02-B04 | 1 | 0 | 0 | `L01-E03-SE01-01` |
 | L01-E04 | L01-A02-B05 | 0 | 1 | 0 | `L01-E04-M01-01` |
-| L01-E05 | L01-A03-B03 | 1 | 0 | 0 | `L01-E05-SE01-01` |
-| L01-E06 | L01-A03-B04 | 1 | 0 | 0 | `L01-E06-SE01-01` |
+| L01-E05 | L01-A03-B03 | 1 | 1 | 0 | `L01-E05-SE01-01`, `L01-E05-M01-01` |
+| L01-E06 | L01-A03-B04 | 2 | 0 | 0 | `L01-E06-SE01-01`, `L01-E06-SE01-02` |
 | L01-E07 | L01-A04-B02 | 1 | 1 | 0 | `L01-E07-SE01-01`, `L01-E07-M01-01` |
-| L01-E08 | L01-A04-B04 | 2 | 0 | 0 | `L01-E08-SE01-01`, `L01-E08-SE01-02` |
-| L01-E09 | L01-A04-B06 | 1 | 1 | 0 | `L01-E09-SE01-01`, `L01-E09-M01-01` |
-| L01-E10 | L01-A06-B02 | 0 | 1 | 1 | `L01-E10-M01-01`, `L01-E10-LK01-01` |
-| L01-E11 | L01-A06-B04 | 0 | 1 | 1 | `L01-E11-LK01-01`, `L01-E11-M01-01` |
+| L01-E08 | L01-A04-B04 | 2 | 1 | 0 | `L01-E08-SE01-01`, `L01-E08-SE01-02`, `L01-E08-M01-01` |
+| L01-E09 | L01-A04-B06 | 2 | 1 | 0 | `L01-E09-SE01-01`, `L01-E09-M01-01`, `L01-E09-SE01-02` |
+| L01-E13 | L01-A06-B01 | 0 | 0 | 2 | `L01-E13-LK01-01`, `L01-E13-LK01-02` (two attackers) |
+| L01-E10 | L01-A06-B02 | 0 | 1 | 2 | `L01-E10-M01-01`, `L01-E10-LK01-01`, `L01-E10-LK01-02` (two attackers) |
+| L01-E14 | L01-A06-B03 | 1 | 0 | 0 | `L01-E14-SE01-01` |
+| L01-E11 | L01-A06-B04 | 1 | 1 | 1 | `L01-E11-LK01-01`, `L01-E11-M01-01`, `L01-E11-SE01-01` (two attackers) |
+| L01-E15 | L01-A06-B05 | 0 | 0 | 2 | `L01-E15-LK01-01`, `L01-E15-LK01-02` (hold-out, two attackers) |
+| L01-E16 | L01-A06-B05 | 0 | 0 | 2 | `L01-E16-LK01-01`, `L01-E16-LK01-02` (hold-out reinforcements; share E15's two tokens) |
 
-**Totals:** 32 beats, 11 groups, 8 Night Guards, 6 Patrol Rovers, 2 Staffers (16 enemies). The two optional branches add discovery, not enemies. The C24 build had 9 Staffers and 6 Clippers (15); the C33 rebuild changed every enemy ID, so the save schema is 3. The E10 Staffer is new since the C24 build. A06's two rovers (E10 and E11) are where this table differs from the level brief (see A06).
+**Fun pass (C41, 2026-10-05):** the groups grew from 11 to 15 and the enemies from 16 to 29 (12 Night Guards, 8 Patrol Rovers, 9 Staffers); there is no E12. Per-area changes are noted under each area below.
+
+**Totals before C41:** 32 beats, 11 groups, 8 Night Guards, 6 Patrol Rovers, 2 Staffers (16 enemies). The two optional branches add discovery, not enemies. The C24 build had 9 Staffers and 6 Clippers (15); the C33 rebuild changed every enemy ID, so the save schema is 3. The E10 Staffer is new since the C24 build. A06's two rovers (E10 and E11) are where this table differs from the level brief (see A06).

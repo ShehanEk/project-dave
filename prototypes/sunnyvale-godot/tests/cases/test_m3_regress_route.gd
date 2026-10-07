@@ -7,7 +7,10 @@ extends TestCase
 ## Grew out of the M3 assembly review (LAY-03 Rover (then Clipper) windup on
 ## the landing, LAY-08 Night Guards and Staffers (then Staffers) too close to a
 ## landing, LAY-09 backstops above the ordinary-rise limit, LAY-16 E11 retreat
-## floor); keep passing after any future geometry change.
+## floor); keep passing after any future geometry change. C41 (the fun pass)
+## added enemies near the main route (E08's Rover, E14's Night Guard, the
+## hold-out's staffers); the hold-out's two sleep until the exit wicket's
+## override wakes them, so they are not landing hazards.
 
 const LEVEL_01 := "res://scenes/levels/level_01.tscn"
 const H := 96.0
@@ -93,7 +96,9 @@ func _run_route(branches: Array, label: String) -> void:
 
 	var enemies: Array = []
 	for e in get_tree().get_nodes_in_group("enemy"):
-		if level.is_ancestor_of(e):
+		# The hold-out's staffers (C41) sleep until the exit wicket's override
+		# wakes them, so a landing near one is never a landing into a fight.
+		if level.is_ancestor_of(e) and not (e._group != null and e._group.wait_for_trigger):
 			enemies.append({"id": e.entity_id, "pos": e.global_position, "cls": e.get_class_name() if e.has_method("get_class_name") else e.get_script().get_global_name()})
 	var groups: Array = []
 	_find_groups(level, groups)

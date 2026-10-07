@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/area_root.gd" id="1_arearoot"]
 [ext_resource type="Script" path="res://scripts/world/block.gd" id="2_block"]
@@ -13,6 +13,7 @@
 [ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="11_routepoint"]
 [ext_resource type="Script" path="res://scripts/world/environment_state.gd" id="12_envstate"]
 [ext_resource type="Script" path="res://scripts/world/visuals/area_backdrop.gd" id="50_backdrop"]
+[ext_resource type="Script" path="res://scripts/world/decal.gd" id="20_decal"]
 
 [node name="A05Depot" type="Node2D"]
 script = ExtResource("1_arearoot")
@@ -47,6 +48,50 @@ kind = 3
 [node name="Hatch" parent="Geometry" instance=ExtResource("3_hatch")]
 position = Vector2(2300, 0)
 size = Vector2(64, 192)
+
+[node name="Decals" type="Node2D" parent="."]
+
+[node name="Cable1" type="Node2D" parent="Decals"]
+position = Vector2(330, 19.5)
+script = ExtResource("20_decal")
+piece = "cable"
+
+[node name="Vent1" type="Node2D" parent="Decals"]
+position = Vector2(840, 21)
+script = ExtResource("20_decal")
+piece = "vent"
+
+[node name="Grate1" type="Node2D" parent="Decals"]
+position = Vector2(960, 18)
+script = ExtResource("20_decal")
+piece = "grate"
+flip = true
+
+[node name="Cable2" type="Node2D" parent="Decals"]
+position = Vector2(1230, 19.5)
+script = ExtResource("20_decal")
+piece = "cable"
+
+[node name="Vent2" type="Node2D" parent="Decals"]
+position = Vector2(1930, 21)
+script = ExtResource("20_decal")
+piece = "vent"
+
+[node name="Grate2" type="Node2D" parent="Decals"]
+position = Vector2(2140, 18)
+script = ExtResource("20_decal")
+piece = "grate"
+
+[node name="Vent3" type="Node2D" parent="Decals"]
+position = Vector2(2540, 21)
+script = ExtResource("20_decal")
+piece = "vent"
+flip = true
+
+[node name="Hose1" type="Node2D" parent="Decals"]
+position = Vector2(2646, 0)
+script = ExtResource("20_decal")
+piece = "hose"
 
 [node name="Scenery" type="Node2D" parent="."]
 

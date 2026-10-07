@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/area_root.gd" id="1_arearoot"]
 [ext_resource type="Script" path="res://scripts/world/block.gd" id="2_block"]
@@ -9,6 +9,8 @@
 [ext_resource type="PackedScene" path="res://scenes/objects/beat_zone.tscn" id="7_beat"]
 [ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="8_routepoint"]
 [ext_resource type="Script" path="res://scripts/world/visuals/area_backdrop.gd" id="9_backdrop"]
+[ext_resource type="Script" path="res://scripts/world/decal.gd" id="20_decal"]
+[ext_resource type="Script" path="res://scripts/world/visuals/foreground_layer.gd" id="21_foreground"]
 
 [node name="A01Gate" type="Node2D"]
 script = ExtResource("1_arearoot")
@@ -30,6 +32,10 @@ script = ExtResource("9_backdrop")
 mode = 1
 tile_width = 3400.0
 horizon_y = 0.0
+
+[node name="Foreground" type="Node2D" parent="."]
+script = ExtResource("21_foreground")
+tile_width = 3400.0
 
 [node name="Geometry" type="Node2D" parent="."]
 
@@ -69,23 +75,78 @@ script = ExtResource("2_block")
 size = Vector2(1754, 300)
 kind = 0
 
+[node name="Decals" type="Node2D" parent="."]
+
+[node name="Leaves1" type="Node2D" parent="Decals"]
+position = Vector2(321, 0)
+script = ExtResource("20_decal")
+piece = "leaves"
+
+[node name="Hose1" type="Node2D" parent="Decals"]
+position = Vector2(603, 0)
+script = ExtResource("20_decal")
+piece = "hose"
+flip = true
+
+[node name="PuddleB1" type="Node2D" parent="Decals"]
+position = Vector2(744, 18)
+script = ExtResource("20_decal")
+piece = "puddle_b"
+
+[node name="CrackA1" type="Node2D" parent="Decals"]
+position = Vector2(1731, 25.5)
+script = ExtResource("20_decal")
+piece = "crack_a"
+
+[node name="PuddleC1" type="Node2D" parent="Decals"]
+position = Vector2(1887, 16.5)
+script = ExtResource("20_decal")
+piece = "puddle_c"
+flip = true
+
+[node name="CrackB1" type="Node2D" parent="Decals"]
+position = Vector2(2049, 27)
+script = ExtResource("20_decal")
+piece = "crack_b"
+
+[node name="Leaves2" type="Node2D" parent="Decals"]
+position = Vector2(2193, 3)
+script = ExtResource("20_decal")
+piece = "leaves"
+
+[node name="PuddleA1" type="Node2D" parent="Decals"]
+position = Vector2(2325, 16.5)
+script = ExtResource("20_decal")
+piece = "puddle_a"
+
+[node name="CrackA2" type="Node2D" parent="Decals"]
+position = Vector2(2802, 25.5)
+script = ExtResource("20_decal")
+piece = "crack_a"
+flip = true
+
+[node name="Leaves3" type="Node2D" parent="Decals"]
+position = Vector2(3105, 12)
+script = ExtResource("20_decal")
+piece = "leaves"
+
 [node name="Scenery" type="Node2D" parent="."]
 
 [node name="EntryGate" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(40, 0)
 kind = 17
 size = Vector2(140, 110)
+position = Vector2(140, 0)
 
 [node name="House1" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(310, 0)
 kind = 0
 size = Vector2(150, 140)
+position = Vector2(430, 0)
 
 [node name="WelcomeSign" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(560, 0)
 kind = 11
 size = Vector2(170, 72)
 text = "WELCOME TO SUNNYVALE"
+position = Vector2(670, 0)
 
 [node name="Planter1" parent="Scenery" instance=ExtResource("5_scenery")]
 position = Vector2(1400, -120)
@@ -126,6 +187,11 @@ size = Vector2(30, 120)
 position = Vector2(2750, 0)
 kind = 6
 size = Vector2(30, 150)
+
+[node name="Bench_Target" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(2580, 0)
+kind = 20
+size = Vector2(110, 35)
 
 [node name="LandingLamp_Exit" parent="Scenery" instance=ExtResource("5_scenery")]
 position = Vector2(3040, 0)

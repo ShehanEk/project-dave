@@ -138,7 +138,11 @@ func _probe_platform_cycle() -> void:
 	await _unload()
 
 
-# (c) roof fall into the service lane below the gap-platform -> back up.
+# (c) roof fall into the service lane below the first roofs -> back up.
+# C41 (the fun pass): the street now ends at x 1880, under the end of
+# Terrace3; past it the roofs have real gaps (RoofPit_S1..S9 cost one health
+# and return Dave to the roof he jumped from; test_m7_roof_fall.gd). The
+# fall below now lands on the remaining street under Terrace3.
 # LAY-05 regression: the original fix removed RecoveryStepA/RecoveryStepB
 # (they sat inside the GapPlatform's own x-sweep, so the platform could
 # shove the hero off them or block the climb) and tried to have the hero
@@ -167,7 +171,7 @@ func _probe_roof_fall_recovery() -> void:
 		await _load()
 		var a3 := _area("L01-A03")
 		await seconds(phase)
-		await _place(a3, Vector2(2150, -4))
+		await _place(a3, Vector2(1700, -4))
 		var hp0: int = Session.state.get("health", 6)
 		var spec := [
 			{"pos": Vector2(1490, 0), "tol": 15.0},
@@ -288,22 +292,32 @@ func _probe_a06_pit_reset_hold_right() -> void:
 
 
 # (i) fall off the roof after the first terrace -> walk the street to the exit?
+# C41: the street ends at x 1880 and the roof gaps past it return Dave to
+# the roof he fell from, so holding right can never reach the exit.
 func _probe_a03_midroof_street_bypass() -> void:
 	await _load()
 	var a3 := _area("L01-A03")
-	await _place(a3, Vector2(2150, -4))
+	await _place(a3, Vector2(1700, -4))
 	press("move_right")
 	var t := 0
 	var reached := false
 	while t < 60 * 30:
 		await get_tree().physics_frame
 		t += 1
+		# Walking off the end of the street can kill Dave (a death rebuilds
+		# every area), so look the area up again whenever it was freed.
+		if not is_instance_valid(a3):
+			a3 = _area("L01-A03")
+			if a3 == null:
+				continue
 		var lp := _local(a3)
 		if lp.x >= a3.width - 64.0:
 			reached = absf(lp.y) < 8.0
 			break
 	release_all()
+	if not is_instance_valid(a3):
+		a3 = _area("L01-A03")
 	var lp := _local(a3)
-	print("[probe_lay_recovery] A03 fall to street at x=2150 then hold right only: reached A03 exit=%s in %.2fs final local=(%.0f,%.0f)" % [reached, t / 60.0, lp.x, lp.y])
+	print("[probe_lay_recovery] A03 fall to street at x=1700 then hold right only: reached A03 exit=%s in %.2fs final local=(%.0f,%.0f)" % [reached, t / 60.0, lp.x, lp.y])
 	check(not reached, "A03 service lane below the roofs does not let the hero skip B03-B05 (E05, E06, CP02) by walking right (%.1fs)" % (t / 60.0))
 	await _unload()

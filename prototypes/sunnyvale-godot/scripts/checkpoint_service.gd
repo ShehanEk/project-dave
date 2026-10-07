@@ -75,7 +75,7 @@ var _re_generic_id: RegEx
 
 
 func _ready() -> void:
-	_re_checkpoint = _compile("^(CP0[0-5]|UPG01)$")
+	_re_checkpoint = _compile("^(CP0[0-7]|UPG01)$")
 	_re_weapon_type = _compile("^W[0-9]{2}$")
 	_re_weapon_instance = _compile("^L01-W[0-9]{2}-P[0-9]{2}$")
 	_re_switch = _compile("^L01-SW[0-9]{2}$")

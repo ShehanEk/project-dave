@@ -235,6 +235,13 @@ func _run_continue() -> void:
 	while bot.points.size() > 0 and (bot.points[0] as RoutePoint).global_position.x < resume_x - 4.0:
 		bot.points.pop_front()
 		bot._point_areas.pop_front()
+	# The bot walks the route and never shoots back. Since the fun pass (C41)
+	# the lockdown fights and the wicket's 16 s hold-out are tuned for a
+	# player who fights, so a bot that only walks can be killed there; a death
+	# then rebuilds the area under it and it loops until the timeout. This
+	# check is about the exported build playing through, not combat, so the
+	# hero is kept up (as every route test's bot is).
+	level.hero.debug_invulnerable = true
 	bot.start(level.hero)
 	bot.failed.connect(func(msg: String, _idx: int, _pos: Vector2) -> void:
 		_fail("RouteBot failed en route to completion: %s" % msg)

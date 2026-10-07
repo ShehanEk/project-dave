@@ -140,7 +140,9 @@ func _build_visual() -> void:
 			var g := Sprite2D.new()
 			g.texture = Lights.soft_disc()
 			g.scale = Vector2.ONE * 0.2
-			g.position = Vector2(0.5, 3.5)
+			# On the palm: the rig's grip socket (a pixel rig's hand is bigger than the old one).
+			var sock: Dictionary = rig.sockets.get("grip_" + hand.trim_suffix("_hand"), {})
+			g.position = sock["pos"] if sock.has("pos") else Vector2(0.5, 3.5)
 			g.z_index = 12
 			g.light_mask = 0
 			var mat := CanvasItemMaterial.new()
@@ -539,6 +541,8 @@ func _update_lights(delta: float) -> void:
 
 func _bark(lines: PackedStringArray) -> void:
 	if lines.is_empty() or bark_label == null:
+		return
+	if _group != null and not _group.claim_voice(self, BARK_TIME):
 		return
 	bark_label.text = lines[_rng.randi_range(0, lines.size() - 1)]
 	bark_label.visible = true

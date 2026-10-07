@@ -68,13 +68,17 @@ const PA_BEAT := 3.2
 ## workbench purchase/service checkpoint (its own "Respawn" marker mirrored here
 ## per CONVENTIONS.md IDs "checkpoints `CP00`...`CP05`" / "workbench `L01-UPG01`");
 ## CP05 is the exit wicket's safe landing (M5 wires the actual commit).
+## CP06 (mid-plaza, A04) and CP07 (mid-exit, A06) are the fun pass's extra
+## recovery stations (C41), numbered after the original six.
 const CHECKPOINT_MARKERS := {
 	"CP00": [0, "Spawn_CP00"],
 	"CP01": [1, "Respawn_CP01"],
 	"CP02": [2, "Respawn_CP02"],
+	"CP06": [3, "Respawn_CP06"],
 	"CP03": [3, "Respawn_CP03"],
 	"CP04": [4, "Respawn_CP04"],
 	"UPG01": [4, "Respawn_UPG01"],
+	"CP07": [5, "Respawn_CP07"],
 	"CP05": [5, "Respawn_CP05"],
 }
 

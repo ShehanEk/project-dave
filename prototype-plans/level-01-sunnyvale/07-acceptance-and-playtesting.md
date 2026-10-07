@@ -23,8 +23,8 @@ A complete prototype must launch, finish, preserve the confirmed rules, and meet
 | T03 | Wall / enemy shots | Solid walls block; Night Guard and Staffer body hits damage and bleed (no green HIT spark); Patrol Rover frontal hits show blocked feedback |
 | T04 | Night Guard and Staffer | Every swing or lunge warns; one attack deals at most one health during immunity |
 | T05 | Patrol Rover | Charge stays grounded and straight; a backstop stall exposes the rear battery; three base hits fit a fair opening |
-| T06 | Mixed lane | At most two enemies active; only one windup/active attacker; usable retreat remains |
-| T07 | Roof fall | Recovery lane reaches the route by normal jumps; no damage, trap, or forced fight |
+| T06 | Mixed lane | No more windup/active attackers than the group's token pool allows (one, or two in the A06 lockdown fights, C41); usable retreat remains |
+| T07 | Roof fall | Under the first roofs, the recovery lane reaches the route by normal jumps at no cost; past them a roof-gap fall costs one health and returns Dave to the roof he jumped from, never trapping him (C41) |
 | T08 | SW01 | Walkway extends once; repeated use/reload cannot retract it under the hero |
 | T09 | Main treasure | 45 chips available before the workbench; ignoring some/all never blocks a route |
 | T10 | Optional routes | Lockout Notice (EF01) and separate 20-chip cache reachable without new abilities |

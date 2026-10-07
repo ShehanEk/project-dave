@@ -59,7 +59,7 @@ Every enemy dies, and none is merely disabled. Humans (the Night Guard and the S
 
 ## Combat fairness
 
-At most two enemies may be active in a group and one may hold the attack token through its windup/active attack. Others can approach without contact damage but must not body-block every exit. After that attack, release the token fairly; do not let one enemy monopolize it. Player damage is from explicit attack hitboxes, not every sprite overlap.
+At most two enemies may be active in a group and one may hold the attack token through its windup/active attack. **C41 (the fun pass) relaxes this:** a group may field up to four enemies, and a group's `max_attackers` (one by default) sets how many may hold a token at once — two in the A06 lockdown fights. Groups that wake at different times in one yard share one token pool. Others can approach without contact damage but must not body-block every exit. After that attack, release the token fairly; do not let one enemy monopolize it. Player damage is from explicit attack hitboxes, not every sprite overlap.
 
 No cross-group pursuit, attacks from unseen camera regions, random spawns, or damage while returning control after a scene. A shot shows hit/blocked feedback distinctly. Each enemy is defeated once; no random currency drops. Every tell is carried by motion, sound and shape as well as by the reserved tell colors (red means attack now), and darkness must never hide one.
 
