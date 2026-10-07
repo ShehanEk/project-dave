@@ -21,6 +21,8 @@ const SPEAKER_COLORS := {
 }
 const SPEAKER_DEFAULT := Color("#FFB02E")
 
+const PixelUi := preload("res://scripts/ui/pixel_ui.gd")
+
 @onready var _panel: PanelContainer = $Panel
 @onready var _speaker_label: Label = $Panel/VBox/SpeakerLabel
 @onready var _text_label: Label = $Panel/VBox/TextLabel
@@ -30,6 +32,15 @@ const SPEAKER_DEFAULT := Color("#FFB02E")
 func _ready() -> void:
 	layer = 18
 	add_to_group("subtitle_panel")
+	# Pixel UI (Sheet 11): the panel frame, nine-sliced at 3 px per UI pixel,
+	# opaque navy (the scene's flat 90% plate stays as the no-art fallback).
+	var frame := PixelUi.frame_style("panel", 4)
+	if frame:
+		frame.content_margin_left = 21.0
+		frame.content_margin_right = 21.0
+		frame.content_margin_top = 15.0
+		frame.content_margin_bottom = 15.0
+		_panel.add_theme_stylebox_override("panel", frame)
 	_panel.visible = false
 	_hint_label.visible = false
 	_apply_text_size()

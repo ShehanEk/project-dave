@@ -1,149 +1,272 @@
-[gd_resource type="Theme" load_steps=9 format=3]
+[gd_resource type="Theme" format=3]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-bg_color = Color(0.055, 0.09, 0.149, 0.96)
-border_width_left = 4
-border_width_top = 4
-border_width_right = 4
-border_width_bottom = 4
-border_color = Color(0.247, 0.878, 0.816, 0.55)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
+[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/panel.png" id="1_panel"]
+[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/button_normal.png" id="2_btn_normal"]
+[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/button_hover.png" id="3_btn_hover"]
+[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/button_pressed.png" id="4_btn_pressed"]
+[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/button_disabled.png" id="5_btn_disabled"]
+[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/focus.png" id="6_focus"]
+[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/slider_track.png" id="7_track"]
+[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/slider_fill.png" id="8_fill"]
+[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/slider_knob.png" id="9_knob"]
+[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/check_off.png" id="10_check_off"]
+[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/check_on.png" id="11_check_on"]
+[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/divider.png" id="12_divider"]
+[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/arrow_down.png" id="13_arrow_down"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
-bg_color = Color(0.11, 0.165, 0.227, 1)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.247, 0.878, 0.816, 0.55)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-content_margin_left = 14.0
-content_margin_right = 14.0
-content_margin_top = 8.0
-content_margin_bottom = 8.0
+[sub_resource type="CanvasTexture" id="CanvasTexture_panel"]
+diffuse_texture = ExtResource("1_panel")
+texture_filter = 1
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_hover"]
-bg_color = Color(0.18, 0.231, 0.306, 1)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.247, 0.878, 0.816, 0.55)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-content_margin_left = 14.0
-content_margin_right = 14.0
-content_margin_top = 8.0
-content_margin_bottom = 8.0
+[sub_resource type="CanvasTexture" id="CanvasTexture_btn_normal"]
+diffuse_texture = ExtResource("2_btn_normal")
+texture_filter = 1
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_pressed"]
-bg_color = Color(0.106, 0.365, 0.345, 1)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.247, 0.878, 0.816, 0.55)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-content_margin_left = 14.0
-content_margin_right = 14.0
-content_margin_top = 8.0
-content_margin_bottom = 8.0
+[sub_resource type="CanvasTexture" id="CanvasTexture_btn_hover"]
+diffuse_texture = ExtResource("3_btn_hover")
+texture_filter = 1
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_disabled"]
-bg_color = Color(0.11, 0.165, 0.227, 0.45)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.18, 0.231, 0.306, 0.6)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-content_margin_left = 14.0
-content_margin_right = 14.0
-content_margin_top = 8.0
-content_margin_bottom = 8.0
+[sub_resource type="CanvasTexture" id="CanvasTexture_btn_pressed"]
+diffuse_texture = ExtResource("4_btn_pressed")
+texture_filter = 1
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_focus"]
+[sub_resource type="CanvasTexture" id="CanvasTexture_btn_disabled"]
+diffuse_texture = ExtResource("5_btn_disabled")
+texture_filter = 1
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_focus"]
+diffuse_texture = ExtResource("6_focus")
+texture_filter = 1
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_track"]
+diffuse_texture = ExtResource("7_track")
+texture_filter = 1
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_fill"]
+diffuse_texture = ExtResource("8_fill")
+texture_filter = 1
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_knob"]
+diffuse_texture = ExtResource("9_knob")
+texture_filter = 1
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_check_off"]
+diffuse_texture = ExtResource("10_check_off")
+texture_filter = 1
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_check_on"]
+diffuse_texture = ExtResource("11_check_on")
+texture_filter = 1
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_divider"]
+diffuse_texture = ExtResource("12_divider")
+texture_filter = 1
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_arrow_down"]
+diffuse_texture = ExtResource("13_arrow_down")
+texture_filter = 1
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_panel"]
+texture = SubResource("CanvasTexture_panel")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+content_margin_left = 18.0
+content_margin_top = 18.0
+content_margin_right = 18.0
+content_margin_bottom = 18.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_popup"]
+texture = SubResource("CanvasTexture_panel")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+content_margin_left = 9.0
+content_margin_top = 9.0
+content_margin_right = 9.0
+content_margin_bottom = 9.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_normal"]
+texture = SubResource("CanvasTexture_btn_normal")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+content_margin_left = 18.0
+content_margin_top = 10.0
+content_margin_right = 18.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_hover"]
+texture = SubResource("CanvasTexture_btn_hover")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+content_margin_left = 18.0
+content_margin_top = 10.0
+content_margin_right = 18.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_pressed"]
+texture = SubResource("CanvasTexture_btn_pressed")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+content_margin_left = 18.0
+content_margin_top = 10.0
+content_margin_right = 18.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_disabled"]
+texture = SubResource("CanvasTexture_btn_disabled")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+content_margin_left = 18.0
+content_margin_top = 10.0
+content_margin_right = 18.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_focus"]
+texture = SubResource("CanvasTexture_focus")
+texture_margin_left = 18.0
+texture_margin_top = 15.0
+texture_margin_right = 18.0
+texture_margin_bottom = 15.0
+expand_margin_left = 6.0
+expand_margin_top = 6.0
+expand_margin_right = 6.0
+expand_margin_bottom = 6.0
 draw_center = false
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(1, 0.69, 0.18, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-expand_margin_left = 2.0
-expand_margin_top = 2.0
-expand_margin_right = 2.0
-expand_margin_bottom = 2.0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slider_bg"]
-bg_color = Color(0.11, 0.165, 0.227, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.247, 0.878, 0.816, 0.55)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-content_margin_top = 6.0
-content_margin_bottom = 6.0
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_track"]
+texture = SubResource("CanvasTexture_track")
+texture_margin_left = 6.0
+texture_margin_top = 6.0
+texture_margin_right = 6.0
+texture_margin_bottom = 6.0
+content_margin_top = 9.0
+content_margin_bottom = 9.0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slider_fill"]
-bg_color = Color(0.247, 0.878, 0.816, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-content_margin_top = 6.0
-content_margin_bottom = 6.0
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fill"]
+texture = SubResource("CanvasTexture_fill")
+texture_margin_left = 6.0
+texture_margin_top = 6.0
+texture_margin_right = 6.0
+texture_margin_bottom = 6.0
+content_margin_top = 9.0
+content_margin_bottom = 9.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_scroll"]
+texture = SubResource("CanvasTexture_track")
+texture_margin_left = 6.0
+texture_margin_top = 6.0
+texture_margin_right = 6.0
+texture_margin_bottom = 6.0
+content_margin_left = 9.0
+content_margin_top = 9.0
+content_margin_right = 9.0
+content_margin_bottom = 9.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_scroll_grabber"]
+texture = SubResource("CanvasTexture_fill")
+texture_margin_left = 6.0
+texture_margin_top = 6.0
+texture_margin_right = 6.0
+texture_margin_bottom = 6.0
+content_margin_left = 9.0
+content_margin_top = 9.0
+content_margin_right = 9.0
+content_margin_bottom = 9.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_divider"]
+texture = SubResource("CanvasTexture_divider")
+content_margin_top = 5.0
+content_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_none"]
 
 [resource]
 default_font_size = 22
 Label/colors/font_color = Color(0.847, 0.886, 0.925, 1)
 Label/font_sizes/font_size = 20
-Panel/styles/panel = SubResource("StyleBoxFlat_panel")
-PanelContainer/styles/panel = SubResource("StyleBoxFlat_panel")
-Button/styles/normal = SubResource("StyleBoxFlat_btn_normal")
-Button/styles/hover = SubResource("StyleBoxFlat_btn_hover")
-Button/styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
-Button/styles/disabled = SubResource("StyleBoxFlat_btn_disabled")
-Button/styles/focus = SubResource("StyleBoxFlat_btn_focus")
+Panel/styles/panel = SubResource("StyleBoxTexture_panel")
+PanelContainer/styles/panel = SubResource("StyleBoxTexture_panel")
+Button/styles/normal = SubResource("StyleBoxTexture_btn_normal")
+Button/styles/hover = SubResource("StyleBoxTexture_btn_hover")
+Button/styles/pressed = SubResource("StyleBoxTexture_btn_pressed")
+Button/styles/hover_pressed = SubResource("StyleBoxTexture_btn_pressed")
+Button/styles/disabled = SubResource("StyleBoxTexture_btn_disabled")
+Button/styles/focus = SubResource("StyleBoxTexture_focus")
 Button/colors/font_color = Color(0.847, 0.886, 0.925, 1)
 Button/colors/font_hover_color = Color(1, 1, 1, 1)
 Button/colors/font_pressed_color = Color(1, 1, 1, 1)
+Button/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
 Button/colors/font_disabled_color = Color(0.45, 0.5, 0.56, 1)
 Button/colors/font_focus_color = Color(1, 1, 1, 1)
 Button/font_sizes/font_size = 22
-OptionButton/styles/normal = SubResource("StyleBoxFlat_btn_normal")
-OptionButton/styles/hover = SubResource("StyleBoxFlat_btn_hover")
-OptionButton/styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
-OptionButton/styles/disabled = SubResource("StyleBoxFlat_btn_disabled")
-OptionButton/styles/focus = SubResource("StyleBoxFlat_btn_focus")
+OptionButton/styles/normal = SubResource("StyleBoxTexture_btn_normal")
+OptionButton/styles/hover = SubResource("StyleBoxTexture_btn_hover")
+OptionButton/styles/pressed = SubResource("StyleBoxTexture_btn_pressed")
+OptionButton/styles/hover_pressed = SubResource("StyleBoxTexture_btn_pressed")
+OptionButton/styles/disabled = SubResource("StyleBoxTexture_btn_disabled")
+OptionButton/styles/focus = SubResource("StyleBoxTexture_focus")
 OptionButton/colors/font_color = Color(0.847, 0.886, 0.925, 1)
 OptionButton/colors/font_hover_color = Color(1, 1, 1, 1)
+OptionButton/colors/font_pressed_color = Color(1, 1, 1, 1)
+OptionButton/colors/font_focus_color = Color(1, 1, 1, 1)
+OptionButton/constants/arrow_margin = 12
 OptionButton/font_sizes/font_size = 20
-CheckButton/styles/focus = SubResource("StyleBoxFlat_btn_focus")
+OptionButton/icons/arrow = SubResource("CanvasTexture_arrow_down")
+PopupMenu/styles/panel = SubResource("StyleBoxTexture_popup")
+PopupMenu/styles/hover = SubResource("StyleBoxTexture_btn_hover")
+PopupMenu/colors/font_color = Color(0.847, 0.886, 0.925, 1)
+PopupMenu/colors/font_hover_color = Color(1, 1, 1, 1)
+PopupMenu/font_sizes/font_size = 20
+CheckButton/styles/normal = SubResource("StyleBoxEmpty_none")
+CheckButton/styles/hover = SubResource("StyleBoxEmpty_none")
+CheckButton/styles/pressed = SubResource("StyleBoxEmpty_none")
+CheckButton/styles/hover_pressed = SubResource("StyleBoxEmpty_none")
+CheckButton/styles/disabled = SubResource("StyleBoxEmpty_none")
+CheckButton/styles/focus = SubResource("StyleBoxTexture_focus")
+CheckButton/icons/checked = SubResource("CanvasTexture_check_on")
+CheckButton/icons/unchecked = SubResource("CanvasTexture_check_off")
+CheckButton/icons/checked_disabled = SubResource("CanvasTexture_check_on")
+CheckButton/icons/unchecked_disabled = SubResource("CanvasTexture_check_off")
+CheckButton/icons/checked_mirrored = SubResource("CanvasTexture_check_on")
+CheckButton/icons/unchecked_mirrored = SubResource("CanvasTexture_check_off")
+CheckButton/icons/checked_disabled_mirrored = SubResource("CanvasTexture_check_on")
+CheckButton/icons/unchecked_disabled_mirrored = SubResource("CanvasTexture_check_off")
 CheckButton/colors/font_color = Color(0.847, 0.886, 0.925, 1)
 CheckButton/font_sizes/font_size = 20
-HSlider/styles/slider = SubResource("StyleBoxFlat_slider_bg")
-HSlider/styles/grabber_area = SubResource("StyleBoxFlat_slider_fill")
-HSlider/styles/grabber_area_highlight = SubResource("StyleBoxFlat_slider_fill")
-HSlider/styles/focus = SubResource("StyleBoxFlat_btn_focus")
+CheckBox/styles/normal = SubResource("StyleBoxEmpty_none")
+CheckBox/styles/hover = SubResource("StyleBoxEmpty_none")
+CheckBox/styles/pressed = SubResource("StyleBoxEmpty_none")
+CheckBox/styles/hover_pressed = SubResource("StyleBoxEmpty_none")
+CheckBox/styles/disabled = SubResource("StyleBoxEmpty_none")
+CheckBox/styles/focus = SubResource("StyleBoxTexture_focus")
+CheckBox/icons/checked = SubResource("CanvasTexture_check_on")
+CheckBox/icons/unchecked = SubResource("CanvasTexture_check_off")
+CheckBox/icons/checked_disabled = SubResource("CanvasTexture_check_on")
+CheckBox/icons/unchecked_disabled = SubResource("CanvasTexture_check_off")
+CheckBox/colors/font_color = Color(0.847, 0.886, 0.925, 1)
+CheckBox/font_sizes/font_size = 20
+HSlider/styles/slider = SubResource("StyleBoxTexture_track")
+HSlider/styles/grabber_area = SubResource("StyleBoxTexture_fill")
+HSlider/styles/grabber_area_highlight = SubResource("StyleBoxTexture_fill")
+HSlider/styles/focus = SubResource("StyleBoxTexture_focus")
+HSlider/icons/grabber = SubResource("CanvasTexture_knob")
+HSlider/icons/grabber_highlight = SubResource("CanvasTexture_knob")
+HSlider/icons/grabber_disabled = SubResource("CanvasTexture_knob")
+VScrollBar/styles/scroll = SubResource("StyleBoxTexture_scroll")
+VScrollBar/styles/scroll_focus = SubResource("StyleBoxTexture_scroll")
+VScrollBar/styles/grabber = SubResource("StyleBoxTexture_scroll_grabber")
+VScrollBar/styles/grabber_highlight = SubResource("StyleBoxTexture_scroll_grabber")
+VScrollBar/styles/grabber_pressed = SubResource("StyleBoxTexture_scroll_grabber")
+HSeparator/styles/separator = SubResource("StyleBoxTexture_divider")
+HSeparator/constants/separation = 12

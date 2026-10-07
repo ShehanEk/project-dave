@@ -119,6 +119,12 @@ so it's used as-is.
 | Mouse left button | `mouse_left_outline.svg` |
 | Mouse move / aim | `mouse_move.svg` |
 
+**Superseded (2026-10-07):** the game no longer draws these icons. The pixel
+UI pass (Sheets 11 and 12, `scripts/ui/pixel_ui.gd`) replaced them with pixel
+key caps lettered with the current binding and pixel mice;
+`input_icon_map.gd` has no Kenney table any more. The SVGs stay in the
+folder, unused; the notes below describe the earlier wiring.
+
 **Wiring status: done.** `ControlsPanel` (`scripts/ui/controls_panel.gd`)
 renders each binding as a small `TextureRect` icon per key (falling back to
 text for a binding with no icon above) instead of a joined string. The

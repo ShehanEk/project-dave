@@ -13,7 +13,7 @@ signal closed(swapped: bool)
 
 var _pad_id: String = ""
 
-@onready var _title_label: Label = $Panel/VBox/TitleLabel
+@onready var _title_label: Label = $Panel/VBox/TitleRow/TitleLabel
 @onready var _confirm_button: Button = $Panel/VBox/HBox/ConfirmButton
 @onready var _decline_button: Button = $Panel/VBox/HBox/DeclineButton
 

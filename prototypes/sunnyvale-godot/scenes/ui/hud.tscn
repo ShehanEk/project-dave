@@ -1,10 +1,12 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
 [ext_resource type="Script" path="res://scripts/world/toast_label.gd" id="2_toast"]
 [ext_resource type="Script" path="res://scripts/ui/weapon_icon.gd" id="3_weapon_icon"]
 [ext_resource type="Script" path="res://scripts/ui/chip_icon.gd" id="4_chip_icon"]
 [ext_resource type="Script" path="res://scripts/ui/keycard_icon.gd" id="5_keycard_icon"]
+[ext_resource type="Script" path="res://scripts/ui/pixel_icon.gd" id="6_pixel_icon"]
+[ext_resource type="Script" path="res://scripts/ui/pixel_frame.gd" id="7_pixel_frame"]
 
 [node name="Hud" type="CanvasLayer"]
 script = ExtResource("1_hud")
@@ -14,39 +16,57 @@ offset_left = 16.0
 offset_top = 14.0
 offset_right = 480.0
 offset_bottom = 54.0
-theme_override_constants/separation = 16
+theme_override_constants/separation = 15
 
 [node name="HealthRow" type="HBoxContainer" parent="TopBar"]
 layout_mode = 2
 theme_override_constants/separation = 3
 
-[node name="Health0" type="Panel" parent="TopBar/HealthRow"]
-custom_minimum_size = Vector2(22, 32)
+[node name="Health0" type="Control" parent="TopBar/HealthRow"]
+custom_minimum_size = Vector2(27, 36)
 layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("6_pixel_icon")
+piece = "health_full"
 
-[node name="Health1" type="Panel" parent="TopBar/HealthRow"]
-custom_minimum_size = Vector2(22, 32)
+[node name="Health1" type="Control" parent="TopBar/HealthRow"]
+custom_minimum_size = Vector2(27, 36)
 layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("6_pixel_icon")
+piece = "health_full"
 
-[node name="Health2" type="Panel" parent="TopBar/HealthRow"]
-custom_minimum_size = Vector2(22, 32)
+[node name="Health2" type="Control" parent="TopBar/HealthRow"]
+custom_minimum_size = Vector2(27, 36)
 layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("6_pixel_icon")
+piece = "health_full"
 
-[node name="Health3" type="Panel" parent="TopBar/HealthRow"]
-custom_minimum_size = Vector2(22, 32)
+[node name="Health3" type="Control" parent="TopBar/HealthRow"]
+custom_minimum_size = Vector2(27, 36)
 layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("6_pixel_icon")
+piece = "health_full"
 
-[node name="Health4" type="Panel" parent="TopBar/HealthRow"]
-custom_minimum_size = Vector2(22, 32)
+[node name="Health4" type="Control" parent="TopBar/HealthRow"]
+custom_minimum_size = Vector2(27, 36)
 layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("6_pixel_icon")
+piece = "health_full"
 
-[node name="Health5" type="Panel" parent="TopBar/HealthRow"]
-custom_minimum_size = Vector2(22, 32)
+[node name="Health5" type="Control" parent="TopBar/HealthRow"]
+custom_minimum_size = Vector2(27, 36)
 layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("6_pixel_icon")
+piece = "health_full"
 
 [node name="WeaponBox" type="HBoxContainer" parent="TopBar"]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 9
 
 [node name="WeaponIcon" type="Control" parent="TopBar/WeaponBox"]
 custom_minimum_size = Vector2(34, 28)
@@ -56,33 +76,39 @@ script = ExtResource("3_weapon_icon")
 
 [node name="TagLabel" type="Label" parent="TopBar/WeaponBox"]
 layout_mode = 2
+size_flags_vertical = 4
 theme_override_colors/font_color = Color(0.847, 0.886, 0.925, 1)
 theme_override_colors/font_outline_color = Color(0.027, 0.035, 0.059, 1)
 theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 22
 text = "P01"
 
-[node name="QuickcyclePip" type="ColorRect" parent="TopBar/WeaponBox"]
-custom_minimum_size = Vector2(14, 14)
-layout_mode = 2
-size_flags_vertical = 4
-color = Color(0.663, 0.443, 0.29, 1)
+[node name="QuickcyclePip" type="Control" parent="TopBar/WeaponBox"]
 visible = false
-
-[node name="ReadyDot" type="ColorRect" parent="TopBar/WeaponBox"]
-custom_minimum_size = Vector2(14, 14)
+custom_minimum_size = Vector2(12, 12)
 layout_mode = 2
 size_flags_vertical = 4
-color = Color(0.529, 0.706, 0.369, 1)
+script = ExtResource("6_pixel_icon")
+piece = "pip_lit"
+fallback_color = Color(1, 0.69, 0.18, 1)
+
+[node name="ReadyDot" type="Control" parent="TopBar/WeaponBox"]
+custom_minimum_size = Vector2(15, 15)
+layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("6_pixel_icon")
+piece = "ready_lit"
+fallback_color = Color(0.302, 0.89, 0.541, 1)
 
 [node name="ChipIcon" type="Control" parent="TopBar"]
-custom_minimum_size = Vector2(20, 20)
+custom_minimum_size = Vector2(36, 36)
 layout_mode = 2
 size_flags_vertical = 4
 script = ExtResource("4_chip_icon")
 
 [node name="WalletLabel" type="Label" parent="TopBar"]
 layout_mode = 2
+size_flags_vertical = 4
 theme_override_colors/font_color = Color(1, 0.82, 0.4, 1)
 theme_override_colors/font_outline_color = Color(0.027, 0.035, 0.059, 1)
 theme_override_constants/outline_size = 5
@@ -91,7 +117,7 @@ text = "Chips: 0"
 
 [node name="KeycardIcon" type="Control" parent="TopBar"]
 visible = false
-custom_minimum_size = Vector2(28, 22)
+custom_minimum_size = Vector2(42, 30)
 layout_mode = 2
 size_flags_vertical = 4
 script = ExtResource("5_keycard_icon")
@@ -111,6 +137,12 @@ horizontal_alignment = 2
 autowrap_mode = 2
 text = "Reach the server depot."
 
+[node name="Banner" type="Control" parent="ObjectiveLabel"]
+show_behind_parent = true
+layout_mode = 0
+mouse_filter = 2
+script = ExtResource("7_pixel_frame")
+
 [node name="Toast" type="Label" parent="."]
 anchor_left = 0.5
 anchor_right = 0.5
@@ -121,6 +153,7 @@ offset_bottom = 120.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 22
 horizontal_alignment = 1
+vertical_alignment = 1
 autowrap_mode = 2
 text = ""
 script = ExtResource("2_toast")
