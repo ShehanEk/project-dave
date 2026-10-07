@@ -534,14 +534,20 @@ func _update_presentation(delta: float) -> void:
 	var chassis := _part("chassis")
 	var tilt := 0.0
 	var bob := Vector2.ZERO
+	# A pixel-art rig sits on whole art pixels (cutout_rig.gd rounds the root),
+	# so its bounce and shake are one art pixel, not a fraction of one.
+	var pw: float = rig.pixel_world if rig.pixel_art else 0.0
 	match state:
 		State.PATROL:
-			bob.y = 0.0 if calm else sin(_anim_t * 9.0) * 0.35
+			if pw > 0.0:
+				bob.y = -pw if not calm and sin(_anim_t * 9.0) > 0.5 else 0.0
+			else:
+				bob.y = 0.0 if calm else sin(_anim_t * 9.0) * 0.35
 		State.WINDUP:
 			# Rocking back on the rear wheels, nose up, shaking with the spin.
 			tilt = -0.07 * clampf(_state_timer / 0.2, 0.0, 1.0)
 			if not calm:
-				bob.x = sin(_anim_t * 60.0) * 0.5
+				bob.x = (pw if sin(_anim_t * 60.0) > 0.0 else 0.0) if pw > 0.0 else sin(_anim_t * 60.0) * 0.5
 		State.CHARGE:
 			tilt = 0.035
 		State.STALL:

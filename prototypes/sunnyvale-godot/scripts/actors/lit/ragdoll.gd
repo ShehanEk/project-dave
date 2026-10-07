@@ -35,7 +35,7 @@ const DETACHED := ["baton"]
 ## ~45° past its limit after a sideways fall.
 const STIFF_JOINTS := {"near_forearm": 3.0, "far_forearm": 3.0, "near_shin": 2.5, "far_shin": 2.5,
 		"near_thigh": 3.0, "far_thigh": 3.0}
-const LOCKED := ["near_hand", "far_hand", "near_foot", "far_foot", "head"]
+const LOCKED := ["near_hand", "far_hand", "near_foot", "far_foot", "head", "port"]
 const PartScript := preload("res://scripts/actors/lit/ragdoll_part.gd")
 
 var bodies: Dictionary = {}       # joint name -> RigidBody2D
@@ -111,7 +111,12 @@ func build(rig: Node2D, impulse: Vector2, hit_position: Vector2, base_velocity: 
 				limits[jname] = Vector2(-hi, -lo) if flipped else Vector2(lo, hi)
 	for entry in locked_sprites:
 		var sprite: Sprite2D = entry[0]
-		var holder: RigidBody2D = bodies[entry[1]]
+		# (A part locked onto a locked part, the Staffer's port on its head, rides on whatever
+		# the chain ends at: the torso.)
+		var holder_name: String = entry[1]
+		while not bodies.has(holder_name) and rig.defs.has(holder_name) and String(rig.defs[holder_name]["parent"]) != "":
+			holder_name = rig.defs[holder_name]["parent"]
+		var holder: RigidBody2D = bodies[holder_name]
 		var gt: Transform2D = sprite.global_transform
 		sprite.get_parent().remove_child(sprite)
 		holder.add_child(sprite)

@@ -7,10 +7,18 @@ extends TestCase
 ## with each frame's normal map (a frame without one falls back to flat
 ## normals). Presentation only — movement/collision are covered by the M1
 ## tests.
+##
+## Since 2026-10-07 Dave is the pixel-art rig (hero_rig_visual.gd, tested by
+## test_pixel_dave.gd); the Rook frames are its fallback when the rig's art is
+## missing, so every hero here is built with the Visual's `rig_path` pointed
+## at a file that does not exist (NO_RIG), and these checks keep the fallback
+## working. The facing and backpedal rules (hero.gd) are checked here on the
+## Rook frames and on the rig in test_pixel_dave.gd.
 
 const Frames := preload("res://scripts/actors/visuals/rook_frames.gd")
 const LIT_SHADER_PATH := "res://assets/shaders/lit_part.gdshader"
 const NORMAL_DIR := "res://assets/characters/rook/normals/"
+const NO_RIG := "res://assets/characters/lit/dave/__no_rig__.json"
 
 
 func run() -> void:
@@ -39,8 +47,10 @@ func _make_level() -> Hero:
 	floor_block.position = Vector2(-2000, 0)
 	add_child(floor_block)
 	var hero: Hero = load("res://scenes/actors/hero.tscn").instantiate()
+	hero.get_node("Visual").rig_path = NO_RIG     # the Rook-frame fallback
 	hero.position = Vector2(0, -1)
 	add_child(hero)
+	check(hero.visual.rig == null, "the hero is built with the Rook-frame fallback")
 	return hero
 
 

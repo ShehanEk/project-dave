@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scripts/actors/hero.gd" id="1_hero"]
 [ext_resource type="Resource" path="res://data/tuning/hero.tres" id="2_tuning"]
 [ext_resource type="PackedScene" path="res://scenes/weapons/scrapjack.tscn" id="3_gun"]
-[ext_resource type="Script" path="res://scripts/actors/visuals/hero_visual.gd" id="4_visual"]
+[ext_resource type="Script" path="res://scripts/actors/visuals/hero_rig_visual.gd" id="4_visual"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
 size = Vector2(40, 96)
@@ -60,8 +60,7 @@ text = "Interact"
 position = Vector2(-6.3, -75.4)
 
 [node name="Scrapjack" parent="AimPivot" instance=ExtResource("3_gun")]
-position = Vector2(35.8, 0.2)
-scale = Vector2(0.65, 0.65)
+position = Vector2(33.5, 0)
 
 [node name="WristLight" type="PointLight2D" parent="AimPivot"]
 position = Vector2(22, 4)

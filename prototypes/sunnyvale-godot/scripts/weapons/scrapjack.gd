@@ -63,11 +63,18 @@ var _since_shot: float = 999.0
 ## fist holds the grip. Falls back to the drawn placeholder without it.
 const RIG_PATH := "res://assets/characters/lit/scrapjack/rig.json"
 const CutoutRig := preload("res://scripts/actors/lit/cutout_rig.gd")
-## Where the fist holds the grip, in this node's space (hero.tscn scales
-## the node by 0.65; the rig is scaled back so it keeps its imported size).
+## The muzzle flash is the user's pixel-art strip (Sheet 9), played at the
+## muzzle on each shot; the drawn starburst below is the fallback without it.
+const PixelFx := preload("res://scripts/effects/pixel_fx.gd")
+## Where the fist holds the grip, in this node's space. hero.tscn keeps the
+## node at scale 1 since Dave became a pixel rig (2026-10-07), so the gun's art
+## pixels stay 1.5 world px; a scaled node's rig is scaled back to its
+## imported size.
 const GRIP_LOCAL := Vector2(2.0, 3.0)
 ## How far the upper housing and the barrel (one sliding block, so no gap
-## opens between them) snap back on a shot, world px.
+## opens between them) snap back on a shot, world px. (The pixel-art gun
+## moves in whole art pixels, 1.5 world px, so the slide and the arm's kick
+## step instead of gliding: see _update_rig.)
 const SLIDE_BACK := 1.2
 ## The coils glow hot on a shot and cool over COIL_COOL seconds.
 const COIL_HOT := Color("#FF8A3D")
@@ -130,7 +137,8 @@ func _build_rig() -> void:
 	move_child(rig, 0)
 	rig.position = GRIP_LOCAL
 	# Under the arm (hero_visual.gd adds it after this gun), so Dave's fist
-	# wraps the grip; the parts keep their own order inside the rig.
+	# wraps the grip; the parts keep their own order inside the rig. Dave's
+	# pixel rig (hero_rig_visual.gd) re-layers it between his upper arm and fist.
 	rig.z_index = -8
 	var s := 1.0 / maxf(absf(scale.x), 0.001)
 	rig.scale = Vector2(s, s)
@@ -155,9 +163,15 @@ func _update_rig(delta: float) -> void:
 	var k: float = 0.0
 	if held and tuning and tuning.recoil_recovery_time > 0.0:
 		k = _recoil_timer / tuning.recoil_recovery_time
-	rig.position = GRIP_LOCAL + Vector2(-tuning.recoil_distance * motion_scale * k if tuning else 0.0, 0.0)
+	var push: float = tuning.recoil_distance * motion_scale * k if tuning else 0.0
+	var slide: float = SLIDE_BACK * k
+	if rig.pixel_art:
+		# A pixel-art gun recoils in whole art pixels (the node is scaled, the rig scaled back).
+		push = snappedf(push, rig.pixel_world / maxf(absf(scale.x), 0.001))
+		slide = snappedf(slide, rig.pixel_world)
+	rig.position = GRIP_LOCAL + Vector2(-push, 0.0)
 	for j in _slide_rest:
-		rig.joints[j].position = _slide_rest[j] + Vector2(-SLIDE_BACK * k, 0.0)
+		rig.joints[j].position = _slide_rest[j] + Vector2(-slide, 0.0)
 	rig.set_emissive("barrel", COIL_HOT, COIL_IDLE + COIL_SHOT * _heat * _heat)
 	# The charge light dips at a shot, then recovers.
 	rig.set_emissive("battery", CHARGE_TEAL, 1.3 - 0.7 * _heat)
@@ -238,6 +252,8 @@ func _try_fire() -> void:
 
 	_recoil_timer = tuning.recoil_recovery_time
 	_heat = 1.0
+	# Local to the muzzle, so the flash turns and flips with the aim.
+	PixelFx.spawn("muzzle_flash", Vector2.ZERO, _muzzle, {"local": true})
 	GameFeel.shot(self, forward)
 	fired.emit()
 
@@ -270,7 +286,8 @@ func _draw() -> void:
 	if rig == null:
 		_draw_placeholder(o)
 
-	if held and _recoil_timer > 0.0 and tuning and tuning.recoil_recovery_time > 0.0:
+	if held and _recoil_timer > 0.0 and tuning and tuning.recoil_recovery_time > 0.0 \
+			and not PixelFx.has_fx("muzzle_flash"):
 		_draw_flash(o, motion_scale)
 	_draw_tag(o)
 

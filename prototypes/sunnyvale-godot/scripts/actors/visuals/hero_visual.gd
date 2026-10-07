@@ -29,6 +29,11 @@ extends Node2D
 ##
 ## No class_name (hero.tscn attaches this by path; hero.gd calls it through
 ## an untyped `visual` reference).
+##
+## Since 2026-10-07 Dave is a pixel-art rig: hero.tscn attaches
+## hero_rig_visual.gd, which extends this script and falls back to it (these
+## Rook frames) only when the rig's art is missing; the Scrapjack is then at
+## scale 1 (hero.tscn) with its grip moved into this arm's fist.
 
 const Frames := preload("res://scripts/actors/visuals/rook_frames.gd")
 const SceneryDrawScript := preload("res://scripts/world/scenery_draw.gd")

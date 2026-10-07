@@ -1,0 +1,710 @@
+{
+ "name": "H01 Dave Harlan",
+ "kind": "human",
+ "texture_scale": 2,
+ "albedo": "albedo.png",
+ "normal": "normal.png",
+ "spec": "spec.png",
+ "ground_lock": true,
+ "sole_points": [
+  [
+   -3.0903,
+   10.8701
+  ],
+  [
+   6.2132,
+   11.2786
+  ],
+  [
+   11.3472,
+   10.8701
+  ]
+ ],
+ "parts": {
+  "head": {
+   "rect": [
+    84,
+    4,
+    42,
+    48
+   ],
+   "pivot": [
+    12.0,
+    42.0
+   ]
+  },
+  "hood": {
+   "rect": [
+    32,
+    68,
+    39,
+    27
+   ],
+   "pivot": [
+    24.0,
+    21.0
+   ]
+  },
+  "torso": {
+   "rect": [
+    4,
+    4,
+    48,
+    60
+   ],
+   "pivot": [
+    24.0,
+    54.0
+   ]
+  },
+  "pelvis": {
+   "rect": [
+    211,
+    4,
+    39,
+    30
+   ],
+   "pivot": [
+    18.0,
+    21.0
+   ]
+  },
+  "upper_arm": {
+   "rect": [
+    186,
+    4,
+    21,
+    39
+   ],
+   "pivot": [
+    9.0,
+    3.0
+   ]
+  },
+  "forearm": {
+   "rect": [
+    130,
+    4,
+    24,
+    48
+   ],
+   "pivot": [
+    12.0,
+    6.0
+   ]
+  },
+  "hand_grip": {
+   "rect": [
+    75,
+    68,
+    21,
+    27
+   ],
+   "pivot": [
+    9.0,
+    3.0
+   ]
+  },
+  "hand_open": {
+   "rect": [
+    4,
+    68,
+    24,
+    30
+   ],
+   "pivot": [
+    12.0,
+    3.0
+   ]
+  },
+  "thigh": {
+   "rect": [
+    56,
+    4,
+    24,
+    51
+   ],
+   "pivot": [
+    12.0,
+    3.0
+   ]
+  },
+  "shin": {
+   "rect": [
+    158,
+    4,
+    24,
+    45
+   ],
+   "pivot": [
+    12.0,
+    9.0
+   ]
+  },
+  "foot": {
+   "rect": [
+    100,
+    68,
+    39,
+    27
+   ],
+   "pivot": [
+    12.0,
+    3.0
+   ]
+  },
+  "lanyard": {
+   "rect": [
+    143,
+    68,
+    12,
+    21
+   ],
+   "pivot": [
+    6.0,
+    0.0
+   ]
+  }
+ },
+ "joints": [
+  {
+   "name": "pelvis",
+   "part": "pelvis",
+   "parent": "",
+   "pos": [
+    0.0,
+    -43.5
+   ],
+   "z": 3,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -4.0,
+     -4.0
+    ],
+    "b": [
+     4.0,
+     -4.0
+    ],
+    "r": 6.0
+   },
+   "mass": 12.0,
+   "limit": null,
+   "rest_dir": -90
+  },
+  {
+   "name": "torso",
+   "part": "torso",
+   "parent": "pelvis",
+   "pos": [
+    0.0,
+    -10.5
+   ],
+   "z": 5,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     -2.0
+    ],
+    "b": [
+     0.75,
+     -16.0
+    ],
+    "r": 8.16
+   },
+   "mass": 25.0,
+   "limit": [
+    -35,
+    75
+   ],
+   "rest_dir": -90
+  },
+  {
+   "name": "lanyard",
+   "part": "lanyard",
+   "parent": "torso",
+   "pos": [
+    3.0,
+    -15.0
+   ],
+   "z": 6,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     2.55
+    ],
+    "b": [
+     0.0,
+     7.95
+    ],
+    "r": 2.55
+   },
+   "mass": 0.4,
+   "limit": [
+    -130,
+    130
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "hood",
+   "part": "hood",
+   "parent": "torso",
+   "pos": [
+    0.0,
+    -21.0
+   ],
+   "z": 5,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -6.26,
+     -3.75
+    ],
+    "b": [
+     1.76,
+     -3.75
+    ],
+    "r": 5.74
+   },
+   "mass": 0.6,
+   "limit": [
+    -20,
+    20
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "head",
+   "part": "head",
+   "parent": "torso",
+   "pos": [
+    1.5,
+    -21.0
+   ],
+   "z": 6,
+   "far": false,
+   "collider": {
+    "type": "circle",
+    "c": [
+     3.1495,
+     -10.3309
+    ],
+    "r": 8.4
+   },
+   "mass": 5.0,
+   "limit": [
+    -40,
+    45
+   ],
+   "rest_dir": -90
+  },
+  {
+   "name": "far_upper_arm",
+   "part": "upper_arm",
+   "parent": "torso",
+   "pos": [
+    -3.0,
+    -18.0
+   ],
+   "z": 1,
+   "far": true,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     0.0551,
+     15.2206
+    ],
+    "r": 3.36
+   },
+   "mass": 2.5,
+   "limit": [
+    -175,
+    70
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "far_forearm",
+   "part": "forearm",
+   "parent": "far_upper_arm",
+   "pos": [
+    0.0,
+    15.0
+   ],
+   "z": 1,
+   "far": true,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     1.5257,
+     18.0436
+    ],
+    "r": 3.6
+   },
+   "mass": 1.8,
+   "limit": [
+    -145,
+    0
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "far_hand",
+   "part": "hand_open",
+   "parent": "far_forearm",
+   "pos": [
+    1.5,
+    18.0
+   ],
+   "z": 1,
+   "far": true,
+   "collider": {
+    "type": "circle",
+    "c": [
+     0.0,
+     5.75
+    ],
+    "r": 2.8
+   },
+   "mass": 0.7,
+   "limit": [
+    -60,
+    60
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "far_thigh",
+   "part": "thigh",
+   "parent": "pelvis",
+   "pos": [
+    0.0,
+    0.0
+   ],
+   "z": 2,
+   "far": true,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     -0.8508,
+     16.875
+    ],
+    "r": 4.8
+   },
+   "mass": 8.0,
+   "limit": [
+    -110,
+    40
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "far_shin",
+   "part": "shin",
+   "parent": "far_thigh",
+   "pos": [
+    -1.5,
+    16.5
+   ],
+   "z": 2,
+   "far": true,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     -0.1287,
+     14.9449
+    ],
+    "r": 4.32
+   },
+   "mass": 4.0,
+   "limit": [
+    0,
+    150
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "far_foot",
+   "part": "foot",
+   "parent": "far_shin",
+   "pos": [
+    0.0,
+    15.0
+   ],
+   "z": 2,
+   "far": true,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -1.0903,
+     8.8786
+    ],
+    "b": [
+     9.3472,
+     8.8786
+    ],
+    "r": 2.3
+   },
+   "mass": 1.5,
+   "limit": [
+    -40,
+    35
+   ],
+   "rest_dir": 0
+  },
+  {
+   "name": "near_thigh",
+   "part": "thigh",
+   "parent": "pelvis",
+   "pos": [
+    0.0,
+    0.0
+   ],
+   "z": 4,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     -0.8508,
+     16.875
+    ],
+    "r": 4.8
+   },
+   "mass": 8.0,
+   "limit": [
+    -110,
+    40
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "near_shin",
+   "part": "shin",
+   "parent": "near_thigh",
+   "pos": [
+    -1.5,
+    16.5
+   ],
+   "z": 4,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     -0.1287,
+     14.9449
+    ],
+    "r": 4.32
+   },
+   "mass": 4.0,
+   "limit": [
+    0,
+    150
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "near_foot",
+   "part": "foot",
+   "parent": "near_shin",
+   "pos": [
+    0.0,
+    15.0
+   ],
+   "z": 4,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -1.0903,
+     8.8786
+    ],
+    "b": [
+     9.3472,
+     8.8786
+    ],
+    "r": 2.3
+   },
+   "mass": 1.5,
+   "limit": [
+    -40,
+    35
+   ],
+   "rest_dir": 0
+  },
+  {
+   "name": "near_upper_arm",
+   "part": "upper_arm",
+   "parent": "torso",
+   "pos": [
+    -3.0,
+    -18.0
+   ],
+   "z": 7,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     0.0551,
+     15.2206
+    ],
+    "r": 3.36
+   },
+   "mass": 2.5,
+   "limit": [
+    -175,
+    70
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "near_forearm",
+   "part": "forearm",
+   "parent": "near_upper_arm",
+   "pos": [
+    0.0,
+    15.0
+   ],
+   "z": 10,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     1.5257,
+     18.0436
+    ],
+    "r": 3.6
+   },
+   "mass": 1.8,
+   "limit": [
+    -145,
+    0
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "near_hand",
+   "part": "hand_grip",
+   "parent": "near_forearm",
+   "pos": [
+    1.5,
+    18.0
+   ],
+   "z": 10,
+   "far": false,
+   "collider": {
+    "type": "circle",
+    "c": [
+     0.0,
+     5.75
+    ],
+    "r": 2.8
+   },
+   "mass": 0.7,
+   "limit": [
+    -60,
+    60
+   ],
+   "rest_dir": 90
+  }
+ ],
+ "sockets": {
+  "grip": {
+   "joint": "near_hand",
+   "pos": [
+    2.9,
+    5.75
+   ]
+  },
+  "grip_far": {
+   "joint": "far_hand",
+   "pos": [
+    -0.59,
+    6.49
+   ]
+  },
+  "wrist_light": {
+   "joint": "near_forearm",
+   "pos": [
+    2.07,
+    15.68
+   ]
+  },
+  "blood_head": {
+   "joint": "head",
+   "pos": [
+    4.38,
+    -7.61
+   ]
+  },
+  "blood_chest": {
+   "joint": "torso",
+   "pos": [
+    0.51,
+    -15.39
+   ]
+  },
+  "blood_belly": {
+   "joint": "torso",
+   "pos": [
+    0.51,
+    -4.72
+   ]
+  },
+  "blood_arm": {
+   "joint": "near_upper_arm",
+   "pos": [
+    0.33,
+    6.95
+   ]
+  },
+  "blood_thigh": {
+   "joint": "near_thigh",
+   "pos": [
+    -0.22,
+    7.87
+   ]
+  }
+ },
+ "source": "concept-art/h01-dave/h01-dave-parts-pixel-v1.webp",
+ "pixel_art": true,
+ "pixel_world": 1.5
+}

@@ -43,6 +43,9 @@ const REAL_FALL_AIR_TIME := 0.12
 ## No class_name on the puff script (see its own doc comment) — reached
 ## through this plain preload + its static `spawn()`.
 const KenneyPuff := preload("res://scripts/effects/kenney/kenney_puff.gd")
+## The pixel UI helper (no class_name): backs PromptLabel with the pixel
+## prompt tag (`dress_prompt_label()`), keeping the plain label without the art.
+const PixelUi := preload("res://scripts/ui/pixel_ui.gd")
 
 # --- presentation-only state (M6): read by Visual, never by physics/logic ---
 const LAND_SQUASH_TIME := 0.12
@@ -74,7 +77,8 @@ var _interact_was_pressed: bool = false
 @onready var interact_sensor: Area2D = $InteractSensor
 @onready var prompt_label: Label = $PromptLabel
 @onready var aim_pivot: Node2D = $AimPivot
-## Untyped on purpose (M6 art pass adds no class_name — see hero_visual.gd):
+## Untyped on purpose (M6 art pass adds no class_name — see hero_visual.gd;
+## hero.tscn attaches hero_rig_visual.gd, which extends it):
 ## calling its update_pose()/setup() below is a dynamic dispatch that needs
 ## no static type resolved through the (unrefreshed during this pass) import
 ## cache.
@@ -91,6 +95,7 @@ func _ready() -> void:
 	platform_on_leave = CharacterBody2D.PLATFORM_ON_LEAVE_DO_NOTHING
 	if Session:
 		Session.health_changed.connect(_on_health_changed)
+	PixelUi.dress_prompt_label(prompt_label)
 	prompt_label.visible = false
 	if visual:
 		visual.setup(aim_pivot)
@@ -412,4 +417,5 @@ func _update_interact_prompt() -> void:
 		_interact_pose_timer = INTERACT_POSE_TIME
 	_interact_was_pressed = interact_pressed
 
-# --- visual: scripts/actors/visuals/hero_visual.gd (child node "Visual") ----
+# --- visual: scripts/actors/visuals/hero_rig_visual.gd (child node "Visual"; ----
+# --- Dave's pixel rig, falling back to hero_visual.gd's Rook frames) ---------
