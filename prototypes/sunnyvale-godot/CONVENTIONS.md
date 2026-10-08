@@ -703,8 +703,8 @@ is presentation only: no collision and no gameplay state live in it.
   on whole art pixels, so the Rover's patrol bounce and windup shake are one art
   pixel (`patrol_rover.gd`), and its wheels are round at every angle (a
   symmetrised 14 x 14 art) so they spin without wobbling. The Scrapjack is not
-  posed: its turn is the aim pivot's own (continuous, nearest-sampled, never
-  stepped), and `scrapjack.gd` moves the arm's kick and the housing and barrel's
+  posed: its turn is the aim pivot's own (the hero's 22.5-degree aim steps,
+  C50; the gun rig adds no step of its own), and `scrapjack.gd` moves the arm's kick and the housing and barrel's
   slide in whole art pixels when the rig is `pixel_art`. Recipe: `tools/art/README.md`,
   "Pixel rigs" and "Pixel props"; test: `tests/cases/test_pixel_chars.gd`.
 - **Shader:** `assets/shaders/lit_part.gdshader` (normal-mapped, with specular
@@ -729,12 +729,19 @@ is presentation only: no collision and no gameplay state live in it.
   `shoulder_offset()`, `aim_pivot`, `facing`) with the clips in
   `clips_dave.gd` (idle, run sampled by the stride phase, jump_rise,
   jump_fall, land, hurt, interact, defeated: a keyed drop to one knee, not a
-  ragdoll; a respawn stands him straight back up). The Scrapjack stays on
-  `AimPivot` at scale 1 (grip 35.5 px from the shoulder, muzzle on the aim
-  line); every physics tick, after `hero.gd` has turned `AimPivot`
+  ragdoll; a respawn stands him straight back up). **Aim steps (C50):**
+  `hero.gd` turns `AimPivot` in 22.5-degree steps (`AIM_STEP`, `aim_step` -4
+  straight up .. 0 level .. 4 straight down on the side he faces; while he runs
+  away from the aim the gun rests at step 1), and puts the Scrapjack at that
+  step's hold, `visual.gun_hold(step)` (`GUN_HOLD` in `hero_rig_visual.gd`: set
+  for every other step, the middle in between; closer than the arm's reach so
+  the elbow bends, straight up forward of his face, straight down forward of
+  his legs). The shot itself goes exactly at the aim: `scrapjack.gd` fires
+  along `hero.shot_direction()`, at most half a step off the barrel. Every
+  physics tick, after `hero.gd` has turned `AimPivot`
   (`process_physics_priority` 100), the near arm is solved as a two-bone
   chain in the rig's rotation steps so the fist holds the gun's grip (within
-  an art pixel) at any aim, either facing. The gun is drawn between the near
+  an art pixel) at each step, either facing. The gun is drawn between the near
   upper arm (z 7) and the near forearm and fist (z 10). The wrist light rides
   on the forearm's cuff. When `assets/characters/lit/dave/rig.json` is
   missing, the Visual falls back to the Rook frames (each with a normal map in

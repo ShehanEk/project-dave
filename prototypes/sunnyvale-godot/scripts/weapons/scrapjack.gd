@@ -234,6 +234,11 @@ func _try_fire() -> void:
 	var shoulder: Vector2 = pivot.global_position
 	var muzzle_pos: Vector2 = _muzzle.global_position
 	var forward: Vector2 = pivot.global_transform.x.normalized()
+	# C50: the arm and gun turn in 22.5-degree steps, but the shot goes exactly where the
+	# player points (the hero's shot_direction()), at most half a step off the barrel.
+	var hero := pivot.get_parent()
+	if hero and hero.has_method("shot_direction"):
+		forward = hero.shot_direction()
 
 	# Muzzle clamp: never spawn a bolt behind/inside world collision, and
 	# never skip past an enemy HitZone that already lies between the

@@ -30,6 +30,10 @@ var _died_emitted: bool = false
 var _is_firing: bool = false
 var _move_dir: int = 0
 var _aim_face_timer: float = 0.0
+## The snapped aim direction (C50): -4 straight up .. 0 level .. 4 straight down.
+var aim_step: int = 0
+## The exact direction to the aim (unit vector), which the shots follow (C50).
+var _shot_dir: Vector2 = Vector2.RIGHT
 var _jumped_this_frame: bool = false
 
 ## M6.5 Kenney integration pass: seconds spent with `_was_on_floor` false,
@@ -57,8 +61,17 @@ const FACING_DEADZONE := 8.0
 ## Seconds the body keeps facing the aim after the last shot, so tapping fire
 ## while running away doesn't spin him round between shots.
 const FIRE_FACING_HOLD := 0.4
-## The gun's rest angle (rad, below level) while he runs away from the aim.
-const ARM_REST_DROP := 0.35
+## C50: the arm and the gun turn in 22.5-degree steps (16 directions round him: level,
+## three steps up and down on the side he faces, and straight up and down; behind him he
+## turns round), so the pixel arm holds a few clean poses instead of shimmering through
+## every angle. The shot still goes exactly where the player points (shot_direction()),
+## at most half a step off the barrel. The step is counted from level, negative up:
+## -4 straight up .. 4 straight down.
+const AIM_STEP := PI / 8.0
+const AIM_STEP_MIN := -4
+const AIM_STEP_MAX := 4
+## The step the gun rests at while he runs away from the aim (pointing ahead, a little down).
+const AIM_REST_STEP := 1
 const HIT_POSE_TIME := 0.2
 const INTERACT_POSE_TIME := 0.35
 ## Horizontal speed (px/s) above which he counts as moving on the ground: the
@@ -341,9 +354,11 @@ func set_firing(firing: bool) -> void:
 	_is_firing = firing
 
 
-## Rotates the weapon pivot toward the current aim; flips it vertically
-## (rather than upside-down) when aiming left, a standard 2D top-down/side
-## aim trick that keeps the held weapon's silhouette right-side up.
+## Turns the weapon pivot to the aim, snapped to the nearest 22.5-degree step (C50);
+## flips it vertically (rather than upside-down) when he faces left, a standard
+## 2D side-view trick that keeps the held weapon's silhouette right-side up. The
+## Scrapjack fires along shot_direction() (the exact aim), and each step has its own hold (the visual's gun_hold(): where the gun sits from the
+## shoulder, so the elbow bends and the gun never covers his face).
 func _update_aim_pivot() -> void:
 	if aim_pivot == null:
 		return
@@ -355,11 +370,29 @@ func _update_aim_pivot() -> void:
 	var to_aim := get_current_aim() - aim_pivot.global_position
 	if to_aim.x * facing < -FACING_DEADZONE:
 		# Aim behind him while he runs the other way: the gun rests ahead.
-		aim_pivot.rotation = ARM_REST_DROP if facing > 0 else PI - ARM_REST_DROP
-		aim_pivot.scale.y = float(facing)
+		aim_step = AIM_REST_STEP
+		_shot_dir = Vector2.ZERO
 	elif to_aim.length() > 0.5:
-		aim_pivot.rotation = to_aim.angle()
-		aim_pivot.scale.y = 1.0 if to_aim.x >= 0.0 else -1.0
+		_shot_dir = to_aim.normalized()
+		# The aim's angle on his facing side (0 level, negative up), clamped to straight
+		# up or down (inside FACING_DEADZONE the cursor may sit a little behind him).
+		var rel := clampf(Vector2(to_aim.x * facing, to_aim.y).angle(), -PI * 0.5, PI * 0.5)
+		aim_step = clampi(int(round(rel / AIM_STEP)), AIM_STEP_MIN, AIM_STEP_MAX)
+	var angle := float(aim_step) * AIM_STEP
+	aim_pivot.rotation = angle if facing > 0 else PI - angle
+	aim_pivot.scale.y = float(facing)
+	if visual and visual.has_method("gun_hold"):
+		var gun := aim_pivot.get_node_or_null("Scrapjack") as Node2D
+		if gun:
+			gun.position = visual.gun_hold(aim_step)
+
+
+## The direction a shot leaves in (C50): exactly toward the aim, which may be up to half
+## a step off the stepped gun; along the gun itself while it rests (aim behind him).
+func shot_direction() -> Vector2:
+	if _shot_dir == Vector2.ZERO and aim_pivot:
+		return aim_pivot.global_transform.x.normalized()
+	return _shot_dir
 
 
 # --- damage / health ---------------------------------------------------------

@@ -52,7 +52,7 @@ A belt pouch holds microchips and evidence drives. It is not a holster. Dave sho
 
 ## Sprite and pose requirements
 
-**Done as a rig (2026-10-07):** the parts sheet's 12 parts (head, hood, torso, pelvis, upper arm, forearm, gripping hand, open hand, thigh, shin, boot, badge on its lanyard) make a 17-joint rig, the enemies' human rig plus the hood and the lanyard. Hand-keyed clips replace the Rook frames one for one (idle, run, rising, falling, landing, hurt, plugging in, defeated), and the gun arm is posed every tick so his fist holds the pistol's grip wherever he aims. The two-handed holds, the tether brace, reload, swap, workbench, reading and reaction poses below are still to key when those mechanics exist.
+**Done as a rig (2026-10-07):** the parts sheet's 12 parts (head, hood, torso, pelvis, upper arm, forearm, gripping hand, open hand, thigh, shin, boot, badge on its lanyard) make a 17-joint rig, the enemies' human rig plus the hood and the lanyard. Hand-keyed clips replace the Rook frames one for one (idle, run, rising, falling, landing, hurt, plugging in, defeated), and the gun arm is posed every tick so his fist holds the pistol's grip wherever he aims. Since C50 (2026-10-08) the arm and gun turn in 22.5-degree steps with a bent-elbow hold per step (straight up in front of his face), while the shot goes exactly where the player points. The two-handed holds, the tether brace, reload, swap, workbench, reading and reaction poses below are still to key when those mechanics exist.
 
 Separate body, jacket, trousers, boots, hood, badge and lanyard, pouch, hair mass and held weapon. The default neutral sprite has empty hands because weapons are separate assets, not because there is an unarmed fighting system.
 

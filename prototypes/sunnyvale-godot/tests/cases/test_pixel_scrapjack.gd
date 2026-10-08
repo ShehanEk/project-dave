@@ -8,8 +8,8 @@ extends TestCase
 ## the emissive masks, joints on whole art pixels. What the hero and
 ## scrapjack.gd rely on is kept: the four joints, the frame as the root with
 ## its origin on the grip (where Dave's fist is), the muzzle socket on the
-## barrel at the front of the gun, and a gun that turns smoothly with the aim
-## and recoils in whole art pixels.
+## barrel at the front of the gun, and a gun that turns with the aim pivot (in the
+## hero's 22.5-degree aim steps, C50) and recoils in whole art pixels.
 ##
 ## The sheet draws the pistol about 123 generated pixels long (the prompt asked
 ## for 26), so at the smooth gun's 26 world px the art would be 17 pixels long
@@ -244,20 +244,23 @@ func _test_on_the_hero() -> void:
 		front = maxf(front, right)
 	check(absf((gun._muzzle.position.x - rig.position.x) / s - front) < 0.01, "the muzzle is at the front edge of the drawn gun")
 
-	# The gun turns with the aim and is not stepped: its global rotation is the aim pivot's own, to
-	# the last digit (a pixel-art rig stepping its turn would be off by up to half a step), and the
-	# pivot follows the aim.
+	# C50: the gun turns with the aim pivot exactly (the gun rig itself never steps its turn), and the
+	# pivot snaps to the nearest 22.5-degree step of the aim; the shot direction is the exact aim.
 	var distinct := {}
 	for deg in [3.0, 17.0, -41.0, 63.0, 17.3, 17.9]:
 		var a := deg_to_rad(deg)
 		hero.aim_override = hero.aim_pivot.global_position + Vector2(cos(a), sin(a)) * 400.0
 		await physics_frames(3)
 		var turn: float = wrapf(rig.global_rotation - hero.aim_pivot.global_rotation, -PI, PI)
-		check(absf(turn) < 0.0005, "the gun turns exactly with the aim pivot at %.1f degrees, with no rotation step (%.4f deg off)" % [deg, rad_to_deg(turn)])
+		check(absf(turn) < 0.0005, "the gun turns exactly with the aim pivot at %.1f degrees (%.4f deg off)" % [deg, rad_to_deg(turn)])
 		var to_aim: float = (hero.aim_override - hero.aim_pivot.global_position).angle()
-		check(absf(wrapf(hero.aim_pivot.global_rotation - to_aim, -PI, PI)) < deg_to_rad(2.5), "and the pivot follows the aim (%.1f vs %.1f degrees)" % [rad_to_deg(hero.aim_pivot.global_rotation), rad_to_deg(to_aim)])
+		var snapped: float = snappedf(to_aim, Hero.AIM_STEP)
+		check(absf(wrapf(hero.aim_pivot.global_rotation - snapped, -PI, PI)) < 0.001,
+				"and the pivot snaps to the nearest 22.5-degree step (%.1f for an aim of %.1f degrees)" % [rad_to_deg(hero.aim_pivot.global_rotation), rad_to_deg(to_aim)])
+		check(absf(wrapf(hero.aim_pivot.global_rotation - to_aim, -PI, PI)) <= Hero.AIM_STEP * 0.5 + 0.001, "at most half a step off the aim")
+		check(absf(hero.shot_direction().angle() - to_aim) < 0.01, "and the shot goes exactly at the aim (%.1f degrees)" % rad_to_deg(hero.shot_direction().angle()))
 		distinct[snappedf(rig.global_rotation, 0.0001)] = true
-	check_eq(distinct.size(), 6, "six different aims give six different gun angles, even 0.3 and 0.6 degrees apart")
+	check_eq(distinct.size(), 4, "six aims give four gun steps (17.0, 17.3 and 17.9 degrees share the 22.5-degree step; 3 is level)")
 	# Aiming left turns the gun over (hero.gd flips the pivot) rather than upside down.
 	hero.aim_override = hero.aim_pivot.global_position + Vector2(-400.0, -50.0)
 	await physics_frames(3)

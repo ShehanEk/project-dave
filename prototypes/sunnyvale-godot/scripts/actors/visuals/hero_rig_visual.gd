@@ -49,6 +49,18 @@ const GUN_GRIP_LOCAL := Vector2(2.0, 3.0)
 ## sits in that arm's fist (hero.tscn places the gun for the pixel rig).
 const FALLBACK_GUN_POSITION := Vector2(32.5, -0.9)
 const BLOOD_SOCKETS := ["blood_head", "blood_chest", "blood_belly", "blood_arm", "blood_thigh"]
+## C50: where the gun's grip sits from the shoulder at each aim step (hero.gd's aim_step,
+## in 22.5-degree steps: -4 straight up .. 0 level .. 4 straight down), in the aim pivot's
+## frame (x along the aim, y to the aim's lower or forward side). Closer than the arm's
+## full reach, so the elbow bends; straight up holds the gun forward of his face, straight
+## down forward of his legs. Set for every other step; the steps between take the middle.
+const GUN_HOLD := {
+	-4: Vector2(21.0, 20.0),
+	-2: Vector2(26.0, 5.0),
+	0: Vector2(27.0, 2.0),
+	2: Vector2(26.0, -2.0),
+	4: Vector2(21.0, -17.0),
+}
 
 @export_file("*.json") var rig_path: String = RIG_PATH
 
@@ -223,6 +235,17 @@ func aim_arm() -> void:
 	fa.rotation = r_fa
 	hand.rotation = r_h
 	_place_wrist_light()
+
+
+## Where hero.gd puts the Scrapjack on the aim pivot for aim direction `step` (C50).
+## The Rook-frame fallback keeps its one fixed spot.
+func gun_hold(step: int) -> Vector2:
+	if rig == null:
+		return FALLBACK_GUN_POSITION
+	var k := clampi(step, -4, 4)
+	if GUN_HOLD.has(k):
+		return GUN_HOLD[k]
+	return (GUN_HOLD[k - 1] + GUN_HOLD[k + 1]) * 0.5
 
 
 ## The gun's grip (where the fist goes), global: the gun rig's origin, which

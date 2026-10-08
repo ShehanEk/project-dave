@@ -13,7 +13,7 @@
 
 Use move, jump, aim, fire, alternate fire when unlocked, reload where applicable, interact, and pause. The game remains on one side-view plane. Bindings are remappable; these are action definitions rather than mandatory keyboard keys. Dave has no sneak, hide or takedown action, because the game has no stealth or detection system (C16). He has no crouch, duck or slide either: his hurtbox is always a full-height standing box, so every enemy shot on his floor is answered by a jump, by cover (low or high) or by another floor ([W04](../04-world/encounter-and-boss-fairness.md)).
 
-Aim with a pointer or right stick within the gameplay plane. On a controller without active aim input, aim defaults toward the last facing direction. Keyboard-only play has an optional directional aiming scheme. Facing follows deliberate aim while firing and movement otherwise. The body can reverse without a forced turning delay.
+Aim with a pointer or right stick within the gameplay plane. On a controller without active aim input, aim defaults toward the last facing direction. Keyboard-only play has an optional directional aiming scheme. Facing follows deliberate aim while firing and movement otherwise. Dave's arm and gun show the aim in 22.5-degree steps (C50), but the shot travels exactly along the aim. The body can reverse without a forced turning delay.
 
 ## Movement
 
