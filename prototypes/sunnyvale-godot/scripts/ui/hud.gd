@@ -249,6 +249,19 @@ func _on_checkpoint_committed(checkpoint_id: String) -> void:
 		return
 	if _toast:
 		_toast.show_message("Progress saved", ToastLabel.HOLD_TIME, ToastLabel.FADE_TIME, "save")
+		# The small "saved" double tick (N05), with the visible toast and nowhere
+		# else: the checkpoint bong is Audio's own on the same signal, the station's
+		# local toast and the workbench's panel line are silent, and CP04's toast
+		# (skipped above) sits under the lockdown stinger.
+		_play_sfx(&"toast_save")
+
+
+## Interface cues go through the Audio autoload when there is one (tests and
+## demo scenes run without it).
+func _play_sfx(cue: StringName) -> void:
+	var audio := get_node_or_null("/root/Audio")
+	if audio:
+		audio.play_sfx(cue)
 
 
 func _on_save_failed(_reason: String, _checkpoint_id: String) -> void:

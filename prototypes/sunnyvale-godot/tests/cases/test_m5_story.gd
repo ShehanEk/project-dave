@@ -9,11 +9,11 @@ const LEVEL_01 := "res://scenes/levels/level_01.tscn"
 const DEPOT_AREA_INDEX := 4
 const EXIT_AREA_INDEX := 5
 
-## Comfortably longer than CoreNode's own ~19s full watch-through
-## (T_WARNING+T_LOCKED+3 lines+T_CONTAINMENT), so a "normal" run reaches full
-## completion (including hero.input_enabled returning) before this test
-## checks anything.
-const FULL_WATCH_SECONDS := 21.0
+## Comfortably longer than CoreNode's own full watch-through (19.0s authored;
+## up to ~20.4s with the N05 voice clips, which lengthen the 2nd and 3rd lines),
+## so a "normal" run reaches full completion (including hero.input_enabled
+## returning) before this test checks anything.
+const FULL_WATCH_SECONDS := 22.0
 
 
 func run() -> void:

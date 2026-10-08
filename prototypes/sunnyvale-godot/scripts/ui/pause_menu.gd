@@ -250,7 +250,10 @@ func _open(view: View) -> void:
 	_refresh_settings_controls()
 	_controls_view.refresh()
 	_apply_view()
-	_play_sfx(&"ui_move")
+	# The menu-opening whoosh (N05; Pause, Tab's Journal and F1's Controls all
+	# open here). It carries its own tick, so it replaces the old ui_move; closing
+	# keeps ui_back (see _resume).
+	_play_sfx(&"ui_pause")
 	var telemetry := get_node_or_null("/root/Telemetry")
 	if telemetry:
 		telemetry.pause_start()

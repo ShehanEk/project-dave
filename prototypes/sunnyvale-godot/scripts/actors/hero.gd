@@ -46,6 +46,8 @@ const KenneyPuff := preload("res://scripts/effects/kenney/kenney_puff.gd")
 ## The pixel UI helper (no class_name): backs PromptLabel with the pixel
 ## prompt tag (`dress_prompt_label()`), keeping the plain label without the art.
 const PixelUi := preload("res://scripts/ui/pixel_ui.gd")
+## What he is standing on -> the footstep cue (no class_name, like PixelUi).
+const SurfaceMap := preload("res://scripts/world/surface_map.gd")
 
 # --- presentation-only state (M6): read by Visual, never by physics/logic ---
 const LAND_SQUASH_TIME := 0.12
@@ -59,6 +61,11 @@ const FIRE_FACING_HOLD := 0.4
 const ARM_REST_DROP := 0.35
 const HIT_POSE_TIME := 0.2
 const INTERACT_POSE_TIME := 0.35
+## Horizontal speed (px/s) above which he counts as moving on the ground: the
+## run cycle plays, and footsteps are counted.
+const MOVING_SPEED := 4.0
+## Radians the run cycle's stride phase advances per px run (one cycle = TAU).
+const STRIDE_PHASE_PER_PX := 0.045
 var _stride_phase: float = 0.0
 var _land_squash_timer: float = 0.0
 var _hit_pose_timer: float = 0.0
@@ -151,6 +158,7 @@ func _physics_process(delta: float) -> void:
 	# Visual first: it picks this tick's sprite frame, and AimPivot then
 	# snaps to that frame's shoulder (no one-tick lag between arm and body).
 	_update_visual_pose(delta)
+	_update_footsteps(delta)
 	_update_aim_pivot()
 
 
@@ -163,15 +171,76 @@ func _update_visual_pose(delta: float) -> void:
 	_hit_pose_timer = maxf(0.0, _hit_pose_timer - delta)
 	_interact_pose_timer = maxf(0.0, _interact_pose_timer - delta)
 
-	var moving := is_on_floor() and absf(velocity.x) > 4.0
+	var moving := is_on_floor() and absf(velocity.x) > MOVING_SPEED
 	if moving:
 		# Signed: moving toward the facing side advances the run cycle,
 		# moving away from it (backpedalling toward the aim) runs it backward.
-		_stride_phase += velocity.x * float(facing) * delta * 0.045
+		_stride_phase += velocity.x * float(facing) * delta * STRIDE_PHASE_PER_PX
 	if visual:
 		visual.update_pose(facing, moving, is_on_floor(), velocity.y, _stride_phase,
 				_is_firing, is_immune(), _died_emitted, _land_squash_timer,
 				_hit_pose_timer, _interact_pose_timer)
+
+
+# --- footsteps (presentation-only, like the stride above) -----------------------
+
+## Ground distance (px) between two footfalls: one foot contact of the run
+## cycle (the cycle is TAU of stride phase and plants a foot every half of it),
+## so the sound lands on the foot the rig plants. About 70 px, which is 5.5
+## steps a second at the 384 px/s run speed, the same cadence as the legs.
+const FOOTSTEP_STRIDE := PI / STRIDE_PHASE_PER_PX
+## Distance (px) after starting to move (or after a landing squash) to the
+## first step, so a walk sounds at once instead of a full stride later.
+const FIRST_FOOTSTEP_DISTANCE := 14.0
+## The floor probe: a ray from this far above his feet to this far below them,
+## on the world layer, run only when a step sounds.
+const FLOOR_PROBE_UP := 8.0
+const FLOOR_PROBE_DOWN := 16.0
+
+## Steps sounded so far and the cue of the latest one (tests read these).
+var footsteps_played: int = 0
+var last_footstep_cue: StringName = &""
+var _step_distance: float = FOOTSTEP_STRIDE - FIRST_FOOTSTEP_DISTANCE
+var _floor_probe: PhysicsRayQueryParameters2D = null
+
+
+## One footstep per FOOTSTEP_STRIDE of ground run under his own power. None
+## while standing, airborne, pushed against a wall, dead, with input off (a
+## modal or cutscene), or in the hurt, interact or landing poses, which are the
+## moments the rig is not showing the run cycle. Standing or airborne primes the
+## distance so the first step of the next run follows FIRST_FOOTSTEP_DISTANCE.
+func _update_footsteps(delta: float) -> void:
+	var running := (is_on_floor() and _move_dir != 0 and absf(velocity.x) > MOVING_SPEED
+			and not _died_emitted and _hit_pose_timer <= 0.0 and _interact_pose_timer <= 0.0
+			and _land_squash_timer <= 0.0)
+	if not running:
+		_step_distance = FOOTSTEP_STRIDE - FIRST_FOOTSTEP_DISTANCE
+		return
+	_step_distance += absf(velocity.x) * delta
+	if _step_distance >= FOOTSTEP_STRIDE:
+		_step_distance -= FOOTSTEP_STRIDE
+		_play_footstep()
+
+
+func _play_footstep() -> void:
+	var cue := _surface_cue()
+	footsteps_played += 1
+	last_footstep_cue = cue
+	Audio.play_sfx(cue, global_position)
+
+
+## The footstep cue for the floor under his feet (SurfaceMap): a short ray
+## down finds the block or platform, so the roofs' paving run-in and landing
+## differ from their slabs. DEFAULT (paving) when nothing is found, such as in
+## an isolated test scene with no AreaRoot.
+func _surface_cue() -> StringName:
+	if _floor_probe == null:
+		_floor_probe = PhysicsRayQueryParameters2D.new()
+		_floor_probe.collision_mask = 1  # layer 1: world
+	_floor_probe.from = global_position + Vector2(0.0, -FLOOR_PROBE_UP)
+	_floor_probe.to = global_position + Vector2(0.0, FLOOR_PROBE_DOWN)
+	var hit := get_world_2d().direct_space_state.intersect_ray(_floor_probe)
+	return SurfaceMap.for_collider(hit.get("collider", null))
 
 
 # --- movement ---------------------------------------------------------------

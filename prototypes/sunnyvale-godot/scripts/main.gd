@@ -187,7 +187,15 @@ func _show_title() -> void:
 	_title.quit_requested.connect(_on_title_quit_requested)
 	var audio := get_node_or_null("/root/Audio")
 	if audio:
-		audio.set_music(&"none")
+		# N05: the title screen has its own theme (silence if that track is missing), at
+		# boot and after Quit to title. Starting the level crossfades from it to the
+		# level music (a Play again stays in the level, so it never passes through here).
+		audio.set_music(&"title")
+		# The ambience bed goes quiet under the title. The level's own director picks
+		# the bed for where the hero stands the moment it is instanced
+		# (LevelDirector.update_ambience(), from _ready()), so New Game and Continue
+		# fade in from silence straight into the right bed.
+		audio.set_ambience(&"none")
 
 
 func _on_new_game_confirmed() -> void:
@@ -207,17 +215,16 @@ func _start_level() -> void:
 	if _title:
 		_title.queue_free()
 		_title = null
-	# Music (M6): Session state is already adopted at this point (new_run()/
-	# load_from_snapshot() ran in the caller just above) so this one check
-	# covers every entry into the level — New Game (always pre-awakening ->
-	# campus) AND Continue, including "immediately on Continue after
-	# awakening" (audio-direction.md / CONVENTIONS.md "Audio"): Continue's
-	# load_from_snapshot() never re-emits story_state_changed, so Audio's own
-	# live signal listener can't catch this case on its own.
-	var audio := get_node_or_null("/root/Audio")
-	if audio:
-		var awakening: bool = Session.get_story("awakening_done") == true
-		audio.set_music(&"lockdown" if awakening else &"campus")
+	# Music (M6, N05): not set here. Session state is already adopted at this point
+	# (new_run()/load_from_snapshot() ran in the caller just above), and the level's
+	# own director picks the track for where the hero stands, and the lockdown, the
+	# moment it is instanced below (LevelDirector.update_music(), from _ready(), then
+	# every frame). Choosing the track in two places (campus/lockdown here, depot
+	# there) would make a Continue at a depot checkpoint start one track and
+	# immediately cross to another. That covers New Game (pre-awakening, campus),
+	# Continue at any checkpoint, and "immediately on Continue after awakening":
+	# load_from_snapshot() never re-emits story_state_changed, so Audio's own live
+	# signal listener could not catch that case on its own.
 	# Open the telemetry log BEFORE instancing the level: LevelDirector's own
 	# `_ready()` (which runs synchronously the instant it's added below) fires
 	# the very first area_enter/register_encounter_groups calls, which are

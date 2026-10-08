@@ -341,17 +341,38 @@ driver — nodes still instance/play/stop, they just produce no audible output):
 
 - `play_sfx(cue: StringName, position: Variant = null) -> void` — a one-shot
   cue. `position` (a `Vector2`) plays it through a small
-  (`SFX2D_POOL_SIZE` = 8) `AudioStreamPlayer2D` pool for positional 2D
+  (`SFX2D_POOL_SIZE` = 16) `AudioStreamPlayer2D` pool for positional 2D
   sound (world/combat cues); omitted/`null` plays it flat through a smaller
-  (`SFX_POOL_SIZE` = 6) `AudioStreamPlayer` pool (UI/HUD/global cues). Both
-  pools prefer an idle player and round-robin over the pool when every
-  player is busy — never blocks, never grows unbounded. An unknown/
+  (`SFX_POOL_SIZE` = 10) `AudioStreamPlayer` pool (UI/HUD/global cues). Both
+  pools prefer an idle player; when every player is busy the new sound takes over
+  the OLDEST player whose sound is no more important (N05: barks, stings and the
+  story beats are priority 2 and are cut only by each other, never by footsteps
+  or hits; the order is an exact play counter) — never blocks, never grows
+  unbounded. Two guards keep the pool from flooding (a Rover that turned every
+  frame once filled all eight players and cut every bark): a cue listed in
+  `CUE_MIN_GAP_SECONDS` (`rover_patrol`, 1.2 s) plays at most once per gap, and a
+  positional sound farther than `AUDIBLE_RANGE` (2100 px) from the camera takes no
+  player at all (no camera, as in isolated tests, counts as audible). An unknown/
   misspelled cue name never crashes a caller: exactly one `push_warning`
   per distinct unknown name (`_warned_cues`), then a no-op. `has_cue(cue)`
   (for tests) reports whether a cue actually has a loaded stream behind it.
+  It returns the pooled player it used (null for an unknown cue), so a caller can
+  stop its own sound with `stop_player_if_playing(player, stream)`; `stop_sfx(cue)`
+  stops every player currently playing that cue (matched by stream, because pooled
+  players are reused).
 - `set_music(track: StringName) -> void` — `&"campus"` / `&"lockdown"` /
-  `&"none"` (`campus` is a 48 s dark ambient loop for the campus at night, and
-  `lockdown` a 30 s tense loop once Adam has answered). Crossfades over `MUSIC_CROSSFADE_SECONDS` (1.2s) between two
+  `&"depot"` / `&"title"` / `&"none"`. `campus` and `lockdown` were synthesized
+  loops (48 s and 30 s); since N05 each plays the ElevenLabs stereo loop of the same
+  key instead (`music_source(track) == &"eleven"`, from `eleven_manifest.gd`'s
+  `MUSIC`, levelled to the old loop's A-weighted level) and the synthesized one stays
+  loaded as the fallback. `depot` (the server hall before the lockdown) and `title`
+  (title screen) exist only as ElevenLabs loops. `has_music(track)` for tests.
+  Who picks the track: `main.gd` `_show_title()` sets `title`; the level director is the
+  only owner of level music (`ambience_map.gd` `music_for(area_id, awakening_done)`,
+  applied by `LevelDirector.update_music()` at level start and every frame: A05 before
+  the lockdown `depot`, every other area `campus`, after it `lockdown`; none while
+  the completion screen is up, and `_show_completion_screen()` fades to `none` and plays
+  `sting_complete`). Crossfades over `MUSIC_CROSSFADE_SECONDS` (1.2s) between two
   alternating `AudioStreamPlayer`s; calling it again with the CURRENT track
   is a no-op (never restarts an already-playing loop). The logical "current
   track" (`current_music()`) updates immediately even though the audible
@@ -361,8 +382,50 @@ driver — nodes still instance/play/stop, they just produce no audible output):
   (`_make_seamless()`) — the WAV content itself is authored to already be
   seamless at that point (see `tools/gen_audio.py`'s `loop_locked_freq()`
   doc comment), this just tells the engine to actually repeat it.
+- `set_ambience(bed: StringName) -> void` (N05) — the ambience bed under the
+  music: a key of `eleven_manifest.gd`'s `AMBIENCE` (`amb_campus_night`,
+  `amb_roof_night`, `amb_plaza_wet`, `amb_depot_hum`, `amb_lockdown_bed`,
+  `amb_alarm_far`, `amb_wicket_yard`, `amb_server_core`) or `&"none"`. Two
+  alternating `AudioStreamPlayer`s on the SFX bus crossfade over
+  `AMBIENCE_CROSSFADE_SECONDS` (2 s); the current bed again is a no-op; an unknown
+  bed is silence. `current_ambience()` / `has_ambience(bed)` for tests.
+  `scripts/audio/ambience_map.gd` (`bed_for(area_id, awakening_done, in_core_room)`)
+  decides the bed, and `LevelDirector.update_ambience()` applies it (at level start
+  and every frame, so Continue, death rollback and the live awakening need no
+  signal): A01/A02 campus, A03 roof, A04 wet plaza, A05 depot (the core-node room,
+  within 360 px of the node, `amb_server_core`), A06 the yard; after `awakening_done`
+  every area but A06 plays `amb_lockdown_bed`. `main.gd` sets `none` on the title.
+  `amb_alarm_far` is built but unused: the lockdown and yard beds already carry alarm pulses.
+- `play_voice(line: StringName) -> float` (N05) — a spoken line (`adam_hello`,
+  `adam_stay`, `dave_word_gets_around`, `pa_lethal`, `pa_remain_calm`) on its own
+  `AudioStreamPlayer` (SFX bus); returns the clip length in seconds (0.0 for an
+  unknown line, so callers keep their old timing), alternate takes are random, a
+  new line cuts the old one, `stop_voice()` ends it (the SC01 skip calls it).
+  Captions always show the same text (the subtitles setting hides only the text).
+  `current_voice()`, `has_voice(line)`, `voice_length(line)` for tests.
 
 ### Cue list and provenance
+
+**The ElevenLabs set (N05, C47).** Most cues now play ElevenLabs takes first.
+`tools/process_elevenlabs.py` turns the raw takes under `audio-source/elevenlabs/`
+into `assets/audio/eleven/{sfx,amb,voice}/*.wav` (mono; 44.1 kHz effects and voice,
+32 kHz beds; silence trimmed, a 35 Hz high-pass, windup tells cut to their windups,
+beds crossfaded into seamless loops, effects peak-normalized and trimmed per cue by
+its `PEAK_MIX_DB` row) and writes the generated `scripts/audio/eleven_manifest.gd`
+(`SFX`, `AMBIENCE`, `VOICE`, each with its mix `volume_db`). The director preloads
+the manifest by path; a cue with a manifest entry whose files load plays those takes
+(`cue_source(cue) == &"eleven"`, base pitch 1.0, pitch variance from
+`SFX_SOURCES`), otherwise it falls back to its `SFX_SOURCES` source
+(`&"legacy"`), so the Kenney and synthesized sources listed below stay as the
+fallback. `guard_swing` plays the realistic and whip takes, not the first four
+(they sounded fake). Six cues exist only as ElevenLabs sounds
+(`Audio.ELEVEN_ONLY_CUES`, not in `SFX_NAMES`, so `gen_audio.py`'s cross-check
+ignores them): `footstep_paving` / `footstep_metal` / `footstep_roof`, `ui_pause`,
+`toast_save` and `ready_click`. Regenerate with
+`python3 tools/process_elevenlabs.py` (afconvert, macOS). Tests:
+`tests/cases/test_n05_eleven_audio.gd`, `test_n05_footsteps.gd`,
+`test_n05_ambience.gd`, `test_n05_voice.gd`, `test_n05_ui_ticks.gd`.
+The "Source" column below names the fallback, not what plays now.
 
 Two source kinds feed `Audio.SFX_SOURCES` (`scripts/audio/audio_director.gd`),
 per cue:
@@ -425,7 +488,10 @@ Session-signal wiring.
 | `swap` | wired | `Session.weapon_swapped` | Kenney — `ui-audio/switch1.ogg` (pitch varied) |
 | `save_failed` | wired | `Session.save_failed` | Kenney — `interface-sounds/error_001.ogg` |
 | `exit` | wired | `Session.level_completed` | Synthesized — no finale/musical sting in any curated pack |
-| music `campus`/`lockdown`/`none` | wired | `scripts/main.gd` (`_show_title()` -> none; `_start_level()` checks `Session.get_story("awakening_done")` -> campus/lockdown, covering New Game, Continue, AND "immediately on Continue after Adam's answer" since `load_from_snapshot()` never re-emits `story_state_changed`) + `Audio`'s own `story_state_changed` listener (live lockdown mid-run) | Synthesized |
+| music `campus`/`lockdown`/`depot`/`title`/`none` | wired (N05) | `scripts/main.gd` `_show_title()` -> `title`; `LevelDirector.update_music()` (level start, every frame, Play again) picks campus / depot / lockdown from the area and `awakening_done`, covering New Game, Continue and the live awakening; `Audio`'s own `story_state_changed` listener also switches to lockdown | ElevenLabs loops; synthesized `campus_loop`/`lockdown_loop` are the fallback |
+| `sting_complete` | wired (N05) | `LevelDirector._show_completion_screen()`, with the music fading to none; stopped (`Audio.stop_sfx`) on Play again and when the level is freed | ElevenLabs only (12 s) |
+| `sting_checkpoint` | built, not wired (N05) | the 4 s save sting duplicates the `checkpoint` and `toast_save` sounds; it is registered and ready if the user wants it in place of the old checkpoint bong | ElevenLabs only |
+| `bark_guard_*` (7) / `bark_staffer_*` (4) | wired (N05) | `scripts/actors/brawler.gd` `_bark()`: the caption's text maps to its cue through `scripts/audio/bark_map.gd` (`BarkMap.cue_for`), played positionally at the speaker; the group's one-voice hold lengthens to the clip (longest take + 0.1 s, at most `BARK_VOICE_MAX` 2.9 s); no bark from a dead speaker, a new bark cuts the speaker's own old one, a defeat cuts his voice | ElevenLabs only (Guard and Staffer voices, 2 takes each) |
 | `pistol_fire` / `pistol_fire_quick` | wired | `scripts/weapons/scrapjack.gd` `_try_fire()` — quick variant when `_current_stage() >= 1`; also the muzzle-clamp instant-resolve path plays `bolt_hit`/`bolt_blocked` itself (mutually exclusive with `scrap_bolt.gd`'s own resolve — the clamp `return`s before a bolt is ever spawned, so the two never double-play the same shot) | Kenney — `sci-fi-sounds/laserRetro_000\|001\|002.ogg` (pool) / `laserSmall_000\|001.ogg` (pool), both pitch varied |
 | `bolt_hit` / `bolt_blocked` | wired | `scripts/weapons/scrap_bolt.gd` `_resolve(outcome, at)` — `at` as the position; a hit on a target that bleeds skips `bolt_hit` (the target plays `hit_flesh`); see the muzzle-clamp note above for the other, non-overlapping call site | Kenney — `impact-sounds/impactGeneric_light_000\|001\|002.ogg` (pool) / `impactMetal_medium_000\|001\|002.ogg` (pool, the clang of a shot turned away by armor), both pitch varied |
 | `hero_hurt` | wired | `scripts/actors/hero.gd` `take_damage()`, only on the `return true` path | Kenney — `impact-sounds/impactPunch_medium_001.ogg` (pitch varied) |
@@ -454,6 +520,10 @@ Session-signal wiring.
 | `alarm` | wired | `scripts/objects/core_node.gd`'s SC01 coroutine, at the same lockdown moment (plays even if `SubtitlePanel` is absent) | Synthesized — a low emergency tone |
 | `hatch_open` | wired | `scripts/objects/emergency_hatch.gd`, reacting to `story_state_changed("hatch_open", true)` | Kenney — `sci-fi-sounds/doorOpen_000.ogg` |
 | `pit_fall` | wired | `scripts/objects/pit_hazard.gd`, on hero entry (alongside `hero.fall_to(...)`) | Kenney — `impact-sounds/impactSoft_heavy_000.ogg` |
+| `footstep_paving` / `footstep_metal` / `footstep_roof` | wired (N05) | `scripts/actors/hero.gd` `_update_footsteps()`: one step per `FOOTSTEP_STRIDE` (about 70 px, one foot contact of the run cycle) of ground run under his own power, first step after 14 px; the surface comes from `scripts/world/surface_map.gd` (`for_collider()`: A03 roof slabs roof, the depot and moving platforms metal, everything else paving) | ElevenLabs only (4 takes each) |
+| `ui_pause` | wired (N05) | `scripts/ui/pause_menu.gd` `_open()` (Pause, Journal and Controls), instead of the `ui_move` that played there | ElevenLabs only |
+| `toast_save` | wired (N05) | `scripts/ui/hud.gd` `_on_checkpoint_committed()`, with the "Progress saved" toast (not CP04, which has its own toast) | ElevenLabs only |
+| `ready_click` | wired (N05) | `scripts/weapons/scrapjack.gd`, 0.25 s after a weapon swap at a pad, on the held gun only | ElevenLabs only |
 | `ui_move` / `ui_confirm` / `ui_back` | wired | No shared UI base exists — added per dialog script (`title_screen.gd`, `pause_menu.gd`, `workbench_panel.gd`, `swap_confirm.gd`, `completion_screen.gd`): `ui_confirm` on an accepting action, `ui_back` on Cancel/Decline/Quit-to-title, `ui_move` on focus change | Kenney — `ui-audio/rollover2\|3\|4.ogg` (pool) / `ui-audio/click1\|2.ogg` (pool) / `interface-sounds/back_001\|002.ogg` (pool), all pitch varied and trimmed quieter than gameplay cues |
 
 Every cue has at least one call site. The M6 integration pass closed the
@@ -846,7 +916,9 @@ mask 2; `Interactable` subclasses are layer 6 (hero's `InteractSensor` masks
   replaced the old M3 stub; the revamp rewrote it as Adam's scene). First
   interact (with `awakening_done` false) starts a ~19s noninteractive beat
   (3.5s copy + 2.0s lights dim + 4.0/2.0/3.5s for the three subtitle lines +
-  4.0s lockdown hold, unchanged from M5): hero input disabled, Dave plugs a
+  4.0s lockdown hold, unchanged from M5; with the N05 voices each line is held for
+  at least its clip plus `VOICE_BEAT` (0.35 s), so control returns at about 19.8 to
+  20.4 s, and `pa_remain_calm` follows 0.8 s later): hero input disabled, Dave plugs a
   drive into the port and a copy bar starts filling (subtitle "UPLINK:
   copying Adam's hidden logs...", `uplink` ticks), the depot lights dim, then
   a subtitled Adam / Dave / Adam exchange on the shared `SubtitlePanel`
@@ -927,7 +999,7 @@ mask 2; `Interactable` subclasses are layer 6 (hero's `InteractSensor` masks
   disabling `hero.input_enabled`, the Security PA line (`PA_SPEAKER`,
   `PA_LINE`: "All teams: lethal force is authorized. Harlan is armed.", shown
   once on the subtitle panel) and `scenes/ui/completion.tscn`, which opens
-  `PA_BEAT` (3.2 s) later; `level_ended` still fires at once. Loading a
+  `PA_BEAT` later (4.0 s since N05: the `pa_lethal` clip is 3.55 s); `level_ended` still fires at once. Loading a
   snapshot whose `story["level_complete"]` is already true (Continue on a
   save made AFTER finishing) never relies on the wicket firing again —
   `LevelDirector._ready()` checks that flag directly and shows the completion

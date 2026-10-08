@@ -58,6 +58,10 @@ const FLASH_CORE := Color("#FFFDF4")
 var _muzzle_light: PointLight2D
 var _since_shot: float = 999.0
 
+## How long after a pad swap the new gun's ready click plays, seconds: after
+## the `swap` clunk and the dialog closing, before the player fires again.
+const READY_CLICK_DELAY := 0.25
+
 ## The painted gun (C37): the user's generated parts sheet as a lit cutout
 ## rig (tools/art/import_parts_sheet.py scrapjack), its origin where Dave's
 ## fist holds the grip. Falls back to the drawn placeholder without it.
@@ -95,6 +99,28 @@ func _ready() -> void:
 	_build_rig()
 	# Fixed scene shape is Hero > AimPivot > Scrapjack; resolved lazily
 	# (not here) since child _ready() runs before the Hero's own _ready().
+	if held and Session and not Session.weapon_swapped.is_connected(_on_weapon_swapped):
+		Session.weapon_swapped.connect(_on_weapon_swapped)
+
+
+func _exit_tree() -> void:
+	if Session and Session.weapon_swapped.is_connected(_on_weapon_swapped):
+		Session.weapon_swapped.disconnect(_on_weapon_swapped)
+
+
+## Audio only (N05): a pad swap trades the held gun for the one on the pad; the
+## exchange itself is the `swap` cue (Audio plays it on this signal), and a beat
+## later the new gun clicks home, ready to fire. It happens once per swap, never
+## per shot, and nothing here touches cooldown, cadence or input.
+func _on_weapon_swapped(_old_id: String, _new_id: String) -> void:
+	if held and is_inside_tree():
+		get_tree().create_timer(READY_CLICK_DELAY).timeout.connect(_play_ready_click)
+
+
+func _play_ready_click() -> void:
+	var audio := get_node_or_null("/root/Audio")
+	if audio and is_inside_tree():
+		audio.play_sfx(&"ready_click", global_position)
 
 
 func _physics_process(delta: float) -> void:

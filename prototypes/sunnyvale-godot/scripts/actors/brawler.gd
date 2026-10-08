@@ -22,6 +22,7 @@ const Animator := preload("res://scripts/actors/lit/rig_animator.gd")
 const Ragdoll := preload("res://scripts/actors/lit/ragdoll.gd")
 const Blood := preload("res://scripts/effects/blood.gd")
 const Lights := preload("res://scripts/actors/lit/lights.gd")
+const BarkMap := preload("res://scripts/audio/bark_map.gd")
 
 const H := 96.0
 const WIDTH := 22.0
@@ -32,6 +33,10 @@ const ALARM := Color("#FF3B4E")
 const OUTLINE := Color("#05070B")
 const HIT_FLASH := 0.25
 const BARK_TIME := 1.8
+## A spoken bark (BarkMap) holds the group's one voice for its recording's length
+## plus this gap, at most BARK_VOICE_MAX seconds (the longest take is 2.7 s).
+const BARK_VOICE_GAP := 0.1
+const BARK_VOICE_MAX := 2.9
 ## Velocity kick (px/s) the killing shot gives the ragdoll part it hit.
 const DEATH_PUSH := 300.0
 
@@ -56,6 +61,10 @@ var _noticed: bool = false
 var _hurt_barked: bool = false
 var _windups: int = 0
 var _bark_t: float = 0.0
+## The pooled player and stream of this enemy's recording, so a new bark never talks
+## over the old one and a defeat cuts the voice off.
+var _bark_player: Node = null
+var _bark_stream: AudioStream = null
 var _group: EncounterGroup = null
 var _area_root: Node2D = null
 var _tell_light: PointLight2D
@@ -411,6 +420,7 @@ func _defeat(hit_position: Vector2, direction: Vector2) -> void:
 	if state == State.DEFEATED:
 		return
 	state = State.DEFEATED
+	_stop_bark_voice()
 	attack_box.active = false
 	hit_zone.set_deferred("monitorable", false)
 	collision_layer = 0
@@ -539,14 +549,62 @@ func _update_lights(delta: float) -> void:
 	rig.set_flash(_flash)
 
 
+## Says one of `lines`: the caption over the head (BARK_TIME) and, when the line
+## has a recording (BarkMap), that recording from here. The group lets one enemy
+## speak at a time and holds the voice for as long as the recording runs (never
+## less than the caption's BARK_TIME), so two barks never overlap in the mix.
 func _bark(lines: PackedStringArray) -> void:
 	if lines.is_empty() or bark_label == null:
 		return
-	if _group != null and not _group.claim_voice(self, BARK_TIME):
+	# The pick comes first because the recording sets the hold; a refused claim
+	# gives the pick back, so who speaks and which line comes next are unchanged.
+	var rng_state := _rng.state
+	var text: String = lines[_rng.randi_range(0, lines.size() - 1)]
+	var cue := _bark_cue(text)
+	var hold := BARK_TIME
+	if cue != &"":
+		hold = maxf(BARK_TIME, _cue_seconds(cue) + BARK_VOICE_GAP)
+	if _group != null and not _group.claim_voice(self, hold):
+		_rng.state = rng_state
 		return
-	bark_label.text = lines[_rng.randi_range(0, lines.size() - 1)]
+	bark_label.text = text
 	bark_label.visible = true
 	_bark_t = BARK_TIME
+	if cue != &"":
+		_stop_bark_voice()
+		_bark_player = Audio.play_sfx(cue, global_position)
+		_bark_stream = _bark_player.stream if _bark_player != null else null
+
+
+## Cuts this enemy's recording if it is still speaking.
+func _stop_bark_voice() -> void:
+	if _bark_player != null and _bark_stream != null and Audio:
+		Audio.stop_player_if_playing(_bark_player, _bark_stream)
+	_bark_player = null
+	_bark_stream = null
+
+
+func _exit_tree() -> void:
+	_stop_bark_voice()
+
+
+## The recording that speaks `text`, or &"" when it plays nothing: no recording
+## for the line, or the speaker is dead (the killing shot's bark, a body freed this
+## frame), so a corpse never talks. The caption is unaffected either way.
+func _bark_cue(text: String) -> StringName:
+	if state == State.DEFEATED or health <= 0 or is_queued_for_deletion():
+		return &""
+	var cue: StringName = BarkMap.cue_for(text)
+	return cue if cue != &"" and Audio.has_cue(cue) else &""
+
+
+## How long the longest take of `cue` runs, in seconds (a take is picked at random,
+## so the voice is held for the worst case), capped at BARK_VOICE_MAX.
+static func _cue_seconds(cue: StringName) -> float:
+	var longest := 0.0
+	for s in Audio._sfx_pools.get(cue, {}).get("streams", []):
+		longest = maxf(longest, (s as AudioStream).get_length())
+	return minf(longest, BARK_VOICE_MAX)
 
 
 func _play_sfx(cue: StringName) -> void:

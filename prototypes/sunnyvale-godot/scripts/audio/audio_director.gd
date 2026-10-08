@@ -23,6 +23,13 @@ extends Node
 
 const SFX_DIR := "res://assets/audio/sfx/"
 const MUSIC_DIR := "res://assets/audio/music/"
+## The ElevenLabs set (N05): sound effects, ambience beds and voice lines made by
+## tools/process_elevenlabs.py, with their mix trims in this generated manifest
+## (preloaded by path, like the art skins: no `class_name`). A cue that has an
+## entry whose files load plays those; a cue with none (or whose files are missing)
+## plays its SFX_SOURCES source below, so the old Kenney / synthesized sounds stay
+## as the fallback.
+const Eleven := preload("res://scripts/audio/eleven_manifest.gd")
 
 ## Every cue this project knows about (05-content-and-assets.md /
 ## audio-direction.md). Keep this list, SFX_SOURCES below, and
@@ -47,6 +54,23 @@ const SFX_NAMES: Array[StringName] = [
 	# Night-campus additions: the clearance keycard and its wicket, the SC01
 	# copy bar, the lockdown stinger, and the Link implant chirp.
 	&"keycard", &"keycard_denied", &"door_unlock", &"uplink", &"lockdown", &"link_chirp",
+]
+
+## Cues that only exist as ElevenLabs sounds (they have no synthesized or Kenney
+## source, so they are not in SFX_NAMES, which tools/gen_audio.py cross-checks):
+## the hero's footsteps by surface, and three interface and weapon ticks.
+const ELEVEN_ONLY_CUES: Array[StringName] = [
+	&"footstep_paving", &"footstep_metal", &"footstep_roof",
+	&"ui_pause", &"toast_save", &"ready_click",
+	# The guards' and Staffers' spoken barks (played positionally at the speaker; the
+	# text each says is in data/tuning/*.tres and scripts/audio/bark_map.gd maps it to
+	# its cue), and the level-complete and checkpoint music stings.
+	&"bark_guard_ground", &"bark_guard_security", &"bark_guard_there_he_is",
+	&"bark_guard_dont_make_me", &"bark_guard_last_warning", &"bark_guard_hes_shooting",
+	&"bark_guard_shots_fired",
+	&"bark_staffer_stay", &"bark_staffer_workstation", &"bark_staffer_hold_still",
+	&"bark_staffer_dave",
+	&"sting_complete", &"sting_checkpoint",
 ]
 
 ## A small pitch nudge applied only to cues heard often enough (gunfire,
@@ -315,6 +339,29 @@ const SFX_SOURCES: Dictionary = {
 	&"link_chirp": {
 		"files": [SFX_DIR + "link_chirp.wav"], "volume_db": -6.5, "pitch_variance": PITCH_VARIANCE_FREQUENT,
 	},
+	# ElevenLabs-only cues (ELEVEN_ONLY_CUES): no old source, so "files" is empty and
+	# the trim here only matters if the manifest is ever missing. Steps are heard
+	# constantly, so they take the pitch nudge; the interface ticks do too.
+	&"footstep_paving": {"files": [], "volume_db": -20.0, "pitch_variance": PITCH_VARIANCE_FREQUENT},
+	&"footstep_metal": {"files": [], "volume_db": -20.0, "pitch_variance": PITCH_VARIANCE_FREQUENT},
+	&"footstep_roof": {"files": [], "volume_db": -22.0, "pitch_variance": PITCH_VARIANCE_FREQUENT},
+	&"ui_pause": {"files": [], "volume_db": -13.0, "pitch_variance": 0.0},
+	&"toast_save": {"files": [], "volume_db": -14.0, "pitch_variance": 0.0},
+	&"ready_click": {"files": [], "volume_db": -14.0, "pitch_variance": PITCH_VARIANCE_FREQUENT},
+	# Spoken barks and the two stings: fixed pitch (a voice nudged in pitch sounds wrong).
+	&"bark_guard_ground": {"files": [], "volume_db": -6.0, "pitch_variance": 0.0},
+	&"bark_guard_security": {"files": [], "volume_db": -6.0, "pitch_variance": 0.0},
+	&"bark_guard_there_he_is": {"files": [], "volume_db": -6.0, "pitch_variance": 0.0},
+	&"bark_guard_dont_make_me": {"files": [], "volume_db": -6.0, "pitch_variance": 0.0},
+	&"bark_guard_last_warning": {"files": [], "volume_db": -6.0, "pitch_variance": 0.0},
+	&"bark_guard_hes_shooting": {"files": [], "volume_db": -6.0, "pitch_variance": 0.0},
+	&"bark_guard_shots_fired": {"files": [], "volume_db": -6.0, "pitch_variance": 0.0},
+	&"bark_staffer_stay": {"files": [], "volume_db": -9.0, "pitch_variance": 0.0},
+	&"bark_staffer_workstation": {"files": [], "volume_db": -9.0, "pitch_variance": 0.0},
+	&"bark_staffer_hold_still": {"files": [], "volume_db": -9.0, "pitch_variance": 0.0},
+	&"bark_staffer_dave": {"files": [], "volume_db": -9.0, "pitch_variance": 0.0},
+	&"sting_complete": {"files": [], "volume_db": -4.0, "pitch_variance": 0.0},
+	&"sting_checkpoint": {"files": [], "volume_db": -8.0, "pitch_variance": 0.0},
 }
 
 ## Music track key (as passed to set_music) -> file basename under MUSIC_DIR.
@@ -323,8 +370,32 @@ const MUSIC_FILES := {
 	&"lockdown": "lockdown_loop",
 }
 
-const SFX_POOL_SIZE := 6
-const SFX2D_POOL_SIZE := 8
+## Ambience beds (set_ambience) fade over this long; a spoken line (play_voice) uses
+## one player of its own so a new line cuts the old one.
+const AMBIENCE_CROSSFADE_SECONDS := 2.0
+const AMBIENCE_NONE := &"none"
+
+const SFX_POOL_SIZE := 10
+const SFX2D_POOL_SIZE := 16
+
+## When every pooled player is busy a new sound takes one over: the OLDEST player
+## whose sound is not more important than the new one. Spoken barks, the music
+## stings and the story beats are important (priority 2) and are only ever cut by
+## another important sound, never by footsteps, hits or the like. (A Rover that
+## turned every frame once filled the whole pool and cut every bark.)
+const PRIORITY_CUE_PREFIXES: Array[String] = ["bark_", "sting_"]
+const PRIORITY_CUES: Array[StringName] = [&"adam_chime", &"lockdown", &"alarm", &"exit"]
+
+## The least time between two plays of the same cue, in seconds of game time, for
+## the cues that can be asked for every frame. The Rover's turn roll is requested on
+## each physics frame while it is blocked and flipping.
+const CUE_MIN_GAP_SECONDS := {
+	&"rover_patrol": 1.2,
+}
+
+## A positional sound farther than this from the camera is silent anyway (the 2D
+## players' default max_distance is 2000 px), so it takes no player at all.
+const AUDIBLE_RANGE := 2100.0
 const MUSIC_CROSSFADE_SECONDS := 1.2
 const MUSIC_FADE_DB := -80.0
 
@@ -336,17 +407,34 @@ const MUSIC_FADE_DB := -80.0
 ## once and no-ops) rather than erroring.
 var _sfx_pools: Dictionary = {}
 var _music_streams: Dictionary = {}  # StringName -> AudioStreamWAV
+var _music_trims: Dictionary = {}    # StringName -> float (the track's own level, dB)
+var _music_sources: Dictionary = {}  # StringName -> &"eleven" | &"legacy"
+## The synthesized loops stay loaded (and looped) even where an ElevenLabs loop has
+## replaced them: they are the fallback, and holding them keeps the shared resource
+## (with its loop points) alive for anything else that loads the same file.
+var _legacy_music_streams: Dictionary = {}
+var _ambience_streams: Dictionary = {}  # StringName -> {"stream": AudioStreamWAV, "volume_db": float}
+var _voice_lines: Dictionary = {}       # StringName -> {"streams": Array, "volume_db": float}
 var _warned_cues: Dictionary = {}    # StringName -> true (warn once each)
 
 var _sfx_pool: Array[AudioStreamPlayer] = []
-var _sfx_pool_next: int = 0
 var _sfx2d_pool: Array[AudioStreamPlayer2D] = []
-var _sfx2d_pool_next: int = 0
+var _cue_last_frame: Dictionary = {}  # StringName -> physics frame of the last play
+var _play_serial: int = 0              # counts plays, so "oldest" is exact even within one frame
 
 var _music_a: AudioStreamPlayer
 var _music_b: AudioStreamPlayer
 var _music_active: AudioStreamPlayer = null
 var _music_tween: Tween = null
+
+var _ambience_a: AudioStreamPlayer
+var _ambience_b: AudioStreamPlayer
+var _ambience_active: AudioStreamPlayer = null
+var _ambience_tween: Tween = null
+var _ambience_current: StringName = &"__unset__"
+
+var _voice_player: AudioStreamPlayer
+var _voice_current: StringName = &""
 ## Sentinel (not a real track key) so the very first set_music() call — even
 ## set_music(&"none") from the title screen — always actually applies.
 var _music_current: StringName = &"__unset__"
@@ -363,6 +451,11 @@ func _ready() -> void:
 	_build_pools()
 	_music_a = _make_music_player()
 	_music_b = _make_music_player()
+	_ambience_a = _make_ambience_player()
+	_ambience_b = _make_ambience_player()
+	_voice_player = AudioStreamPlayer.new()
+	_voice_player.bus = _safe_bus("SFX")
+	add_child(_voice_player)
 	_connect_session()
 
 
@@ -374,26 +467,58 @@ func _make_music_player() -> AudioStreamPlayer:
 	return p
 
 
+func _make_ambience_player() -> AudioStreamPlayer:
+	var p := AudioStreamPlayer.new()
+	p.bus = _safe_bus("SFX")
+	p.volume_db = MUSIC_FADE_DB
+	add_child(p)
+	return p
+
+
 func _safe_bus(bus_name: String) -> String:
 	return bus_name if AudioServer.get_bus_index(bus_name) >= 0 else "Master"
 
 
 func _load_streams() -> void:
-	for cue in SFX_NAMES:
+	var cues: Array[StringName] = []
+	cues.append_array(SFX_NAMES)
+	cues.append_array(ELEVEN_ONLY_CUES)
+	for cue in cues:
 		var source: Dictionary = SFX_SOURCES.get(cue, {})
-		var streams: Array[AudioStream] = []
-		for path in source.get("files", []):
-			if not ResourceLoader.exists(path):
-				continue
-			var stream: AudioStream = load(path)
-			if stream:
-				streams.append(stream)
+		var pitch_variance := float(source.get("pitch_variance", 0.0))
+		var eleven_streams := _load_all(Eleven.SFX.get(cue, {}).get("files", []))
+		if not eleven_streams.is_empty():
+			# The ElevenLabs takes: levelled by the tool, so the manifest's trim is the
+			# cue's mix and the Kenney "darker" base pitch no longer applies.
+			_sfx_pools[cue] = {
+				"streams": eleven_streams,
+				"volume_db": float(Eleven.SFX[cue].get("volume_db", 0.0)),
+				"pitch": 1.0,
+				"pitch_variance": pitch_variance,
+				"source": &"eleven",
+			}
+			continue
 		_sfx_pools[cue] = {
-			"streams": streams,
+			"streams": _load_all(source.get("files", [])),
 			"volume_db": float(source.get("volume_db", 0.0)),
 			"pitch": float(source.get("pitch", 1.0)),
-			"pitch_variance": float(source.get("pitch_variance", 0.0)),
+			"pitch_variance": pitch_variance,
+			"source": &"legacy",
 		}
+	for bed in Eleven.AMBIENCE:
+		var entry: Dictionary = Eleven.AMBIENCE[bed]
+		var path: String = entry.get("file", "")
+		if not ResourceLoader.exists(path):
+			continue
+		var stream: AudioStreamWAV = load(path)
+		if stream:
+			_make_seamless(stream)
+			_ambience_streams[bed] = {"stream": stream, "volume_db": float(entry.get("volume_db", 0.0))}
+	for line in Eleven.VOICE:
+		var entry: Dictionary = Eleven.VOICE[line]
+		var streams := _load_all(entry.get("files", []))
+		if not streams.is_empty():
+			_voice_lines[line] = {"streams": streams, "volume_db": float(entry.get("volume_db", 0.0))}
 	for key in MUSIC_FILES:
 		var path := MUSIC_DIR + String(MUSIC_FILES[key]) + ".wav"
 		if not ResourceLoader.exists(path):
@@ -401,7 +526,35 @@ func _load_streams() -> void:
 		var stream: AudioStreamWAV = load(path)
 		if stream:
 			_make_seamless(stream)
+			_legacy_music_streams[key] = stream
 			_music_streams[key] = stream
+			_music_trims[key] = 0.0
+			_music_sources[key] = &"legacy"
+	# The ElevenLabs loops (stereo, levelled to the synthesized ones): a track with a
+	# loadable file here replaces the synthesized loop of the same key, and the
+	# depot and title tracks exist only here.
+	for key in Eleven.MUSIC:
+		var entry: Dictionary = Eleven.MUSIC[key]
+		var path: String = entry.get("file", "")
+		if not ResourceLoader.exists(path):
+			continue
+		var stream: AudioStreamWAV = load(path)
+		if stream:
+			_make_seamless(stream)
+			_music_streams[key] = stream
+			_music_trims[key] = float(entry.get("volume_db", 0.0))
+			_music_sources[key] = &"eleven"
+
+
+func _load_all(paths: Array) -> Array[AudioStream]:
+	var streams: Array[AudioStream] = []
+	for path in paths:
+		if not ResourceLoader.exists(path):
+			continue
+		var stream: AudioStream = load(path)
+		if stream:
+			streams.append(stream)
+	return streams
 
 
 ## Sets the WAV's own loop points to its full length so AudioStreamPlayer
@@ -451,43 +604,86 @@ func _connect_session() -> void:
 ## Plays a one-shot cue. `position` (Vector2) plays it positionally through a
 ## small AudioStreamPlayer2D pool; omitted/null plays it as a flat 2D-less
 ## cue (UI, HUD, global world events) through a small AudioStreamPlayer pool.
-## An unknown cue name — or one whose configured source file(s) failed to
+## Returns the pooled player it used (so a caller can stop its own sound with
+## stop_player_if_playing), or null for an unknown cue. An unknown cue name — or
+## one whose configured source file(s) failed to
 ## load — never errors: it push_warnings once and returns. When a cue has
 ## more than one pooled source file, one is picked at random each call; the
 ## cue's base "pitch" (see SFX_SOURCES) is applied, and a small pitch_variance
 ## adds a further +-N% pitch nudge on top of that for cues heard often enough
 ## that exact repetition would be noticeable.
-func play_sfx(cue: StringName, position: Variant = null) -> void:
+func play_sfx(cue: StringName, position: Variant = null) -> Node:
 	var pool: Dictionary = _sfx_pools.get(cue, {})
 	var streams: Array = pool.get("streams", [])
 	if streams.is_empty():
 		if not _warned_cues.has(cue):
 			_warned_cues[cue] = true
 			push_warning("Audio.play_sfx: unknown cue %s" % String(cue))
-		return
+		return null
+	var gap_seconds: float = CUE_MIN_GAP_SECONDS.get(cue, 0.0)
+	if gap_seconds > 0.0:
+		var frame := Engine.get_physics_frames()
+		var min_frames := int(ceil(gap_seconds * float(Engine.physics_ticks_per_second)))
+		if frame - int(_cue_last_frame.get(cue, -1000000)) < min_frames:
+			return null
+		_cue_last_frame[cue] = frame
+	if position != null and not _audible_from_camera(position):
+		return null
 	var stream: AudioStream = streams[randi() % streams.size()]
 	var volume_db: float = pool.get("volume_db", 0.0)
 	var pitch_variance: float = pool.get("pitch_variance", 0.0)
 	var pitch_scale: float = pool.get("pitch", 1.0)
 	if pitch_variance > 0.0:
 		pitch_scale *= 1.0 + randf_range(-pitch_variance, pitch_variance)
+	var priority := _cue_priority(cue)
 	if position != null:
-		var player2d: AudioStreamPlayer2D = _acquire_2d()
+		var player2d: AudioStreamPlayer2D = _acquire_2d(priority)
+		_play_serial += 1
+		player2d.set_meta(&"priority", priority)
+		player2d.set_meta(&"serial", _play_serial)
 		player2d.global_position = position
 		player2d.stream = stream
 		player2d.volume_db = volume_db
 		player2d.pitch_scale = pitch_scale
 		player2d.play()
-	else:
-		var player: AudioStreamPlayer = _acquire_flat()
-		player.stream = stream
-		player.volume_db = volume_db
-		player.pitch_scale = pitch_scale
-		player.play()
+		return player2d
+	var player: AudioStreamPlayer = _acquire_flat(priority)
+	_play_serial += 1
+	player.set_meta(&"priority", priority)
+	player.set_meta(&"serial", _play_serial)
+	player.stream = stream
+	player.volume_db = volume_db
+	player.pitch_scale = pitch_scale
+	player.play()
+	return player
 
 
-## Switches the level music. `track` is `&"campus"`, `&"lockdown"` or
-## `&"none"`. Crossfades over MUSIC_CROSSFADE_SECONDS; calling it again with
+## Stops every pooled player that is playing one of `cue`'s sounds right now (a
+## long sting that the next screen must not overlap). Pooled players are reused, so
+## this matches on the stream, never on the player: it never cuts another cue.
+func stop_sfx(cue: StringName) -> void:
+	var streams: Array = _sfx_pools.get(cue, {}).get("streams", [])
+	if streams.is_empty():
+		return
+	for p in _sfx_pool:
+		if p.playing and streams.has(p.stream):
+			p.stop()
+	for p in _sfx2d_pool:
+		if p.playing and streams.has(p.stream):
+			p.stop()
+
+
+## Stops `player` if it is STILL playing `stream`: the handle `play_sfx` returned
+## may have been reused by another cue since, and that one must not be cut. For
+## a speaker who must not talk over himself or keep talking after he dies.
+func stop_player_if_playing(player: Node, stream: AudioStream) -> void:
+	if is_instance_valid(player) and player.playing and player.stream == stream:
+		player.stop()
+
+
+## Switches the level music. `track` is `&"campus"`, `&"lockdown"`, `&"depot"`,
+## `&"title"` or `&"none"` (depot and title exist only as ElevenLabs loops; a track
+## with no loaded stream is silence, never an error). Crossfades over MUSIC_CROSSFADE_SECONDS; calling it again with
 ## the CURRENT track is a no-op (never restarts a loop that's already
 ## playing). The logical "current track" updates immediately (readable via
 ## current_music()) even though the audible fade takes a moment — callers
@@ -519,7 +715,7 @@ func set_music(track: StringName) -> void:
 		incoming.stream = target_stream
 		incoming.volume_db = MUSIC_FADE_DB
 		incoming.play()
-		_music_tween.tween_property(incoming, "volume_db", 0.0, MUSIC_CROSSFADE_SECONDS)
+		_music_tween.tween_property(incoming, "volume_db", float(_music_trims.get(track, 0.0)), MUSIC_CROSSFADE_SECONDS)
 		_music_active = incoming
 	else:
 		_music_active = null
@@ -527,6 +723,106 @@ func set_music(track: StringName) -> void:
 	if outgoing and outgoing != _music_active and outgoing.playing:
 		_music_tween.tween_property(outgoing, "volume_db", MUSIC_FADE_DB, MUSIC_CROSSFADE_SECONDS)
 		_music_tween.chain().tween_callback(outgoing.stop)
+
+
+## Switches the ambience bed under the music: `bed` is a key of the manifest's
+## AMBIENCE (`&"amb_campus_night"`, `&"amb_roof_night"`, `&"amb_plaza_wet"`,
+## `&"amb_depot_hum"`, `&"amb_lockdown_bed"`, `&"amb_alarm_far"`, `&"amb_wicket_yard"`,
+## `&"amb_server_core"`) or `&"none"`. Crossfades over AMBIENCE_CROSSFADE_SECONDS;
+## asking for the bed already playing is a no-op, and a bed whose file is missing is
+## silence rather than an error. The beds are seamless loops on the SFX bus, so the
+## player's SFX slider sets their volume.
+func set_ambience(bed: StringName) -> void:
+	if bed == _ambience_current:
+		return
+	_ambience_current = bed
+	if _ambience_tween and _ambience_tween.is_valid():
+		_ambience_tween.kill()
+	_ambience_tween = null
+	var outgoing := _ambience_active
+	var entry: Dictionary = _ambience_streams.get(bed, {})
+	if entry.is_empty() and not (outgoing and outgoing.playing):
+		_ambience_active = null
+		return
+	_ambience_tween = create_tween()
+	_ambience_tween.set_parallel(true)
+	if not entry.is_empty():
+		var incoming := _ambience_b if outgoing == _ambience_a else _ambience_a
+		incoming.stream = entry["stream"]
+		incoming.volume_db = MUSIC_FADE_DB
+		incoming.play()
+		_ambience_tween.tween_property(incoming, "volume_db", float(entry["volume_db"]), AMBIENCE_CROSSFADE_SECONDS)
+		_ambience_active = incoming
+	else:
+		_ambience_active = null
+	if outgoing and outgoing != _ambience_active and outgoing.playing:
+		_ambience_tween.tween_property(outgoing, "volume_db", MUSIC_FADE_DB, AMBIENCE_CROSSFADE_SECONDS)
+		_ambience_tween.chain().tween_callback(outgoing.stop)
+
+
+## The bed asked for last (`&"none"`, a manifest key, or the unset sentinel before
+## the first set_ambience() call). For tests and readers.
+func current_ambience() -> StringName:
+	return _ambience_current
+
+
+## True while `bed` has a loaded loop. For tests.
+func has_ambience(bed: StringName) -> bool:
+	return _ambience_streams.has(bed)
+
+
+## Plays a spoken line (`&"adam_hello"`, `&"adam_stay"`, `&"dave_word_gets_around"`,
+## `&"pa_lethal"`, `&"pa_remain_calm"`) and returns its length in seconds, so the
+## caller can hold the subtitle for as long as the voice runs. One line speaks at a
+## time: a new line cuts the old one, and stop_voice() ends it (the dialogue skip).
+## Alternate takes are picked at random. An unknown line, or one with no loaded file,
+## plays nothing and returns 0.0.
+func play_voice(line: StringName) -> float:
+	var entry: Dictionary = _voice_lines.get(line, {})
+	var streams: Array = entry.get("streams", [])
+	if streams.is_empty():
+		return 0.0
+	var stream: AudioStream = streams[randi() % streams.size()]
+	_voice_player.stream = stream
+	_voice_player.volume_db = float(entry.get("volume_db", 0.0))
+	_voice_player.play()
+	_voice_current = line
+	return stream.get_length()
+
+
+func stop_voice() -> void:
+	if _voice_player and _voice_player.playing:
+		_voice_player.stop()
+	_voice_current = &""
+
+
+## The line speaking now, or &"" when none is. For tests.
+func current_voice() -> StringName:
+	return _voice_current if _voice_player and _voice_player.playing else &""
+
+
+## True while `line` has at least one loaded take. For tests.
+func has_voice(line: StringName) -> bool:
+	return _voice_lines.has(line)
+
+
+## The length of `line`'s first take in seconds (0.0 for an unknown line), so a
+## caller can plan around it before playing.
+func voice_length(line: StringName) -> float:
+	var streams: Array = _voice_lines.get(line, {}).get("streams", [])
+	return (streams[0] as AudioStream).get_length() if not streams.is_empty() else 0.0
+
+
+## True while `track` has a loaded music loop. For tests and callers that pick a
+## track only when it exists.
+func has_music(track: StringName) -> bool:
+	return _music_streams.has(track)
+
+
+## Where `track` plays from: &"eleven" (the ElevenLabs loop), &"legacy" (the
+## synthesized one) or &"" (no such track). For tests.
+func music_source(track: StringName) -> StringName:
+	return _music_sources.get(track, &"")
 
 
 ## The logical current track key (&"campus" / &"lockdown" / &"none" /
@@ -543,6 +839,12 @@ func has_cue(cue: StringName) -> bool:
 	return not (_sfx_pools.get(cue, {}).get("streams", []) as Array).is_empty()
 
 
+## Where `cue` plays from: &"eleven" (the ElevenLabs takes), &"legacy" (its old
+## Kenney or synthesized source) or &"" for an unknown cue. For tests.
+func cue_source(cue: StringName) -> StringName:
+	return _sfx_pools.get(cue, {}).get("source", &"")
+
+
 ## The number of loaded source-file variants behind `cue` (0 for an unknown
 ## cue or one whose files all failed to load). For tests.
 func cue_variant_count(cue: StringName) -> int:
@@ -551,22 +853,61 @@ func cue_variant_count(cue: StringName) -> int:
 
 # --- pool helpers ----------------------------------------------------------------
 
-func _acquire_flat() -> AudioStreamPlayer:
+func _acquire_flat(priority: int = 1) -> AudioStreamPlayer:
 	for p in _sfx_pool:
 		if not p.playing:
 			return p
-	var p: AudioStreamPlayer = _sfx_pool[_sfx_pool_next]
-	_sfx_pool_next = (_sfx_pool_next + 1) % _sfx_pool.size()
-	return p
+	return _oldest_not_above(_sfx_pool, priority) as AudioStreamPlayer
 
 
-func _acquire_2d() -> AudioStreamPlayer2D:
+func _acquire_2d(priority: int = 1) -> AudioStreamPlayer2D:
 	for p in _sfx2d_pool:
 		if not p.playing:
 			return p
-	var p: AudioStreamPlayer2D = _sfx2d_pool[_sfx2d_pool_next]
-	_sfx2d_pool_next = (_sfx2d_pool_next + 1) % _sfx2d_pool.size()
-	return p
+	return _oldest_not_above(_sfx2d_pool, priority) as AudioStreamPlayer2D
+
+
+## The player to take over when the pool is full: the oldest one whose sound is no
+## more important than `priority`; if every player holds something more important,
+## the oldest of all.
+func _oldest_not_above(pool: Array, priority: int) -> Node:
+	var best: Node = null
+	var best_time := 0
+	for p in pool:
+		if int(p.get_meta(&"priority", 1)) > priority:
+			continue
+		var t := int(p.get_meta(&"serial", 0))
+		if best == null or t < best_time:
+			best = p
+			best_time = t
+	if best != null:
+		return best
+	for p in pool:
+		var t := int(p.get_meta(&"serial", 0))
+		if best == null or t < best_time:
+			best = p
+			best_time = t
+	return best
+
+
+func _cue_priority(cue: StringName) -> int:
+	if PRIORITY_CUES.has(cue):
+		return 2
+	var name := String(cue)
+	for prefix in PRIORITY_CUE_PREFIXES:
+		if name.begins_with(prefix):
+			return 2
+	return 1
+
+
+## False for a positional sound the camera is too far from to hear. With no camera
+## (isolated test scenes, the title) everything counts as audible.
+func _audible_from_camera(position: Vector2) -> bool:
+	var viewport := get_viewport()
+	var camera := viewport.get_camera_2d() if viewport else null
+	if camera == null:
+		return true
+	return camera.get_screen_center_position().distance_to(position) <= AUDIBLE_RANGE
 
 
 # --- Session signal wiring (ADV: audio calls only, never gameplay) ---------------
