@@ -133,6 +133,15 @@ VOICE_PEAK_MIX_DB = {
     "adam_hello": -4.0, "adam_stay": -4.0, "dave_word_gets_around": -5.0,
     "pa_lethal": -6.0, "pa_remain_calm": -6.0,
 }
+# The SC00 intro comic's narration (C49): one line per panel by the designed "DEAD EDEN -
+# Narrator" voice, plus Stroud's line on panel 4 (the library voice "Mac Halloway").
+# The narrator sits on top (the title music is ducked under it), Stroud a little lower.
+INTRO_LINES = ["intro_narration_%02d" % i for i in range(1, 9)] + ["intro_stroud_04"]
+VOICE_LINES += INTRO_LINES
+for _line in INTRO_LINES:
+    VOICE_PEAK_MIX_DB[_line] = -4.0 if _line == "intro_stroud_04" else -3.0
+# Lines that use only these takes (the game plays a random take of a line otherwise).
+VOICE_TAKES = {line: [1] for line in INTRO_LINES}
 
 # The peak level (dBFS) each cue plays at through its trim. Loudest and most dramatic
 # (-2 to -5): the pistol, the Rover's ram and wreck, the lockdown stinger, Adam's chime,
@@ -440,6 +449,8 @@ def process_voice(write, notes):
     out = {}
     for line in VOICE_LINES:
         takes = find_takes(line)
+        if line in VOICE_TAKES:
+            takes = [t for n, t in enumerate(takes, 1) if n in VOICE_TAKES[line]]
         clips = []
         for path in takes:
             x = highpass(decode(path, SFX_RATE), SFX_RATE, 70.0)

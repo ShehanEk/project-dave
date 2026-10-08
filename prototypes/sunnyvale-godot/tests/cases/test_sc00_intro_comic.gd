@@ -4,10 +4,13 @@ extends TestCase
 ##   1. The art: eight 2048x1152 panels in assets/story/intro/ that load as textures.
 ##   2. The script: eight third-person captions, the city named Eon City, Stroud's one
 ##      spoken line on panel 4 and the DEAD EDEN logo on the last panel.
-##   3. Playing it: the first caption types in over time; advance() finishes the typing,
-##      then moves to the next panel; a panel moves on by itself a few seconds after its
-##      caption is done; the last panel shows the logo; advancing past it ends the
-##      comic (`finished(false)`) and frees it.
+##   3. Playing it: the narrator reads each panel (the ElevenLabs intro lines, with the
+##      music ducked under him) while the caption types in at the voice's pace;
+##      advance() finishes the typing, then moves to the next panel and cuts the voice; a
+##      panel waits for its voice, then moves on by itself; on panel 4 Stroud speaks
+##      after the narration (a press jumps to him); the last panel shows the logo;
+##      advancing past it ends the comic (`finished(false)`), stops the voice, lifts the
+##      duck and frees the comic.
 ##   4. Skipping: skip() from any panel ends it at once (`finished(true)`); the
 ##      accept and cancel actions advance and skip like the calls do.
 ##   5. Reduced motion: no drift (the panel never scales); otherwise the panel slowly
@@ -74,6 +77,16 @@ func _test_art() -> void:
 		if tex:
 			check_eq(tex.get_size(), Vector2(2048, 1152), "panel %d is 2048x1152 (16:9)" % [i + 1])
 	check(ResourceLoader.exists(IntroComic.LOGO_PATH), "the DEAD EDEN logo exists for the last panel")
+	# The narration: one ElevenLabs line per panel and Stroud's, each shorter than a
+	# long breath past its caption's reading time.
+	for i in IntroComic.PANELS.size():
+		var line: StringName = IntroComic.PANELS[i].get("voice", &"")
+		check_eq(line, StringName("intro_narration_%02d" % [i + 1]), "panel %d has its narration line" % [i + 1])
+		check(Audio.has_voice(line), "panel %d's narration is loaded (%s)" % [i + 1, line])
+		var length: float = Audio.voice_length(line)
+		check(length > 0.8 and length < 14.0, "panel %d's narration is %.1f s" % [i + 1, length])
+	check(Audio.has_voice(&"intro_stroud_04"), "Stroud's line is loaded")
+	check_eq(IntroComic.PANELS[3].get("line_voice", &""), &"intro_stroud_04", "panel 4 plays Stroud's voice")
 
 
 # --- 2. the script ---------------------------------------------------------------------
@@ -106,6 +119,8 @@ func _test_playing() -> void:
 	check_eq(intro.panel_index(), 0, "the comic opens on panel 1")
 	check(intro.current_texture() != null, "panel 1's art is shown")
 	check(not intro.caption_fully_shown(), "the first caption is still typing two frames in")
+	check_eq(Audio.current_voice(), &"intro_narration_01", "the narrator reads panel 1")
+	check_eq(Audio.music_duck(), IntroComic.MUSIC_DUCK_DB, "the music is ducked under the narration")
 	await seconds(0.5)
 	var label: Label = intro.find_child("Caption", true, false)
 	check(label.visible_characters > 0 and label.visible_characters < label.get_total_character_count(),
@@ -117,24 +132,48 @@ func _test_playing() -> void:
 	check_eq(intro.panel_index(), 1, "the next advance() goes to panel 2")
 	check_eq(intro.caption_text(), IntroComic.PANELS[1]["caption"], "panel 2's caption")
 
-	# The panel moves on by itself after its caption is done.
+	# The narrator reads panel 2; once the typing is done the panel waits for the voice,
+	# then moves on by itself a moment later.
+	check_eq(Audio.current_voice(), &"intro_narration_02", "the narrator reads panel 2")
 	intro.advance()
-	await seconds(IntroComic.AUTO_ADVANCE_SECONDS + 0.3)
-	check_eq(intro.panel_index(), 2, "panel 2 moves on by itself after its hold")
+	var left: float = intro.voice_seconds_left()
+	check(left > 1.0, "the typing is done but the voice still has %.1f s to go" % left)
+	await seconds(left * 0.5)
+	check_eq(intro.panel_index(), 1, "panel 2 waits while its voice is speaking")
+	await seconds(left * 0.5 + IntroComic.AUTO_ADVANCE_SECONDS + 0.3)
+	check_eq(intro.panel_index(), 2, "then moves on by itself after its hold")
+	check_eq(Audio.current_voice(), &"intro_narration_03", "and the narrator reads panel 3")
 
-	# Panel 4's spoken line shows once its caption is complete.
+	# Panel 4: Stroud speaks after the narration, in his own voice.
 	intro.advance()
 	intro.advance()
 	check_eq(intro.panel_index(), 3, "panel 4")
-	check_eq(intro.speaker_line(), "", "Stroud's line waits for the caption")
+	check_eq(Audio.current_voice(), &"intro_narration_04", "turning the page cut panel 3's voice for panel 4's")
 	intro.advance()
+	check_eq(intro.speaker_line(), "", "Stroud's line waits for the narration")
+	await seconds(intro.voice_seconds_left() + 0.1)
 	check(intro.speaker_line().begins_with("Stroud:") and intro.speaker_line().contains("pay grade"),
-			"Stroud's line shows under the caption (got: %s)" % intro.speaker_line())
+			"Stroud's line shows when the narration ends (got: %s)" % intro.speaker_line())
+	check_eq(Audio.current_voice(), &"intro_stroud_04", "and Stroud says it in his own voice")
 	intro.advance()
+	check_eq(intro.panel_index(), 4, "a press during Stroud's line turns the page")
 	check_eq(intro.speaker_line(), "", "panel 5 has no spoken line")
 
-	while intro.panel_index() < 7:
+	# A press during the narration on panel 4 jumps straight to Stroud's line.
+	intro.skip()
+	await physics_frames(2)
+	intro = _spawn_intro()
+	await physics_frames(2)
+	while intro.panel_index() < 3:
 		intro.advance()
+	intro.advance()  # finish the typing
+	intro.advance()  # cut the narration: Stroud now
+	check(intro.speaker_line().begins_with("Stroud:"), "a press cuts to Stroud's line")
+	check_eq(Audio.current_voice(), &"intro_stroud_04", "and his voice")
+	intro.advance()
+	check_eq(intro.panel_index(), 4, "the next press turns the page")
+
+	while intro.panel_index() < 7:
 		intro.advance()
 	check(not intro.logo_visible(), "the logo waits for the last caption")
 	intro.advance()
@@ -143,6 +182,8 @@ func _test_playing() -> void:
 	intro.advance()
 	check_eq(_done_box[0], 1, "advancing past the last panel ends the comic once")
 	check_eq(_done_box[1], false, "a comic watched to the end is not 'skipped'")
+	check_eq(Audio.current_voice(), &"", "the end of the comic stops the narrator")
+	check_eq(Audio.music_duck(), 0.0, "and lifts the music back up")
 	await physics_frames(2)
 	check(not is_instance_valid(intro), "the comic frees itself when it ends")
 
@@ -160,6 +201,8 @@ func _test_skipping_and_input() -> void:
 	intro.skip()
 	check_eq(_done_box[0], 1, "skip() ends the comic at once")
 	check_eq(_done_box[1], true, "and reports it as skipped")
+	check_eq(Audio.current_voice(), &"", "skipping stops the narrator")
+	check_eq(Audio.music_duck(), 0.0, "and lifts the music back up")
 	intro.skip()
 	intro.advance()
 	check_eq(_done_box[0], 1, "nothing fires twice after the end")

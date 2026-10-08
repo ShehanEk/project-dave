@@ -35,7 +35,11 @@ the run and deletes the save at once, shows the SC00 intro comic
 (`scripts/ui/intro_comic.gd`, C49, group `intro_comic`, `finished(skipped)`)
 and starts the level when the comic ends. `_on_new_game_confirmed()` still
 starts the level at once (the tests and demos call it), and `play_intro = false`
-makes the title's New Game skip the comic. Continue never shows it.
+makes the title's New Game skip the comic. Continue never shows it. The comic's
+narration is ordinary voice lines (`intro_narration_01` to `_08`, `intro_stroud_04`;
+`Audio.play_voice()`), and it ducks the music with `Audio.set_music_duck(db)` (an
+Amplify effect on the Music bus, so the Music slider is untouched) and lifts it when it
+ends or is freed.
 
 ## Engine and commands
 

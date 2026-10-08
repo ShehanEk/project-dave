@@ -149,14 +149,17 @@ func _play_through_intro() -> bool:
 		_fail("intro comic never appeared after New Game")
 		return false
 	var count: int = intro.panel_count()
-	var textured := 0
-	for i in count:
+	var seen := {}
+	var presses := 0
+	# Press through it like a player: finish each caption, cut to Stroud's line on
+	# panel 4, turn the page; record each panel's art as it shows.
+	while is_instance_valid(intro) and not intro.is_finished() and presses < 60:
 		if intro.current_texture() != null:
-			textured += 1
-		intro.advance()  # finish the caption's typing
+			seen[intro.panel_index()] = true
+		intro.advance()
+		presses += 1
 		await get_tree().process_frame
-		intro.advance()  # next panel (after the last one, the end of the comic)
-		await get_tree().process_frame
+	var textured := seen.size()
 	print("[M7DRIVER] intro comic panels=", count, " with_art=", textured)
 	if textured != count:
 		_fail("intro comic art missing in the export (%d of %d panels)" % [textured, count])

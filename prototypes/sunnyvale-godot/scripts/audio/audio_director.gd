@@ -397,6 +397,8 @@ const CUE_MIN_GAP_SECONDS := {
 ## players' default max_distance is 2000 px), so it takes no player at all.
 const AUDIBLE_RANGE := 2100.0
 const MUSIC_CROSSFADE_SECONDS := 1.2
+## How fast set_music_duck() lowers or restores the music.
+const MUSIC_DUCK_SECONDS := 0.6
 const MUSIC_FADE_DB := -80.0
 
 ## StringName -> {"streams": Array[AudioStream], "volume_db": float, "pitch": float,
@@ -426,6 +428,9 @@ var _music_a: AudioStreamPlayer
 var _music_b: AudioStreamPlayer
 var _music_active: AudioStreamPlayer = null
 var _music_tween: Tween = null
+var _music_duck: AudioEffectAmplify = null
+var _music_duck_tween: Tween = null
+var _music_duck_target := 0.0
 
 var _ambience_a: AudioStreamPlayer
 var _ambience_b: AudioStreamPlayer
@@ -723,6 +728,30 @@ func set_music(track: StringName) -> void:
 	if outgoing and outgoing != _music_active and outgoing.playing:
 		_music_tween.tween_property(outgoing, "volume_db", MUSIC_FADE_DB, MUSIC_CROSSFADE_SECONDS)
 		_music_tween.chain().tween_callback(outgoing.stop)
+
+
+## Lowers all music by `db` (0.0 restores it) over MUSIC_DUCK_SECONDS, under a voice
+## that must be heard over it: the SC00 intro comic ducks the title theme under its
+## narration. It works on an Amplify effect on the Music bus, so the player's Music
+## slider (the bus volume) and set_music()'s own fades are untouched.
+func set_music_duck(db: float) -> void:
+	_music_duck_target = db
+	var bus := AudioServer.get_bus_index("Music")
+	if bus < 0:
+		return
+	if _music_duck == null:
+		_music_duck = AudioEffectAmplify.new()
+		_music_duck.volume_db = 0.0
+		AudioServer.add_bus_effect(bus, _music_duck)
+	if _music_duck_tween and _music_duck_tween.is_valid():
+		_music_duck_tween.kill()
+	_music_duck_tween = create_tween()
+	_music_duck_tween.tween_property(_music_duck, "volume_db", db, MUSIC_DUCK_SECONDS)
+
+
+## The duck set_music_duck() is heading for (0.0 when the music is not ducked).
+func music_duck() -> float:
+	return _music_duck_target
 
 
 ## Switches the ambience bed under the music: `bed` is a key of the manifest's

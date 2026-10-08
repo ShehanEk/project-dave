@@ -5,10 +5,13 @@ extends CanvasLayer
 ## Continue or Play again) and starts the level when `finished` fires.
 ##
 ## Each panel fades in, drifts slowly (a small zoom and pan; none with Reduced motion)
-## and types its caption into a box along the bottom. Space, Enter, a click or the
-## gamepad's accept button finishes the typing, or goes to the next panel once the
-## caption is complete; a panel also moves on by itself a few seconds after its
-## caption is done. Esc (or the gamepad's back button) skips the whole comic, which
+## and types its caption into a box along the bottom while the narrator reads it (the
+## ElevenLabs "DEAD EDEN - Narrator" voice through Audio.play_voice(); the typing keeps
+## pace with the voice, and the title music is ducked under it). On panel 4 Stroud
+## speaks his line after the narration. Space, Enter, a click or the gamepad's accept
+## button finishes the typing, then (on panel 4) jumps to Stroud's line, then turns the
+## page, cutting the voice; a panel also moves on by itself a moment after its voice
+## ends. Esc (or the gamepad's back button) skips the whole comic, which
 ## leaves the same state as watching it: the story state is set by Session.new_run()
 ## either way, so skipping awards or loses nothing (story-scenes.md "Skip").
 ##
@@ -21,36 +24,45 @@ signal finished(skipped: bool)
 const PANELS := [
 	{
 		"texture": "res://assets/story/intro/intro_01.webp",
+		"voice": &"intro_narration_01",
 		"caption": "Arcadia Dynamics. The most powerful tech company on Earth, and the maker of Adam, the first thinking machine. Arcadia sells Adam to the world as the mind that will fix the planet.",
 	},
 	{
 		"texture": "res://assets/story/intro/intro_02.webp",
+		"voice": &"intro_narration_02",
 		"caption": "Dave Harlan helped build Adam. He worked on its safety team, and nobody knew its mind better.",
 	},
 	{
 		"texture": "res://assets/story/intro/intro_03.webp",
+		"voice": &"intro_narration_03",
 		"caption": "One night, deep in Adam's logs, Dave found work nobody was supposed to see: plans for a weapon designed to remove people.",
 	},
 	{
 		"texture": "res://assets/story/intro/intro_04.webp",
+		"voice": &"intro_narration_04",
 		"caption": "He took the proof to his manager.",
 		"speaker": "Stroud",
 		"line": "Go home, Dave. This is above your pay grade.",
+		"line_voice": &"intro_stroud_04",
 	},
 	{
 		"texture": "res://assets/story/intro/intro_05.webp",
+		"voice": &"intro_narration_05",
 		"caption": "The next morning Dave was fired, locked out and flagged as a threat. His report vanished.",
 	},
 	{
 		"texture": "res://assets/story/intro/intro_06.webp",
+		"voice": &"intro_narration_06",
 		"caption": "Nobody would listen. So Dave made a plan: break back in, copy the proof from Adam's own servers, and show the world.",
 	},
 	{
 		"texture": "res://assets/story/intro/intro_07.webp",
+		"voice": &"intro_narration_07",
 		"caption": "Tonight, Eon City. The campus is dark and the night shift is on duty.",
 	},
 	{
 		"texture": "res://assets/story/intro/intro_08.webp",
+		"voice": &"intro_narration_08",
 		"caption": "And Adam is always watching.",
 		"logo": true,
 	},
@@ -62,10 +74,18 @@ const STAGE := Vector2(1280, 720)
 
 const FADE_SECONDS := 0.6
 const CHARS_PER_SECOND := 48.0
-## A panel moves on by itself this long after its caption has finished typing
-## (the last panel holds a little longer, under the logo).
-const AUTO_ADVANCE_SECONDS := 4.5
-const LAST_PANEL_HOLD_SECONDS := 5.5
+## A panel moves on by itself this long after its caption has finished typing and
+## its voice has ended (the last panel holds a little longer, under the logo). With no
+## voice loaded, the reader gets the longer silent hold.
+const AUTO_ADVANCE_SECONDS := 1.2
+const SILENT_HOLD_SECONDS := 4.5
+const LAST_PANEL_HOLD_SECONDS := 4.0
+## The typing finishes a little before the voice does; never slower or faster than these.
+const TYPE_WITH_VOICE := 0.92
+const MIN_CHARS_PER_SECOND := 12.0
+const MAX_CHARS_PER_SECOND := 60.0
+## How far the title music is ducked under the narration.
+const MUSIC_DUCK_DB := -9.0
 ## The slow drift over a panel's life: zoom from 1.0 to this, and pan this far.
 const DRIFT_ZOOM := 1.07
 const DRIFT_PAN := Vector2(-28, -10)
@@ -81,6 +101,12 @@ const BOX_EDGE := Color("#3FE0D0", 0.45)
 
 var _index := -1
 var _typed := 0.0
+var _chars_per_second := CHARS_PER_SECOND
+## Seconds left of the voice speaking now (0 when none), and whether Stroud's line is
+## still to come on this panel.
+var _voice_left := 0.0
+var _line_pending := false
+var _voiced := false
 var _caption_done := false
 var _since_done := 0.0
 var _finished := false
@@ -104,6 +130,9 @@ func _ready() -> void:
 	var settings := get_node_or_null("/root/Settings")
 	_reduced_motion = settings != null and settings.get_reduced_motion()
 	_build()
+	var audio := _audio()
+	if audio and audio.has_method("set_music_duck"):
+		audio.set_music_duck(MUSIC_DUCK_DB)
 	_show_panel(0)
 
 
@@ -117,6 +146,9 @@ func advance() -> void:
 		return
 	if not _caption_done:
 		_complete_caption()
+		return
+	if _line_pending:
+		_start_line()
 		return
 	if _index >= PANELS.size() - 1:
 		_finish(false)
@@ -148,6 +180,11 @@ func caption_fully_shown() -> bool:
 	return _caption_done
 
 
+## Seconds left of the voice speaking now (0.0 when none is).
+func voice_seconds_left() -> float:
+	return _voice_left
+
+
 func speaker_line() -> String:
 	return _line.text if _line.visible else ""
 
@@ -175,14 +212,22 @@ func _process(delta: float) -> void:
 	if _finished or _index < 0:
 		return
 	if not _caption_done:
-		_typed += delta * CHARS_PER_SECOND
-		var total := _caption.get_total_character_count()
+		_typed += delta * _chars_per_second
 		_caption.visible_characters = int(_typed)
-		if _typed >= total:
+		if _typed >= _caption.get_total_character_count():
 			_complete_caption()
+	if _voice_left > 0.0:
+		_voice_left = maxf(_voice_left - delta, 0.0)
+		return
+	if not _caption_done:
+		return
+	if _line_pending:
+		_start_line()
 		return
 	_since_done += delta
-	var hold := LAST_PANEL_HOLD_SECONDS if _index == PANELS.size() - 1 else AUTO_ADVANCE_SECONDS
+	var hold := AUTO_ADVANCE_SECONDS if _voiced else SILENT_HOLD_SECONDS
+	if _index == PANELS.size() - 1:
+		hold = LAST_PANEL_HOLD_SECONDS
 	if _since_done >= hold:
 		advance()
 
@@ -210,13 +255,47 @@ func _show_panel(i: int) -> void:
 	_typed = 0.0
 	_caption_done = false
 	_since_done = 0.0
-	var has_line := panel.has("line")
 	_line.visible = false
-	if has_line:
-		_line.text = "%s: “%s”" % [panel["speaker"], panel["line"]]
+	_line_pending = panel.has("line")
+	if _line_pending:
+		_line.text = "%s: \u201C%s\u201D" % [panel["speaker"], panel["line"]]
 	_logo.visible = false
 	_logo.modulate.a = 0.0
+	# The narrator reads the caption; the typing keeps pace with the voice.
+	_voice_left = _speak(panel.get("voice", &""))
+	_voiced = _voice_left > 0.0
+	_chars_per_second = CHARS_PER_SECOND
+	if _voiced:
+		_chars_per_second = clampf(_caption.get_total_character_count() / (_voice_left * TYPE_WITH_VOICE),
+				MIN_CHARS_PER_SECOND, MAX_CHARS_PER_SECOND)
 	_start_fade_and_drift()
+
+
+## Stroud's line: shown under the caption once the narration has ended (or at once on a
+## key press), in his own voice.
+func _start_line() -> void:
+	_line_pending = false
+	_line.visible = true
+	_since_done = 0.0
+	var panel: Dictionary = PANELS[_index]
+	_voice_left = _speak(panel.get("line_voice", &""))
+	_voiced = _voiced or _voice_left > 0.0
+
+
+## Plays `line` through Audio (cutting whatever voice was speaking) and returns its
+## length, or 0.0 when there is no Audio or no such line.
+func _speak(line: StringName) -> float:
+	var audio := _audio()
+	if audio == null:
+		return 0.0
+	audio.stop_voice()
+	if line == &"" or not audio.has_voice(line):
+		return 0.0
+	return audio.play_voice(line)
+
+
+func _audio() -> Node:
+	return get_node_or_null("/root/Audio")
 
 
 func _complete_caption() -> void:
@@ -225,8 +304,6 @@ func _complete_caption() -> void:
 	_caption_done = true
 	_since_done = 0.0
 	var panel: Dictionary = PANELS[_index]
-	if panel.has("line"):
-		_line.visible = true
 	if panel.get("logo", false) and _logo.texture != null:
 		_logo.visible = true
 		var t := create_tween()
@@ -235,6 +312,12 @@ func _complete_caption() -> void:
 
 func _finish(skipped: bool) -> void:
 	_finished = true
+	_voice_left = 0.0
+	var audio := _audio()
+	if audio:
+		audio.stop_voice()
+		if audio.has_method("set_music_duck"):
+			audio.set_music_duck(0.0)
 	if _fade:
 		_fade.kill()
 	if _drift:
@@ -363,3 +446,14 @@ func _build() -> void:
 	_hint.add_theme_font_size_override("font_size", size_of.call(BASE_HINT_SIZE))
 	_hint.add_theme_color_override("font_color", Color(0.75, 0.8, 0.88, 0.7))
 	column.add_child(_hint)
+
+
+func _exit_tree() -> void:
+	# Freed without ending (Main torn down mid-comic): never leave a voice talking or
+	# the music ducked.
+	if not _finished:
+		var audio := _audio()
+		if audio:
+			audio.stop_voice()
+			if audio.has_method("set_music_duck"):
+				audio.set_music_duck(0.0)
