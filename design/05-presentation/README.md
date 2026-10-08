@@ -12,5 +12,6 @@ This is section 05 of the concept design pack. Read the [decision register](../d
 | 2 / N02 | [Dialogue, voices, and writing direction](dialogue-and-writing.md) | Defines voices for Adam, Dave, Arcadia, the guards and Thornwall, the Linked and the machines, plus sample lines, profanity and content limits and delivery rules. |
 | 3 / N03 | [Interface and accessibility direction](interface-and-accessibility.md) | Defines the one-weapon HUD, microchip counter, keycard indicator, swap and upgrade screens, the evidence-file journal and adjustable presentation, including the Blood setting and dark-scene accessibility options. |
 | 4 / N04 | [Sound and music direction](audio-direction.md) | Defines act moods, weapon and enemy-gun identities, attack cues, restrained wet impacts, Adam's voice and Link chirps, mix priorities and an audio asset handoff. |
+| 5 / N05 | [ElevenLabs audio brief](elevenlabs-audio-brief.md) | The Level 1 cue list, prompts, durations and file names for generating new effects, ambience, voices and music with ElevenLabs, and how the files are processed. Generated and in the game as of 2026-10-08 (C47) except the Guard and Staffer voices and the music. |
 
 [All five sections](../README.md) · [AI entry guide](../../AI_START_HERE.md)
