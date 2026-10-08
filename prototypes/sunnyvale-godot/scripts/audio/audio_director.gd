@@ -79,6 +79,10 @@ const ELEVEN_ONLY_CUES: Array[StringName] = [
 ## telegraphs, story stingers, alarms, one-off pickups) are left at their
 ## authored pitch so they stay a precise, repeatable read.
 const PITCH_VARIANCE_FREQUENT := 0.04
+## Base pitch for a cue's ElevenLabs takes (default 1.0). The Quickcycle shot plays a
+## fifth higher so it sounds like a different, tighter gun (C52: the 0.24 s version
+## sounded the same as the base shot and nobody heard the upgrade).
+const ELEVEN_PITCH := {&"pistol_fire_quick": 1.5}
 
 ## Base playback pitch for the hero and pistol cues (all Kenney sources):
 ## about a semitone down, so the dark night-campus mix does not sit
@@ -498,7 +502,7 @@ func _load_streams() -> void:
 			_sfx_pools[cue] = {
 				"streams": eleven_streams,
 				"volume_db": float(Eleven.SFX[cue].get("volume_db", 0.0)),
-				"pitch": 1.0,
+				"pitch": float(ELEVEN_PITCH.get(cue, 1.0)),
 				"pitch_variance": pitch_variance,
 				"source": &"eleven",
 			}

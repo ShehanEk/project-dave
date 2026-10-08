@@ -119,7 +119,7 @@
     "damage_immunity_s": 1.0,
     "pistol_damage": 1,
     "pistol_base_interval_s": 0.32,
-    "pistol_quickcycle_interval_s": 0.24,
+    "pistol_quickcycle_interval_s": 0.18,
     "night_guard_health": 3,
     "staffer_health": 2,
     "rover_battery_health": 3

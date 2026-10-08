@@ -69,9 +69,9 @@ func _test_cadence_stage1() -> void:
 	await physics_frames(3)
 
 	var count := await _fire_for(hero, 3.2)
-	# 3.2s / 0.24s per shot = 13.33 shots.
-	check(count >= 12 and count <= 14,
-			"holding fire 3.2s at stage 1 (0.24s Quickcycle interval) yields ~13 shots (got %d)" % count)
+	# 3.2s / 0.18s per shot = 17.8 shots (the physics tick rounds each wait up).
+	check(count >= 16 and count <= 19,
+			"holding fire 3.2s at stage 1 (0.18s Quickcycle interval) yields ~18 shots (got %d)" % count)
 
 	hero.queue_free()
 	floor_b.queue_free()

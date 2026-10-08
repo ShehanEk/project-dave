@@ -31,6 +31,7 @@ var _cooldown: float = 0.0
 var _recoil_timer: float = 0.0
 var _hero: Node = null
 var _quickcycle_spin: float = 0.0
+var _wheel_heat: float = 0.0
 
 const OUTLINE := Color("#332a20")        # warm charcoal (C11 contour)
 const UPPER_FILL := Color("#b96b4c")     # rust-red upper housing
@@ -46,6 +47,14 @@ const QUICKCYCLE_FILL := Color("#a9714a")  # copper flywheel cover
 ## FLASH_TIME, but while the trigger is held it never drops below
 ## HOLD_ENERGY between shots, so rapid fire holds one glow and never strobes.
 const FLASH_COLOR := Color("#FFE4BD")
+## C52: with the Quickcycle fitted a shot flares brighter and cold teal-white, with a bigger drawn
+## flash, and the flywheel spins up and glows teal while firing, so the upgrade shows on screen.
+const QUICK_FLASH_COLOR := Color("#C9FFF4")
+const QUICK_FLASH_BOOST := 1.45
+const QUICK_FLASH_SCALE := 1.3
+const QUICK_WHEEL_GLOW := Color(1.5, 2.3, 2.1)
+const QUICK_WHEEL_SPIN := 26.0
+const QUICK_BATTERY_BOOST := 1.6
 const FLASH_TIME := 0.07
 const FLASH_ENERGY := 2.4
 const HOLD_ENERGY := 0.8
@@ -129,9 +138,13 @@ func _physics_process(delta: float) -> void:
 		# Visible dial spin (w01-scrapjack-pistol.md "spins faster during
 		# firing"), purely cosmetic: idle tick plus a burst while recoil is
 		# still settling from a shot.
-		var spin_rate: float = 1.4 + (9.0 if _recoil_timer > 0.0 else 0.0)
+		# C52: the wheel winds up on every shot and glows teal while it spins; at the
+		# Quickcycle's rate the trigger held keeps it spun up, and it winds down once idle.
+		_wheel_heat = maxf(0.0, _wheel_heat - delta / (COIL_COOL * 2.0))
+		var spin_rate: float = 1.4 + QUICK_WHEEL_SPIN * _wheel_heat
 		_quickcycle_spin = wrapf(_quickcycle_spin + spin_rate * delta, 0.0, TAU)
 		_quickcycle.rotation = _quickcycle_spin
+		_quickcycle.modulate = Color.WHITE.lerp(QUICK_WHEEL_GLOW, _wheel_heat)
 	# M6 (cosmetic): a resting ground/pad instance (held = false) never reads
 	# input or fires — only the hero's own held instance does. Untouched
 	# below this guard: cadence/cooldown/recoil timing and the fire path.
@@ -200,7 +213,8 @@ func _update_rig(delta: float) -> void:
 		rig.joints[j].position = _slide_rest[j] + Vector2(-slide, 0.0)
 	rig.set_emissive("barrel", COIL_HOT, COIL_IDLE + COIL_SHOT * _heat * _heat)
 	# The charge light dips at a shot, then recovers.
-	rig.set_emissive("battery", CHARGE_TEAL, 1.3 - 0.7 * _heat)
+	var battery: float = (1.3 - 0.7 * _heat) * (QUICK_BATTERY_BOOST if _current_stage() >= 1 else 1.0)
+	rig.set_emissive("battery", CHARGE_TEAL, battery)
 
 
 func _current_stage() -> int:
@@ -283,8 +297,10 @@ func _try_fire() -> void:
 
 	_recoil_timer = tuning.recoil_recovery_time
 	_heat = 1.0
-	# Local to the muzzle, so the flash turns and flips with the aim.
-	PixelFx.spawn("muzzle_flash", Vector2.ZERO, _muzzle, {"local": true})
+	_wheel_heat = 1.0
+	# Local to the muzzle, so the flash turns and flips with the aim. A bigger one with the Quickcycle.
+	PixelFx.spawn("muzzle_flash", Vector2.ZERO, _muzzle,
+			{"local": true, "scale_mul": QUICK_FLASH_SCALE if _current_stage() >= 1 else 1.0})
 	GameFeel.shot(self, forward)
 	fired.emit()
 
@@ -395,7 +411,9 @@ func _flash_muzzle_light() -> void:
 		_muzzle_light = SceneryDraw.make_light(_muzzle, SceneryDraw.smooth_disc_texture(),
 				Vector2.ZERO, FLASH_RADIUS, FLASH_COLOR, 0.0, FLASH_HEIGHT)
 		_muzzle_light.name = "MuzzleFlashLight"
-	_muzzle_light.energy = FLASH_ENERGY * k
+	var quick: bool = _current_stage() >= 1
+	_muzzle_light.color = QUICK_FLASH_COLOR if quick else FLASH_COLOR
+	_muzzle_light.energy = FLASH_ENERGY * k * (QUICK_FLASH_BOOST if quick else 1.0)
 	_muzzle_light.visible = true
 	_since_shot = 0.0
 

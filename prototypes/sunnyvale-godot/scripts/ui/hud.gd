@@ -69,9 +69,12 @@ var _flash_left := 0.0
 @onready var _objective_banner: Control = $ObjectiveLabel/Banner
 @onready var _keycard_icon: Control = $TopBar/KeycardIcon
 @onready var _toast: ToastLabel = $Toast
+## A Quickcycle was just bought; the next checkpoint toast says so instead of "Progress saved".
+var _quickcycle_pending := false
 
 
 func _ready() -> void:
+	add_to_group("hud")
 	layer = 15
 	for child in _health_row.get_children():
 		if child is Control and child.has_method("set_piece"):
@@ -245,8 +248,21 @@ func _on_weapon_changed(_old_id: String, _new_id: String) -> void:
 	_refresh_weapon()
 
 
-func _on_upgrade_changed(_weapon_type: String, _stage: int) -> void:
+func _on_upgrade_changed(weapon_type: String, stage: int) -> void:
 	_refresh_weapon()
+	# C52: the generic "Progress saved" that follows the purchase (UPG01) gives way to this.
+	if weapon_type == "W01" and stage >= 1:
+		_quickcycle_pending = true
+
+
+## "Quickcycle online": raised when the bench is bought from and again when its panel closes.
+func announce_quickcycle() -> void:
+	if _toast == null:
+		return
+	var tuning: WeaponTuning = load("res://data/tuning/w01_scrapjack.tres")
+	var faster := roundi((tuning.base_interval / tuning.quickcycle_interval - 1.0) * 100.0)
+	_toast.show_message("Quickcycle online: %d%% faster fire" % faster, 2.4, ToastLabel.FADE_TIME, "pip_lit")
+	_play_sfx(&"ready_click")
 
 
 ## sc01-double-toast: CP04 is CoreNode's own SC01 completion commit, which
@@ -257,6 +273,10 @@ func _on_upgrade_changed(_weapon_type: String, _stage: int) -> void:
 ## HUD's is the only one and still shows normally.
 func _on_checkpoint_committed(checkpoint_id: String) -> void:
 	if checkpoint_id == "CP04":
+		return
+	if _quickcycle_pending:
+		_quickcycle_pending = false
+		announce_quickcycle()
 		return
 	if _toast:
 		_toast.show_message("Progress saved", ToastLabel.HOLD_TIME, ToastLabel.FADE_TIME, "save")

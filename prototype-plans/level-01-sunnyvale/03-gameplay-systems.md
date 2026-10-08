@@ -16,7 +16,7 @@ No double jump, dash, climb, ladder, fall-through floor, or reload input is need
 | --- | --- |
 | Basic shot | 1 damage; finite visible bolt; one valid hit then despawn |
 | Base interval | 0.32s |
-| Quickcycle interval | 0.24s |
+| Quickcycle interval | 0.18s (was 0.24s until C52, 2026-10-08: too small to notice) |
 | Ammo / reload | Unlimited basic fire / none |
 | Upgrade | Stage 1 Quickcycle; 40 microchips; buy once per run |
 | Stage 2 / 3 | Not purchasable in L01; no extra ability or attachment implemented |
