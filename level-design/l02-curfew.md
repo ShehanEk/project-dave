@@ -27,7 +27,7 @@ Confirmed gameplay: explore, fight, collect treasure, overcome an obstacle, reac
 | Main objective | Recover the Boom Broom, work through the reconfiguring hedge maze under curfew, take the level's keycard from the water-tower pavilion and open the Parade gate into the showcase hall. |
 | Intended difficulty | Easy (the first enemy gun is met alone, with cover beside it) |
 | First successful exploration target | 12–16 minutes; excludes repeated failures and exhaustive secret hunting |
-| New weapon | Boom Broom |
+| New weapon | Boom Broom (the swap pad taken out of Level 1 is ready for it: [swap pad for Level 2](swap-pad-for-level-2.md)) |
 | Weapon types introduced by level end | Scrapjack Pistol, Boom Broom |
 | New enemy types | Sidearm Guard, Security Drone, Hound (with a Night Guard handler) |
 | Enemy guns first faced | Pistol, AS-9 "Civic" (EG01), carried by the Sidearm Guards |

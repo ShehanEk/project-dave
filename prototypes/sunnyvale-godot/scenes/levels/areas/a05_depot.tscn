@@ -1,11 +1,10 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/area_root.gd" id="1_arearoot"]
 [ext_resource type="Script" path="res://scripts/world/block.gd" id="2_block"]
 [ext_resource type="PackedScene" path="res://scenes/objects/emergency_hatch.tscn" id="3_hatch"]
 [ext_resource type="PackedScene" path="res://scenes/objects/core_node.tscn" id="4_console"]
 [ext_resource type="PackedScene" path="res://scenes/objects/workbench.tscn" id="5_workbench"]
-[ext_resource type="PackedScene" path="res://scenes/objects/weapon_pad.tscn" id="6_pad"]
 [ext_resource type="PackedScene" path="res://scenes/objects/practice_target.tscn" id="7_target"]
 [ext_resource type="PackedScene" path="res://scenes/objects/kill_plane.tscn" id="8_kill"]
 [ext_resource type="PackedScene" path="res://scenes/objects/beat_zone.tscn" id="9_beat"]
@@ -185,10 +184,6 @@ position = Vector2(600, 0)
 
 [node name="Workbench" parent="Entities" instance=ExtResource("5_workbench")]
 position = Vector2(1450, 0)
-
-[node name="WeaponPad" parent="Entities" instance=ExtResource("6_pad")]
-position = Vector2(1780, 0)
-pad_id = "L01-A05-PAD01"
 
 [node name="PracticeTarget" parent="Entities" instance=ExtResource("7_target")]
 position = Vector2(2050, -60)

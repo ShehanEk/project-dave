@@ -146,6 +146,17 @@ func _exit_tree() -> void:
 ## LevelDirector calls this once, right after instancing both the Hero and
 ## this HUD, and again is never needed — the Hero/HUD pair lives for the
 ## whole run.
+## The held gun's workshop tag ("P01") matters only where a second copy can be
+## swapped in: LevelDirector turns it on in a level with a swap pad (none in Level 1
+## since the pad was taken out on 2026-10-08; see level-design/swap-pad-for-level-2.md).
+var show_weapon_tag := false
+
+
+func set_weapon_tag_shown(on: bool) -> void:
+	show_weapon_tag = on
+	_weapon_tag_label.visible = on
+
+
 func setup(hero: Node) -> void:
 	_hero = hero
 	_weapon = hero.get_node_or_null("AimPivot/Scrapjack") if hero else null
@@ -302,6 +313,7 @@ func _refresh_weapon() -> void:
 		return
 	var parts := Session.equipped_weapon().split("-")
 	_weapon_tag_label.text = parts[-1] if parts.size() > 0 else ""
+	_weapon_tag_label.visible = show_weapon_tag
 	PixelUi.use_font(_weapon_tag_label)
 	var owns_quickcycle := Session.weapon_stage("W01") >= 1
 	_weapon_pip.visible = owns_quickcycle

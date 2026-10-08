@@ -77,3 +77,5 @@ The detailed briefs propose room layouts and encounter sequences, not new weapon
 - [Encounter and boss fairness](../design/04-world/encounter-and-boss-fairness.md)
 
 The editable Markdown and JSON files are the sources of truth.
+
+**Kept for later:** [the weapon swap pad, for Level 2](swap-pad-for-level-2.md) (taken out of Level 1, C51).

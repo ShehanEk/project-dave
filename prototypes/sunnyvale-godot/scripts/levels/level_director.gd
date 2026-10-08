@@ -153,6 +153,7 @@ func _ready() -> void:
 	hud = load(HUD_SCENE).instantiate()
 	add_child(hud)
 	hud.setup(hero)
+	_update_weapon_tag()
 
 	pause_menu = load(PAUSE_MENU_SCENE).instantiate()
 	add_child(pause_menu)
@@ -348,6 +349,23 @@ func _build_areas() -> void:
 	level_width = x
 
 	_connect_exit_wicket()
+	_update_weapon_tag()
+
+
+## The HUD names the held gun's copy (its workshop tag) only when this level has a
+## swap pad to trade it at (Level 1 has none since 2026-10-08).
+func has_swap_pad() -> bool:
+	if _areas_root == null:
+		return false
+	for pad in get_tree().get_nodes_in_group("weapon_pad"):
+		if _areas_root.is_ancestor_of(pad):
+			return true
+	return false
+
+
+func _update_weapon_tag() -> void:
+	if hud:
+		hud.set_weapon_tag_shown(has_swap_pad())
 
 
 ## Free every area and rebuild them fresh so each pickup/enemy/switch/story

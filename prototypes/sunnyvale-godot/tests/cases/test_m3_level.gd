@@ -199,9 +199,10 @@ func _test_population_counts() -> void:
 	check(stations.size() == 5 and stations.has("CP01") and stations.has("CP02") and stations.has("CP03")
 			and stations.has("CP06") and stations.has("CP07"),
 			"recovery stations CP01, CP02, CP03, CP06, CP07 are each present exactly once (got %s)" % [stations.keys()])
-	check(pads.has("L01-A05-PAD01"), "weapon pad L01-A05-PAD01 is present")
-	check(Session.weapon_on_pad("L01-A05-PAD01") == "L01-W01-P02",
-			"L01-A05-PAD01 holds the resting weapon L01-W01-P02 (Session)")
+	# C51: no swap pad in Level 1 (it returns in Level 2), and the HUD hides the gun's tag.
+	check(pads.is_empty(), "Level 1 has no weapon swap pad (C51; got %s)" % [pads.keys()])
+	check(not level.has_swap_pad(), "LevelDirector reports no swap pad")
+	check(not level.hud._weapon_tag_label.visible, "so the HUD hides the held gun's workshop tag")
 	check(switches.has("L01-SW01"), "route switch L01-SW01 is present")
 	check(walkways.has("L01-SW01"), "a service walkway matching switch L01-SW01 is present")
 	check(wickets == 1, "exactly one exit wicket in the level (got %d)" % wickets)

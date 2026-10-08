@@ -36,6 +36,9 @@ func _init() -> void:
 
 
 func _ready() -> void:
+	# The HUD shows the held gun's workshop tag only in a level with a swap pad
+	# (LevelDirector looks for this group after building the areas).
+	add_to_group("weapon_pad")
 	if painted_piece() != "":
 		ObjectSkins.make_crisp(self)
 

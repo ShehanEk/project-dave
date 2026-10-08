@@ -135,7 +135,7 @@ func _static_checks() -> void:
 				check(res[-1] != "NONE" or res[1] != "NONE", "Rover %s has a backstop within one charge (4H) of its start" % e.entity_id)
 	# depot interactables
 	var a5: AreaRoot = level.areas[4]
-	var names := ["CoreNode", "Workbench", "WeaponPad"]
+	var names := ["CoreNode", "Workbench"]  # the WeaponPad was removed from Level 1 (C51)
 	var rects := {}
 	for n in names:
 		var node: Area2D = a5.get_node("Entities/" + n)

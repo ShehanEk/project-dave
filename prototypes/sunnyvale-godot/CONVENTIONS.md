@@ -868,7 +868,9 @@ stay stable), evidence file `EF01` (pickup entity `L01-OPT01-A01`), keycard
 `L01-KC01` (pickup entity `L01-KC01-P`), med-patches `L01-HS01`…, checkpoints
 `CP00`…`CP07` (CP06 mid-plaza and CP07 in the wicket yard were added by the
 C41 fun pass, numbered after the original six), switch `L01-SW01`, workbench
-`L01-UPG01`, weapon instances `L01-W01-P01`/`P02` (pad `L01-A05-PAD01`), core
+`L01-UPG01`, weapon instances `L01-W01-P01`/`P02` (pad `L01-A05-PAD01`, no longer placed
+in the level since C51; the HUD hides the workshop tag without a pad; see
+`level-design/swap-pad-for-level-2.md`), core
 node `L01-SC01`. The workbench's own checkpoint id is `"UPG01"` (not one of
 `CP00`-`CP07`) — `CheckpointService` whitelists it alongside the `CP0[0-7]`
 pattern.

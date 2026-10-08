@@ -122,7 +122,7 @@ Each object needs its states side by side, as listed.
 
 - **Recovery station:** every station. Lamp off while waiting, lamp on once it is the active checkpoint, with the old smooth glow over the lamp.
 - **Workbench:** the depot's workbench, dimmed while locked, with a small amber (locked) or teal (usable) status lamp on the pegboard. The decorative bench in the depot scenery (`Scenery` WORKBENCH) is still code-drawn.
-- **Weapon pad:** the depot's swap pad; the resting weapon and its tag sit on the plate.
+- **Weapon pad:** the depot's swap pad; the resting weapon and its tag sit on the plate. (Taken out of Level 1 on 2026-10-08, C51; the art is kept for Level 2: [swap pad for Level 2](../../level-design/swap-pad-for-level-2.md).)
 - **Core node:** calm teal until the lockdown starts, alarm amber after it; the copy bar and Dave's drive are drawn on its housing.
 - **Emergency hatch:** the closed door, then the open doorway once the lockdown opens it. The piece is shorter than the hatch's solid, so one band of its hazard posts repeats to come close to the solid's height.
 - **Service wicket:** the barred gate with the amber reader (locked), the open frame with the teal reader, and the gate shut by the striped bar during the hold-out (its reader turns teal while the override runs).
