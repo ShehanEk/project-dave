@@ -1,4 +1,4 @@
-# Playtest kit — Sunnyvale L01 timing gate
+# Playtest kit — Eon City L01 timing gate
 
 Authority: `../../../prototype-plans/level-01-sunnyvale/07-acceptance-and-playtesting.md`
 ("Timing protocol") and `01-player-journey-and-pacing.md`. This kit exists

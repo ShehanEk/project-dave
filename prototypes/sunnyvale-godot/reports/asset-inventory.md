@@ -1,4 +1,4 @@
-# M6 asset inventory — Sunnyvale prototype
+# M6 asset inventory — Eon City prototype
 
 Compiled during the M6 integration/verification pass (consolidating the
 parallel audio, characters, environment, and fx/UI presentation passes),
@@ -30,7 +30,7 @@ four ways. File and cue names throughout are the current ones.
   `resident_full_2x.png` into `staffer_full_*.png`, and they were then
   deleted), and in `concept-art/` the Resident sources (`z01-resident/`: the
   selected PNG, its prompt and selection record) and the three daytime
-  Sunnyvale scene keyframes (`l01-sunnyvale/`).
+  Eon City scene keyframes (`l01-sunnyvale/`).
   `tools/derive_character_sprites.py` no longer produced any Resident output;
   it derived only the Clipper's (the tool itself was deleted on 2026-09-30).
 - **New.** A fully procedural **Staffer** (`scripts/actors/visuals/

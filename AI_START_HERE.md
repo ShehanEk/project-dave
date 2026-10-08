@@ -90,6 +90,6 @@ Keep new balancing figures labeled untested. Keep proposed names and visuals edi
 
 **Visual direction:** hand-drawn 2D rendering (C11) with the new dark sci-fi palette, lighting and mood (C15, P21). Enemies are drawn as a lit cutout rig with smooth, realistic engine lighting, hand-keyed motion (C38) and ragdoll deaths (C35): confirmed direction, validated by the approved lit-cutout test (2026-09-30). See the [style guide](art-design/style-guide.md).
 
-**Selected references:** none are current. The Clipper's selected design (C10) ended when the Clipper was removed (C32), and the zombie Resident art and the old daytime Sunnyvale scenes were deleted (C23). The [concept-art gallery](concept-art/README.md) now holds only the hero's placeholder sprite pack. A test build of one lit Night Guard will validate the enemy look; new concept art for Dave, the enemies, the mini-bosses and the night campus is still needed.
+**Selected references:** none are current. The Clipper's selected design (C10) ended when the Clipper was removed (C32), and the zombie Resident art and the old daytime Eon City scenes were deleted (C23). The [concept-art gallery](concept-art/README.md) now holds only the hero's placeholder sprite pack. A test build of one lit Night Guard will validate the enemy look; new concept art for Dave, the enemies, the mini-bosses and the night campus is still needed.
 
 [Main concept](dead-eden-concept.md) · [Design documents](design/README.md) · [Twelve levels](level-design/README.md) · [Forty-three enemy, gun and weapon art briefs](art-design/README.md)

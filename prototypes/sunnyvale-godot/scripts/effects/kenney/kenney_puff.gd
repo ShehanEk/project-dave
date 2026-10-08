@@ -38,7 +38,7 @@ const TEX_STAR_SOFT := preload("res://assets/kenney/particle-pack/star_05.png")
 const TEX_METAL_SPARK := preload("res://assets/kenney/particles/machines/star_01_metal_spark.png")
 const TEX_STEAM := preload("res://assets/kenney/particles/machines/whitePuff00_stall_steam.png")
 
-# Sunnyvale palette (CONVENTIONS.md / art-design/style-guide.md C11).
+# Eon City palette (CONVENTIONS.md / art-design/style-guide.md C11).
 const CREAM := Color("#D8E2EC")  # night pass: cool white
 const PEACH := Color("#E07A3F")  # night pass: Dave orange
 const GOLD := Color("#FFD166")  # microchip gold

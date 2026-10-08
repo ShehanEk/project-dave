@@ -96,7 +96,7 @@ The game is mature, not for kids. It stays mysterious and scary rather than edgy
 
 | Act | Levels | Look |
 | --- | --- | --- |
-| **Sunnyvale campus at night** | 1–3 | Navy night; sculpted gardens under cold white path lights and amber security lamps. Glass office towers have a few lit windows. Teal Arcadia signage, flickering holographic billboards, and flat bands of ground fog in the gardens. The product showcase hall is dark between spotlit exhibits. |
+| **Eon City campus at night** | 1–3 | Navy night; sculpted gardens under cold white path lights and amber security lamps. Glass office towers have a few lit windows. Teal Arcadia signage, flickering holographic billboards, and flat bands of ground fog in the gardens. The product showcase hall is dark between spotlit exhibits. |
 | **The Rootworks** | 4–6 | Black server halls with walls of blinking teal and green status LEDs and cable bundles hanging like roots. Cooling mist, dark water, pipes and red emergency strobes. Adam's cores glow behind glass. |
 | **Arcadia Wellness Center** | 7–9 | Sterile clinic walls in shadow on emergency power, green exit signs, flickering surgical lamps and red "PLEASE REMAIN STILL" signage. The Memory Orchard's server trees shimmer teal in a dark archive. |
 | **The Garden** | 10–12 | Adam's hidden factory: a vast underground hall holding an eerie, beautiful engineered garden of bioluminescent plants. Pale Heir bodies hang on assembly lines, and violet Bloom canisters glow in the launch chamber. |
@@ -205,6 +205,6 @@ Then ask for a single evenly lit, flat-color, side-view full-body painting on a 
 
 Keep each selected PNG with its selection record and current continuation prompt. Store only selected concept images in the repository. Do not label a new exploration as selected without a user decision.
 
-The zombie Resident art, the old daytime Sunnyvale scenes (C23) and the Clipper's concept art (C32) were deleted; the tracked files remain in git history only. No enemy painting is selected yet, and the lit Night Guard test (C35) comes first. The final enemy paintings are still to come. Sprite resolution, atlas layout, the rig tool, the clip retargeting method, frame budgets, whether scenery modules get normal maps, and the export pipeline remain future choices, to be settled by that test.
+The zombie Resident art, the old daytime Eon City scenes (C23) and the Clipper's concept art (C32) were deleted; the tracked files remain in git history only. No enemy painting is selected yet, and the lit Night Guard test (C35) comes first. The final enemy paintings are still to come. Sprite resolution, atlas layout, the rig tool, the clip retargeting method, frame budgets, whether scenery modules get normal maps, and the export pipeline remain future choices, to be settled by that test.
 
 [AI entry guide](../AI_START_HERE.md) · [Art brief index](README.md) · [Level guide](../level-design/design-guide.md)

@@ -23,7 +23,7 @@ All enemy counts below are the total placed population, not simultaneous waves. 
 | L01-A01-B03 | 20s | Inert shooting target |
 | L01-A01-B04 | 15s | Chip trail and open gate |
 
-**Entry and silhouette:** Dave climbs through the broken perimeter service gate at left, past a dark "Welcome to Sunnyvale" visitor sign; the campus landmark above the server depot (the brief's smiling "Sunny" clock; scenery kind `CLOCK`) glows teal as a distant right-side landmark. The hero starts with W01 instance W01-P01. Set CP00 with six health, zero chips and no keycard.
+**Entry and silhouette:** Dave climbs through the broken perimeter service gate at left, past a dark "Welcome to Eon City" visitor sign; the campus landmark above the server depot (the brief's smiling "Sunny" clock; scenery kind `CLOCK`) glows teal as a distant right-side landmark. The hero starts with W01 instance W01-P01. Set CP00 with six health, zero chips and no keycard.
 
 **Geometry and lesson:** Broad flat apron, two low ledges, then one short gap with a walkable catch floor. Put the inert target (an old security-training silhouette board) beyond a clear shooting lane; it reacts to shots but awards nothing and does not lock the gate. Prompts show once and disappear after successful input. No mandatory tutorial dialog.
 

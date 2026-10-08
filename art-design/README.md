@@ -131,7 +131,7 @@ The shared kit of nine. Any enemy can carry any gun, and each gun is a separate 
 
 ## Environment
 
-- [Sunnyvale play plane](environment/sunnyvale-play-plane.md) — the review of Level 1's props, terrain and objects against the pixel-art backgrounds (C39), with the ChatGPT prompts for the sheets that repaint them, the sign lettering and the characters. The terrain (Sheet 1) and the street furniture (Sheet 2, C42) are in the game.
+- [Eon City play plane](environment/sunnyvale-play-plane.md) — the review of Level 1's props, terrain and objects against the pixel-art backgrounds (C39), with the ChatGPT prompts for the sheets that repaint them, the sign lettering and the characters. The terrain (Sheet 1) and the street furniture (Sheet 2, C42) are in the game.
 
 ## Suggested review order
 

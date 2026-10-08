@@ -7,7 +7,7 @@ extends Node2D
 ## enemies, or landing edges.
 ##
 ## Revamp (C24) night pass: every kind is redrawn as its Arcadia-campus-at-
-## night equivalent (art-design/style-guide.md "Sunnyvale campus at night";
+## night equivalent (art-design/style-guide.md "Eon City campus at night";
 ## level brief "What the level looks like") in the same C11 rendering —
 ## confident dark outlines, flat colors, one or two crisp cel-shadow shapes,
 ## light drawn as flat glow shapes and rim light. Props never get the

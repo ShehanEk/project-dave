@@ -55,7 +55,7 @@ const STARTING_WEAPON := "L01-W01-P01"
 const OBJECTIVE_START := "Reach the server depot."
 const OBJECTIVE_DEPOT := "Plug into Adam's core node."
 const OBJECTIVE_POST_SC01 := "Escape through the service wicket."
-const OBJECTIVE_COMPLETE := "Sunnyvale complete."
+const OBJECTIVE_COMPLETE := "Eon City complete."
 
 ## Live run state. Read freely; mutate only through methods.
 var state: Dictionary = {}

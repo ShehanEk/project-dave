@@ -145,7 +145,7 @@ position = Vector2(430, 0)
 [node name="WelcomeSign" parent="Scenery" instance=ExtResource("5_scenery")]
 kind = 11
 size = Vector2(170, 72)
-text = "WELCOME TO SUNNYVALE"
+text = "WELCOME TO EON CITY"
 position = Vector2(670, 0)
 
 [node name="Planter1" parent="Scenery" instance=ExtResource("5_scenery")]

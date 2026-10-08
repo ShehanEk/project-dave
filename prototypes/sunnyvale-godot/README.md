@@ -1,7 +1,7 @@
-# DEAD EDEN — Sunnyvale prototype
+# DEAD EDEN — Eon City prototype
 
 A single-level (L01) Godot 4 prototype of DEAD EDEN's opening area. Dave
-Harlan, a fired AI researcher, breaks into Arcadia Dynamics' Sunnyvale campus
+Harlan, a fired AI researcher, breaks into Arcadia Dynamics' Eon City campus
 at night, takes the level's clearance keycard, plugs into one of the core
 nodes of Arcadia's sentient AI, Adam, to copy proof, and escapes through the
 lockdown. Design authority: `../../prototype-plans/level-01-sunnyvale/`.

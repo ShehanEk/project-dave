@@ -34,7 +34,7 @@ Arcadia Dynamics sells **Adam** to the world as the mind that will "fix the plan
 | Area | Planned content |
 | --- | --- |
 | Level 1 prototype | Godot; rebuilt from the ground up around the new roster (C33, 2026-09-30) |
-| Campaign | 12 levels in 4 acts: Sunnyvale campus, the Rootworks, the Wellness Center, the Garden |
+| Campaign | 12 levels in 4 acts: Eon City campus, the Rootworks, the Wellness Center, the Garden |
 | Detailed level design | 12 standalone briefs with ordered areas and reusable AI prompts |
 | Hero | Dave Harlan, a rogue AI researcher (name confirmed; look and details proposed) |
 | Villains | Adam (the sentient AI), Arcadia Dynamics (the corporation) and its hired contractor Thornwall |

@@ -69,9 +69,9 @@ func _fitting() -> void:
 	var calm: Dictionary = PixelFont.fit("PLEASE REMAIN CALM", 312.0, 60.0)
 	check_eq(calm["scale"], 2, "a wide hologram's text is drawn at 2 art pixels per font pixel")
 	check_eq(calm["lines"], PackedStringArray(["PLEASE REMAIN CALM"]), "on one line")
-	var welcome: Dictionary = PixelFont.fit("WELCOME TO SUNNYVALE", 150.0, 40.0)
+	var welcome: Dictionary = PixelFont.fit("WELCOME TO EON CITY", 150.0, 40.0)
 	check_eq(welcome["scale"], 1, "a narrow sign's text uses 1 art pixel per font pixel")
-	check_eq(welcome["lines"], PackedStringArray(["WELCOME TO", "SUNNYVALE"]), "and wraps at a space")
+	check_eq(welcome["lines"], PackedStringArray(["WELCOME TO", "EON CITY"]), "and wraps at a space")
 	check(welcome["size"].x <= 150.0 and welcome["size"].y <= 40.0, "inside the box (%s)" % [welcome["size"]])
 	check_eq(PixelFont.fit("ROOF WALK", 90.0, 14.0)["lines"], PackedStringArray(["ROOF WALK"]), "short text stays on one line when it fits")
 	check(PixelFont.fit("EXITS CLOSED FOR YOUR COMFORT", 10.0, 10.0).is_empty(), "text that fits nowhere is reported")
@@ -182,7 +182,7 @@ func _level_signs() -> void:
 			if not fit.is_empty():
 				check(fit["size"].x <= rect_w and fit["size"].y <= rect_h, "and stays inside it (%s of %.0f x %.0f)" % [fit["size"], rect_w, rect_h])
 	check(signs >= 8 and projectors >= 5, "the level has its signs and holograms (%d, %d)" % [signs, projectors])
-	for t in ["WELCOME TO SUNNYVALE", "FRONT GARDENS", "GARDEN PATH", "ROOF WALK", "SERVICE WICKET", "STAFF ANNEX", "SERVER DEPOT",
+	for t in ["WELCOME TO EON CITY", "FRONT GARDENS", "GARDEN PATH", "ROOF WALK", "SERVICE WICKET", "STAFF ANNEX", "SERVER DEPOT",
 			"THIS WAY", "EMERGENCY EXIT", "LOCKDOWN", "PLEASE REMAIN CALM", "EXITS CLOSED FOR YOUR COMFORT"]:
 		check(texts.has(t), "the level has \"%s\"" % t)
 		check(PixelFont.covers(t), "and the font covers it")

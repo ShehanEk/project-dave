@@ -17,7 +17,7 @@ The lit cutout test build (C35) uses this asset: one Night Guard, painted flat, 
 
 Basic melee enemy and the first human Dave has to fight. A guard at work, who bleeds and stays down.
 
-*Proposed identity:* Arcadia Security's night-shift campus guard, a contract officer in his forties who walks the Sunnyvale grounds after hours with a flashlight, a shock baton and a radio. He is human, not Linked, and he takes his orders from the security desk, not from Adam. That morning every post got the same notice: Dave Harlan, fired researcher, flagged as a security threat. He knows the face, so he shouts and swings. Combat is lethal (C28): he bleeds (C29), and when he goes down he stays down.
+*Proposed identity:* Arcadia Security's night-shift campus guard, a contract officer in his forties who walks the Eon City grounds after hours with a flashlight, a shock baton and a radio. He is human, not Linked, and he takes his orders from the security desk, not from Adam. That morning every post got the same notice: Dave Harlan, fired researcher, flagged as a security threat. He knows the face, so he shouts and swings. Combat is lethal (C28): he bleeds (C29), and when he goes down he stays down.
 
 The Night Guard appears in Levels 1–4. In Act 1 he is also the handler of the [Hound](../hounds/k01-hound.md) (C30): he stays two paces behind the dog and joins the fight a beat after its lunges. After Level 1 the PA announces that lethal force is authorized and that Harlan is armed. The Night Guard is still the baton man: a tired person with a bad shift, who has no idea what Arcadia is doing beneath his feet.
 

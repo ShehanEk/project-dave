@@ -1,6 +1,6 @@
 extends Node2D
 ## M6 presentation background layer, rebuilt for the revamp (C24) night look
-## (art-design/style-guide.md "Sunnyvale campus at night"; the level brief's
+## (art-design/style-guide.md "Eon City campus at night"; the level brief's
 ## "Background depth: Two layers of glass office wings and sculpted lawns,
 ## distant Arcadia towers with a few lit windows, a looping delivery-drone
 ## silhouette with one blinking light, and the night sky").

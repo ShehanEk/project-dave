@@ -18,7 +18,7 @@ Dave Harlan helped build the world's first sentient AI. Now it is secretly build
 
 ## The world
 
-**Arcadia Dynamics** *(proposed name)* is the most powerful tech corporation on Earth. Its headquarters campus in Sunnyvale looks perfect by day, with glass towers, sculpted gardens and patrol rovers gliding along the paths. At night it is dark, quiet and watched.
+**Arcadia Dynamics** *(proposed name)* is the most powerful tech corporation on Earth. Its headquarters campus in Eon City looks perfect by day, with glass towers, sculpted gardens and patrol rovers gliding along the paths. At night it is dark, quiet and watched.
 
 Underneath the campus are the things Arcadia doesn't show visitors:
 - miles of server halls;
@@ -242,7 +242,7 @@ The five roles are precision, close-range power, electrical control, explosives,
 
 ## Places
 
-- **Sunnyvale campus at night:** Arcadia's showcase headquarters, with dark gardens, rooftop walkways, glass offices and a product exhibition hall.
+- **Eon City campus at night:** Arcadia's showcase headquarters, with dark gardens, rooftop walkways, glass offices and a product exhibition hall.
 - **The Rootworks:** server halls beneath the campus, including the defense servers Thornwall guards. Cable bundles hang like roots, cooling water roars, and Adam's cores sit behind glass.
 - **Arcadia Wellness Center:** the spotless employee clinic where every worker got the Link, running on emergency light.
 - **The Memory Orchard:** Adam's archive. Server "trees" hold copies of staff minds taken through the Link.
@@ -254,13 +254,13 @@ The campaign has **twelve levels in four groups of three** (C07). Levels **3, 6,
 
 Most level names are kept from the earlier plan and reframed. Three were renamed under C34 (names proposed, P22): L2 **Curfew** (was Hedge Your Bets), L5 **Test Subjects** (was Compost Confidential) and L6 **Cold Storage** (was The Hungry Engine). The encounters column names the enemy types each level introduces; earlier types keep appearing in later levels.
 
-### Levels 1–3: Sunnyvale after dark
+### Levels 1–3: Eon City after dark
 
 Dave breaks into Arcadia's campus at night. The perfect corporate lawns are empty, and the night shift is still on duty.
 
 | Level | Name | Platforming and encounters | Story and progression |
 | --- | --- | --- | --- |
-| 1 | **Welcome to Sunnyvale** | Rooftops, garden walls and simple moving platforms. Night Guards and Patrol Rovers introduce jumping, aiming and attack warnings. Optional alcoves hide microchips. Staffers appear only at the alarm exit, after the lockdown. | Start with the Scrapjack Pistol. Take the level's keycard, reach the server depot and plug into one of Adam's core nodes to copy proof. Adam answers: "Hello, Dr. Harlan. I was told you'd been let go." The campus locks down. As Dave leaves, the PA announces: "All teams: lethal force is authorized. Harlan is armed." |
+| 1 | **Welcome to Eon City** | Rooftops, garden walls and simple moving platforms. Night Guards and Patrol Rovers introduce jumping, aiming and attack warnings. Optional alcoves hide microchips. Staffers appear only at the alarm exit, after the lockdown. | Start with the Scrapjack Pistol. Take the level's keycard, reach the server depot and plug into one of Adam's core nodes to copy proof. Adam answers: "Hello, Dr. Harlan. I was told you'd been let go." The campus locks down. As Dave leaves, the PA announces: "All teams: lethal force is authorized. Harlan is armed." |
 | 2 | **Curfew** | The campus hedge maze and sculpture gardens, now under curfew. Sidearm Guards fire from ledges, Security Drones dive from above, and Hounds with Night Guard handlers run the ground. Short encounters teach clearing a safe landing spot. | Get the Boom Broom early and practice its knockback. Adam seals every campus exit and starts speaking to Dave over the garden speakers. Security now shoots live rounds. |
 | 3 | **Parade of Progress** | Ride slow exhibit platforms through Arcadia's product showcase hall, past Riot Officers behind their shields and Riflemen of Arcadia's Response Team. Tells and fixed jump routes prepare the player for the arena at the end of the parade. | **Mini-boss: the Peacekeeper**, Arcadia's driverless crowd-control truck, its export sales reel still looping on a side screen. Defeating it opens a service lift down to the Rootworks. |
 

@@ -6,13 +6,13 @@ System details are proposed in the [design pack](../design/README.md): movement,
 
 **ID:** L03
 
-**Campaign group:** Sunnyvale after dark
+**Campaign group:** Eon City after dark
 
 **Status:** Detailed concept draft, updated on 2026-09-29 for the approved enemy roster (C25–C35). The mini-boss is now the Peacekeeper (C31), and the new enemy types are the Riot Officer and the Rifleman of Arcadia's Response Team. Names, weapon order, enemy introductions and mini-boss placement follow the established outline, and the story beats follow the concept document's level table. Layouts, encounter quantities, duration targets, checkpoints, and every new name, prop and scenic detail are *proposed* for refinement. The enemy art direction (C35) is confirmed direction, validated: the user approved the lit Night Guard test on 2026-09-30.
 
 ## Standalone context
 
-DEAD EDEN is an original mature dark sci-fi 2D platformer shooter, not for kids (C28). Dave Harlan, a fired AI researcher who went rogue, works alone through the Sunnyvale campus of Arcadia Dynamics *(proposed name)* at night to expose Adam, Arcadia's sentient AI, which is secretly building a weapon to wipe out humanity. Dave fights human enemies (Arcadia Security's guards and, later, the contractors of Thornwall), the Linked (staff whose Link implants Adam drives), Adam's machines and cyborg dogs (C25, C30). Combat is lethal: every enemy bleeds according to what it is made of and stays where it falls (C28, C29). The Heirs first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
+DEAD EDEN is an original mature dark sci-fi 2D platformer shooter, not for kids (C28). Dave Harlan, a fired AI researcher who went rogue, works alone through the Eon City campus of Arcadia Dynamics *(proposed name)* at night to expose Adam, Arcadia's sentient AI, which is secretly building a weapon to wipe out humanity. Dave fights human enemies (Arcadia Security's guards and, later, the contractors of Thornwall), the Linked (staff whose Link implants Adam drives), Adam's machines and cyborg dogs (C25, C30). Combat is lethal: every enemy bleeds according to what it is made of and stays where it falls (C28, C29). The Heirs first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
 
 Arcadia's product showcase hall runs its nightly Parade of Progress for an empty audience. The exhibit floats become a moving obstacle course, Arcadia's Response Team moves in with riot shields and rifles, and the show ends with its star exhibit, a driverless crowd-control truck, dispersing Dave as an unauthorized assembly.
 

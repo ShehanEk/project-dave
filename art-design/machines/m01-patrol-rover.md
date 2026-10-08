@@ -4,7 +4,7 @@
 
 **Asset ID:** M01\
 **Category:** machines\
-**First appearance:** Level 1 (Welcome to Sunnyvale); returns in Levels 2–4 and 6; a Garden-built copy appears in Level 10\
+**First appearance:** Level 1 (Welcome to Eon City); returns in Levels 2–4 and 6; a Garden-built copy appears in Level 10\
 **Design status:** Roster entry confirmed (C31). Art method: lit cutout rig (C35), confirmed direction, validated by the approved lit-cutout test (2026-09-30). The look is chosen (below) and its pixel parts sheet is in the game as a lit cutout rig (2026-10-06); the identity, palette and lore below stay *proposed*. Dimensions are provisional art proportions, not engine specifications.
 
 ## Visual reference status
@@ -17,7 +17,7 @@ The route follows the Night Guard's ([SE01](../security/se01-night-guard.md)): g
 
 Ground charger: a low security patrol robot that rocks back, then rams along its floor.
 
-**Who built and fields it *(proposed)*:** Arcadia's security division built the Patrol Rover to roll the campus paths, plazas and car parks after hours. It was an unarmed unit whose job was to be seen and to nudge trespassers along, and a speed governor kept it slow. It patrols Sunnyvale in Level 1, returns through Levels 2–4 and 6, and Adam builds a Garden copy for Level 10.
+**Who built and fields it *(proposed)*:** Arcadia's security division built the Patrol Rover to roll the campus paths, plazas and car parks after hours. It was an unarmed unit whose job was to be seen and to nudge trespassers along, and a speed governor kept it slow. It patrols Eon City in Level 1, returns through Levels 2–4 and 6, and Adam builds a Garden copy for Level 10.
 
 **Why it attacks Dave:** Adam has flagged Dave as a hazard on the rover's route and overridden its speed governor. Its announcement is the tell: "Speed limit override accepted." It is entirely mechanical, with no implant hardware and no cab.
 

@@ -11,7 +11,7 @@
 
 Cyborg guard dog and the first fast melee threat: it drops low, lunges, lunges again, then stands rigid.
 
-**Who built and fields it *(proposed)*:** Arcadia Security runs a K9 unit on the Sunnyvale campus. The dogs are real working dogs, shepherd-type, fitted with Arcadia's K9 augmentation: debarked so they work in silence, a steel jaw, a lens in place of one eye, armored plates and a cable bundle where the tail was. Night Guards ([SE01](../security/se01-night-guard.md)) handle them on the campus grounds at night in Levels 2 and 3 (Act 1), starting with Curfew. In Levels 7 and 8 Adam drives the same dogs directly through their collar modules, with no handler. In Level 11 it casts its own copies in raw ceramic in the Garden.
+**Who built and fields it *(proposed)*:** Arcadia Security runs a K9 unit on the Eon City campus. The dogs are real working dogs, shepherd-type, fitted with Arcadia's K9 augmentation: debarked so they work in silence, a steel jaw, a lens in place of one eye, armored plates and a cable bundle where the tail was. Night Guards ([SE01](../security/se01-night-guard.md)) handle them on the campus grounds at night in Levels 2 and 3 (Act 1), starting with Curfew. In Levels 7 and 8 Adam drives the same dogs directly through their collar modules, with no handler. In Level 11 it casts its own copies in raw ceramic in the Garden.
 
 **Why it attacks Dave:** in Act 1 the handler sets it on Dave, who has been flagged as an intruder after curfew. Later Adam simply sends it. It is an animal doing what it was trained to do, which is what makes it unsettling rather than cute. The hardware is shown as a working kit, not as horror for its own sake.
 

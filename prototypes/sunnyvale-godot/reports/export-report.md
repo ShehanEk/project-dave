@@ -176,7 +176,7 @@ APP="DEAD EDEN - Sunnyvale Prototype.app/Contents/MacOS/DEAD EDEN - Sunnyvale Pr
 
 New Game run output:
 ```
-DEAD EDEN Sunnyvale prototype booted on Godot 4.7.2-stable (official)
+DEAD EDEN Eon City prototype booted on Godot 4.7.2-stable (official)
 [M7DRIVER] starting phase=newgame
 [M7DRIVER] title screen found — clicking New Game
 [M7DRIVER] post-new-game checkpoint_id=CP00 objective=Reach the server depot. health=6 wallet=0 chips_found=0
@@ -190,14 +190,14 @@ a real, valid checkpoint snapshot, checkpoint_id `CP01` — proves (b).)
 
 Continue run output:
 ```
-DEAD EDEN Sunnyvale prototype booted on Godot 4.7.2-stable (official)
+DEAD EDEN Eon City prototype booted on Godot 4.7.2-stable (official)
 [M7DRIVER] starting phase=continue
 [M7DRIVER] title screen found — clicking Continue
 [M7DRIVER] post-continue checkpoint_id=CP01 objective=Reach the server depot. health=6 wallet=15 chips_found=15
 [M7DRIVER] resumed at CP01 (area index 1) — driving to the end
 [M7DRIVER] Session.level_completed fired
 [M7DRIVER] completion screen present=true
-[M7DRIVER] post-completion checkpoint_id=CP05 objective=Sunnyvale complete. health=6 wallet=45 chips_found=45
+[M7DRIVER] post-completion checkpoint_id=CP05 objective=Eon City complete. health=6 wallet=45 chips_found=45
 [M7DRIVER] DONE ok
 ```
 (exit code 0 — proves (c) Continue restores the exported app's own save, and
@@ -223,7 +223,7 @@ stdbuf -o0 "./DEAD EDEN - Sunnyvale Prototype.app/Contents/MacOS/DEAD EDEN - Sun
 ```
 Output: `Godot Engine v4.7.2.stable.official.ed1daf0bf`, `OpenGL API 4.1
 Metal - 91.7 - Compatibility - Using Device: Apple - Apple M1 Pro`, `DEAD EDEN
-Sunnyvale prototype booted on Godot 4.7.2-stable (official)` — no `ERROR:`/
+Eon City prototype booted on Godot 4.7.2-stable (official)` — no `ERROR:`/
 `WARNING:` lines, process stayed alive and responsive (title screen) for the
 full observation window, no crash report under `~/Library/Logs/
 DiagnosticReports`. (Note: without `stdbuf -o0`, this release binary's stdout

@@ -1,4 +1,4 @@
-# Sunnyvale — Level 1 Godot prototype plan
+# Eon City — Level 1 Godot prototype plan
 
 **Visual direction (C11, C15, C35):** [hand-drawn 2D in a dark night-campus palette, painted flat and lit in the engine](../../art-design/style-guide.md). Revamped 2026-09-29 (C14–C24) and rebuilt 2026-09-30 (C33); there are no selected scene images for the new look.
 
@@ -6,7 +6,7 @@
 
 ## Revamp (2026-09-29)
 
-The user replaced the game's story and atmosphere (C14–C21) and asked for this prototype to be rebuilt to match (C24); see the [decision register](../../design/decisions.md), entries C14–C24. This plan, the prototype and its reports now describe the rebuilt game: Dave Harlan, a fired AI researcher, breaks back into Arcadia Dynamics' Sunnyvale campus at night to copy proof that the sentient AI Adam is secretly building a weapon (C14, C17, C18).
+The user replaced the game's story and atmosphere (C14–C21) and asked for this prototype to be rebuilt to match (C24); see the [decision register](../../design/decisions.md), entries C14–C24. This plan, the prototype and its reports now describe the rebuilt game: Dave Harlan, a fired AI researcher, breaks back into Arcadia Dynamics' Eon City campus at night to copy proof that the sentient AI Adam is secretly building a weapon (C14, C17, C18).
 
 What changed is story, names, look and collectibles. Zombies are gone entirely and there is no stealth (C16). The old daytime suburb and the zombie art were deleted (C23).
 

@@ -1,4 +1,4 @@
-# Kenney asset credits (Sunnyvale prototype)
+# Kenney asset credits (Eon City prototype)
 
 All assets below are from [Kenney](https://kenney.nl/), licensed **CC0 1.0**
 (public domain — no attribution required, but credited here anyway). Each
@@ -198,7 +198,7 @@ own doc comment) that every call site reaches through a plain `preload()` +
 its static `spawn()` function: landing/pit dust at `hero.gd`/`pit_hazard.gd`, chip/cache sparkle at
 `chip.gd`/`chip_cache.gd`, and checkpoint sparkle at `recovery_station.gd`. All respect
 `Settings.reduced_motion` (fewer particles, less travel, never fully hidden)
-and are tinted to the Sunnyvale palette per the style guide. The C33 rebuild
+and are tinted to the Eon City palette per the style guide. The C33 rebuild
 removed the `defeat_puff` kind and its `smoke_02.png`: the old Staffer's
 `_defeat()` was its only caller, and people now die into ragdolls and blood
 instead of a smoke puff. The C37 shooting pass removed the `muzzle_flash` kind
@@ -219,7 +219,7 @@ stars, drawn by the deleted `clipper_visual.gd`):
 | `whitePuff00_stall_steam.png` (from `smoke-particles/PNG/White puff/whitePuff00.png`) | One-shot smoke puffs (`machine_smoke`): one when the rover's stall starts (`_enter_stall()`) and one at its wreck (`_defeat()`). The Clipper's looping stall steam and its reduced-motion static puff went with `clipper_visual.gd` |
 
 Both wired kinds respect `Settings.reduced_motion` through `kenney_puff.gd`'s
-own handling of one-shot kinds and are tinted to the Sunnyvale palette (warm
+own handling of one-shot kinds and are tinted to the Eon City palette (warm
 white/amber sparks, cream smoke) — see `scripts/effects/kenney/kenney_puff.gd`
 for the exact configs, and `tests/cases/test_kenney_part_b.gd` for the covering
 tests.

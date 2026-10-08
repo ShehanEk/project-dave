@@ -89,7 +89,7 @@ theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 20
 horizontal_alignment = 1
 autowrap_mode = 2
-text = "Level 1 — Welcome to Sunnyvale. Arcadia Dynamics campus, 02:14 AM."
+text = "Level 1 — Welcome to Eon City. Arcadia Dynamics campus, 02:14 AM."
 
 [node name="Panel" type="Panel" parent="."]
 layout_mode = 0

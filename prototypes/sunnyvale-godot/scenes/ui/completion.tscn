@@ -34,7 +34,7 @@ theme_override_constants/separation = 14
 layout_mode = 2
 theme_override_colors/font_color = Color(0.247, 0.878, 0.816, 1)
 theme_override_font_sizes/font_size = 28
-text = "Sunnyvale complete."
+text = "Eon City complete."
 
 [node name="StatsView" type="VBoxContainer" parent="Panel/VBox"]
 layout_mode = 2
