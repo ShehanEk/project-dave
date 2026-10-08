@@ -1,4 +1,4 @@
-# Sunnyvale prototype — implementation conventions
+# Eon City prototype — implementation conventions
 
 Binding contracts for everyone (human or AI) building this Godot project. The
 design authority is `../../prototype-plans/level-01-sunnyvale/` (00–09 +
@@ -30,7 +30,12 @@ transition and nothing else. It adopts `Session` state (`new_run()` or
 `level_01.tscn` under `LevelDirector`, then listens for `LevelDirector.
 quit_to_title_requested` (from the pause menu) to free the level and show the
 title screen again. `LevelDirector` itself never knows about the title
-screen.
+screen. The title's New Game goes through `_on_new_game_requested()`: it resets
+the run and deletes the save at once, shows the SC00 intro comic
+(`scripts/ui/intro_comic.gd`, C49, group `intro_comic`, `finished(skipped)`)
+and starts the level when the comic ends. `_on_new_game_confirmed()` still
+starts the level at once (the tests and demos call it), and `play_intro = false`
+makes the title's New Game skip the comic. Continue never shows it.
 
 ## Engine and commands
 
@@ -161,7 +166,7 @@ weapon-swaps.md.
 
 Exactly one of `Session.OBJECTIVE_START` ("Reach the server depot.") /
 `OBJECTIVE_DEPOT` ("Plug into Adam's core node.") / `OBJECTIVE_POST_SC01`
-("Escape through the service wicket.") / `OBJECTIVE_COMPLETE` ("Sunnyvale
+("Escape through the service wicket.") / `OBJECTIVE_COMPLETE` ("Eon City
 complete.") is ever `state["objective"]` (part of the persisted state, so it
 survives rollback/reload); `LevelDirector` bumps START->DEPOT on first
 entering A05 pre-awakening, `CoreNode` bumps DEPOT->POST_SC01 as part of

@@ -9,6 +9,8 @@ extends Node
 
 const LEVEL_01 := "res://scenes/levels/level_01.tscn"
 const TITLE_SCENE := "res://scenes/ui/title_screen.tscn"
+## SC00 (C49): the intro comic that tells the premise before a New Game.
+const IntroComic := preload("res://scripts/ui/intro_comic.gd")
 
 ## Crosshair cursor (M7 Kenney UI pass; assets/kenney/README.md section 3 —
 ## Crosshair Pack, Outline style, `crosshair-000`). Shown as the OS mouse
@@ -33,14 +35,23 @@ const CROSSHAIR_2X := preload("res://assets/kenney/crosshair-pack/crosshair_2x.p
 ## even at the base window size, per the task brief ("2x variant on
 ## high-DPI/large windows").
 const LARGE_WINDOW_SIZE := Vector2i(1920, 1080)
+## The window title players see. project.godot's config/name stays "DEAD EDEN -
+## Sunnyvale Prototype" because it names the user:// folder that holds saves and
+## playtest logs; the city was renamed Eon City (C48), so the window says that.
+const WINDOW_TITLE := "DEAD EDEN - Eon City Prototype"
 
 var _level: Node = null
 var _title: Control = null
+var _intro: CanvasLayer = null
+## New Game from the title plays the intro comic first. Tests and debug demos that
+## call `_on_new_game_confirmed()` directly start the level at once either way.
+var play_intro := true
 var _cursor_mode: CursorMode = CursorMode.ARROW
 
 
 func _ready() -> void:
-	print("DEAD EDEN Sunnyvale prototype booted on Godot ", Engine.get_version_info().string)
+	print("DEAD EDEN Eon City prototype booted on Godot ", Engine.get_version_info().string)
+	get_window().title = WINDOW_TITLE
 	# So the cursor's own _process (below) keeps running, and correctly snaps
 	# back to the arrow, the instant `get_tree().paused` becomes true — the
 	# same reasoning PauseMenu's own PROCESS_MODE_ALWAYS doc comment gives.
@@ -182,7 +193,7 @@ func _show_title() -> void:
 	get_tree().paused = false
 	_title = load(TITLE_SCENE).instantiate()
 	add_child(_title)
-	_title.new_game_confirmed.connect(_on_new_game_confirmed)
+	_title.new_game_confirmed.connect(_on_new_game_requested)
 	_title.continue_confirmed.connect(_on_continue_confirmed)
 	_title.quit_requested.connect(_on_title_quit_requested)
 	var audio := get_node_or_null("/root/Audio")
@@ -198,12 +209,38 @@ func _show_title() -> void:
 		audio.set_ambience(&"none")
 
 
+## The title's New Game (after any overwrite confirm): the intro comic, then the
+## level. The run is reset and the old save deleted right away, as the confirm text
+## promises, so the comic only delays the level. The title music keeps playing under
+## the comic; the level's director takes over the music when the level starts.
+func _on_new_game_requested() -> void:
+	if not play_intro:
+		_on_new_game_confirmed()
+		return
+	_reset_for_new_game()
+	if _title:
+		_title.queue_free()
+		_title = null
+	_intro = IntroComic.new()
+	add_child(_intro)
+	_intro.finished.connect(_on_intro_finished)
+
+
+func _on_intro_finished(_skipped: bool) -> void:
+	_intro = null
+	_start_level()
+
+
 func _on_new_game_confirmed() -> void:
+	_reset_for_new_game()
+	_start_level()
+
+
+func _reset_for_new_game() -> void:
 	Session.new_run()
 	var checkpoint_service := get_node_or_null("/root/CheckpointService")
 	if checkpoint_service:
 		checkpoint_service.clear()
-	_start_level()
 
 
 func _on_continue_confirmed(snapshot: Dictionary) -> void:

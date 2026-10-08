@@ -111,6 +111,8 @@ func _run_newgame() -> void:
 	# save routes through the confirm dialog, so the title node may already
 	# be gone here; that is success, not a failure.
 	if not is_instance_valid(title):
+		if not await _play_through_intro():
+			return
 		var level_now := await _find_level()
 		if level_now == null:
 			_fail("level never loaded after New Game")
@@ -123,11 +125,43 @@ func _run_newgame() -> void:
 		title.get_node("Panel/VBox/ConfirmView/ConfirmRow/ConfirmButton").pressed.emit()
 		await get_tree().process_frame
 
+	if not await _play_through_intro():
+		return
 	var level := await _find_level()
 	if level == null:
 		_fail("level never loaded after New Game")
 		return
 	await _drive_newgame_route(level)
+
+
+## New Game plays the SC00 intro comic (C49) before the level: step through every
+## panel the way a player pressing Space would, checking each panel's art loaded in
+## the exported build, then let it hand over to the level.
+func _play_through_intro() -> bool:
+	var intro: Node = null
+	var elapsed := 0.0
+	while intro == null and elapsed < HERO_TIMEOUT:
+		intro = get_tree().get_first_node_in_group("intro_comic")
+		if intro == null:
+			await get_tree().process_frame
+			elapsed += get_process_delta_time()
+	if intro == null:
+		_fail("intro comic never appeared after New Game")
+		return false
+	var count: int = intro.panel_count()
+	var textured := 0
+	for i in count:
+		if intro.current_texture() != null:
+			textured += 1
+		intro.advance()  # finish the caption's typing
+		await get_tree().process_frame
+		intro.advance()  # next panel (after the last one, the end of the comic)
+		await get_tree().process_frame
+	print("[M7DRIVER] intro comic panels=", count, " with_art=", textured)
+	if textured != count:
+		_fail("intro comic art missing in the export (%d of %d panels)" % [textured, count])
+		return false
+	return true
 
 
 func _drive_newgame_route(level: Node) -> void:
