@@ -58,6 +58,7 @@ Population: 8 Night Guards, 6 Patrol Rovers and 2 Staffers, 16 enemies (the C24 
 | [07 — Acceptance and playtesting](07-acceptance-and-playtesting.md) | Functional checks, timing protocol, and completion gates |
 | [08 — AI execution prompts](08-ai-execution-prompts.md) | Master build prompt, one prompt for each milestone, and the revamp and rebuild prompts |
 | [09 — Progress and handoff](09-progress-and-handoff.md) | Current state, decisions, evidence, and next-agent template |
+| [10 — Lessons and workflow](10-lessons-and-workflow.md) | The working loop, what works and what does not, design and technical lessons, and the learning log (update it after every pass) |
 | [prototype-spec.json](prototype-spec.json) | Machine-readable IDs, counts, time allocations, and constraints (schema 3: the rebuilt Night Guard, Patrol Rover and Staffer counts) |
 
 ## Working on the prototype
