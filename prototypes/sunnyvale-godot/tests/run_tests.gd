@@ -8,6 +8,31 @@ extends SceneTree
 const CASES_DIR := "res://tests/cases"
 
 
+## A GDScript runtime error ("SCRIPT ERROR: ...") inside a case aborts its
+## run() coroutine, yet `await tc.run()` still returns normally, so the case
+## would otherwise count as passed with its remaining checks silently skipped.
+## This Logger records every script error so the runner can fail the case.
+class ScriptErrorCatcher extends Logger:
+	var errors: PackedStringArray = []
+	var _mutex := Mutex.new()
+
+	func _log_error(function: String, file: String, line: int, code: String,
+			rationale: String, _editor_notify: bool, error_type: int,
+			_script_backtraces: Array) -> void:
+		if error_type != Logger.ERROR_TYPE_SCRIPT:
+			return
+		_mutex.lock()
+		errors.append("%s (%s:%d in %s)" % [rationale if rationale != "" else code, file, line, function])
+		_mutex.unlock()
+
+	func take() -> PackedStringArray:
+		_mutex.lock()
+		var out := errors
+		errors = PackedStringArray()
+		_mutex.unlock()
+		return out
+
+
 func _initialize() -> void:
 	_run.call_deferred()
 
@@ -44,6 +69,8 @@ func _run() -> void:
 	files.sort()
 	var failed := 0
 	var ran := 0
+	var catcher := ScriptErrorCatcher.new()
+	OS.add_logger(catcher)
 	for f in files:
 		if filter != "" and not f.contains(filter):
 			continue
@@ -68,8 +95,11 @@ func _run() -> void:
 		var tc: TestCase = case_script.new()
 		tc.name = f.get_basename()
 		root.add_child(tc)
+		catcher.take()
 		await tc.run()
 		tc.release_all()
+		for err in catcher.take():
+			tc.failures.append("script error aborted the case before it finished: " + err)
 		if checkpoint_service and checkpoint_service.get_save_dir() != test_save_dir:
 			tc.failures.append(
 					"left CheckpointService save dir at '%s' instead of restoring the runner's throwaway dir '%s' (AUD-01 regression)"
@@ -98,6 +128,7 @@ func _run() -> void:
 				% [real_dir_fingerprint, real_dir_fingerprint_after])
 		failed += 1
 
+	OS.remove_logger(catcher)
 	print("RESULT: %d/%d cases passed" % [ran - failed, ran])
 	quit(1 if failed > 0 or ran == 0 else 0)
 
