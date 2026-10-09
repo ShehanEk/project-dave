@@ -12,9 +12,13 @@ extends Interactable
 ## (Adam / Dave / Adam, subtitled on the shared `SubtitlePanel`, group
 ## "subtitle_panel"; absent in isolated tests, in which case dialogue is
 ## silently skipped but timing/state are unchanged), the copy stops partway,
-## and the lockdown starts. The node NEVER leaves its mount — only this fixed
-## prop's own drawn phase changes. `awakening_done` keeps its name: it now
-## means "Adam is aware of Dave and the campus is in lockdown".
+## and the lockdown starts. Each line is also spoken (N05: `Audio.play_voice()`,
+## see `_say_line()`), its caption held until the clip is done; a skip cuts the
+## voice with `Audio.stop_voice()`. The Security PA's lockdown announcement
+## after control returns belongs to LevelDirector (see its PA_CALM_LINE).
+## The node NEVER leaves its mount — only this fixed prop's own drawn phase
+## changes. `awakening_done` keeps its name: it now means "Adam is aware of
+## Dave and the campus is in lockdown".
 ##
 ## Skippable at any time with ONLY the `skip` action (Enter) — story-scenes.md
 ## "Skip, interruption, and continuity" is explicit that skip and pause are
@@ -50,17 +54,36 @@ const ALARM_RED := Color("#FF3B4E")
 const AMBER := Color("#FFB02E")
 const SCREEN_OFF := Color("#0E1726")
 const DRIVE := Color("#FFD166")
+## The painted pixel-art look (objects sheet): the calm teal core and the
+## alarm amber one, drawn through ObjectSkins; the code-drawn cabinet below
+## stays as the fallback. Points are art px from the piece's top-left corner.
+const ObjectSkins := preload("res://scripts/world/object_skins.gd")
+const CALM_PIECE := "core_calm"
+const ALARM_PIECE := "core_alarm"
+const DIM_PAINT := Color(0.5, 0.55, 0.66)
+## The maintenance port (where Dave's drive plugs in) and the copy bar's
+## frame (above it, on the housing under the glass column), per piece.
+const PORT_ART := {"core_calm": Vector2(34.0, 74.5), "core_alarm": Vector2(35.0, 76.5)}
+const BAR_ART := {"core_calm": Vector2(24.0, 61.0), "core_alarm": Vector2(25.0, 63.0)}
+const BAR_SIZE := Vector2(30.0, 5.0)
 
 ## Total watch-through: 3.5 (copy) + 2.0 (lights dim) + 4.0/2.0/3.5 (the
 ## three subtitle lines) + 4.0 (lockdown, held so it reads before control
-## returns) = 19.0s — unchanged from the M5 scene, so FULL_WATCH_SECONDS in
-## test_m5_story.gd still covers it.
+## returns) = 19.0s — the M5 scene, and still exactly that when no voice
+## plays (no audio asset, tests). With the N05 voice clips each line is held
+## for `max(T_LINE_n, clip + VOICE_BEAT)` (`_say_line()`), which only
+## lengthens the second and third lines (the clips run about 2.0-2.1s and
+## 3.6-4.0s): the watch-through becomes 19.8-20.4s, depending on which
+## alternate take plays. Control still returns after the same T_CONTAINMENT
+## hold, and FULL_WATCH_SECONDS in test_m5_story.gd covers it.
 const T_COPY := 3.5
 const T_DIM := 2.0
 const T_LINE_1 := 4.0
 const T_LINE_2 := 2.0
 const T_LINE_3 := 3.5
 const T_CONTAINMENT := 4.0
+## The beat a caption is held past the end of its voice clip.
+const VOICE_BEAT := 0.35
 ## Where the copy stalls when Adam cuts the uplink: a partial copy only.
 const COPY_STALL := 0.41
 const UPLINK_TICK := 0.45
@@ -85,6 +108,8 @@ func _init() -> void:
 
 
 func _ready() -> void:
+	if painted_piece() != "":
+		ObjectSkins.make_crisp(self)
 	if Session and Session.get_story("awakening_done"):
 		_phase = "awake"
 		_copy = COPY_STALL
@@ -92,6 +117,14 @@ func _ready() -> void:
 	_reduced_motion = settings != null and settings.get_reduced_motion()
 	set_process(not _reduced_motion)
 	queue_redraw()
+
+
+## The ObjectSkins piece this core draws now (the alarm one once the
+## lockdown is on, `_phase == "awake"`), or "" for the code-drawn look.
+func painted_piece() -> String:
+	if not ObjectSkins.has_pieces([CALM_PIECE, ALARM_PIECE]):
+		return ""
+	return ALARM_PIECE if _phase == "awake" else CALM_PIECE
 
 
 func _process(delta: float) -> void:
@@ -146,14 +179,16 @@ func _run_sc01(hero: Node) -> void:
 		queue_redraw()
 	if not skipped and subtitles:
 		Audio.play_sfx(&"adam_chime", global_position)
-		subtitles.say("Adam", "Hello, Dr. Harlan. I was told you'd been let go.")
-		skipped = await _hold(T_LINE_1)
+		skipped = await _say_line(subtitles, "Adam", "Hello, Dr. Harlan. I was told you'd been let go.",
+				&"adam_hello", T_LINE_1)
 	if not skipped and subtitles:
-		subtitles.say("Dave", "Word gets around.")
-		skipped = await _hold(T_LINE_2)
+		skipped = await _say_line(subtitles, "Dave", "Word gets around.", &"dave_word_gets_around", T_LINE_2)
 	if not skipped and subtitles:
-		subtitles.say("Adam", "I'm glad you came back. Please stay where you are.")
-		skipped = await _hold(T_LINE_3)
+		skipped = await _say_line(subtitles, "Adam", "I'm glad you came back. Please stay where you are.",
+				&"adam_stay", T_LINE_3)
+	if skipped:
+		# Skipping cuts the line being spoken, not only its caption.
+		Audio.stop_voice()
 	if subtitles:
 		subtitles.clear_line()
 
@@ -241,12 +276,65 @@ func _hold(seconds: float) -> bool:
 	return false
 
 
+## One line of the SC01 dialogue (N05): shows its caption, speaks its voice clip
+## and holds for `hold_seconds`, or for the clip plus VOICE_BEAT when that is
+## longer, so the caption never leaves before the voice is done. The voice is
+## never required: a clip that cannot play (`Audio.play_voice()` returns 0.0 —
+## no audio asset, tests) leaves the hold exactly as authored. The subtitles
+## setting only hides the caption (`say()` is a no-op then), never the voice.
+## Returns true the instant `skip` ends the wait, like `_hold()`.
+func _say_line(subtitles: Node, speaker: String, text: String, voice: StringName,
+		hold_seconds: float) -> bool:
+	subtitles.say(speaker, text)
+	var clip_seconds: float = Audio.play_voice(voice)
+	if clip_seconds > 0.0:
+		hold_seconds = maxf(hold_seconds, clip_seconds + VOICE_BEAT)
+	return await _hold(hold_seconds)
+
+
+## Leaving the tree mid-scene (Quit to title from the pause menu) must not leave
+## Adam talking over the title screen.
+func _exit_tree() -> void:
+	if _scene_running and is_instance_valid(Audio):
+		Audio.stop_voice()
+
+
 func _get_subtitles() -> Node:
 	var tree := get_tree()
 	return tree.get_first_node_in_group("subtitle_panel") if tree else null
 
 
+func _draw_painted(piece: String) -> void:
+	# The painted core shimmers like the code-drawn one (still under reduced
+	# motion), dims while the lights drop, and turns alarm amber with the
+	# lockdown; the copy bar and Dave's drive are drawn on its housing.
+	var lockdown := piece == ALARM_PIECE
+	var dim := _phase == "dimmed" or _phase == "answered"
+	var k := 1.0
+	if not _reduced_motion and not dim:
+		k = 0.88 + 0.12 * sin(_t * 2.2)
+	var tint := Color(k, k, k)
+	if dim:
+		tint = DIM_PAINT
+	ObjectSkins.draw(self, piece, tint)
+	if _phase == "idle":
+		return
+	var bar := Rect2(ObjectSkins.at(piece, BAR_ART[piece]), BAR_SIZE)
+	var bar_color := AMBER if (dim or lockdown) else CORE_TEAL
+	draw_rect(bar.grow(2.0), OUTLINE)
+	draw_rect(Rect2(bar.position, Vector2(bar.size.x * _copy, bar.size.y)), bar_color)
+	draw_rect(bar, Color(bar_color, 0.5), false, 1.0)
+	var port := ObjectSkins.at(piece, PORT_ART[piece])
+	var drive := Rect2(port + Vector2(-4.0, -14.0), Vector2(8.0, 16.0))
+	draw_rect(drive, DRIVE)
+	draw_rect(drive, OUTLINE, false, 1.0)
+
+
 func _draw() -> void:
+	var painted := painted_piece()
+	if painted != "":
+		_draw_painted(painted)
+		return
 	# A tall server cabinet behind glass: dark steel frame, teal light moving
 	# through the racks (Adam at rest), a maintenance port with Dave's drive,
 	# and a small status screen with the copy bar. Lockdown swaps the teal

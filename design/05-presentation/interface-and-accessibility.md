@@ -12,6 +12,8 @@
 ## Interface goals
 Keep the world visible, the carried weapon unambiguous, and the next action understandable. This is a proposed screen/content specification, not a finished UI mockup or a claim of accessibility certification. The interface has to work over dark scenes without becoming bright noise: panels are compact, backed in near-black, and drawn from the palette below.
 
+In the Level 1 prototype (2026-10-07) the HUD and menus are pixel art matching the world (UI Sheets 11 and 12 of the [play-plane brief](../../art-design/environment/sunnyvale-play-plane.md)): navy panels with a teal pixel border, pixel buttons and focus brackets, pixel health segments, weapon slot, chip and keycard icons, and key caps lettered with the current binding. Sentences and settings stay in a scalable UI font (the pixel font has capitals only), so the text-size setting still applies everywhere.
+
 ## Interface palette (*proposed*, from P21)
 | Token | Hex | Interface use |
 | --- | --- | --- |

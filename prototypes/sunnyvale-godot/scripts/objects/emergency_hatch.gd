@@ -18,6 +18,13 @@ const FRAME := Color("#1C2A3A")
 const LOCKED := Color("#FF3B4E")
 const EXIT_GREEN := Color("#4DE38A")
 const HAZARD := Color("#FFB02E")
+## The painted pixel-art look (objects sheet): the closed door and the open
+## doorway, drawn through ObjectSkins; the code-drawn look below stays as the
+## fallback. The piece is shorter than `size.y`, so its middle band repeats
+## (no pixel scaled) to come close to the solid's height.
+const ObjectSkins := preload("res://scripts/world/object_skins.gd")
+const CLOSED_PIECE := "hatch_closed"
+const OPEN_PIECE := "hatch_open"
 
 @export var size: Vector2 = Vector2(64.0, 192.0)
 
@@ -34,9 +41,19 @@ func _ready() -> void:
 	_shape.shape = rect
 	_shape.position = Vector2(0.0, -size.y * 0.5)
 	add_child(_shape)  # generated, not saved
+	if painted_piece() != "":
+		ObjectSkins.make_crisp(self)
 	if Session:
 		Session.story_state_changed.connect(_on_story_changed)
 	_refresh()
+
+
+## The ObjectSkins piece this hatch draws now (closed or open), or "" for the
+## code-drawn look.
+func painted_piece() -> String:
+	if not ObjectSkins.has_pieces([CLOSED_PIECE, OPEN_PIECE]):
+		return ""
+	return OPEN_PIECE if is_open() else CLOSED_PIECE
 
 
 func _exit_tree() -> void:
@@ -67,6 +84,10 @@ func _refresh() -> void:
 
 
 func _draw() -> void:
+	var painted := painted_piece()
+	if painted != "":
+		ObjectSkins.draw_tall(self, painted, ObjectSkins.repeats(CLOSED_PIECE, size.y))
+		return
 	var rect := Rect2(Vector2(-size.x * 0.5, -size.y), size)
 	var frame_w := 6.0
 	if is_open():

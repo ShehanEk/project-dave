@@ -1,7 +1,8 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/workbench_panel.gd" id="1_workbench_panel"]
 [ext_resource type="Theme" path="res://assets/ui/c11_theme.tres" id="2_theme"]
+[ext_resource type="Script" path="res://scripts/ui/pixel_icon.gd" id="3_pixel_icon"]
 
 [node name="WorkbenchPanel" type="CanvasLayer"]
 script = ExtResource("1_workbench_panel")
@@ -9,7 +10,7 @@ script = ExtResource("1_workbench_panel")
 [node name="Dim" type="ColorRect" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0, 0, 0.35)
+color = Color(0, 0, 0, 0.45)
 mouse_filter = 2
 
 [node name="Panel" type="Panel" parent="."]
@@ -18,68 +19,239 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -260.0
-offset_top = -200.0
-offset_right = 260.0
-offset_bottom = 200.0
+offset_left = -350.0
+offset_top = -290.0
+offset_right = 350.0
+offset_bottom = 290.0
 
 [node name="VBox" type="VBoxContainer" parent="Panel"]
-offset_left = 24.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
 offset_top = 20.0
-offset_right = 496.0
-offset_bottom = 380.0
-theme_override_constants/separation = 14
+offset_right = -28.0
+offset_bottom = -20.0
+theme_override_constants/separation = 10
 
-[node name="TitleLabel" type="Label" parent="Panel/VBox"]
+[node name="HeaderRow" type="HBoxContainer" parent="Panel/VBox"]
 layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TitleLabel" type="Label" parent="Panel/VBox/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.247, 0.878, 0.816, 1)
 theme_override_font_sizes/font_size = 28
 text = "Maintenance Workbench"
 
+[node name="ChipIcon" type="Control" parent="Panel/VBox/HeaderRow"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("3_pixel_icon")
+piece = "chip"
+px = 2
+
+[node name="WalletLabel" type="Label" parent="Panel/VBox/HeaderRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.69, 0.18, 1)
+theme_override_font_sizes/font_size = 28
+text = "45"
+
+[node name="HeaderLine" type="ColorRect" parent="Panel/VBox"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+color = Color(0.247, 0.878, 0.816, 0.5)
+
+[node name="ServiceHeader" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.62, 0.7, 1)
+theme_override_font_sizes/font_size = 18
+text = "1. REPAIR AND SAVE"
+
 [node name="ServiceRow" type="HBoxContainer" parent="Panel/VBox"]
 layout_mode = 2
+theme_override_constants/separation = 16
 
 [node name="ServiceButton" type="Button" parent="Panel/VBox/ServiceRow"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
-text = "Service (heal + save)"
+text = "Repair and save"
 
-[node name="CadenceLabel" type="Label" parent="Panel/VBox"]
+[node name="ServiceInfo" type="Label" parent="Panel/VBox/ServiceRow"]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
 theme_override_colors/font_color = Color(0.66, 0.73, 0.8, 1)
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 18
 autowrap_mode = 2
-text = "Quickcycle: 0.32s -> 0.24s cadence"
+text = "Free. Heals you fully and saves your progress here."
 
-[node name="PriceLabel" type="Label" parent="Panel/VBox"]
+[node name="ServiceLine" type="ColorRect" parent="Panel/VBox"]
+custom_minimum_size = Vector2(0, 2)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.66, 0.73, 0.8, 1)
-theme_override_font_sizes/font_size = 22
-autowrap_mode = 2
-text = "40 chips"
+color = Color(0.247, 0.878, 0.816, 0.25)
 
-[node name="WalletLabel" type="Label" parent="Panel/VBox"]
+[node name="UpgradeHeader" type="Label" parent="Panel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.69, 0.18, 1)
-theme_override_font_sizes/font_size = 22
-text = "Chips: 0"
+theme_override_colors/font_color = Color(0.55, 0.62, 0.7, 1)
+theme_override_font_sizes/font_size = 18
+text = "2. UPGRADES"
 
-[node name="UpgradeRow" type="HBoxContainer" parent="Panel/VBox"]
+[node name="QuickcycleCard" type="HBoxContainer" parent="Panel/VBox"]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="ConfirmButton" type="Button" parent="Panel/VBox/UpgradeRow"]
+[node name="Icon" type="Control" parent="Panel/VBox/QuickcycleCard"]
+custom_minimum_size = Vector2(72, 42)
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "Confirm"
+size_flags_vertical = 0
+script = ExtResource("3_pixel_icon")
+piece = "weapon_scrapjack"
+px = 3
 
-[node name="DeclineButton" type="Button" parent="Panel/VBox/UpgradeRow"]
+[node name="Info" type="VBoxContainer" parent="Panel/VBox/QuickcycleCard"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "Decline"
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="NameRow" type="HBoxContainer" parent="Panel/VBox/QuickcycleCard/Info"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="NameLabel" type="Label" parent="Panel/VBox/QuickcycleCard/Info/NameRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Quickcycle"
+
+[node name="StateLabel" type="Label" parent="Panel/VBox/QuickcycleCard/Info/NameRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.62, 0.7, 1)
+theme_override_font_sizes/font_size = 18
+size_flags_horizontal = 3
+size_flags_vertical = 8
+text = "NOT INSTALLED"
+
+[node name="RateGrid" type="GridContainer" parent="Panel/VBox/QuickcycleCard/Info"]
+layout_mode = 2
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 4
+columns = 3
+
+[node name="NowName" type="Label" parent="Panel/VBox/QuickcycleCard/Info/RateGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+custom_minimum_size = Vector2(110, 0)
+text = "Standard"
+
+[node name="NowBar" type="ColorRect" parent="Panel/VBox/QuickcycleCard/Info/RateGrid"]
+custom_minimum_size = Vector2(190, 14)
+layout_mode = 2
+size_flags_vertical = 4
+color = Color(0.05, 0.07, 0.1, 1)
+
+[node name="Fill" type="ColorRect" parent="Panel/VBox/QuickcycleCard/Info/RateGrid/NowBar"]
+anchor_bottom = 1.0
+anchor_right = 0.55
+color = Color(0.66, 0.73, 0.8, 1)
+
+[node name="NowValue" type="Label" parent="Panel/VBox/QuickcycleCard/Info/RateGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "0 shots/s"
+
+[node name="QuickName" type="Label" parent="Panel/VBox/QuickcycleCard/Info/RateGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Quickcycle"
+
+[node name="QuickBar" type="ColorRect" parent="Panel/VBox/QuickcycleCard/Info/RateGrid"]
+custom_minimum_size = Vector2(190, 14)
+layout_mode = 2
+size_flags_vertical = 4
+color = Color(0.05, 0.07, 0.1, 1)
+
+[node name="Fill" type="ColorRect" parent="Panel/VBox/QuickcycleCard/Info/RateGrid/QuickBar"]
+anchor_bottom = 1.0
+anchor_right = 1.0
+color = Color(0.247, 0.878, 0.816, 1)
+
+[node name="QuickValue" type="Label" parent="Panel/VBox/QuickcycleCard/Info/RateGrid"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "0 shots/s"
+
+[node name="PlatingCard" type="HBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Icon" type="Control" parent="Panel/VBox/PlatingCard"]
+custom_minimum_size = Vector2(72, 48)
+layout_mode = 2
+size_flags_vertical = 0
+script = ExtResource("3_pixel_icon")
+piece = "health_full"
+px = 4
+
+[node name="Info" type="VBoxContainer" parent="Panel/VBox/PlatingCard"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="NameRow" type="HBoxContainer" parent="Panel/VBox/PlatingCard/Info"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="NameLabel" type="Label" parent="Panel/VBox/PlatingCard/Info/NameRow"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Scrap Plating"
+
+[node name="StateLabel" type="Label" parent="Panel/VBox/PlatingCard/Info/NameRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.62, 0.7, 1)
+theme_override_font_sizes/font_size = 18
+size_flags_horizontal = 3
+size_flags_vertical = 8
+text = "NOT INSTALLED"
+
+[node name="EffectLabel" type="Label" parent="Panel/VBox/PlatingCard/Info"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.66, 0.73, 0.8, 1)
+theme_override_font_sizes/font_size = 18
+autowrap_mode = 2
+text = "Max health 6 -> 7: one more hit before you go down."
+
+[node name="BalanceLabel" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.66, 0.73, 0.8, 1)
+theme_override_font_sizes/font_size = 18
+autowrap_mode = 2
+text = "You have 45 chips: enough for one. Choose."
+
+[node name="UpgradeRowButtons" type="HBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="ConfirmButton" type="Button" parent="Panel/VBox/UpgradeRowButtons"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Buy Quickcycle (40)"
+
+[node name="PlatingButton" type="Button" parent="Panel/VBox/UpgradeRowButtons"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Buy Plating (25)"
+
+[node name="DeclineButton" type="Button" parent="Panel/VBox/UpgradeRowButtons"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Close"
 
 [node name="StatusLabel" type="Label" parent="Panel/VBox"]
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
+size_flags_vertical = 10
 theme_override_colors/font_color = Color(0.247, 0.878, 0.816, 1)
 theme_override_font_sizes/font_size = 20
 autowrap_mode = 2

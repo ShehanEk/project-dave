@@ -79,7 +79,7 @@ The reload is the opening: launcher broken open, the far hand at the bandolier, 
 
 **Fluid:** human blood (Blood #B3212F, drying to #8A1A26), drawn by the engine: a spray at the hit point, wound marks attached to the hit part and floor pools. Blood anchors sit on the head (at the hood's side), chest, belly, near upper arm and near thigh. No implant sparks.
 
-**Motion and death:** Mixamo clips converted to the rig: a heavy-weapon idle, a slow walk, a lean-back lob and a hit flinch. Hand-key the launcher tilt and the reload where no clip fits. Death is a ragdoll pushed by the killing shot, and the launcher drops as a prop, never a pickup. The body then stays as a static corpse, restored after a death or Continue.
+**Motion and death:** hand-keyed on the rig for the side view (C38): a heavy-weapon idle, a slow walk, a lean-back lob and a hit flinch, plus the launcher tilt and the reload. Death is a ragdoll pushed by the killing shot, and the launcher drops as a prop, never a pickup. The body then stays as a static corpse, restored after a death or Continue.
 
 Plan the blood, the tell glows, the muzzle flashes, the implant lights and every other effect as separate layers, never painted into the parts. These are the intended rig components, not a finished rig: the lit Night Guard test settles the tool, the pivots and the clip retargeting.
 
@@ -141,7 +141,7 @@ Using the attached approved Grenadier reference, draw one clear full-body 2D ani
 - Split the approved painting into the rig parts above, with hidden overlap under every joint and the far limbs painted complete. Make a matching normal map for every part (green = up, same size and layout) and check the lit result under a moving lamp.
 - Check both facings in the lit test, so the mirrored parts still take light from the lamp's side. The canister, the sleeve patch and the hip pouches must read correctly flipped.
 - Check the silhouette and the readability at gameplay size in the engine, in grayscale and against near-black backgrounds, next to the other people types: the Rifleman (helmet and carbine), the Heavy Gunner (helmet and back drum) and the Marksman (long coat). The Grenadier reads by the round hooded head with the snout and canister, and by the bandolier diagonal. The tell must read by pose and glow with the night overlay on.
-- Convert the Mixamo clips (heavy-weapon idle, slow walk, lean-back lob, hit flinch) to the rig and hand-key the tell pose where no clip fits. Check that the launcher tips up to about 60 degrees without a gap at the shoulder, and that the bandolier swings as its own part.
+- Hand-key each move (heavy-weapon idle, slow walk, lean-back lob, hit flinch) for the side view (C38). Check that the launcher tips up to about 60 degrees without a gap at the shoulder, and that the bandolier swings as its own part.
 - Keep blood, tell glows, muzzle flashes, implant lights and effects as separate layers. A concept painting is not a finished rig, atlas or validated animation.
 
 See [shared style guide](../style-guide.md) and [asset index](../README.md).

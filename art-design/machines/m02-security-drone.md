@@ -74,7 +74,7 @@ After the dive it hangs at head height with the fork spent: that is the opening.
 - **Normal maps:** one per part, green = up: a smooth domed canopy, ribbed nacelle shrouds and grilles, shallow panel seams on the hull.
 - **Sockets:** no gun socket. Light sockets at the canopy lens (small, steady), the lightbar (large tell glow) and the fork tips (arc effect). Spark points at the nacelles and fork; an oil drip point under the belly.
 - **Fluid:** white sparks and black oil, never blood.
-- **Motion and death:** hand-keyed on the rigid parts (Mixamo clips are humanoid) *(proposed)*. On death it bursts into debris parts: the nacelles, canopy, fork, tail fin and the two hull halves become physics bodies pushed by the killing shot, fall, and settle as a static wreck with a dark oil stain.
+- **Motion and death:** hand-keyed on the rigid parts, like every enemy (C38). On death it bursts into debris parts: the nacelles, canopy, fork, tail fin and the two hull halves become physics bodies pushed by the killing shot, fall, and settle as a static wreck with a dark oil stain.
 
 Plan overlapping drawing layers and visible pivots for the rig. Keep blood, sparks, oil, glows, muzzle flashes, projectiles, attack trails, warning overlays, impacts and environmental props separate from the character. The cutout method is confirmed direction, validated by the approved lit-cutout test (2026-09-30) (C35); frame counts, timing and export remain later production choices.
 

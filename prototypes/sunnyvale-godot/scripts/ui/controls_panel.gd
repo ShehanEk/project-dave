@@ -2,14 +2,14 @@ class_name ControlsPanel
 extends VBoxContainer
 ## Reusable "Controls" help panel (M7 follow-up; interface-and-accessibility.md
 ## / player-controls.md "Input icons follow current bindings"). A static
-## three-column table (name, Kenney input-prompt icon(s), binding text) of
+## three-column table (name, pixel key-cap icon(s), binding text) of
 ## every gameplay action's CURRENT binding, generated at runtime from
 ## InputMap (never hardcoded key names, so a future rebinding screen stays
 ## correct with no changes here), plus a few short spoiler-free tips. The
 ## binding TEXT is the always-correct, always-present column; the icon
 ## column is a visual accelerant beside it that simply goes emptier for a
-## sub-binding this project has no icon file for (see input_icon_map.gd's
-## KEY_ICON_FILES/MOUSE_ICON_FILES) — text never depends on icons existing. Embedded
+## sub-binding with no key cap (see input_icon_map.gd) — text never depends on
+## icons existing. Embedded
 ## as a child VIEW inside both the Title screen and the Pause menu
 ## (CONVENTIONS.md "UI scenes" — "opener owns the action, this node owns
 ## its own buttons") rather than owning its own CanvasLayer/Panel: the host
@@ -35,7 +35,7 @@ signal back_pressed
 const ROWS: Array[Dictionary] = [
 	{"name": "Move", "actions": ["move_left", "move_right"], "static_text": ""},
 	{"name": "Jump — hold for a higher jump", "actions": ["jump"], "static_text": ""},
-	{"name": "Aim", "actions": [], "static_text": "Mouse pointer", "static_icon": "mouse_move.svg"},
+	{"name": "Aim", "actions": [], "static_text": "Mouse pointer", "static_icon": "mouse_aim"},
 	{"name": "Fire — hold to keep firing", "actions": ["fire"], "static_text": ""},
 	{"name": "Interact / use", "actions": ["interact"], "static_text": ""},
 	{"name": "Pause menu", "actions": ["pause"], "static_text": ""},
@@ -55,25 +55,29 @@ const TIPS: Array[String] = [
 	"You carry one weapon; the pistol never needs reloading.",
 ]
 
-const NAME_COLOR := Color(0.2, 0.165, 0.125, 1)
-const BINDING_COLOR := Color(0.212, 0.365, 0.384, 1)
-const TIP_COLOR := Color(0.302, 0.243, 0.176, 1)
+## Light text on the dark pixel panel (#0E1726): pale (about 14:1), teal
+## (about 10:1) and a cool grey (about 8:1). The old dark browns were made for
+## the cream C11 panels and nearly vanished on the night ones.
+const NAME_COLOR := Color(0.847, 0.886, 0.925, 1)
+const BINDING_COLOR := Color(0.247, 0.878, 0.816, 1)
+const TIP_COLOR := Color(0.66, 0.73, 0.8, 1)
 
-## M7 Kenney part B: the icon-file table and the layout-aware key-label logic
+## M7 Kenney part B: the icon table and the layout-aware key-label logic
 ## used to live here directly; they now live in `input_icon_map.gd` (no
 ## `class_name` — see its own doc comment) so `tutorial_prompt.gd` can share
 ## the EXACT same mapping instead of duplicating it — reached through this
 ## plain preload() constant, never re-declared here.
 const InputIconMap := preload("res://scripts/ui/input_icon_map.gd")
-const ICON_DIR := InputIconMap.ICON_DIR
 
-## Icons render at this square size at Settings' Normal text size (~40px per
-## the task brief) scaled by `Settings.scaled_font_size()` exactly like every
-## row's text, EXCEPT this is capped tighter (see `_build_rows()`'s own note)
-## so 9 icon rows plus the header/Back button still fit the shared host
-## Panel's ~460px budget with no scrolling at Normal text size, matching the
-## table's existing no-scroll contract (test_help_regress_table_clip.gd).
-const ICON_SIZE := 28.0
+## The pixel key caps draw at this many canvas px per UI pixel (a cap is 14 UI
+## px tall, so 28 px, the old icon size), one less than the rest of the pixel
+## UI's 3 so 9 icon rows plus the header/Back button still fit the shared host
+## Panel's ~460px budget with no scrolling (test_help_regress_table_clip.gd).
+## It stays 2 at Large text size too: a pixel cap only scales by whole numbers,
+## and 3 (Space alone is 105 px wide) squeezed the binding-text column, the
+## always-present accessible text, into one word per line; the caps' letters
+## are 14 px tall at 2, as big as the Normal row text's capitals.
+const ICON_SCALE := 2
 
 @onready var _scroll: ScrollContainer = $Scroll
 @onready var _header_label: Label = $TitleLabel
@@ -163,7 +167,7 @@ func _build_rows() -> void:
 		# for a key") — a binding with no matching icon file simply leaves
 		# this box emptier for that one sub-binding, never touching the text.
 		var icon_box := HBoxContainer.new()
-		icon_box.add_theme_constant_override("separation", 4)
+		icon_box.add_theme_constant_override("separation", 3)
 		icon_box.alignment = BoxContainer.ALIGNMENT_BEGIN
 		_table.add_child(icon_box)
 		_icon_boxes.append(icon_box)
@@ -233,74 +237,64 @@ func _refresh_row_icons(i: int, row: Dictionary) -> void:
 	for child in box.get_children():
 		box.remove_child(child)
 		child.queue_free()
-	for path in _row_icon_paths(row):
+	var scale := _icon_scale()
+	for icon in _row_icons(row):
 		var rect := TextureRect.new()
-		rect.texture = load(path)
-		# The source SVGs are authored at 64x64 — EXPAND_IGNORE_SIZE is what
-		# actually lets custom_minimum_size shrink them down to ICON_SIZE;
-		# TextureRect's default expand mode (EXPAND_KEEP_SIZE) would otherwise
-		# report the TEXTURE's own 64x64 as this control's minimum size no
-		# matter what custom_minimum_size says, blowing every row's height
-		# out to ~64px+ regardless of the size set here.
+		rect.texture = icon
+		# EXPAND_IGNORE_SIZE lets custom_minimum_size (the cap's UI pixels times
+		# a whole scale) set the size; the caps are nearest-filtered textures.
 		rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		rect.custom_minimum_size = Vector2(ICON_SIZE, ICON_SIZE)
+		rect.custom_minimum_size = icon.get_size() * float(scale)
 		rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		rect.modulate = NAME_COLOR
+		rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		box.add_child(rect)
 
 
-## Every icon file (res:// path, in display order) for row `row`'s CURRENT
-## binding(s) — parallels get_binding_text()/_move_binding_text() but
-## resolves to an icon path instead of a display string. A sub-binding with
-## no matching entry in input_icon_map.gd's KEY_ICON_FILES/MOUSE_ICON_FILES
-## (e.g. a future rebind onto a key this pack has no icon for) is simply omitted here — the row's
-## text label (always built regardless) is what keeps that binding
-## documented either way.
-func _row_icon_paths(row: Dictionary) -> Array[String]:
+## Every icon (in display order) for row `row`'s CURRENT binding(s) —
+## parallels get_binding_text()/_move_binding_text() but resolves to a key cap
+## instead of a display string. A sub-binding with no cap (input_icon_map.gd:
+## e.g. a future rebind onto a key the pixel font cannot letter) is simply
+## omitted here — the row's text label (always built regardless) is what keeps
+## that binding documented either way.
+func _row_icons(row: Dictionary) -> Array[Texture2D]:
 	var static_icon: String = row.get("static_icon", "")
 	if static_icon != "":
-		return [ICON_DIR + static_icon]
+		var icon := InputIconMap.static_icon(static_icon)
+		var out: Array[Texture2D] = []
+		if icon:
+			out.append(icon)
+		return out
 	var actions: Array = row["actions"]
 	if actions.size() == 2:
-		return _move_icon_paths(StringName(actions[0]), StringName(actions[1]))
+		return _move_icons(StringName(actions[0]), StringName(actions[1]))
 	elif actions.size() == 1:
-		return _action_icon_paths(StringName(actions[0]))
+		return InputIconMap.icons_for_action(StringName(actions[0]))
 	return []
-
-
-func _action_icon_paths(action: StringName) -> Array[String]:
-	var paths: Array[String] = []
-	for event in InputMap.action_get_events(action):
-		var path := _event_icon_path(event)
-		if path != "" and not paths.has(path):
-			paths.append(path)
-	return paths
 
 
 ## Move's icon column mirrors _move_binding_text()'s own pairing (index 0
 ## with index 0, ...) so the icons read left-to-right in the same order as
 ## the text beside them ("A D" then "← →" rather than an unrelated order).
-func _move_icon_paths(left_action: StringName, right_action: StringName) -> Array[String]:
+func _move_icons(left_action: StringName, right_action: StringName) -> Array[Texture2D]:
 	var left_events := InputMap.action_get_events(left_action)
 	var right_events := InputMap.action_get_events(right_action)
-	var paths: Array[String] = []
+	var icons: Array[Texture2D] = []
 	var count: int = maxi(left_events.size(), right_events.size())
 	for i in count:
 		if i < left_events.size():
-			var l := _event_icon_path(left_events[i])
-			if l != "" and not paths.has(l):
-				paths.append(l)
+			var l := InputIconMap.icon_for_event(left_events[i])
+			if l != null and not icons.has(l):
+				icons.append(l)
 		if i < right_events.size():
-			var r := _event_icon_path(right_events[i])
-			if r != "" and not paths.has(r):
-				paths.append(r)
-	return paths
+			var r := InputIconMap.icon_for_event(right_events[i])
+			if r != null and not icons.has(r):
+				icons.append(r)
+	return icons
 
 
-## Delegates to input_icon_map.gd (see this script's own top-of-file note) —
-## kept as a thin wrapper so every call site above reads exactly as before.
-func _event_icon_path(event: InputEvent) -> String:
-	return InputIconMap.icon_path_for_event(event)
+## Whole canvas px per UI pixel for the key caps (ICON_SCALE at both text sizes).
+func _icon_scale() -> int:
+	return ICON_SCALE
 
 
 ## Every InputMap action name this panel documents (used by
@@ -374,15 +368,13 @@ func _apply_text_size() -> void:
 			var base: int = _text_size_bases[node]
 			node.add_theme_font_size_override("font_size",
 					settings.scaled_font_size(base) if settings else base)
-	# Icons scale with the SAME Settings.scaled_font_size() ratio as every
-	# row's text (task brief: "icons... scale with the text-size setting"),
-	# reusing the exact helper the fonts above use rather than a second,
-	# independently-tunable ratio.
-	var icon_size: int = settings.scaled_font_size(int(ICON_SIZE)) if settings else int(ICON_SIZE)
+	# The pixel caps keep ICON_SCALE at both text sizes (see its comment);
+	# re-applied here so a rebuilt row always matches.
+	var scale := _icon_scale()
 	for box in _icon_boxes:
 		for child in box.get_children():
-			if child is TextureRect:
-				child.custom_minimum_size = Vector2(icon_size, icon_size)
+			if child is TextureRect and child.texture:
+				child.custom_minimum_size = child.texture.get_size() * float(scale)
 	# Settings' "text size" grows every row's font (and can turn a one-line
 	# row into two) — _table.minimum_size_changed (connected in _ready())
 	# re-measures the Scroll automatically once that settles.

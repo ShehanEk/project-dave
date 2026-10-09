@@ -22,6 +22,7 @@ const Animator := preload("res://scripts/actors/lit/rig_animator.gd")
 const Ragdoll := preload("res://scripts/actors/lit/ragdoll.gd")
 const Blood := preload("res://scripts/effects/blood.gd")
 const Lights := preload("res://scripts/actors/lit/lights.gd")
+const BarkMap := preload("res://scripts/audio/bark_map.gd")
 
 const H := 96.0
 const WIDTH := 22.0
@@ -32,6 +33,10 @@ const ALARM := Color("#FF3B4E")
 const OUTLINE := Color("#05070B")
 const HIT_FLASH := 0.25
 const BARK_TIME := 1.8
+## A spoken bark (BarkMap) holds the group's one voice for its recording's length
+## plus this gap, at most BARK_VOICE_MAX seconds (the longest take is 2.7 s).
+const BARK_VOICE_GAP := 0.1
+const BARK_VOICE_MAX := 2.9
 ## Velocity kick (px/s) the killing shot gives the ragdoll part it hit.
 const DEATH_PUSH := 300.0
 
@@ -56,10 +61,18 @@ var _noticed: bool = false
 var _hurt_barked: bool = false
 var _windups: int = 0
 var _bark_t: float = 0.0
+## The pooled player and stream of this enemy's recording, so a new bark never talks
+## over the old one and a defeat cuts the voice off.
+var _bark_player: Node = null
+var _bark_stream: AudioStream = null
 var _group: EncounterGroup = null
 var _area_root: Node2D = null
 var _tell_light: PointLight2D
 var _hand_glows: Array[Sprite2D] = []
+var _holding: bool = false
+var _stagger_t: float = 0.0
+var _stagger_cd: float = 0.0
+var _hit_anim: bool = false
 var _rng := RandomNumberGenerator.new()
 
 @onready var hit_zone: HitZone = $HitZone
@@ -136,7 +149,9 @@ func _build_visual() -> void:
 			var g := Sprite2D.new()
 			g.texture = Lights.soft_disc()
 			g.scale = Vector2.ONE * 0.2
-			g.position = Vector2(0.5, 3.5)
+			# On the palm: the rig's grip socket (a pixel rig's hand is bigger than the old one).
+			var sock: Dictionary = rig.sockets.get("grip_" + hand.trim_suffix("_hand"), {})
+			g.position = sock["pos"] if sock.has("pos") else Vector2(0.5, 3.5)
 			g.z_index = 12
 			g.light_mask = 0
 			var mat := CanvasItemMaterial.new()
@@ -155,6 +170,8 @@ func _physics_process(delta: float) -> void:
 	if state == State.DEFEATED:
 		return
 	_state_timer += delta
+	_stagger_t = maxf(0.0, _stagger_t - delta)
+	_stagger_cd = maxf(0.0, _stagger_cd - delta)
 	_apply_gravity(delta)
 	match state:
 		State.DORMANT:
@@ -163,9 +180,15 @@ func _physics_process(delta: float) -> void:
 				_enter(State.APPROACH)
 				_notice()
 		State.PATROL:
-			_tick_patrol()
+			if _stagger_t > 0.0:
+				velocity.x = 0.0
+			else:
+				_tick_patrol()
 		State.APPROACH:
-			_tick_approach()
+			if _stagger_t > 0.0:
+				velocity.x = 0.0
+			else:
+				_tick_approach()
 		State.WINDUP:
 			velocity.x = 0.0
 			if _state_timer >= tuning.windup_time:
@@ -230,9 +253,8 @@ func _notice() -> void:
 func _tick_approach() -> void:
 	velocity.x = 0.0
 	var hero := _get_hero()
-	if hero == null:
-		return
-	if _group != null and not _group.is_active:
+	if hero == null or (_group != null and not _group.is_active):
+		_set_holding(true)
 		return
 	var dx: float = hero.global_position.x - global_position.x
 	var same_floor: bool = absf(hero.global_position.y - global_position.y) <= tuning.floor_band
@@ -242,11 +264,31 @@ func _tick_approach() -> void:
 		if can_attack:
 			_strike_dir = facing
 			_enter(State.WINDUP)
+		else:
+			# In reach but another enemy in the group holds the attack
+			# token: he waits his turn standing, not running in place.
+			_set_holding(true)
 		return
 	var dir: int = 1 if dx > 0.0 else -1
 	facing = dir
-	if same_floor and _can_step(dir):
+	var moving: bool = same_floor and _can_step(dir)
+	if moving:
 		velocity.x = dir * tuning.approach_speed()
+	_set_holding(not moving)
+
+
+## An approach that can't go on (the lane's edge, a ledge, a wall, Dave on
+## another floor, waiting for the group's attack token) holds its ground in
+## the idle pose, facing Dave, instead of walking in place.
+func _set_holding(on: bool) -> void:
+	if on == _holding:
+		return
+	_holding = on
+	if anim == null or state != State.APPROACH:
+		return
+	var c: String = tuning.clip_idle if on else tuning.clip_stalk
+	if anim.clips.has(c) or anim.has_mocap(c):
+		anim.play(c, false, 0.2)
 
 
 ## One walking step toward `dir` keeps the feet on floor, clear of walls and
@@ -269,7 +311,7 @@ func _tick_strike(delta: float) -> void:
 		if _state_timer >= tuning.lunge_time or _lunge_traveled >= tuning.lunge_distance():
 			_enter(State.RECOVERY)
 	else:
-		var stepping: bool = _state_timer < 0.12 and _floor_ahead(_strike_dir) and not _wall_ahead(_strike_dir)
+		var stepping: bool = _state_timer < 0.12 and _can_step(_strike_dir)
 		velocity.x = _strike_dir * tuning.swing_step_speed if stepping else 0.0
 		attack_box.active = _state_timer >= tuning.swing_active_from and _state_timer <= tuning.swing_active_to
 		if _state_timer >= tuning.swing_time:
@@ -280,6 +322,8 @@ func _enter(s: State) -> void:
 	var was := state
 	state = s
 	_state_timer = 0.0
+	_holding = false
+	_hit_anim = false
 	if was == State.DORMANT and tuning.link_joint != "":
 		# Adam takes the body over: the Link light steadies with a chirp.
 		_play_sfx(&"link_chirp")
@@ -352,12 +396,31 @@ func _on_hit(damage: int, hit_position: Vector2, direction: Vector2) -> void:
 		_bark(tuning.voice_hurt)
 	if health <= 0:
 		_defeat(hit_position, direction)
+		return
+	_flinch()
+
+
+## The hit flinch: never during the windup or the swing (a hit never
+## interrupts an attack); in the recovery it plays without changing the
+## timing; walking, he also stops for a moment, at most once per cooldown.
+func _flinch() -> void:
+	if anim == null or tuning.clip_hit == "" or not (anim.clips.has(tuning.clip_hit) or anim.has_mocap(tuning.clip_hit)):
+		return
+	if state == State.WINDUP or state == State.STRIKE or _stagger_cd > 0.0:
+		return
+	anim.play(tuning.clip_hit, true, 0.05)
+	_hit_anim = true
+	_stagger_cd = tuning.hit_stagger_cooldown
+	if state == State.PATROL or state == State.APPROACH:
+		_stagger_t = tuning.hit_stagger_time
+		velocity.x = 0.0
 
 
 func _defeat(hit_position: Vector2, direction: Vector2) -> void:
 	if state == State.DEFEATED:
 		return
 	state = State.DEFEATED
+	_stop_bark_voice()
 	attack_box.active = false
 	hit_zone.set_deferred("monitorable", false)
 	collision_layer = 0
@@ -367,8 +430,14 @@ func _defeat(hit_position: Vector2, direction: Vector2) -> void:
 	if entity_id != "" and Session:
 		Session.mark_defeated(entity_id)
 	_play_sfx(tuning.sfx_defeat)
+	GameFeel.kill(self)
 	var host := _effect_host()
 	if rig != null:
+		# Dead: the neon trim (C36), a Staffer's Link light and any tell glow
+		# go dark on the body.
+		rig.body_material.set_shader_parameter("emissive_energy", 0.0)
+		if tuning.tell_emissive:
+			rig.set_emissive(tuning.tell_joint, Color.BLACK, 0.0)
 		var rd := Ragdoll.new()
 		rd.name = "Body_" + (entity_id if entity_id != "" else name)
 		rd.z_index = z_index
@@ -431,6 +500,15 @@ func _update_presentation(delta: float) -> void:
 		return
 	rig.facing = facing
 	var moving: bool = absf(velocity.x) > 4.0
+	if _hit_anim:
+		anim.speed = 1.0
+		if anim.is_finished() and _stagger_t <= 0.0:
+			_hit_anim = false
+			_holding = false
+			_play_state_clip(0.2)
+		rig.apply_pose(anim.advance(delta))
+		_update_lights(delta)
+		return
 	match state:
 		State.PATROL:
 			anim.speed = absf(velocity.x) / 70.0 if moving else 1.0
@@ -442,6 +520,10 @@ func _update_presentation(delta: float) -> void:
 		_:
 			anim.speed = 1.0
 	rig.apply_pose(anim.advance(delta))
+	_update_lights(delta)
+
+
+func _update_lights(delta: float) -> void:
 	# The tell: amber, then red for the last red_time; its light falls on the
 	# brawler's own arm and face (and on the hero, up close).
 	var energy := 0.0
@@ -467,12 +549,62 @@ func _update_presentation(delta: float) -> void:
 	rig.set_flash(_flash)
 
 
+## Says one of `lines`: the caption over the head (BARK_TIME) and, when the line
+## has a recording (BarkMap), that recording from here. The group lets one enemy
+## speak at a time and holds the voice for as long as the recording runs (never
+## less than the caption's BARK_TIME), so two barks never overlap in the mix.
 func _bark(lines: PackedStringArray) -> void:
 	if lines.is_empty() or bark_label == null:
 		return
-	bark_label.text = lines[_rng.randi_range(0, lines.size() - 1)]
+	# The pick comes first because the recording sets the hold; a refused claim
+	# gives the pick back, so who speaks and which line comes next are unchanged.
+	var rng_state := _rng.state
+	var text: String = lines[_rng.randi_range(0, lines.size() - 1)]
+	var cue := _bark_cue(text)
+	var hold := BARK_TIME
+	if cue != &"":
+		hold = maxf(BARK_TIME, _cue_seconds(cue) + BARK_VOICE_GAP)
+	if _group != null and not _group.claim_voice(self, hold):
+		_rng.state = rng_state
+		return
+	bark_label.text = text
 	bark_label.visible = true
 	_bark_t = BARK_TIME
+	if cue != &"":
+		_stop_bark_voice()
+		_bark_player = Audio.play_sfx(cue, global_position)
+		_bark_stream = _bark_player.stream if _bark_player != null else null
+
+
+## Cuts this enemy's recording if it is still speaking.
+func _stop_bark_voice() -> void:
+	if _bark_player != null and _bark_stream != null and Audio:
+		Audio.stop_player_if_playing(_bark_player, _bark_stream)
+	_bark_player = null
+	_bark_stream = null
+
+
+func _exit_tree() -> void:
+	_stop_bark_voice()
+
+
+## The recording that speaks `text`, or &"" when it plays nothing: no recording
+## for the line, or the speaker is dead (the killing shot's bark, a body freed this
+## frame), so a corpse never talks. The caption is unaffected either way.
+func _bark_cue(text: String) -> StringName:
+	if state == State.DEFEATED or health <= 0 or is_queued_for_deletion():
+		return &""
+	var cue: StringName = BarkMap.cue_for(text)
+	return cue if cue != &"" and Audio.has_cue(cue) else &""
+
+
+## How long the longest take of `cue` runs, in seconds (a take is picked at random,
+## so the voice is held for the worst case), capped at BARK_VOICE_MAX.
+static func _cue_seconds(cue: StringName) -> float:
+	var longest := 0.0
+	for s in Audio._sfx_pools.get(cue, {}).get("streams", []):
+		longest = maxf(longest, (s as AudioStream).get_length())
+	return minf(longest, BARK_VOICE_MAX)
 
 
 func _play_sfx(cue: StringName) -> void:

@@ -15,5 +15,5 @@ acquire_range = 640.0
 floor_band = 64.0
 missed_charge_recovery_time = 0.6
 gravity = 1800.0
-frontal_hint_threshold = 2
+frontal_hint_threshold = 1
 rig_path = "res://assets/characters/lit/patrol_rover/rig.json"

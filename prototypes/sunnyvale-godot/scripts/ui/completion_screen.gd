@@ -18,6 +18,20 @@ signal quit_requested
 @onready var _chips_label: Label = $Panel/VBox/StatsView/ChipsLabel
 @onready var _key_label: Label = $Panel/VBox/StatsView/KeyLabel
 @onready var _quickcycle_label: Label = $Panel/VBox/StatsView/QuickcycleLabel
+@onready var _rank_label: Label = $Panel/VBox/StatsView/RankLabel
+@onready var _best_label: Label = $Panel/VBox/StatsView/BestLabel
+@onready var _adam_label: Label = $Panel/VBox/StatsView/AdamLabel
+
+## C53 debrief: a rank from time, chips and the evidence file (points, 5 at most), the best run
+## kept beside the save, and a line from Adam that points on to Level 2. Ranks by points:
+const RANKS := {5: "S", 4: "A", 3: "B", 2: "C"}
+const RANK_FAST_SECONDS := 240.0
+const RANK_OK_SECONDS := 360.0
+const ADAM_LINE := "Adam: \u201CYou got out of the depot, Dave. Eon City is bigger than one building, and every gate in it answers to me.\u201D"
+
+## The rank shown and whether this run beat the stored best (tests read these).
+var rank := ""
+var new_best := false
 @onready var _play_again_button: Button = $Panel/VBox/StatsView/ButtonRow/PlayAgainButton
 @onready var _quit_button: Button = $Panel/VBox/StatsView/ButtonRow/QuitButton
 @onready var _confirm_button: Button = $Panel/VBox/ConfirmView/ConfirmRow/ConfirmButton
@@ -54,7 +68,52 @@ func _refresh_stats() -> void:
 	_time_label.text = "Active play time: %s" % _format_time(seconds)
 	_chips_label.text = "Microchips found: %d / 65" % Session.chips_found()
 	_key_label.text = "Lockout Notice: %s" % ("Found" if Session.has_evidence("EF01") else "Not found")
-	_quickcycle_label.text = "Quickcycle: %s" % ("Obtained" if Session.weapon_stage("W01") >= 1 else "Not obtained")
+	var fitted: Array[String] = []
+	if Session.weapon_stage("W01") >= 1:
+		fitted.append("Quickcycle")
+	if Session.weapon_stage(Session.PLATING_TYPE) >= 1:
+		fitted.append("Scrap Plating")
+	_quickcycle_label.text = "Upgrades: %s" % (", ".join(fitted) if not fitted.is_empty() else "none")
+	var points := rank_points(seconds, Session.chips_found(), Session.has_evidence("EF01"))
+	rank = rank_for(points)
+	_rank_label.text = "Rank: %s" % rank
+	_best_label.text = _update_best(points, seconds)
+	_adam_label.text = ADAM_LINE
+
+
+## Time (up to 2), chips (up to 2) and the evidence file (1).
+static func rank_points(seconds: float, chips: int, evidence: bool) -> int:
+	var p := 0
+	if seconds > 0.0 and seconds <= RANK_FAST_SECONDS:
+		p += 2
+	elif seconds > 0.0 and seconds <= RANK_OK_SECONDS:
+		p += 1
+	if chips >= 65:
+		p += 2
+	elif chips >= 50:
+		p += 1
+	if evidence:
+		p += 1
+	return p
+
+
+static func rank_for(points: int) -> String:
+	return RANKS.get(clampi(points, 0, 5), "D")
+
+
+## Compares with the stored best (more points, then less time) and keeps the better one.
+func _update_best(points: int, seconds: float) -> String:
+	var cs := get_node_or_null("/root/CheckpointService")
+	if cs == null:
+		return ""
+	var best: Dictionary = cs.load_records()
+	var better := best.is_empty() or points > int(best.get("points", -1)) \
+			or (points == int(best.get("points", -1)) and seconds < float(best.get("seconds", INF)))
+	if better and seconds > 0.0:
+		new_best = not best.is_empty()
+		cs.save_records({"points": points, "seconds": seconds, "rank": rank_for(points)})
+		return "New best!" if new_best else "First clear. Beat it: S needs every chip, the file and under %s." % _format_time(RANK_FAST_SECONDS)
+	return "Best: %s in %s" % [String(best.get("rank", "?")), _format_time(float(best.get("seconds", 0.0)))]
 
 
 static func _format_time(seconds: float) -> String:

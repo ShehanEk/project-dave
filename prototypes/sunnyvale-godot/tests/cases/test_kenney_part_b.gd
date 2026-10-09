@@ -15,6 +15,7 @@ extends TestCase
 ## tests 2 and 4 now prove that one-shot instead.
 
 const KenneyPuff := preload("res://scripts/effects/kenney/kenney_puff.gd")
+const InputIconMapScript := preload("res://scripts/ui/input_icon_map.gd")
 const BlockScript := preload("res://scripts/world/block.gd")
 
 
@@ -290,16 +291,20 @@ func _test_tutorial_prompt_resolves_icon_and_falls_back_after_rebind() -> void:
 	for child in icons_box.get_children():
 		if child is TextureRect:
 			has_icon = true
-	check(has_icon, "the default Space binding for 'jump' resolves to a real Kenney icon")
+	check(has_icon, "the default Space binding for 'jump' resolves to a real key-cap icon")
 
 	prompt.queue_free()
 	await physics_frames(1)
 
-	# Rebind "jump" to a key this pack has no icon file for.
+	# Rebind "jump" to a key with no icon. Since the pixel UI pass every key
+	# whose label the pixel font can letter gets a key cap (Q included), so the
+	# no-icon key is one whose label it cannot: ";" on a real keyboard layout,
+	# "Semicolon" (longer than a cap holds) on the headless display server.
 	InputMap.action_erase_events(&"jump")
 	var rebind := InputEventKey.new()
-	rebind.physical_keycode = KEY_Q
+	rebind.physical_keycode = KEY_SEMICOLON
 	InputMap.action_add_event(&"jump", rebind)
+	var expected_token := "[%s]" % InputIconMapScript.key_label(KEY_SEMICOLON)
 
 	var prompt2: TutorialPrompt = load("res://scenes/objects/tutorial_prompt.tscn").instantiate()
 	prompt2.text = "Jump"
@@ -315,8 +320,8 @@ func _test_tutorial_prompt_resolves_icon_and_falls_back_after_rebind() -> void:
 			has_icon2 = true
 		elif child is Label:
 			fallback_text = child.text
-	check(not has_icon2, "no icon file exists for Q, so no TextureRect renders for the rebound key")
-	check(fallback_text == "[Q]", "a text fallback token names the CURRENT bound key instead (got '%s')" % fallback_text)
+	check(not has_icon2, "no key cap exists for the rebound key, so no TextureRect renders for it")
+	check(fallback_text == expected_token, "a text fallback token names the CURRENT bound key instead (want '%s', got '%s')" % [expected_token, fallback_text])
 
 	prompt2.queue_free()
 	await physics_frames(1)

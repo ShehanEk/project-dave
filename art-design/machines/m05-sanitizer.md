@@ -66,7 +66,7 @@ The vent after each sweep allows safe attacks. Show the gauge, the opening fins 
 - **Normal maps:** one per part, green = up: the pressure-vessel curve with rib relief, rubber tread cleats, the ceramic lip, the gauge dial, shallow panel seams.
 - **Sockets:** no gun socket. Light sockets at the lens slots (small, steady), the nozzle lamp (large tell glow), the tank window and the gauge. The jet spawns at the nozzle mouth as a separate effect. Steam points at the fins; spark points at the ribs; an oil drip point under the body.
 - **Fluid:** white sparks and black oil, never blood.
-- **Motion and death:** hand-keyed on the rigid parts (Mixamo clips are humanoid) *(proposed)*. On death it bursts into debris parts: the nozzle and hose, fins, face panel, tank halves and tread units become physics bodies pushed by the killing shot. The tank cracks and vents steam with no fire, then the wreck settles as a static corpse with a dark oil stain.
+- **Motion and death:** hand-keyed on the rigid parts, like every enemy (C38). On death it bursts into debris parts: the nozzle and hose, fins, face panel, tank halves and tread units become physics bodies pushed by the killing shot. The tank cracks and vents steam with no fire, then the wreck settles as a static corpse with a dark oil stain.
 
 Plan overlapping drawing layers and visible pivots for the rig. Keep blood, sparks, oil, glows, muzzle flashes, projectiles, attack trails, warning overlays, impacts and environmental props separate from the character. The cutout method is confirmed direction, validated by the approved lit-cutout test (2026-09-30) (C35); frame counts, timing and export remain later production choices.
 

@@ -119,7 +119,7 @@
     "damage_immunity_s": 1.0,
     "pistol_damage": 1,
     "pistol_base_interval_s": 0.32,
-    "pistol_quickcycle_interval_s": 0.24,
+    "pistol_quickcycle_interval_s": 0.18,
     "night_guard_health": 3,
     "staffer_health": 2,
     "rover_battery_health": 3
@@ -207,8 +207,8 @@
       "id": "L01-A03",
       "name": "Rooftop walk",
       "seconds": 135,
-      "night_guards": 2,
-      "rovers": 0,
+      "night_guards": 3,
+      "rovers": 1,
       "staffers": 0,
       "chips": 10,
       "small": 5,
@@ -246,8 +246,8 @@
       "id": "L01-A04",
       "name": "Campus plaza",
       "seconds": 165,
-      "night_guards": 4,
-      "rovers": 2,
+      "night_guards": 5,
+      "rovers": 3,
       "staffers": 0,
       "chips": 20,
       "small": 10,
@@ -335,9 +335,9 @@
       "id": "L01-A06",
       "name": "Alarm exit",
       "seconds": 135,
-      "night_guards": 0,
+      "night_guards": 2,
       "rovers": 2,
-      "staffers": 2,
+      "staffers": 9,
       "chips": 0,
       "small": 0,
       "clusters": 0,
@@ -413,7 +413,7 @@
       "id": "L01-E05",
       "beat_id": "L01-A03-B03",
       "night_guards": 1,
-      "rovers": 0,
+      "rovers": 1,
       "staffers": 0,
       "chip_drops": 0,
       "max_simultaneous_attackers": 1
@@ -421,7 +421,7 @@
     {
       "id": "L01-E06",
       "beat_id": "L01-A03-B04",
-      "night_guards": 1,
+      "night_guards": 2,
       "rovers": 0,
       "staffers": 0,
       "chip_drops": 0,
@@ -440,7 +440,7 @@
       "id": "L01-E08",
       "beat_id": "L01-A04-B04",
       "night_guards": 2,
-      "rovers": 0,
+      "rovers": 1,
       "staffers": 0,
       "chip_drops": 0,
       "max_simultaneous_attackers": 1
@@ -448,29 +448,69 @@
     {
       "id": "L01-E09",
       "beat_id": "L01-A04-B06",
-      "night_guards": 1,
+      "night_guards": 2,
       "rovers": 1,
       "staffers": 0,
       "chip_drops": 0,
       "max_simultaneous_attackers": 1
     },
     {
+      "id": "L01-E13",
+      "beat_id": "L01-A06-B01",
+      "night_guards": 0,
+      "rovers": 0,
+      "staffers": 2,
+      "chip_drops": 0,
+      "max_simultaneous_attackers": 2,
+      "note": "C41 lockdown ambush: two slumped staffers wake as Dave leaves the depot, one behind him"
+    },
+    {
       "id": "L01-E10",
       "beat_id": "L01-A06-B02",
       "night_guards": 0,
       "rovers": 1,
-      "staffers": 1,
+      "staffers": 2,
       "chip_drops": 0,
-      "max_simultaneous_attackers": 1
+      "max_simultaneous_attackers": 2
+    },
+    {
+      "id": "L01-E14",
+      "beat_id": "L01-A06-B03",
+      "night_guards": 1,
+      "rovers": 0,
+      "staffers": 0,
+      "chip_drops": 0,
+      "max_simultaneous_attackers": 1,
+      "note": "C41: a guard waits across the hazard pit on Platform B"
     },
     {
       "id": "L01-E11",
       "beat_id": "L01-A06-B04",
-      "night_guards": 0,
+      "night_guards": 1,
       "rovers": 1,
       "staffers": 1,
       "chip_drops": 0,
-      "max_simultaneous_attackers": 1
+      "max_simultaneous_attackers": 2
+    },
+    {
+      "id": "L01-E15",
+      "beat_id": "L01-A06-B05",
+      "night_guards": 0,
+      "rovers": 0,
+      "staffers": 2,
+      "chip_drops": 0,
+      "max_simultaneous_attackers": 2,
+      "note": "C41 hold-out: wakes when the wicket's 16 s lockdown override starts"
+    },
+    {
+      "id": "L01-E16",
+      "beat_id": "L01-A06-B05",
+      "night_guards": 0,
+      "rovers": 0,
+      "staffers": 2,
+      "chip_drops": 0,
+      "max_simultaneous_attackers": 2,
+      "note": "C41 hold-out reinforcements: wake 7 s into the override; share E15's two attack tokens"
     }
   ],
   "optional_branches": [
@@ -516,6 +556,12 @@
       "kind": "recovery"
     },
     {
+      "id": "CP06",
+      "area": "L01-A04",
+      "trigger": "interact_mid_plaza_station",
+      "kind": "recovery"
+    },
+    {
       "id": "CP03",
       "area": "L01-A04",
       "trigger": "interact_far_porch_station",
@@ -526,6 +572,12 @@
       "area": "L01-A05",
       "trigger": "core_node_sequence_complete",
       "kind": "story_snapshot"
+    },
+    {
+      "id": "CP07",
+      "area": "L01-A06",
+      "trigger": "interact_wicket_yard_station",
+      "kind": "recovery"
     },
     {
       "id": "CP05",

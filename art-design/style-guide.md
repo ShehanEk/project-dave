@@ -17,9 +17,10 @@ Every enemy is a **lit cutout rig**: painted parts, lit by the engine.
 - **Normal maps:** every part has a matching normal map (green = up) that carries its form and small detail: seams, fasteners, cloth folds, ceramic, rubber and steel. Suggest materials through flat color plus the normal map, not painted reflections.
 - **Engine light:** the engine's lamps, screens and each gun's muzzle flash light the parts with **smooth, realistic light**: each light has a smooth gradient texture and a height above the play plane (see "Light, in the engine"). This replaces C11's flat, hard-edged three-band light pools and crisp cel shadows.
 - **Proportions:** realistic adult proportions, about 7–7.5 heads tall, with grounded gear. Simplify small bolts, cables and folds so shapes stay chunky and readable at gameplay size; the normal map carries the fine detail.
-- **Motion:** Mixamo motion-capture clips, converted to the 2D rig. Tells, hits and openings must still read by pose and silhouette.
+- **Motion:** hand-keyed on the rig for the side view (C38). Motion capture was tried on the Night Guard and dropped: its 3D twist and foreshortening flatten into odd poses on side-on cutouts. Tells, hits and openings read by pose and silhouette.
 - **Deaths:** ragdolls. The rig parts become physics bodies pushed by the killing shot, and the body stays as a static corpse. Machines and bosses burst into debris parts instead.
 - **Guns and blood:** guns are separate sprites on a hand socket, each with its own muzzle-flash light. Blood is never painted into the parts (see "Mature content and blood").
+- **Neon trim (C36):** the look is light cyberpunk. Each enemy type wears thin neon trim in its own color (piping, bands, edge strips or an underglow), painted as a flat bright stripe in that exact color with no glow; the engine makes it glow. See "Meaning is reserved" for its limits.
 - **Dave:** the hero keeps frame-based sprites (currently the Rook placeholders), and each frame gets a normal map too, so he is lit the same way.
 - **Out of scope:** pixel art, photorealistic painting, glossy chrome, photographic blur, airbrushed or strong gradients in the painted art, and any baked light. The realism is in the light and the proportions, not in the painting.
 
@@ -28,12 +29,16 @@ Every enemy is a **lit cutout rig**: painted parts, lit by the engine.
 Light is still the main tool, and it is now real light. Painted light pools, rim shapes and halo shapes are retired:
 - **Lamps and screens are lights.** Every lamp, screen, sign, status-LED strip, lens and muzzle flash that glows is a light in the engine, with a color, a smooth gradient light texture (a soft round or cone falloff, never a hard-edged band) and a **height** above the play plane, so the normal maps shade from the correct side.
 - **Light pools** on floors, walls and characters come from those lights. Do not paint lighter pool shapes into scenery or characters.
-- **Ambient:** deep navy-black, so unlit areas are dark but not empty. Outside every lamp a figure still reads by its dark outline and flat base color.
+- **Ambient:** deep navy-black, so unlit areas are dark but not empty. Outside every lamp a figure still reads by its dark outline and flat base color. Every character (Dave and the enemies) shares one night level of about 45% of its painted color, slightly cool, so skin tones and uniforms still read away from the lamps (2026-09-30).
 - **Muzzle flashes:** each gun has its own brief muzzle-flash light. Firearm flashes are ivory, and energy weapons flash blue-white like their shots. Rapid fire holds one glow and never strobes.
 - **Tells:** a tell is a large additive glow on the attacking part (see the tell and light rule). It is the brightest thing on that body.
 - **Glow:** soft additive halos surround lamps, lenses, screens and Link lights. There is no volumetric fog rendering; fog is drawn as flat, low-contrast bands.
 - **Shadow:** no shadows are painted into the art. Any shadow the engine adds stays soft and low-contrast. Darkness is a composition tool, not an excuse to hide gameplay.
 - **Readability:** **put a light near every landing.** Tells stay readable in the dark and in a lamp's glare, and **darkness never hides a tell, a ledge or a pickup.** Check every tell and every platform edge in an engine capture with the night overlay on.
+
+## Color scheme (C40)
+
+Complementary: **cool blue against warm orange**. About 85% of a scene is the cool side: Night, Navy, Steel and Slate, with Arcadia teal as its bright accent. About 15% is the warm complement: Dave's burnt-orange jacket and warm light sources (interior windows, uplights, warm lamps) in Window warm, so warmth pulls the eye to Dave and to light. Window warm stays softer and less saturated than Hazard amber, so the most saturated warm on screen is always a tell. Other hues are small reserved accents only (gold pickups, signal green, energy blue, the enemy neons), never fills.
 
 ## Palette tokens (proposed)
 
@@ -50,12 +55,15 @@ Light is still the main tool, and it is now real light. Painted light pools, rim
 | Microchip gold | #FFD166 | Microchip pickups and glints |
 | Signal green | #4DE38A | Exit signs, server status LEDs, 'safe' indicator lights (Acts 2–3). Never a tell or pickup |
 | Dave orange | warm burnt orange | Dave's jacket, so the hero reads instantly against cool darks |
+| Window warm | #E8A35C | The warm complement in the scenery (C40): lit office interiors, uplights on trees, warm lamp glow. Softer than Hazard amber; never a tell |
 | Blood | #B3212F | Wet blood of people, the Linked and dogs, with two or three pale-pink highlight drops and a lighter wet rim on pools |
 | Dried blood | #8A1A26 | Pools and wound marks once dry. Never darker: darker reds vanish against the night palette |
 | Heir lymph | #A88A8C | The Heirs' grey-rose synthetic lymph. Drips only, at 80% alpha |
 | Oil | #14181E | Machine oil, always with a #46566A sheen rim so it reads on dark floors |
 | Energy blue | #5AA9FF | The edge of energy shots and beams (plasma, arc, seeker, beam), always with a white core and a dark outline ring |
 | Tracer ivory | #F2EBD3 | Bullet tracers and firearm muzzle flashes, always with a dark outline. No casings |
+| Enemy neon: lime | #C6FF3D | The Night Guard's neon trim (C36) |
+| Enemy neon: magenta | #FF3DD5 | The Patrol Rover's neon trim (C36, proposed) |
 
 **Meaning is reserved:**
 - Red means danger now: the last 0.25 s of an attack tell, alarms and lockdowns. Blood is a darker red and never takes that role.
@@ -65,6 +73,7 @@ Light is still the main tool, and it is now real light. Painted light pools, rim
 - Gold means pickups.
 - Blood is red, oil is black and lymph is grey-rose. Blood never glows or pulses, never uses a tell color, and is never gold, violet, teal, amber or green.
 - Energy blue with a white core means an energy shot, and tracer ivory means a bullet. Shots are never gold, violet, amber, red, teal or green.
+- Enemy neon marks one enemy type each (C36): lime for the Night Guard, magenta for the Patrol Rover. It is thin, steady trim, always dimmer than any tell, never on the attacking part or a weak point, and it goes dark on death. The scenery never uses an enemy's neon color.
 
 Do not use these colors decoratively in ways that blur those meanings. Level briefs may add a few level-local environment hues (for example a dark coolant teal) as long as they stay clear of the reserved meanings.
 
@@ -87,7 +96,7 @@ The game is mature, not for kids. It stays mysterious and scary rather than edgy
 
 | Act | Levels | Look |
 | --- | --- | --- |
-| **Sunnyvale campus at night** | 1–3 | Navy night; sculpted gardens under cold white path lights and amber security lamps. Glass office towers have a few lit windows. Teal Arcadia signage, flickering holographic billboards, and flat bands of ground fog in the gardens. The product showcase hall is dark between spotlit exhibits. |
+| **Eon City campus at night** | 1–3 | Navy night; sculpted gardens under cold white path lights and amber security lamps. Glass office towers have a few lit windows. Teal Arcadia signage, flickering holographic billboards, and flat bands of ground fog in the gardens. The product showcase hall is dark between spotlit exhibits. |
 | **The Rootworks** | 4–6 | Black server halls with walls of blinking teal and green status LEDs and cable bundles hanging like roots. Cooling mist, dark water, pipes and red emergency strobes. Adam's cores glow behind glass. |
 | **Arcadia Wellness Center** | 7–9 | Sterile clinic walls in shadow on emergency power, green exit signs, flickering surgical lamps and red "PLEASE REMAIN STILL" signage. The Memory Orchard's server trees shimmer teal in a dark archive. |
 | **The Garden** | 10–12 | Adam's hidden factory: a vast underground hall holding an eerie, beautiful engineered garden of bioluminescent plants. Pale Heir bodies hang on assembly lines, and violet Bloom canisters glow in the launch chamber. |
@@ -148,13 +157,15 @@ The lit cutout pipeline (C35), in order:
 3. **Normal maps:** a matching normal map for every part (green = up), with the same size and layout as the part. The painted part stays flat, so the normal map does all the shaping. Guns and Dave's frames get normal maps too.
 4. **Atlas:** pack the parts and their normal maps into an atlas, with identical layouts for both.
 5. **Rig:** assemble the 2D rig with bone pivots and the gun socket, the place where the muzzle flash and shots start. Check both facings.
-6. **Mixamo poses:** drive the rig with Mixamo clips converted to the 2D rig: idle, walk or run, attack, hit and recovery, as the brief requires. Keep threats and weak-point openings readable through pose, movement and the reserved tell colors, and hand-key a tell pose where no clip fits.
+6. **Hand-keyed poses:** pose the rig for the side view (C38): idle, walk or run, attack, hit and recovery, as the brief requires. Keep threats and weak-point openings readable through pose, movement and the reserved tell colors.
 7. **Ragdoll and debris:** a death turns the parts into physics bodies pushed by the killing shot, and the body then stays as a static corpse. Machines and bosses burst into the debris parts their brief lists.
 8. **Contact checks:** compare weapon grips, feet on platforms, closed and open parts and collision poses in the engine, under night lighting.
 
 Generate one painting per request when multi-pose sheets produce inconsistent anatomy. A finished painting does not settle the rig, the pivots or the clip retargeting. The lit Night Guard test is where those get proven, and its result sets the method for every other enemy.
 
 ## Environment layers and camera
+
+**Pixel art (C39):** environments are pixel art, matching the user's night-campus concept: chunky readable pixels, warm lit interiors, uplit trees, teal Arcadia accents and wet reflective paving. The game must look good at 4K, so pixels stay fine: generate at the largest size with 2x2-pixel blocks; the importer reduces each layer to about two texels per generated pixel, so every layer's pixels match in size, and the game draws it with nearest filtering at 1.5 world px per art pixel (about 5 screen px at 4K), scrolled in whole art pixels. No smooth gradients inside a layer; the engine adds the lights. The characters and the gun stay smooth painted cutouts for now. One exception (C42): the street furniture keeps the finer pixels it was generated with (half the background's), because at the background's pixel size it came out too big next to Dave.
 
 Use a fixed side-oriented 2D gameplay camera. Compose scenery as separate foreground, playable, background and effect layers. Overlap, darker and lower-contrast backgrounds and optional parallax suggest depth. The hero, enemies, pickups and collision route stay on one action plane.
 
@@ -194,6 +205,6 @@ Then ask for a single evenly lit, flat-color, side-view full-body painting on a 
 
 Keep each selected PNG with its selection record and current continuation prompt. Store only selected concept images in the repository. Do not label a new exploration as selected without a user decision.
 
-The zombie Resident art, the old daytime Sunnyvale scenes (C23) and the Clipper's concept art (C32) were deleted; the tracked files remain in git history only. No enemy painting is selected yet, and the lit Night Guard test (C35) comes first. The final enemy paintings and the real Mixamo clips are still to come. Sprite resolution, atlas layout, the rig tool, the clip retargeting method, frame budgets, whether scenery modules get normal maps, and the export pipeline remain future choices, to be settled by that test.
+The zombie Resident art, the old daytime Eon City scenes (C23) and the Clipper's concept art (C32) were deleted; the tracked files remain in git history only. No enemy painting is selected yet, and the lit Night Guard test (C35) comes first. The final enemy paintings are still to come. Sprite resolution, atlas layout, the rig tool, the clip retargeting method, frame budgets, whether scenery modules get normal maps, and the export pipeline remain future choices, to be settled by that test.
 
 [AI entry guide](../AI_START_HERE.md) · [Art brief index](README.md) · [Level guide](../level-design/design-guide.md)

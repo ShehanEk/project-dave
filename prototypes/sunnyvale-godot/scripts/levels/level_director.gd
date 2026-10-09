@@ -60,7 +60,34 @@ const NIGHT_LIGHTING_SCENE := "res://scenes/world/night_lighting.tscn"
 ## opens after it. The run is already committed and input is off.
 const PA_SPEAKER := "Security PA"
 const PA_LINE := "All teams: lethal force is authorized. Harlan is armed."
-const PA_BEAT := 3.2
+## How long that caption is held before the completion screen opens. N05: it
+## speaks the `pa_lethal` clip (3.55s), so this grew from 3.2s to cover the clip
+## plus a beat; a longer clip would extend the hold further (see
+## `_on_wicket_reached()`).
+const PA_BEAT := 4.0
+## C53: between the intro comic and SC01 nobody spoke. The campus Security PA now marks the
+## route, text only, once per run, before the depot event (Adam's first words stay for SC01,
+## story-scenes.md). Keyed by pacing beat; each line stays up ROUTE_PA_HOLD seconds.
+const ROUTE_PA_LINES := {
+	"L01-A02-B01": "Night shift, be advised: a flagged former employee is on campus. Dave Harlan. Detain on sight.",
+	"L01-A03-B01": "Rooftop cameras have Harlan heading for the server depot. All units, cut him off.",
+	"L01-A04-B01": "Reminder to staff: your Link keeps you calm and safe. Please stay at your workstations.",
+}
+const ROUTE_PA_HOLD := 5.5
+## N05, the lockdown announcement: once Adam's scene is over and the player has
+## control back, the same Security PA reads this caption with the
+## `pa_remain_calm` clip, once per lockdown (never on Continue: it keys off the
+## live `awakening_done` signal, which a load does not re-emit). It starts
+## PA_CALM_DELAY seconds after control returns (never delaying that hand-back),
+## and the caption stays up PA_CALM_HOLD seconds, or the clip plus
+## PA_VOICE_BEAT when that is longer. It is ticked from `_physics_process`, so
+## it ends with the level and freezes with the pause menu.
+const PA_CALM_LINE := "Attention, staff. For your comfort, all exits are now closed. Please remain calm."
+const PA_CALM_DELAY := 0.8
+const PA_CALM_HOLD := 6.0
+## The beat a PA caption is held past the end of its voice clip.
+const PA_VOICE_BEAT := 0.35
+enum LockdownPa { IDLE, WAIT_CONTROL, DELAY, SPEAKING }
 
 ## Session `checkpoint_id` -> [index into `areas`, marker name under that
 ## area's Markers node]. CP00 is the initial spawn; CP01-CP03 are the
@@ -68,16 +95,31 @@ const PA_BEAT := 3.2
 ## workbench purchase/service checkpoint (its own "Respawn" marker mirrored here
 ## per CONVENTIONS.md IDs "checkpoints `CP00`...`CP05`" / "workbench `L01-UPG01`");
 ## CP05 is the exit wicket's safe landing (M5 wires the actual commit).
+## CP06 (mid-plaza, A04) and CP07 (mid-exit, A06) are the fun pass's extra
+## recovery stations (C41), numbered after the original six.
 const CHECKPOINT_MARKERS := {
 	"CP00": [0, "Spawn_CP00"],
 	"CP01": [1, "Respawn_CP01"],
 	"CP02": [2, "Respawn_CP02"],
+	"CP06": [3, "Respawn_CP06"],
 	"CP03": [3, "Respawn_CP03"],
 	"CP04": [4, "Respawn_CP04"],
 	"UPG01": [4, "Respawn_UPG01"],
+	"CP07": [5, "Respawn_CP07"],
 	"CP05": [5, "Respawn_CP05"],
 }
 
+## N05: which ambience bed plays where the hero is (the decision table).
+const AmbienceMap := preload("res://scripts/audio/ambience_map.gd")
+
+## C53 death beat: a death used to reset the level in the same frame, before the player
+## could see what hit them. Now the killing blow shakes and pauses, Dave stays down for
+## DEATH_HOLD seconds, the screen fades to black over DEATH_FADE, the level is restored
+## behind the black and fades back in. Off in the headless test runner (frame-counted).
+static var death_beat_enabled: bool = true
+const DEATH_HOLD := 0.75
+const DEATH_FADE := 0.3
+const DEATH_FADE_IN := 0.35
 const KILL_PLANE_Y := 2000.0
 const KILL_PLANE_MARGIN := 2000.0
 ## px/s the camera's own top/bottom limits are allowed to move when the
@@ -102,9 +144,23 @@ var _completion_screen: CanvasLayer = null
 ## smoothed _area_for_x tracking so a camera-limit lerp never affects when an
 ## event fires.
 var _telemetry_area: AreaRoot = null
+var _death_fade: ColorRect = null
+var _route_pa_said := {}
+## N05: whether the hero is in the depot's core room (sticky near its edge).
+var _in_core_room: bool = false
+## N05: where the lockdown announcement is (a LockdownPa step) and the seconds
+## left in its current DELAY / SPEAKING step; and whether the wicket's PA line
+## is speaking (so leaving the level mid-line stops the voice).
+var _lockdown_pa: int = LockdownPa.IDLE
+var _lockdown_pa_t: float = 0.0
+var _pa_lethal_active: bool = false
 
 
 func _ready() -> void:
+	if Session:
+		Session.story_state_changed.connect(_on_story_state_changed)
+		Session.run_reset.connect(_on_run_reset_route_pa)
+	BeatHub.get_instance().beat_entered.connect(_on_beat_entered_route_pa)
 	_build_areas()
 
 	hero = load(HERO_SCENE).instantiate()
@@ -118,6 +174,7 @@ func _ready() -> void:
 	hud = load(HUD_SCENE).instantiate()
 	add_child(hud)
 	hud.setup(hero)
+	_update_weapon_tag()
 
 	pause_menu = load(PAUSE_MENU_SCENE).instantiate()
 	add_child(pause_menu)
@@ -148,6 +205,8 @@ func _ready() -> void:
 	_telemetry_area = _area_for_x(hero.global_position.x)
 	if telemetry and _telemetry_area:
 		telemetry.area_enter(_telemetry_area.area_id)
+	update_ambience()
+	update_music()
 
 	# Continue loading a save whose run already reached the wicket (a
 	# completed CP05 snapshot): "never a broken state" — show the real
@@ -166,6 +225,8 @@ func _process(delta: float) -> void:
 	if camera == null or hero == null:
 		return
 	_maybe_report_area_change()
+	update_ambience()
+	update_music()
 	var target_rect := _camera_target_rect_for_area(_area_for_x(hero.global_position.x))
 	var target_top: float = target_rect.position.y
 	var target_bottom: float = target_rect.position.y + target_rect.size.y
@@ -180,8 +241,26 @@ func _process(delta: float) -> void:
 ## cutscene/the completion screen itself, all of which disable
 ## `hero.input_enabled`) — see Session.tick_active_time()'s doc comment.
 func _physics_process(delta: float) -> void:
+	_tick_lockdown_pa(delta)
 	if hero and hero.input_enabled and not level_ended_flag:
 		Session.tick_active_time(delta)
+
+
+func _exit_tree() -> void:
+	if Session and Session.story_state_changed.is_connected(_on_story_state_changed):
+		Session.story_state_changed.disconnect(_on_story_state_changed)
+	if Session and Session.run_reset.is_connected(_on_run_reset_route_pa):
+		Session.run_reset.disconnect(_on_run_reset_route_pa)
+	var hub := BeatHub.get_instance()
+	if hub.beat_entered.is_connected(_on_beat_entered_route_pa):
+		hub.beat_entered.disconnect(_on_beat_entered_route_pa)
+	# Leaving the level mid-announcement (Quit to title) must not leave a PA voice
+	# talking over the title screen.
+	if (_lockdown_pa == LockdownPa.SPEAKING or _pa_lethal_active) and is_instance_valid(Audio):
+		Audio.stop_voice()
+	# the 12 s level-complete sting must not run on into the title screen
+	if is_instance_valid(Audio):
+		Audio.stop_sfx(&"sting_complete")
 
 
 ## Objectives (05-content-and-assets.md): "Reach the server depot." (the
@@ -217,6 +296,67 @@ func _maybe_report_area_change() -> void:
 	_telemetry_area = area
 
 
+## N05 ambience: the bed for where the hero stands now (AmbienceMap's table), with
+## the lockdown read from Session each time so a Continue, a death rollback and a
+## Play again all land on the right bed with no signal of their own. The core room
+## is the depot stretch around the CoreNode (its real position, or the map's
+## fallback); `_in_core_room` keeps its edge from flickering.
+func ambience_bed() -> StringName:
+	if hero == null or areas.is_empty():
+		return AmbienceMap.NONE
+	var area := _area_for_x(hero.global_position.x)
+	var area_id: String = area.area_id if area else ""
+	if area and area_id == AmbienceMap.AREA_DEPOT:
+		var core := area.get_node_or_null("Entities/CoreNode") as Node2D
+		var core_x: float = core.position.x if core else AmbienceMap.CORE_NODE_X
+		_in_core_room = AmbienceMap.in_core_room(
+				hero.global_position.x - area.global_position.x, core_x, _in_core_room)
+	else:
+		_in_core_room = false
+	return AmbienceMap.bed_for(area_id, Session.get_story("awakening_done") == true, _in_core_room)
+
+
+## Asks the Audio autoload for `ambience_bed()`; asking for the bed that already
+## plays does nothing, so this is cheap enough to run every frame.
+func update_ambience() -> void:
+	# A level that Quit to title has just freed can still run one more frame; it must not
+	# put its bed back under the title screen that already silenced it.
+	if is_queued_for_deletion():
+		return
+	Audio.set_ambience(ambience_bed())
+
+
+## N05 music: the track for where the hero stands now (AmbienceMap.music_for()). Like
+## the bed it reads the lockdown from Session each time, so a Continue at any
+## checkpoint, a death rollback and a Play again land on the right track with no
+## signal of their own, and main.gd leaves the level music to this director.
+func music_track() -> StringName:
+	var area: AreaRoot = null
+	if hero != null and not areas.is_empty():
+		area = _area_for_x(hero.global_position.x)
+	return AmbienceMap.music_for(
+			area.area_id if area else "", Session.get_story("awakening_done") == true)
+
+
+## True once the level is over: the wicket is reached, the completion screen is up, or
+## a loaded save was already complete. From then on the completion screen owns the
+## music (it fades the level music out and plays the completion sting), so the
+## per-frame poll below must not start a level track over it.
+func music_held() -> bool:
+	return level_ended_flag or _completion_screen != null or Session.get_story("level_complete") == true
+
+
+## Asks the Audio autoload for `music_track()`; asking for the track that already
+## plays does nothing, so this is cheap enough to run every frame. Does nothing once
+## the level is over (`music_held()`) or the level has been freed (the same
+## last-frame guard as `update_ambience()`: Quit to title has already set the title
+## music, and a poll must not replace it).
+func update_music() -> void:
+	if hero == null or areas.is_empty() or is_queued_for_deletion() or music_held():
+		return
+	Audio.set_music(music_track())
+
+
 # --- area assembly -----------------------------------------------------------
 
 func _build_areas() -> void:
@@ -235,6 +375,23 @@ func _build_areas() -> void:
 	level_width = x
 
 	_connect_exit_wicket()
+	_update_weapon_tag()
+
+
+## The HUD names the held gun's copy (its workshop tag) only when this level has a
+## swap pad to trade it at (Level 1 has none since 2026-10-08).
+func has_swap_pad() -> bool:
+	if _areas_root == null:
+		return false
+	for pad in get_tree().get_nodes_in_group("weapon_pad"):
+		if _areas_root.is_ancestor_of(pad):
+			return true
+	return false
+
+
+func _update_weapon_tag() -> void:
+	if hud:
+		hud.set_weapon_tag_shown(has_swap_pad())
 
 
 ## Free every area and rebuild them fresh so each pickup/enemy/switch/story
@@ -296,8 +453,53 @@ func _on_hero_died() -> void:
 		var area := _area_for_x(hero.global_position.x)
 		telemetry.death(hero.global_position, area.area_id if area else "", "health_zero")
 	hero.input_enabled = false
+	if death_beat_enabled:
+		GameFeel.death(hero)
+		await get_tree().create_timer(DEATH_HOLD, false).timeout
+		await _fade_death(1.0, DEATH_FADE)
+		if not is_inside_tree():
+			return
 	Session.restore_committed()
-	_finish_death_rebuild()
+	await _finish_death_rebuild()
+	if death_beat_enabled and is_inside_tree():
+		_fade_death(0.0, DEATH_FADE_IN)
+
+
+func _on_run_reset_route_pa() -> void:
+	_route_pa_said.clear()
+
+
+func _on_beat_entered_route_pa(beat_id: String, _area_id: String) -> void:
+	if not ROUTE_PA_LINES.has(beat_id) or _route_pa_said.has(beat_id):
+		return
+	if Session and Session.get_story("awakening_done") == true:
+		return
+	var subtitles := get_tree().get_first_node_in_group("subtitle_panel") if is_inside_tree() else null
+	if subtitles == null:
+		return
+	_route_pa_said[beat_id] = true
+	var line: String = ROUTE_PA_LINES[beat_id]
+	subtitles.say(PA_SPEAKER, line)
+	await get_tree().create_timer(ROUTE_PA_HOLD, false).timeout
+	if is_instance_valid(subtitles) and subtitles.current_line() == line:
+		subtitles.clear_line()
+
+
+## The black over the level while a death resets it (made on first use).
+func _fade_death(to_alpha: float, seconds: float) -> void:
+	if _death_fade == null:
+		var layer := CanvasLayer.new()
+		layer.name = "DeathFade"
+		layer.layer = 18
+		add_child(layer)
+		_death_fade = ColorRect.new()
+		_death_fade.color = Color(0.0, 0.0, 0.0, 0.0)
+		_death_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_death_fade.set_anchors_preset(Control.PRESET_FULL_RECT)
+		layer.add_child(_death_fade)
+	var tw := create_tween()
+	tw.tween_property(_death_fade, "color:a", to_alpha, seconds)
+	await tw.finished
 
 
 ## Pause menu's "Restart from checkpoint" (M5 part 2): same rollback +
@@ -414,18 +616,82 @@ func _on_wicket_reached() -> void:
 				Session.chips_found(),
 				Session.has_evidence("EF01"),
 				Session.weapon_stage("W01"))
+	# The wicket's line takes over the PA from any lockdown announcement still
+	# running (its caption and voice are cut; nothing overlaps).
+	_cancel_lockdown_pa()
 	var subtitles := get_tree().get_first_node_in_group("subtitle_panel")
 	if subtitles:
 		subtitles.say(PA_SPEAKER, PA_LINE)
-	get_tree().create_timer(PA_BEAT, false).timeout.connect(_on_pa_line_done)
+	# N05: the line is spoken, and its caption is held past the clip.
+	var pa_hold := PA_BEAT
+	var clip_seconds: float = Audio.play_voice(&"pa_lethal")
+	if clip_seconds > 0.0:
+		_pa_lethal_active = true
+		pa_hold = maxf(PA_BEAT, clip_seconds + PA_VOICE_BEAT)
+	get_tree().create_timer(pa_hold, false).timeout.connect(_on_pa_line_done)
 	level_ended.emit()
 
 
 func _on_pa_line_done() -> void:
+	_pa_lethal_active = false
 	var subtitles := get_tree().get_first_node_in_group("subtitle_panel")
 	if subtitles:
 		subtitles.clear_line()
 	_show_completion_screen()
+
+
+# --- N05: the lockdown announcement ------------------------------------------------
+
+## A live `awakening_done` (SC01 finishing, watched or skipped) arms the
+## announcement. Continue/restore never emit this signal, so a loaded save that
+## is already in lockdown stays silent; a new run's next lockdown arms it again.
+func _on_story_state_changed(flag: String, value: Variant) -> void:
+	if flag == "awakening_done" and value == true and not level_ended_flag:
+		_lockdown_pa = LockdownPa.WAIT_CONTROL
+
+
+## Steps the announcement: wait for the scene to hand control back, then
+## PA_CALM_DELAY, then speak and hold the caption. Never touches the hero's
+## input or the scene, only reads them.
+func _tick_lockdown_pa(delta: float) -> void:
+	match _lockdown_pa:
+		LockdownPa.WAIT_CONTROL:
+			if hero and hero.input_enabled and not Session.cutscene_active:
+				_lockdown_pa = LockdownPa.DELAY
+				_lockdown_pa_t = PA_CALM_DELAY
+		LockdownPa.DELAY:
+			_lockdown_pa_t -= delta
+			if _lockdown_pa_t <= 0.0:
+				_start_lockdown_pa()
+		LockdownPa.SPEAKING:
+			_lockdown_pa_t -= delta
+			if _lockdown_pa_t <= 0.0:
+				_lockdown_pa = LockdownPa.IDLE
+				var subtitles := get_tree().get_first_node_in_group("subtitle_panel")
+				if subtitles:
+					subtitles.clear_line()
+
+
+func _start_lockdown_pa() -> void:
+	_lockdown_pa = LockdownPa.IDLE
+	# No subtitle panel (an isolated test that removed it): nothing to announce.
+	var subtitles := get_tree().get_first_node_in_group("subtitle_panel")
+	if subtitles == null:
+		return
+	subtitles.say(PA_SPEAKER, PA_CALM_LINE)
+	var clip_seconds: float = Audio.play_voice(&"pa_remain_calm")
+	_lockdown_pa_t = PA_CALM_HOLD
+	if clip_seconds > 0.0:
+		_lockdown_pa_t = maxf(PA_CALM_HOLD, clip_seconds + PA_VOICE_BEAT)
+	_lockdown_pa = LockdownPa.SPEAKING
+
+
+## Drops the announcement wherever it is. If it is mid-line, the voice stops too;
+## its caption is left for whoever speaks next to replace.
+func _cancel_lockdown_pa() -> void:
+	if _lockdown_pa == LockdownPa.SPEAKING:
+		Audio.stop_voice()
+	_lockdown_pa = LockdownPa.IDLE
 
 
 func _show_completion_screen() -> void:
@@ -435,6 +701,12 @@ func _show_completion_screen() -> void:
 	add_child(_completion_screen)
 	_completion_screen.play_again_confirmed.connect(_on_play_again_confirmed)
 	_completion_screen.quit_requested.connect(_on_quit_requested)
+	# N05: the level music fades out and the completion sting (a low pulse resolving
+	# into a quiet unresolved chime, flat) takes its place. The poll in update_music()
+	# stays off while the screen is up (music_held()); Play again brings the level
+	# music back, Quit to title the title music.
+	Audio.set_music(&"none")
+	Audio.play_sfx(&"sting_complete")
 
 
 ## "Play again" (03-gameplay-systems.md / M5 "fresh replay clears run
@@ -450,8 +722,11 @@ func _on_play_again_confirmed() -> void:
 	var checkpoint_service := get_node_or_null("/root/CheckpointService")
 	if checkpoint_service:
 		checkpoint_service.clear()
+	Audio.stop_sfx(&"sting_complete")
 	level_ended_flag = false
 	_place_hero_at_checkpoint(String(Session.state.get("checkpoint_id", "CP00")))
+	# The completion screen silenced the music; the new run's opening track fades in now.
+	update_music()
 	await get_tree().physics_frame
 	_rebuild_areas()
 	camera.reset_position()

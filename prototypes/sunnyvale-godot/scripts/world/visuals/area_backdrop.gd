@@ -1,6 +1,6 @@
 extends Node2D
 ## M6 presentation background layer, rebuilt for the revamp (C24) night look
-## (art-design/style-guide.md "Sunnyvale campus at night"; the level brief's
+## (art-design/style-guide.md "Eon City campus at night"; the level brief's
 ## "Background depth: Two layers of glass office wings and sculpted lawns,
 ## distant Arcadia towers with a few lit windows, a looping delivery-drone
 ## silhouette with one blinking light, and the night sky").
@@ -17,16 +17,21 @@ extends Node2D
 ## - SKY: deep navy-to-black night in flat, hard-edged bands (no airbrushed
 ##   gradient), sparse stars, a thin low cloud band and a faint city glow on
 ##   the horizon.
-## - HOMES: Arcadia's campus skyline. Distant glass towers with a few lit
-##   windows, blinking red aviation lights and the odd teal Arcadia arch
-##   emblem; a flickering holographic billboard; a delivery drone; low glass
-##   office pavilions and sculpted hedges; distant path lights; and flat
-##   bands of ground fog in front.
-## - DEPOT: the server depot interior. Rows of dark server racks with
-##   blinking teal and signal-green LEDs, hanging cable bundles, and cool
-##   teal ceiling utility lights (real, smooth PointLight2Ds sitting AT each
-##   fixture with a `height`, lighting the racks, floor and anyone standing
-##   under them, characters through their normal maps; C35).
+## - HOMES: Arcadia's campus skyline. With the painted campus layer (C39):
+##   a row of two-storey glass offices with roof gardens, a delivery drone
+##   and flat bands of ground fog in front. Without it (the procedural
+##   fallback): distant glass towers with a few lit windows, blinking red
+##   aviation lights and the odd teal Arcadia arch emblem; a flickering
+##   holographic billboard; a delivery drone; low glass office pavilions and
+##   sculpted hedges; distant path lights; and the same fog.
+## - DEPOT: the server depot interior. With the painted wall (Sheet 5): the
+##   I-beam ceiling, hanging cables, a row of server racks with teal and green
+##   status lights, three wall monitors and the floor beam, static behind the
+##   play plane. Without it (the procedural fallback): rows of dark server
+##   racks with blinking teal and signal-green LEDs and hanging cable bundles.
+##   Either way, cool teal ceiling utility lights (real, smooth PointLight2Ds
+##   sitting AT each fixture with a `height`, lighting the wall, floor and
+##   anyone standing under them, characters through their normal maps; C35).
 ##
 ## Seamless across areas: SKY and HOMES features are laid out on GLOBAL x
 ## cells (the owning area's world x plus local x), and every layer clips
@@ -83,7 +88,63 @@ const ALARM := Color("#FF3B4E")
 const SIGNAL_GREEN := Color("#4DE38A")
 const PATH_WHITE := Color("#D8E6F0")
 
-# --- SKY -----------------------------------------------------------------------
+# --- SKY: the painted far layer (C39) --------------------------------------------
+## The user's generated pixel-art sky and city skyline, reduced to a true
+## pixel grid by tools/art/import_pixel_layer.py. Drawn with nearest
+## filtering at FAR_ART_PX world px per art pixel, repeating sideways, its
+## base FAR_BASE below the seam floor line (the campus layer covers it).
+## Its own parallax (FAR_DEPTH): the built-in Parallax2D scroll_scale can't
+## be used here (see KNOWN DEVIATION above), so this layer samples the
+## painting by global x minus FAR_DEPTH of the camera's x, which moves it
+## at (1 - FAR_DEPTH) of the camera's speed and lines up exactly at area
+## seams; it steps in whole art pixels so it never shimmers.
+const FAR_TEXTURE := "res://assets/environment/sunnyvale/far.png"
+## 1.5 world px per art pixel: about 5 screen px at 4K (zoom 1.2), fine
+## enough to stay crisp there (3 world px read as a coarse, noisy mosaic).
+const FAR_ART_PX := 1.5
+const FAR_DEPTH := 0.9
+const FAR_BASE := 20.0
+## Dimmed a little so the far city sits behind the play plane.
+const FAR_TINT := Color(0.82, 0.84, 0.9)
+const FAR_LOCKDOWN_TINT := Color(0.85, 0.52, 0.56)
+var _far: Texture2D
+var _far_top: Color
+
+# --- HOMES: the painted campus layer (C39) ---------------------------------------
+## The user's generated campus offices (transparent background), reduced the
+## same way at the same pixel size as the far layer. It replaces the drawn
+## pavilions, hedges, path lights and billboard, stands on the seam floor
+## line and scrolls faster than the far city (CAMPUS_DEPTH), so it reads as
+## nearer.
+const CAMPUS_TEXTURE := "res://assets/environment/sunnyvale/campus.png"
+const CAMPUS_DEPTH := 0.6
+const CAMPUS_BASE := 6.0
+## Dimmed so the lit offices sit behind the play plane and its characters.
+const CAMPUS_TINT := Color(0.6, 0.64, 0.74)
+const CAMPUS_LOCKDOWN_TINT := Color(0.7, 0.42, 0.47)
+var _campus: Texture2D
+
+# --- DEPOT: the painted wall (Sheet 5) -------------------------------------------
+## The user's painted depot wall (opaque): the I-beam ceiling, hanging cables, a
+## row of server racks with status lights, three wall monitors and the floor
+## beam, reduced the same way and drawn at the same FAR_ART_PX as the far and
+## campus layers, so it is 205 art pixels (about 308 world px) tall: its bottom
+## stands on the floor line and its top tucks 8 px behind the ceiling block
+## (CEILING_Y). It replaces the code-drawn back wall, panel seams, racks, cables
+## and floor strip. It is the back wall of the room, so it does not scroll (no
+## parallax, like the racks it replaces); it repeats seamlessly sideways and
+## is sampled by global x so it stays on the shared art-pixel grid. It is drawn
+## by its own child canvas so its crisp nearest filtering never reaches the
+## smooth haze and lights.
+const DEPOT_TEXTURE := "res://assets/environment/sunnyvale/depot.png"
+## The art is already very dark, so these are mild multiplies: a slightly cool
+## one in the calm, a red-leaning one in lockdown (on top of the area's own
+## EnvironmentState `modulate`).
+const DEPOT_TINT := Color(0.94, 1.0, 1.08)
+const DEPOT_LOCKDOWN_TINT := Color(1.0, 0.68, 0.72)
+var _depot_wall: Texture2D
+var _wall: Node2D
+
 const SKY_TOP := -2400.0
 const SKY_BOTTOM := 700.0
 ## Band boundaries relative to `horizon_y`; SKY_BANDS has one more entry
@@ -213,6 +274,26 @@ func _ready() -> void:
 	# as volumetric light on far buildings); the depot's own back wall is
 	# close enough to catch its utility lights.
 	light_mask = 1 if mode == Mode.DEPOT else 0
+	if mode != Mode.DEPOT and ResourceLoader.exists(FAR_TEXTURE):
+		_far = load(FAR_TEXTURE)
+		if mode == Mode.SKY:
+			var img := _far.get_image()
+			_far_top = img.get_pixel(0, 0) if img else Color("#072249")
+	if mode == Mode.HOMES and ResourceLoader.exists(CAMPUS_TEXTURE):
+		_campus = load(CAMPUS_TEXTURE)
+	if mode == Mode.DEPOT and ResourceLoader.exists(DEPOT_TEXTURE):
+		_depot_wall = load(DEPOT_TEXTURE)
+		_wall = Node2D.new()
+		_wall.name = "Wall"
+		_wall.show_behind_parent = true   # under the fill, haze and fixtures drawn here
+		_wall.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		_wall.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
+		_wall.light_mask = light_mask
+		add_child(_wall)  # generated, never saved
+		_wall.draw.connect(_draw_depot_wall)
+	if _scrolling():
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 	match mode:
 		Mode.SKY:
 			_build_sky()
@@ -220,7 +301,7 @@ func _ready() -> void:
 			_build_homes()
 		Mode.DEPOT:
 			_build_depot()
-	if mode != Mode.SKY:
+	if mode != Mode.SKY and not _painted_depot():   # the painted wall has nothing blinking
 		_anim = Node2D.new()
 		_anim.name = "Animated"
 		_anim.light_mask = light_mask
@@ -232,10 +313,18 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_time += delta
+	if _scrolling():
+		if _update_view():
+			queue_redraw()
+			if _anim:
+				_anim.queue_redraw()
+		return
 	if _transition_active():
 		_lockdown_elapsed += delta
 		_apply_depot_lights()
 		queue_redraw()
+		if _wall:
+			_wall.queue_redraw()
 		if not _transition_active():
 			_update_processing()
 	if _anim and _update_view():
@@ -245,7 +334,10 @@ func _process(delta: float) -> void:
 func _draw() -> void:
 	match mode:
 		Mode.SKY:
-			_draw_sky()
+			if _far != null:
+				_draw_far()
+			else:
+				_draw_sky()
 		Mode.HOMES:
 			_draw_homes()
 		Mode.DEPOT:
@@ -273,6 +365,8 @@ func set_lockdown_mode(active: bool, animate: bool = false) -> void:
 	_lockdown_elapsed = 0.0 if (active and animate) else SETTLED
 	_apply_depot_lights()
 	queue_redraw()
+	if _wall:
+		_wall.queue_redraw()
 	if _anim:
 		_anim.queue_redraw()
 	_update_processing()
@@ -287,8 +381,23 @@ func _transition_active() -> bool:
 			and _lockdown_elapsed < float(_fixtures.size()) * BANK_STEP + BANK_DARK
 
 
+## True when the depot draws its painted wall (Sheet 5) instead of the
+## code-drawn back wall, racks, cables and floor strip.
+func _painted_depot() -> bool:
+	return mode == Mode.DEPOT and _depot_wall != null
+
+
+## True when this layer draws a painted strip (C39) with its own parallax,
+## which redraws as the camera moves.
+func _scrolling() -> bool:
+	return (mode == Mode.SKY and _far != null) or (mode == Mode.HOMES and _campus != null)
+
+
 func _update_processing() -> void:
-	var animated := mode != Mode.SKY and not _reduced_motion
+	if _scrolling():
+		set_process(true)
+		return
+	var animated := mode != Mode.SKY and not _painted_depot() and not _reduced_motion
 	set_process(animated or _transition_active())
 
 
@@ -447,6 +556,52 @@ func _draw_sky() -> void:
 		draw_polyline(cl["rim"], rim, 1.5)
 
 
+## The painted far layer over the visible part of this area's span.
+func _draw_far() -> void:
+	_update_view()
+	var x0: float = maxf(0.0, _view_x0)
+	var x1: float = minf(tile_width, _view_x1)
+	if x1 <= x0:
+		return
+	var tint: Color = FAR_LOCKDOWN_TINT if _lockdown else FAR_TINT
+	var top: float = horizon_y + FAR_BASE - float(_far.get_height()) * FAR_ART_PX
+	# Flat sky above the painting, in its own top colour.
+	draw_rect(Rect2(Vector2(x0, horizon_y + SKY_TOP), Vector2(x1 - x0, top - (horizon_y + SKY_TOP) + 1.0)), _far_top * tint)
+	_draw_strip(_far, FAR_DEPTH, horizon_y + FAR_BASE, tint)
+
+
+## Draws a painted strip across the visible part of this layer's span, its
+## base at `base_y`, repeating sideways and sampled by global x minus `depth`
+## of the camera's x (so it moves at 1 - depth of the camera's speed and lines
+## up exactly at area seams). It steps in whole art pixels so it never
+## shimmers.
+func _draw_strip(tex: Texture2D, depth: float, base_y: float, tint: Color) -> void:
+	var x0: float = maxf(0.0, _view_x0)
+	var x1: float = minf(tile_width, _view_x1)
+	if x1 <= x0:
+		return
+	var tex_w: float = float(tex.get_width())
+	var tex_h: float = float(tex.get_height())
+	var h: float = tex_h * FAR_ART_PX
+	# Texel under local x0, stepped to whole art pixels.
+	var cam_x: float = _camera_x()
+	var u: float = floorf((_gx0 + x0 - depth * cam_x) / FAR_ART_PX)
+	var frac: float = (_gx0 + x0 - depth * cam_x) / FAR_ART_PX - u
+	var dx: float = x0 - frac * FAR_ART_PX
+	var span_w: float = x1 - dx
+	draw_texture_rect_region(tex, Rect2(Vector2(dx, base_y - h), Vector2(span_w, h)),
+			Rect2(Vector2(fposmod(u, tex_w), 0.0), Vector2(span_w / FAR_ART_PX, tex_h)), tint)
+
+
+## World x at the centre of what the viewport shows.
+func _camera_x() -> float:
+	var vp := get_viewport()
+	if vp == null:
+		return 0.0
+	var inv := vp.get_canvas_transform().affine_inverse()
+	return (inv * (vp.get_visible_rect().size * 0.5)).x
+
+
 # --- HOMES: the campus skyline --------------------------------------------------
 
 func _build_homes() -> void:
@@ -494,8 +649,29 @@ func _build_homes() -> void:
 			t["emblem"] = true
 			t["emblem_r"] = emblem_r
 		_towers.append(t)
-
+	if _far != null:
+		# The painted far layer (C39) has the skyline and its roof lights.
+		_towers.clear()
+		_aviation.clear()
 	_pavilions.clear()
+	_hedges.clear()
+	_path_lights.clear()
+	_billboards.clear()
+	if _campus == null:
+		_build_campus_shapes()
+	_drone = {}
+	if tile_width >= 900.0:
+		var dk := int(floor(_gx0 / 1000.0))
+		_drone = {
+			"x0": tile_width * 0.12, "x1": tile_width * 0.88,
+			"y": horizon_y - 330.0 - _h(dk, 51) * 120.0,
+			"phase": _h(dk, 52),
+		}
+
+
+## The drawn pavilions, hedges, path lights and billboard: the fallback when
+## the painted campus layer (C39) is missing.
+func _build_campus_shapes() -> void:
 	for k in _cell_range(PAVILION_CELL):
 		if _h(k, 11) > 0.72:
 			continue
@@ -515,7 +691,6 @@ func _build_homes() -> void:
 			i += 1
 		_pavilions.append(p)
 
-	_hedges.clear()
 	for k in _cell_range(HEDGE_CELL):
 		if _h(k, 21) > 0.58:
 			continue
@@ -526,13 +701,11 @@ func _build_homes() -> void:
 			continue
 		_hedges.append({"x": hx, "w": hw, "h": hh, "round": _h(k, 25) < 0.35})
 
-	_path_lights.clear()
 	for k in _cell_range(PATH_LIGHT_CELL):
 		var lx: float = (float(k) + 0.5) * PATH_LIGHT_CELL - _gx0
 		if lx > 6.0 and lx < tile_width - 6.0 and _h(k, 31) < 0.7:
 			_path_lights.append(Vector2(lx, horizon_y - 22.0))
 
-	_billboards.clear()
 	for k in _cell_range(BILLBOARD_CELL):
 		if _h(k, 41) > 0.6:
 			continue
@@ -547,25 +720,20 @@ func _build_homes() -> void:
 			"seed": _h(k, 46),
 		})
 
-	_drone = {}
-	if tile_width >= 900.0:
-		var dk := int(floor(_gx0 / 1000.0))
-		_drone = {
-			"x0": tile_width * 0.12, "x1": tile_width * 0.88,
-			"y": horizon_y - 330.0 - _h(dk, 51) * 120.0,
-			"phase": _h(dk, 52),
-		}
-
 
 func _draw_homes() -> void:
 	var w: float = tile_width
-	_draw_towers()
+	if _far == null:
+		_draw_towers()   # the painted far layer (C39) has the skyline
 	# the far lawn plane under everything that stands on the seam line, then
 	# the same navy-black as the blocks' shadow mass below it (only ever seen
 	# through gaps under the play plane).
 	draw_rect(Rect2(Vector2(0.0, horizon_y - 4.0), Vector2(w, 144.0)), LAWN_FAR)
 	draw_rect(Rect2(Vector2(0.0, horizon_y + 140.0), Vector2(w, 460.0)), UNDERGROUND)
 	draw_line(Vector2(0.0, horizon_y - 4.0), Vector2(w, horizon_y - 4.0), Color(0.2, 0.3, 0.36, 0.35), 1.5)
+	if _campus != null:
+		_update_view()
+		_draw_strip(_campus, CAMPUS_DEPTH, horizon_y + CAMPUS_BASE, CAMPUS_LOCKDOWN_TINT if _lockdown else CAMPUS_TINT)
 	for p in _pavilions:
 		_draw_pavilion(p)
 	for b in _billboards:
@@ -825,6 +993,27 @@ func _in_clear_zone(x0: float, x1: float) -> bool:
 
 func _build_depot() -> void:
 	_racks.clear()
+	_cables.clear()
+	if not _painted_depot():
+		_build_racks_and_cables()   # the painted wall has its own
+	_fixtures.clear()
+	var fx: float = FIXTURE_SPACING * 0.5
+	while fx < tile_width - 60.0:
+		_fixtures.append(fx)
+		fx += FIXTURE_SPACING
+	for l in _fixture_lights:
+		if is_instance_valid(l):
+			l.queue_free()
+	_fixture_lights.clear()
+	var tex := SceneryDraw.smooth_cone_texture()
+	for f in _fixtures:
+		_fixture_lights.append(SceneryDraw.make_light(self, tex, Vector2(float(f), CEILING_Y + 8.0),
+				_fixture_reach(), UTILITY_LIGHT, UTILITY_ENERGY, FIXTURE_LIGHT_HEIGHT))
+	_apply_depot_lights()
+
+
+## The code-drawn fallback's server racks and hanging cables.
+func _build_racks_and_cables() -> void:
 	var x: float = 110.0
 	var i := 0
 	var group_left := 3 + int(_h(0, 23) * 3.0)
@@ -856,7 +1045,6 @@ func _build_depot() -> void:
 			x += 60.0 + _h(i, 22) * 70.0
 			group_left = 3 + int(_h(i, 23) * 3.0)
 
-	_cables.clear()
 	var cx: float = 70.0
 	var ci := 0
 	while cx < tile_width - 80.0:
@@ -868,21 +1056,6 @@ func _build_depot() -> void:
 			_cables.append(_sag_curve(Vector2(cx + 20.0, CEILING_Y + 2.0), Vector2(drop_x, horizon_y - 236.0), 24.0))
 		cx += span * (0.7 + _h(ci, 35) * 0.5)
 		ci += 1
-
-	_fixtures.clear()
-	var fx: float = FIXTURE_SPACING * 0.5
-	while fx < tile_width - 60.0:
-		_fixtures.append(fx)
-		fx += FIXTURE_SPACING
-	for l in _fixture_lights:
-		if is_instance_valid(l):
-			l.queue_free()
-	_fixture_lights.clear()
-	var tex := SceneryDraw.smooth_cone_texture()
-	for f in _fixtures:
-		_fixture_lights.append(SceneryDraw.make_light(self, tex, Vector2(float(f), CEILING_Y + 8.0),
-				_fixture_reach(), UTILITY_LIGHT, UTILITY_ENERGY, FIXTURE_LIGHT_HEIGHT))
-	_apply_depot_lights()
 
 
 ## How far a fixture's smooth light reaches down from the fixture.
@@ -932,24 +1105,31 @@ func _apply_depot_lights() -> void:
 
 func _draw_depot() -> void:
 	var w: float = tile_width
-	# the building above the ceiling, then the depot's back wall.
-	draw_rect(Rect2(Vector2(0.0, horizon_y - 1500.0), Vector2(w, 1500.0 + 60.0)), DEPOT_ABOVE)
+	var painted := _painted_depot()
+	# the building above the ceiling, then the depot's back wall. With the
+	# painted wall (its own child canvas, drawn under this one) the building
+	# stops at the wall's top, which tucks behind the ceiling block.
+	var above_end: float = horizon_y + 60.0
+	if painted:
+		above_end = horizon_y - float(_depot_wall.get_height()) * FAR_ART_PX + 1.0
+	draw_rect(Rect2(Vector2(0.0, horizon_y - 1500.0), Vector2(w, above_end - (horizon_y - 1500.0))), DEPOT_ABOVE)
 	var sy: float = CEILING_Y - 100.0
 	while sy > horizon_y - 1500.0:
 		draw_line(Vector2(0.0, sy), Vector2(w, sy), DEPOT_SEAM, 2.0)
 		sy -= 90.0
-	var wall := Rect2(Vector2(0.0, CEILING_Y - 40.0), Vector2(w, horizon_y + 60.0 - (CEILING_Y - 40.0)))
-	draw_rect(wall, DEPOT_WALL)
-	var px: float = 90.0
-	while px < w:
-		draw_line(Vector2(px, CEILING_Y), Vector2(px, horizon_y), DEPOT_SEAM, 2.0)
-		px += 180.0
-	draw_rect(Rect2(Vector2(0.0, horizon_y - 16.0), Vector2(w, 16.0)), Color("#070B12"))
-	var base: Color = ALARM if _lockdown else TEAL
-	var bx: float = 0.0
-	while bx < w:
-		draw_line(Vector2(bx + 10.0, horizon_y - 8.0), Vector2(minf(bx + 140.0, w), horizon_y - 8.0), Color(base, 0.3), 2.0)
-		bx += 180.0
+	if not painted:
+		var wall := Rect2(Vector2(0.0, CEILING_Y - 40.0), Vector2(w, horizon_y + 60.0 - (CEILING_Y - 40.0)))
+		draw_rect(wall, DEPOT_WALL)
+		var px: float = 90.0
+		while px < w:
+			draw_line(Vector2(px, CEILING_Y), Vector2(px, horizon_y), DEPOT_SEAM, 2.0)
+			px += 180.0
+		draw_rect(Rect2(Vector2(0.0, horizon_y - 16.0), Vector2(w, 16.0)), Color("#070B12"))
+		var base: Color = ALARM if _lockdown else TEAL
+		var bx: float = 0.0
+		while bx < w:
+			draw_line(Vector2(bx + 10.0, horizon_y - 8.0), Vector2(minf(bx + 140.0, w), horizon_y - 8.0), Color(base, 0.3), 2.0)
+			bx += 180.0
 	# A faint haze shaft under each fixture: the same smooth cone as its real
 	# light, so the shaft and the pool it makes match and neither has an edge.
 	var cone := SceneryDraw.smooth_cone_texture()
@@ -986,6 +1166,29 @@ func _draw_depot() -> void:
 		draw_rect(Rect2(Vector2(jx, CEILING_Y - 40.0), Vector2(14.0, horizon_y - CEILING_Y + 40.0)), Color("#0B111B"))
 		draw_line(Vector2(jx + (13.0 if jx == 0.0 else 1.0), CEILING_Y), Vector2(jx + (13.0 if jx == 0.0 else 1.0), horizon_y),
 				Color(0.3, 0.4, 0.52, 0.5), 1.5)
+
+
+## The painted wall across this area's whole span, static, on the shared
+## art-pixel grid (sampled by global x), its bottom on the floor line.
+func _draw_depot_wall() -> void:
+	if _depot_wall == null:
+		return
+	var tex_w: float = float(_depot_wall.get_width())
+	var tex_h: float = float(_depot_wall.get_height())
+	var u0: float = fposmod(_gx0 / FAR_ART_PX, tex_w)
+	_wall.draw_texture_rect_region(_depot_wall,
+			Rect2(Vector2(0.0, horizon_y - tex_h * FAR_ART_PX), Vector2(tile_width, tex_h * FAR_ART_PX)),
+			Rect2(Vector2(u0, 0.0), Vector2(tile_width / FAR_ART_PX, tex_h)),
+			_wall_tint())
+
+
+## The wall's tint: calm and cool, red-leaning in lockdown. A live lockdown
+## fades it in over the banks' stagger, so the wall reddens as the lights do.
+func _wall_tint() -> Color:
+	if not _lockdown:
+		return DEPOT_TINT
+	var total: float = float(_fixtures.size()) * BANK_STEP + BANK_DARK
+	return DEPOT_TINT.lerp(DEPOT_LOCKDOWN_TINT, clampf(_lockdown_elapsed / total, 0.0, 1.0))
 
 
 func _draw_rack(rk: Dictionary) -> void:

@@ -59,7 +59,7 @@ Color values are palette targets for later material work; image generators may a
 - **Attack:** one slow plasma bolt, 0.5 H across at 3.5 H/s, flat at 0.5 H, 2 damage on a direct hit. It bursts on impact in a 1.0 H radius for 0.15 s (1 damage, blocked by walls).
 - **Counter:** jump the bolt and stay clear of the burst, then shoot while the plate is down during the 1.4 s vent. 4 hits.
 
-It stands in a disciplined guard posture, plate up, and moves in slow, measured steps. Motion comes from Mixamo clips converted to the 2D rig, and its death is a ragdoll.
+It stands in a disciplined guard posture, plate up, and moves in slow, measured steps. Its motion is hand-keyed for the side view (C38), and its death is a ragdoll.
 
 ## Openings and limitations
 
@@ -73,7 +73,7 @@ The plate is the guard: raised, it blocks Dave's bolts from the front. During th
 - **Normal maps:** one per part, green = up: matte ceramic with crisp seam grooves, the steel plate core with bevelled edges and a cracked corner, a domed glass emitter panel, ribbed cables.
 - **Sockets:** the gun socket is the palm center of the weapon hand, where the [EG07](../enemy-guns/eg07-plasma-gun.md) palm-emitter overlay sits, with its own muzzle-flash light and the bolt's spawn point. The emitter is grown into the palm, so it never drops. Light sockets along the seams, at the emitter ring and on the mask.
 - **Fluid:** grey-rose lymph: a drip from the hit part under gravity only, wound marks attached to the hit part and a floor pool, separate from the painted art.
-- **Motion and death:** Mixamo clips converted to the 2D rig for the guard steps, the plate lower and the palm raise. Death is a ragdoll: the parts become physics bodies pushed by the killing shot and stay joined at their pivots (no dismemberment, C29), the seams and emitter go dark, and the body settles as a static corpse with a lymph pool.
+- **Motion and death:** hand-keyed on the rig for the side view (C38): the guard steps, the plate lower and the palm raise. Death is a ragdoll: the parts become physics bodies pushed by the killing shot and stay joined at their pivots (no dismemberment, C29), the seams and emitter go dark, and the body settles as a static corpse with a lymph pool.
 
 Plan overlapping drawing layers and visible pivots for the rig. Keep blood, sparks, oil, glows, muzzle flashes, projectiles, attack trails, warning overlays, impacts and environmental props separate from the character. The cutout method is confirmed direction, validated by the approved lit-cutout test (2026-09-30) (C35); frame counts, timing and export remain later production choices.
 

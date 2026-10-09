@@ -70,7 +70,7 @@ After the swing the arm hangs low: the claw and wrist housing sit at half Dave's
 - **Normal maps:** one per part, green = up: raw ceramic with soft casting relief, boxy steel frame edges, joint-housing rims, bolt heads, ribbed hose.
 - **Sockets:** no gun socket. Light sockets at the three joint lamps (small, steady, and the large tell glow). The claw's hit area sits at the palm and fingers. Spark points at the joints; an oil drip point at the elbow.
 - **Fluid:** white sparks and black oil, never blood, plus ceramic chips from the covers.
-- **Motion and death:** hand-keyed on the rigid parts (Mixamo clips are humanoid) *(proposed)*. On death it bursts into debris parts: the arm links, housings, palm and fingers become physics bodies pushed by the killing shot, and the column and base plate stay bolted down as the static wreck with a dark oil stain.
+- **Motion and death:** hand-keyed on the rigid parts, like every enemy (C38). On death it bursts into debris parts: the arm links, housings, palm and fingers become physics bodies pushed by the killing shot, and the column and base plate stay bolted down as the static wreck with a dark oil stain.
 
 Plan overlapping drawing layers and visible pivots for the rig. Keep blood, sparks, oil, glows, muzzle flashes, projectiles, attack trails, warning overlays, impacts and environmental props separate from the character. The cutout method is confirmed direction, validated by the approved lit-cutout test (2026-09-30) (C35); frame counts, timing and export remain later production choices.
 

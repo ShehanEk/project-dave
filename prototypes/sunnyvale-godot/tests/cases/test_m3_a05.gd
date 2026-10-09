@@ -1,7 +1,7 @@
 extends TestCase
 ## M3 L01-A05 Maintenance depot: compact safe interior workshop with the
 ## level's single core_node (L01-SC01, CP04/awakening trigger), the
-## workbench (L01-UPG01) and weapon pad (L01-A05-PAD01) M3 stubs, a
+## workbench (L01-UPG01) M3 stub (the weapon pad L01-A05-PAD01 was removed, C51), a
 ## PracticeTarget for trials, and the emergency_hatch to A06. No enemies, no
 ## chips (per 02-area-blueprints.md). No optional branch — OPT01/OPT02 belong
 ## to L01-A02/A03, not this area.
@@ -68,11 +68,9 @@ func _test_area_population_matches_blueprint() -> void:
 	var entity_ids := area.get_entity_ids()
 	check(entity_ids.has("L01-SC01"), "the core node L01-SC01 is present")
 	check(entity_ids.has("L01-UPG01"), "the workbench L01-UPG01 is present")
-	# WeaponPad is keyed by pad_id, not the shared entity_id export; check the
-	# node directly instead of get_entity_ids().
-	var pad := area.find_child("WeaponPad", true, false)
-	check(pad != null and "pad_id" in pad and pad.pad_id == "L01-A05-PAD01",
-			"the weapon pad L01-A05-PAD01 is present at its own stable spot")
+	# C51 (2026-10-08): the swap pad was taken out of Level 1 (it traded the Scrapjack for an
+	# identical copy); it returns in Level 2 (level-design/swap-pad-for-level-2.md).
+	check(area.find_child("WeaponPad", true, false) == null, "Level 1's depot has no weapon swap pad (C51)")
 
 	# No chip/cache/capsule/evidence ids anywhere (main-route treasure = 0).
 	for id in entity_ids:
@@ -80,14 +78,5 @@ func _test_area_population_matches_blueprint() -> void:
 				"no chip/cache/capsule id leaks into L01-A05 (found %s)" % id)
 
 	check(area.get_beat_ids() == EXPECTED_BEATS, "beat ids match 02-area-blueprints.md exactly (got %s)" % [area.get_beat_ids()])
-
-	# Spatial separation: pad kept >= 3H (288px) from the workbench's and
-	# console's interaction spots, per the area brief.
-	var console := area.find_child("CoreNode", true, false)
-	var workbench := area.find_child("Workbench", true, false)
-	check(absf(pad.position.x - workbench.position.x) >= 288.0,
-			"weapon pad is >=3H from the workbench (dx=%.1f)" % absf(pad.position.x - workbench.position.x))
-	check(absf(pad.position.x - console.position.x) >= 288.0,
-			"weapon pad is >=3H from the console (dx=%.1f)" % absf(pad.position.x - console.position.x))
 
 	area.queue_free()

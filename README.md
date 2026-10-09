@@ -34,7 +34,7 @@ Arcadia Dynamics sells **Adam** to the world as the mind that will "fix the plan
 | Area | Planned content |
 | --- | --- |
 | Level 1 prototype | Godot; rebuilt from the ground up around the new roster (C33, 2026-09-30) |
-| Campaign | 12 levels in 4 acts: Sunnyvale campus, the Rootworks, the Wellness Center, the Garden |
+| Campaign | 12 levels in 4 acts: Eon City campus, the Rootworks, the Wellness Center, the Garden |
 | Detailed level design | 12 standalone briefs with ordered areas and reusable AI prompts |
 | Hero | Dave Harlan, a rogue AI researcher (name confirmed; look and details proposed) |
 | Villains | Adam (the sentient AI), Arcadia Dynamics (the corporation) and its hired contractor Thornwall |
@@ -54,7 +54,7 @@ Arcadia Dynamics sells **Adam** to the world as the mind that will "fix the plan
 
 Each brief describes appearance, palette, proportions, abilities, movement, rig parts, normal maps and sockets, and consistency rules. It includes copy-ready image prompts for a neutral design, a directional sprite study and action studies, all starting from the [style guide's](art-design/style-guide.md) standard dark sci-fi prompt opening. Enemy-gun briefs describe each gun's futuristic look, muzzle-flash light and projectile, and weapon briefs also describe all three cumulative upgrade appearances.
 
-There is no current visual selection: the Clipper's selected design ended when the Clipper was removed (C32). Enemy art is a lit cutout rig (painted parts plus normal maps) with smooth realistic engine lighting, Mixamo motion and ragdoll deaths (C35): confirmed direction, validated by the approved lit-cutout test (2026-09-30), with one lit Night Guard being built to check the look. New concept art for Dave, the enemies, the mini-bosses and the night campus still needs to be generated and chosen.
+There is no current visual selection: the Clipper's selected design ended when the Clipper was removed (C32). Enemy art is a lit cutout rig (painted parts plus normal maps) with smooth realistic engine lighting, hand-keyed motion (C38) and ragdoll deaths (C35): confirmed direction, validated by the approved lit-cutout test (2026-09-30), with one lit Night Guard being built to check the look. New concept art for Dave, the enemies, the mini-bosses and the night campus still needs to be generated and chosen.
 
 ## Files
 

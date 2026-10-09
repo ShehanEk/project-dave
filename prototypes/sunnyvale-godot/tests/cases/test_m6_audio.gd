@@ -34,8 +34,9 @@ extends TestCase
 ##   7. Music is campus on New Game, switches to lockdown the instant
 ##      awakening_done goes live, AND is lockdown immediately on Continue after
 ##      awakening (load_from_snapshot() never re-emits story_state_changed, so
-##      this exercises main.gd's own explicit check, not just the Session
-##      signal listener).
+##      this exercises the level director's own start-up check, not just the
+##      Session signal listener). The title screen plays the title theme (N05;
+##      tests/cases/test_n05_music.gd has the full music table).
 ##   8. Settings' volume sliders still reach the Master/Music/SFX buses that
 ##      Audio's own players are routed through.
 ##
@@ -136,8 +137,15 @@ func _test_cues_exist_and_load() -> void:
 			if stream is AudioStream:
 				loadable += 1
 		check(loadable > 0, "cue resolves to at least one loadable stream: %s" % String(cue))
-		check(Audio.cue_variant_count(cue) == loadable,
-				"Audio director loaded every configured, existing source file for cue: %s" % String(cue))
+		# A cue the ElevenLabs set covers plays those takes (tests/cases/
+		# test_n05_eleven_audio.gd checks them); the legacy files above stay as its
+		# fallback and still have to load.
+		if Audio.cue_source(cue) == &"legacy":
+			check(Audio.cue_variant_count(cue) == loadable,
+					"Audio director loaded every configured, existing source file for cue: %s" % String(cue))
+		else:
+			check(Audio.cue_source(cue) == &"eleven" and Audio.cue_variant_count(cue) > 0,
+					"cue plays its ElevenLabs takes: %s" % String(cue))
 		check(Audio.has_cue(cue), "Audio director registered cue: %s" % String(cue))
 
 	for key in Audio.MUSIC_FILES:
@@ -211,7 +219,9 @@ func _test_called_cues_and_tracks_exist() -> void:
 		check(Audio.has_cue(cue_name), "cue named in %s is registered with Audio: %s" % [cues_seen[cue_name], String(cue_name)])
 	check(tracks_seen.size() >= 2, "setup: the scan found the scripts' set_music() track names (%d)" % tracks_seen.size())
 	for track in tracks_seen:
-		check(track == &"none" or Audio.MUSIC_FILES.has(track),
+		# N05: the ElevenLabs-only tracks (depot, title) are not in MUSIC_FILES, which still
+		# maps just the two synthesized loops; Audio.has_music() covers every loaded track.
+		check(track == &"none" or Audio.MUSIC_FILES.has(track) or Audio.has_music(track),
 				"track named in %s is a music track (or none): %s" % [tracks_seen[track], String(track)])
 
 
@@ -418,7 +428,7 @@ func _test_music_switches_on_new_game_awakening_and_restore() -> void:
 	var main: Node = load("res://scenes/main.tscn").instantiate()
 	add_child(main)
 	await physics_frames(2)
-	check(Audio.current_music() == &"none", "Main boot: showing the title screen silences music")
+	check(Audio.current_music() == &"title", "Main boot: showing the title screen plays the title theme")
 
 	var result: Dictionary = CheckpointService.load_latest()
 	check(result.get("ok", false), "setup: the CP04 save loads back for Continue")
@@ -426,11 +436,11 @@ func _test_music_switches_on_new_game_awakening_and_restore() -> void:
 	await physics_frames(3)
 	check(Audio.current_music() == &"lockdown",
 			"Continue after awakening: music is lockdown immediately " +
-			"(load_from_snapshot() never re-fires story_state_changed — main.gd checks the flag itself)")
+			"(load_from_snapshot() never re-fires story_state_changed — the level director checks the flag itself)")
 
 	main._on_quit_to_title()
 	await physics_frames(2)
-	check(Audio.current_music() == &"none", "Quit to title: music returns to none")
+	check(Audio.current_music() == &"title", "Quit to title: music returns to the title theme")
 
 	main._on_new_game_confirmed()
 	await physics_frames(3)
@@ -438,7 +448,7 @@ func _test_music_switches_on_new_game_awakening_and_restore() -> void:
 
 	main._on_quit_to_title()
 	await physics_frames(2)
-	check(Audio.current_music() == &"none", "Quit to title again: music returns to none")
+	check(Audio.current_music() == &"title", "Quit to title again: music returns to the title theme")
 
 	main.queue_free()
 	await physics_frames(2)

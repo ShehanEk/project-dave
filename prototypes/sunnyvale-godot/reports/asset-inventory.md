@@ -1,4 +1,4 @@
-# M6 asset inventory — Sunnyvale prototype
+# M6 asset inventory — Eon City prototype
 
 Compiled during the M6 integration/verification pass (consolidating the
 parallel audio, characters, environment, and fx/UI presentation passes),
@@ -30,7 +30,7 @@ four ways. File and cue names throughout are the current ones.
   `resident_full_2x.png` into `staffer_full_*.png`, and they were then
   deleted), and in `concept-art/` the Resident sources (`z01-resident/`: the
   selected PNG, its prompt and selection record) and the three daytime
-  Sunnyvale scene keyframes (`l01-sunnyvale/`).
+  Eon City scene keyframes (`l01-sunnyvale/`).
   `tools/derive_character_sprites.py` no longer produced any Resident output;
   it derived only the Clipper's (the tool itself was deleted on 2026-09-30).
 - **New.** A fully procedural **Staffer** (`scripts/actors/visuals/
@@ -267,11 +267,10 @@ column names the script that owns the drawing.
   the Patrol Rover and the Staffer are procedural placeholder rigs (§1) built
   to their written briefs only. They have not been reviewed against a
   selected picture, and final painted art is future work.
-- **Enemy motion is hand-keyed placeholder clips.** Real Mixamo clips are not
-  in the project: the converter (`tools/art/mixamo_to_rig.py`) has been
-  verified only on synthetic Mixamo-named armatures, since no real Mixamo
-  files exist on this machine (the user downloads them with their own Adobe
-  account).
+- **Enemy motion is hand-keyed.** The Night Guard ran on converted Mixamo
+  clips from 2026-09-30 to 2026-10-04; they flattened badly onto the side-on
+  rig, so the user chose all hand-keyed motion (C38) and the clips were
+  deleted. The Staffer's clips are hand-keyed placeholders.
 - **No new concept art for the night campus.** The three daytime scene
   keyframes were deleted (C23), so the night look is built from the level
   brief and style guide alone, and no picture has been selected for it.
@@ -521,16 +520,17 @@ additive `PointLight2D`s with stepped textures (`scenery_draw.gd`).
 
 `particle-pack`, **Transparent** variant, tinted, capped under ~0.5s, halved
 amount/speed under `Settings.reduced_motion`. Status:
-**usable-in-prototype**. Wired at 6 call sites: `scrapjack.gd` (muzzle
-flash), `hero.gd` (landing dust, gated to a real fall/jump), `chip.gd`
+**usable-in-prototype**. Wired at 5 call sites: `hero.gd` (landing dust, gated to a real fall/jump), `chip.gd`
 (pickup sparkle), `chip_cache.gd` (cache-open sparkle), `recovery_station.gd`
 (checkpoint-save sparkle) and `pit_hazard.gd` (pit-fall dust). The seventh,
 the old `staffer.gd`'s defeat puff, went in C33, and the rebuild removed its
-`defeat_puff` kind and `smoke_02.png` with it.
+`defeat_puff` kind and `smoke_02.png` with it, and the C37 shooting pass
+removed the `muzzle_flash` kind and `muzzle_02.png` (the gun draws its own
+ivory flash).
 
 | Pack | Source | CC0 | Files used |
 | --- | --- | --- | --- |
-| Particle Pack | https://kenney.nl/assets/particle-pack | Yes | `muzzle_02` (muzzle flash), `dirt_01` (landing dust), `dirt_03` (pit-fall dust), `star_04` (chip/cache sparkle), `star_05` (checkpoint sparkle) (5) |
+| Particle Pack | https://kenney.nl/assets/particle-pack | Yes | `dirt_01` (landing dust), `dirt_03` (pit-fall dust), `star_04` (chip/cache sparkle), `star_05` (checkpoint sparkle) (4) |
 
 ### 7.6 Machine particles (M7 Kenney part B, 2026-09-27; moved and rewired in C33)
 

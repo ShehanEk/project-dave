@@ -78,7 +78,7 @@ The recharge is the opening: rooted, the rifle lowered, the head bowed. He is fr
 
 **Fluid:** human blood (Blood #B3212F, drying to #8A1A26), drawn by the engine: a spray at the hit point, wound marks attached to the hit part and floor pools. Blood anchors sit on the head (at the jaw), chest, belly, near upper arm and near thigh. No implant sparks.
 
-**Motion and death:** Mixamo clips converted to the rig: a kneeling rifle aim held still, a slow rifle walk for placement and a hit flinch. Hand-key the head tracking and the recharge look-down where no clip fits. Death is a ragdoll pushed by the killing shot, the coat tails flying, and the rifle drops as a prop, never a pickup. The body then stays as a static corpse, restored after a death or Continue.
+**Motion and death:** hand-keyed on the rig for the side view (C38): a kneeling rifle aim held still, a slow rifle walk for placement and a hit flinch, plus the head tracking and the recharge look-down. Death is a ragdoll pushed by the killing shot, the coat tails flying, and the rifle drops as a prop, never a pickup. The body then stays as a static corpse, restored after a death or Continue.
 
 Plan the blood, the tell glows, the muzzle flashes, the implant lights and every other effect as separate layers, never painted into the parts. These are the intended rig components, not a finished rig: the lit Night Guard test settles the tool, the pivots and the clip retargeting.
 
@@ -140,7 +140,7 @@ Using the attached approved Marksman reference, draw one clear full-body 2D anim
 - Split the approved painting into the rig parts above, with hidden overlap under every joint and the far limbs painted complete. Make a matching normal map for every part (green = up, same size and layout) and check the lit result under a moving lamp.
 - Check both facings in the lit test, so the mirrored parts still take light from the lamp's side. The coat sleeve patch and the weapon hand must read correctly flipped.
 - Check the silhouette and the readability at gameplay size in the engine, in grayscale and against near-black backgrounds, next to the other people types: the Rifleman (helmet), the Heavy Gunner (drum) and the Grenadier (hooded mask and bandolier). The Marksman reads by the long coat and the slim visor band. The tell must read by pose and glow with the night overlay on.
-- Convert the Mixamo clips (kneeling aim, slow walk, hit flinch) to the rig and hand-key the tell pose where no clip fits. Check that the visor glints under a moving lamp at gameplay size, and that the coat tails do not hide the knee or the rifle sockets.
+- Hand-key each move (kneeling aim, slow walk, hit flinch) for the side view (C38). Check that the visor glints under a moving lamp at gameplay size, and that the coat tails do not hide the knee or the rifle sockets.
 - Keep blood, tell glows, muzzle flashes, implant lights and effects as separate layers. A concept painting is not a finished rig, atlas or validated animation.
 
 See [shared style guide](../style-guide.md) and [asset index](../README.md).

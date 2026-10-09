@@ -9,11 +9,11 @@ const LEVEL_01 := "res://scenes/levels/level_01.tscn"
 const DEPOT_AREA_INDEX := 4
 const EXIT_AREA_INDEX := 5
 
-## Comfortably longer than CoreNode's own ~19s full watch-through
-## (T_WARNING+T_LOCKED+3 lines+T_CONTAINMENT), so a "normal" run reaches full
-## completion (including hero.input_enabled returning) before this test
-## checks anything.
-const FULL_WATCH_SECONDS := 21.0
+## Comfortably longer than CoreNode's own full watch-through (19.0s authored;
+## up to ~20.4s with the N05 voice clips, which lengthen the 2nd and 3rd lines),
+## so a "normal" run reaches full completion (including hero.input_enabled
+## returning) before this test checks anything.
+const FULL_WATCH_SECONDS := 22.0
 
 
 func run() -> void:
@@ -263,8 +263,14 @@ func _test_t20_completion_totals_and_replay() -> void:
 	# Revamp (C24): the wicket needs the A04 clearance keycard, which a real
 	# run always picks up on the plaza porch (main route).
 	Session.take_keycard("L01-KC01", "L01-KC01-P")
+	# C41: the wicket's override is a 16 s hold-out against the lockdown
+	# staffers; the level ends when it finishes with Dave in the gate. This
+	# test is about the completion flow, so Dave rides the fight out unhurt.
+	level.hero.debug_invulnerable = true
 	level.hero.global_position = wicket.global_position
 	await physics_frames(3)
+	check(not level.level_ended_flag, "the exit wicket holds the level open while its override runs (C41)")
+	await seconds(wicket.override_time + 1.0)
 	check(level.level_ended_flag, "setup: the exit wicket triggers completion")
 	# C28: the Security PA line plays first; the completion screen opens
 	# PA_BEAT later (level_ended_flag and level_ended are set at once).

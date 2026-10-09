@@ -1,4 +1,4 @@
-# Kenney asset credits (Sunnyvale prototype)
+# Kenney asset credits (Eon City prototype)
 
 All assets below are from [Kenney](https://kenney.nl/), licensed **CC0 1.0**
 (public domain — no attribution required, but credited here anyway). Each
@@ -119,6 +119,12 @@ so it's used as-is.
 | Mouse left button | `mouse_left_outline.svg` |
 | Mouse move / aim | `mouse_move.svg` |
 
+**Superseded (2026-10-07):** the game no longer draws these icons. The pixel
+UI pass (Sheets 11 and 12, `scripts/ui/pixel_ui.gd`) replaced them with pixel
+key caps lettered with the current binding and pixel mice;
+`input_icon_map.gd` has no Kenney table any more. The SVGs stay in the
+folder, unused; the notes below describe the earlier wiring.
+
 **Wiring status: done.** `ControlsPanel` (`scripts/ui/controls_panel.gd`)
 renders each binding as a small `TextureRect` icon per key (falling back to
 text for a binding with no icon above) instead of a joined string. The
@@ -181,7 +187,6 @@ by `EnvironmentState`/`AlarmVisuals` per the style guide.
 
 | File | Intended use |
 | --- | --- |
-| `muzzle_02.png` | Pistol muzzle flash |
 | `dirt_01.png` | Hero landing dust puff |
 | `star_04.png` | Gem pickup sparkle |
 | `star_05.png` | Checkpoint-save sparkle (soft glow, distinct from chip's sharp sparkle) |
@@ -190,14 +195,15 @@ by `EnvironmentState`/`AlarmVisuals` per the style guide.
 **Wiring status: done.** `scripts/effects/kenney/kenney_puff.gd` is a single
 reusable one-shot `CPUParticles2D` wrapper (a `kind` -> config table, see its
 own doc comment) that every call site reaches through a plain `preload()` +
-its static `spawn()` function: muzzle flash at `scrapjack.gd`'s muzzle point,
-landing/pit dust at `hero.gd`/`pit_hazard.gd`, chip/cache sparkle at
+its static `spawn()` function: landing/pit dust at `hero.gd`/`pit_hazard.gd`, chip/cache sparkle at
 `chip.gd`/`chip_cache.gd`, and checkpoint sparkle at `recovery_station.gd`. All respect
 `Settings.reduced_motion` (fewer particles, less travel, never fully hidden)
-and are tinted to the Sunnyvale palette per the style guide. The C33 rebuild
+and are tinted to the Eon City palette per the style guide. The C33 rebuild
 removed the `defeat_puff` kind and its `smoke_02.png`: the old Staffer's
 `_defeat()` was its only caller, and people now die into ragdolls and blood
-instead of a smoke puff.
+instead of a smoke puff. The C37 shooting pass removed the `muzzle_flash` kind
+and its `muzzle_02.png`: tinted ivory it read as a white cloud, and the
+Scrapjack's drawn ivory starburst and muzzle light now make the flash.
 
 ### Machine particles (`assets/kenney/particles/machines/`)
 
@@ -213,7 +219,7 @@ stars, drawn by the deleted `clipper_visual.gd`):
 | `whitePuff00_stall_steam.png` (from `smoke-particles/PNG/White puff/whitePuff00.png`) | One-shot smoke puffs (`machine_smoke`): one when the rover's stall starts (`_enter_stall()`) and one at its wreck (`_defeat()`). The Clipper's looping stall steam and its reduced-motion static puff went with `clipper_visual.gd` |
 
 Both wired kinds respect `Settings.reduced_motion` through `kenney_puff.gd`'s
-own handling of one-shot kinds and are tinted to the Sunnyvale palette (warm
+own handling of one-shot kinds and are tinted to the Eon City palette (warm
 white/amber sparks, cream smoke) — see `scripts/effects/kenney/kenney_puff.gd`
 for the exact configs, and `tests/cases/test_kenney_part_b.gd` for the covering
 tests.

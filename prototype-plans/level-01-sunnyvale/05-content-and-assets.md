@@ -4,7 +4,7 @@
 
 ## Existing selected references
 
-Paths below resolve to the approved originals. Keep these originals intact; imported derivatives belong in the Godot project. The revamp deleted the zombie Resident concept art and the three daytime Sunnyvale scenes (C23), and C32 later deleted the Clipper PNG, so no concept PNG remains selected.
+Paths below resolve to the approved originals. Keep these originals intact; imported derivatives belong in the Godot project. The revamp deleted the zombie Resident concept art and the three daytime Eon City scenes (C23), and C32 later deleted the Clipper PNG, so no concept PNG remains selected.
 
 | Subject | Source |
 | --- | --- |
@@ -64,7 +64,7 @@ Short proposed objective sequence:
 1. Reach the server depot.
 2. Plug into Adam's core node.
 3. Escape through the service wicket.
-4. Sunnyvale complete.
+4. Eon City complete.
 
 SC01 text is adapted from the [story scenes](../../design/05-presentation/story-scenes.md) (N01, SC01). A subtitle line reads "UPLINK: copying Adam's hidden logs..." while the copy bar fills; then:
 

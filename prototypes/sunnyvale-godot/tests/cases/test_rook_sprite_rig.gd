@@ -7,10 +7,18 @@ extends TestCase
 ## with each frame's normal map (a frame without one falls back to flat
 ## normals). Presentation only — movement/collision are covered by the M1
 ## tests.
+##
+## Since 2026-10-07 Dave is the pixel-art rig (hero_rig_visual.gd, tested by
+## test_pixel_dave.gd); the Rook frames are its fallback when the rig's art is
+## missing, so every hero here is built with the Visual's `rig_path` pointed
+## at a file that does not exist (NO_RIG), and these checks keep the fallback
+## working. The facing and backpedal rules (hero.gd) are checked here on the
+## Rook frames and on the rig in test_pixel_dave.gd.
 
 const Frames := preload("res://scripts/actors/visuals/rook_frames.gd")
 const LIT_SHADER_PATH := "res://assets/shaders/lit_part.gdshader"
 const NORMAL_DIR := "res://assets/characters/rook/normals/"
+const NO_RIG := "res://assets/characters/lit/dave/__no_rig__.json"
 
 
 func run() -> void:
@@ -39,8 +47,10 @@ func _make_level() -> Hero:
 	floor_block.position = Vector2(-2000, 0)
 	add_child(floor_block)
 	var hero: Hero = load("res://scenes/actors/hero.tscn").instantiate()
+	hero.get_node("Visual").rig_path = NO_RIG     # the Rook-frame fallback
 	hero.position = Vector2(0, -1)
 	add_child(hero)
+	check(hero.visual.rig == null, "the hero is built with the Rook-frame fallback")
 	return hero
 
 
@@ -112,12 +122,15 @@ func _test_smoothing_settings() -> void:
 	var cam: Camera2D = load("res://scenes/actors/game_camera.tscn").instantiate()
 	add_child(cam)
 	check_eq(cam.process_callback, Camera2D.CAMERA2D_PROCESS_PHYSICS, "camera follows on physics ticks")
+	check(is_equal_approx(cam.zoom.x, 1.2), "the camera is zoomed in to 1.2 (playtest 2026-10-04)")
 	cam.queue_free()
 
 
-## Playtest 2026-09-28 ("body facing forward but hand backwards"): the body
-## faces the aim side, so the gun arm always points in front of the body;
-## moving away from the aim backpedals with the run cycle reversed.
+## Playtest 2026-09-30 ("going backward, he should face that way"): running
+## faces the way he runs, and with the aim behind him the gun rests ahead
+## (never backwards across the body, the 2026-09-28 report). Shooting turns
+## him to the aim, so backing off while firing backpedals with the run cycle
+## reversed; he stays turned for a moment after the last shot.
 func _test_faces_aim_and_backpedals() -> void:
 	Session.new_run()
 	var hero := _make_level()
@@ -125,16 +138,27 @@ func _test_faces_aim_and_backpedals() -> void:
 	hero.use_aim_override = true
 	await physics_frames(2)
 	var visual = hero.visual
-	# Aim behind (left) while running right.
+	# Aim behind (left) while running right, not shooting.
 	press(&"move_right")
-	var ok_facing := true
+	var ok_run_facing := true
 	var ok_arm := true
+	for i in 30:
+		hero.aim_override = hero.global_position + Vector2(-300, -60)
+		await physics_frames(1)
+		if hero.facing != 1:
+			ok_run_facing = false
+		if signf(cos(hero.aim_pivot.rotation)) != float(hero.facing):
+			ok_arm = false
+	check(ok_run_facing, "running right with the aim behind him faces the way he runs")
+	# Now shooting while he keeps running right: he turns to the aim and backpedals.
+	press(&"fire")
+	var ok_fire_facing := true
 	var order: Array[int] = []
 	for i in 50:
 		hero.aim_override = hero.global_position + Vector2(-300, -60)
 		await physics_frames(1)
-		if hero.facing != -1:
-			ok_facing = false
+		if i >= 1 and hero.facing != -1:
+			ok_fire_facing = false
 		if signf(cos(hero.aim_pivot.rotation)) != float(hero.facing):
 			ok_arm = false
 		var f := String(visual.current_frame())
@@ -142,8 +166,8 @@ func _test_faces_aim_and_backpedals() -> void:
 			var n := int(f.substr(4))
 			if order.is_empty() or order[-1] != n:
 				order.append(n)
-	release(&"move_right")
-	check(ok_facing, "aiming behind a hero running right turns the body to face the aim")
+	release(&"fire")
+	check(ok_fire_facing, "shooting behind a hero running right turns the body to face the aim")
 	check(ok_arm, "the gun arm always points to the side the body faces")
 	# Backpedalling: consecutive run frames step downward (6 -> 5 -> ...).
 	var down := 0
@@ -155,6 +179,14 @@ func _test_faces_aim_and_backpedals() -> void:
 		elif step == 1:
 			up += 1
 	check(down > up and down >= 3, "backpedalling plays the run frames in reverse (sequence %s)" % str(order))
+	await physics_frames(int(hero.FIRE_FACING_HOLD * 60.0) - 6)
+	check(hero.facing == -1, "he keeps facing the aim just after the last shot")
+	await physics_frames(12)
+	check(hero.facing == 1, "then turns back to the way he runs")
+	release(&"move_right")
+	# Standing still, he faces the aim.
+	await physics_frames(30)
+	check(hero.facing == -1, "standing still, he faces the aim")
 
 
 ## The frame's normal map, or null when that file is not there (yet).
@@ -181,7 +213,7 @@ func _test_lit_with_normal_maps() -> void:
 				"%s uses the lit-part shader" % sprite.name)
 		check_eq(sprite.light_mask, 3, "%s is on light masks 1 | 2 (world lights and the moon rim)" % sprite.name)
 		var ambient: Vector3 = mat.get_shader_parameter("ambient")
-		check(ambient.x > 0.2 and ambient.x < 0.4, "%s has a dim night ambient (about 0.3)" % sprite.name)
+		check(ambient.x > 0.35 and ambient.x < 0.55, "%s has the characters' night ambient (about 0.45)" % sprite.name)
 		check(float(mat.get_shader_parameter("wrap")) > 0.0, "%s wraps its light a little" % sprite.name)
 		check(mat.get_shader_parameter("spec_atlas") != null, "%s always has a spec map (never a bare sampler)" % sprite.name)
 	check(body.material != arm.material, "the body and the arm have their own materials (their own normal maps)")

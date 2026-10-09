@@ -2,11 +2,12 @@ extends TestCase
 ## M7 Kenney UI integration pass — two contracts owned by this workflow slice
 ## (scripts/ui/controls_panel.gd + scenes/ui/controls_panel.tscn, and Main's
 ## own cursor-only addition to scripts/main.gd):
-##   1. ControlsPanel: every documented row shows at least one Kenney
-##      input-prompt icon (assets/kenney/README.md section 2) for its CURRENT
+##   1. ControlsPanel: every documented row shows at least one input-prompt
+##      icon (the pixel key caps and mice since the pixel UI pass, Sheet 12;
+##      Kenney's before) for its CURRENT
 ##      binding, generated from InputMap exactly like the existing binding
-##      text is — and a binding rebound onto a key this project has no icon
-##      file for falls back to text-only for that one row, proving the
+##      text is — and a binding rebound onto a key that has no key cap
+##      falls back to text-only for that one row, proving the
 ##      binding Label (built regardless of icons) is the real accessible
 ##      fallback the task asked for, not a decorative extra.
 ##   2. Main: the OS mouse cursor is the curated crosshair (assets/kenney/
@@ -30,6 +31,7 @@ extends TestCase
 ## needed here.
 
 const CONTROLS_PANEL_SCENE := "res://scenes/ui/controls_panel.tscn"
+const InputIconMapScript := preload("res://scripts/ui/input_icon_map.gd")
 const MAIN_SCENE := "res://scenes/main.tscn"
 
 
@@ -69,7 +71,10 @@ func _test_row_falls_back_to_text_when_no_icon() -> void:
 	var original_events := InputMap.action_get_events(&"interact").duplicate()
 	InputMap.action_erase_events(&"interact")
 	var new_event := InputEventKey.new()
-	new_event.physical_keycode = KEY_Q  # no keyboard_q icon was copied into this project
+	# No key cap for this one: the pixel font cannot letter ";" (a real
+	# layout) and "Semicolon" (headless) is longer than a cap holds. Since the
+	# pixel UI pass, Q has a cap like every other letter.
+	new_event.physical_keycode = KEY_SEMICOLON
 	InputMap.action_add_event(&"interact", new_event)
 	panel.refresh()
 	await physics_frames(1)
@@ -88,7 +93,7 @@ func _test_row_falls_back_to_text_when_no_icon() -> void:
 				"a binding with no matching icon file shows no icon for that row")
 
 	var label: Label = panel.binding_labels.get("interact")
-	check_eq(label.text if label else "", "Q",
+	check_eq(label.text if label else "", InputIconMapScript.key_label(KEY_SEMICOLON),
 			"...but the row's binding TEXT still names the current key, as the accessible fallback")
 
 	# Restore the real project binding so no later test/real player inherits

@@ -1,8 +1,9 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/pause_menu.gd" id="1_pause"]
 [ext_resource type="Theme" path="res://assets/ui/c11_theme.tres" id="2_theme"]
 [ext_resource type="PackedScene" path="res://scenes/ui/controls_panel.tscn" id="3_controls"]
+[ext_resource type="Script" path="res://scripts/ui/pixel_icon.gd" id="4_pixel_icon"]
 
 [node name="PauseMenu" type="CanvasLayer"]
 script = ExtResource("1_pause")
@@ -156,7 +157,15 @@ theme_override_constants/separation = 10
 layout_mode = 2
 theme_override_constants/separation = 12
 
+[node name="Icon" type="Control" parent="Panel/VBox/SettingsView/SubtitlesRow"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("4_pixel_icon")
+piece = "subtitle"
+
 [node name="Label" type="Label" parent="Panel/VBox/SettingsView/SubtitlesRow"]
+custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.847, 0.886, 0.925, 1)
 theme_override_font_sizes/font_size = 20
@@ -170,7 +179,15 @@ button_pressed = true
 layout_mode = 2
 theme_override_constants/separation = 12
 
+[node name="Icon" type="Control" parent="Panel/VBox/SettingsView/TextSizeRow"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("4_pixel_icon")
+piece = ""
+
 [node name="Label" type="Label" parent="Panel/VBox/SettingsView/TextSizeRow"]
+custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.847, 0.886, 0.925, 1)
 theme_override_font_sizes/font_size = 20
@@ -183,7 +200,15 @@ layout_mode = 2
 layout_mode = 2
 theme_override_constants/separation = 12
 
+[node name="Icon" type="Control" parent="Panel/VBox/SettingsView/ReducedMotionRow"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("4_pixel_icon")
+piece = ""
+
 [node name="Label" type="Label" parent="Panel/VBox/SettingsView/ReducedMotionRow"]
+custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.847, 0.886, 0.925, 1)
 theme_override_font_sizes/font_size = 20
@@ -196,7 +221,15 @@ layout_mode = 2
 layout_mode = 2
 theme_override_constants/separation = 12
 
+[node name="Icon" type="Control" parent="Panel/VBox/SettingsView/MasterRow"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("4_pixel_icon")
+piece = "speaker"
+
 [node name="Label" type="Label" parent="Panel/VBox/SettingsView/MasterRow"]
+custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.847, 0.886, 0.925, 1)
 theme_override_font_sizes/font_size = 20
@@ -213,7 +246,15 @@ value = 0.8
 layout_mode = 2
 theme_override_constants/separation = 12
 
+[node name="Icon" type="Control" parent="Panel/VBox/SettingsView/MusicRow"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("4_pixel_icon")
+piece = "speaker"
+
 [node name="Label" type="Label" parent="Panel/VBox/SettingsView/MusicRow"]
+custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.847, 0.886, 0.925, 1)
 theme_override_font_sizes/font_size = 20
@@ -230,7 +271,15 @@ value = 0.8
 layout_mode = 2
 theme_override_constants/separation = 12
 
+[node name="Icon" type="Control" parent="Panel/VBox/SettingsView/SfxRow"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("4_pixel_icon")
+piece = "speaker"
+
 [node name="Label" type="Label" parent="Panel/VBox/SettingsView/SfxRow"]
+custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.847, 0.886, 0.925, 1)
 theme_override_font_sizes/font_size = 20

@@ -1,0 +1,80 @@
+{
+ "_source": {
+  "colors": 48,
+  "key": 14,
+  "pixel_px": 6.6,
+  "sheet": "concept-art/env-sunnyvale/sunnyvale-effects-v1.webp"
+ },
+ "bullet_impact": {
+  "anchor": [
+   9,
+   9
+  ],
+  "anchor_kind": "centre",
+  "frame_size": [
+   18,
+   18
+  ],
+  "frames": 5
+ },
+ "checkpoint_sparkle": {
+  "anchor": [
+   7,
+   9
+  ],
+  "anchor_kind": "centre",
+  "frame_size": [
+   14,
+   19
+  ],
+  "frames": 6
+ },
+ "chip_glint": {
+  "anchor": [
+   6,
+   6
+  ],
+  "anchor_kind": "centre",
+  "frame_size": [
+   13,
+   12
+  ],
+  "frames": 4
+ },
+ "landing_dust": {
+  "anchor": [
+   11,
+   10
+  ],
+  "anchor_kind": "floor",
+  "frame_size": [
+   22,
+   10
+  ],
+  "frames": 5
+ },
+ "machine_break": {
+  "anchor": [
+   12,
+   11
+  ],
+  "anchor_kind": "centre",
+  "frame_size": [
+   24,
+   23
+  ],
+  "frames": 6
+ },
+ "muzzle_flash": {
+  "anchor": [
+   0,
+   6
+  ],
+  "anchor_kind": "left",
+  "frame_size": [
+   15,
+   12
+  ],
+  "frames": 4
+ }
+}

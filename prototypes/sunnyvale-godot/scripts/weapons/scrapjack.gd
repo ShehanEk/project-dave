@@ -31,6 +31,7 @@ var _cooldown: float = 0.0
 var _recoil_timer: float = 0.0
 var _hero: Node = null
 var _quickcycle_spin: float = 0.0
+var _wheel_heat: float = 0.0
 
 const OUTLINE := Color("#332a20")        # warm charcoal (C11 contour)
 const UPPER_FILL := Color("#b96b4c")     # rust-red upper housing
@@ -38,23 +39,65 @@ const LOWER_FILL := Color("#dcceaf")     # aged-cream lower frame
 const STEEL_FILL := Color("#424a4d")     # dark steel (muzzle ring, fasteners)
 const GRIP_FILL := Color("#438f88")      # teal wrap
 const QUICKCYCLE_FILL := Color("#a9714a")  # copper flywheel cover
-const AMBER := Color("#e8b65a")          # amber indicator / muzzle flash
 
-## M6.5 Kenney integration pass (assets/kenney/README.md section 5): a small
-## particle-pack burst that augments (never replaces) the drawn amber flash
-## in `_draw()` below. No class_name on the puff script (see its own doc
-## comment) — reached through this plain preload + its static `spawn()`.
-const KenneyPuff := preload("res://scripts/effects/kenney/kenney_puff.gd")
-
-## C35 lit cutouts: each shot also flashes a short, smooth light at the
-## muzzle (see `_flash_muzzle_light()`), warm ivory like every muzzle flash in
-## the kit, so Dave and anyone near him are lit, through their normal maps,
-## from the muzzle's real position and height.
+## C35 lit cutouts: each shot also flashes a smooth light at the muzzle,
+## warm ivory like every firearm flash, so Dave and anyone near him are lit,
+## through their normal maps, from the muzzle's real position and height.
+## C37: one light, held at the muzzle; each shot flares it and it fades over
+## FLASH_TIME, but while the trigger is held it never drops below
+## HOLD_ENERGY between shots, so rapid fire holds one glow and never strobes.
 const FLASH_COLOR := Color("#FFE4BD")
+## C52: with the Quickcycle fitted a shot flares brighter and cold teal-white, with a bigger drawn
+## flash, and the flywheel spins up and glows teal while firing, so the upgrade shows on screen.
+const QUICK_FLASH_COLOR := Color("#C9FFF4")
+const QUICK_FLASH_BOOST := 1.45
+const QUICK_FLASH_SCALE := 1.3
+const QUICK_WHEEL_GLOW := Color(1.5, 2.3, 2.1)
+const QUICK_WHEEL_SPIN := 26.0
+const QUICK_BATTERY_BOOST := 1.6
 const FLASH_TIME := 0.07
 const FLASH_ENERGY := 2.4
+const HOLD_ENERGY := 0.8
 const FLASH_HEIGHT := 26.0
 const FLASH_RADIUS := 140.0
+## The drawn flash at the muzzle (C37): tracer ivory with a white core.
+const FLASH_IVORY := Color("#F2EBD3")
+const FLASH_CORE := Color("#FFFDF4")
+
+var _muzzle_light: PointLight2D
+var _since_shot: float = 999.0
+
+## How long after a pad swap the new gun's ready click plays, seconds: after
+## the `swap` clunk and the dialog closing, before the player fires again.
+const READY_CLICK_DELAY := 0.25
+
+## The painted gun (C37): the user's generated parts sheet as a lit cutout
+## rig (tools/art/import_parts_sheet.py scrapjack), its origin where Dave's
+## fist holds the grip. Falls back to the drawn placeholder without it.
+const RIG_PATH := "res://assets/characters/lit/scrapjack/rig.json"
+const CutoutRig := preload("res://scripts/actors/lit/cutout_rig.gd")
+## The muzzle flash is the user's pixel-art strip (Sheet 9), played at the
+## muzzle on each shot; the drawn starburst below is the fallback without it.
+const PixelFx := preload("res://scripts/effects/pixel_fx.gd")
+## Where the fist holds the grip, in this node's space. hero.tscn keeps the
+## node at scale 1 since Dave became a pixel rig (2026-10-07), so the gun's art
+## pixels stay 1.5 world px; a scaled node's rig is scaled back to its
+## imported size.
+const GRIP_LOCAL := Vector2(2.0, 3.0)
+## How far the upper housing and the barrel (one sliding block, so no gap
+## opens between them) snap back on a shot, world px. (The pixel-art gun
+## moves in whole art pixels, 1.5 world px, so the slide and the arm's kick
+## step instead of gliding: see _update_rig.)
+const SLIDE_BACK := 1.2
+## The coils glow hot on a shot and cool over COIL_COOL seconds.
+const COIL_HOT := Color("#FF8A3D")
+const COIL_IDLE := 0.12
+const COIL_SHOT := 1.6
+const COIL_COOL := 0.28
+const CHARGE_TEAL := Color("#3FE0D0")
+var rig: Node2D
+var _slide_rest: Dictionary = {}   # joint -> rest position
+var _heat: float = 0.0
 
 
 func _ready() -> void:
@@ -62,8 +105,31 @@ func _ready() -> void:
 		tuning = load("res://data/tuning/w01_scrapjack.tres")
 	if bolt_scene == null:
 		bolt_scene = load("res://scenes/weapons/scrap_bolt.tscn")
+	_build_rig()
 	# Fixed scene shape is Hero > AimPivot > Scrapjack; resolved lazily
 	# (not here) since child _ready() runs before the Hero's own _ready().
+	if held and Session and not Session.weapon_swapped.is_connected(_on_weapon_swapped):
+		Session.weapon_swapped.connect(_on_weapon_swapped)
+
+
+func _exit_tree() -> void:
+	if Session and Session.weapon_swapped.is_connected(_on_weapon_swapped):
+		Session.weapon_swapped.disconnect(_on_weapon_swapped)
+
+
+## Audio only (N05): a pad swap trades the held gun for the one on the pad; the
+## exchange itself is the `swap` cue (Audio plays it on this signal), and a beat
+## later the new gun clicks home, ready to fire. It happens once per swap, never
+## per shot, and nothing here touches cooldown, cadence or input.
+func _on_weapon_swapped(_old_id: String, _new_id: String) -> void:
+	if held and is_inside_tree():
+		get_tree().create_timer(READY_CLICK_DELAY).timeout.connect(_play_ready_click)
+
+
+func _play_ready_click() -> void:
+	var audio := get_node_or_null("/root/Audio")
+	if audio and is_inside_tree():
+		audio.play_sfx(&"ready_click", global_position)
 
 
 func _physics_process(delta: float) -> void:
@@ -72,9 +138,13 @@ func _physics_process(delta: float) -> void:
 		# Visible dial spin (w01-scrapjack-pistol.md "spins faster during
 		# firing"), purely cosmetic: idle tick plus a burst while recoil is
 		# still settling from a shot.
-		var spin_rate: float = 1.4 + (9.0 if _recoil_timer > 0.0 else 0.0)
+		# C52: the wheel winds up on every shot and glows teal while it spins; at the
+		# Quickcycle's rate the trigger held keeps it spun up, and it winds down once idle.
+		_wheel_heat = maxf(0.0, _wheel_heat - delta / (COIL_COOL * 2.0))
+		var spin_rate: float = 1.4 + QUICK_WHEEL_SPIN * _wheel_heat
 		_quickcycle_spin = wrapf(_quickcycle_spin + spin_rate * delta, 0.0, TAU)
 		_quickcycle.rotation = _quickcycle_spin
+		_quickcycle.modulate = Color.WHITE.lerp(QUICK_WHEEL_GLOW, _wheel_heat)
 	# M6 (cosmetic): a resting ground/pad instance (held = false) never reads
 	# input or fires — only the hero's own held instance does. Untouched
 	# below this guard: cadence/cooldown/recoil timing and the fire path.
@@ -85,11 +155,66 @@ func _physics_process(delta: float) -> void:
 		_hero = get_parent().get_parent()  # AimPivot -> Hero
 	_cooldown = maxf(0.0, _cooldown - delta)
 	_recoil_timer = maxf(0.0, _recoil_timer - delta)
+	_since_shot += delta
 
 	var input_ok: bool = _hero == null or _hero.input_enabled
-	if input_ok and Input.is_action_pressed("fire") and _cooldown <= 0.0:
+	var firing: bool = input_ok and Input.is_action_pressed("fire")
+	if firing and _cooldown <= 0.0:
 		_try_fire()
+	_update_muzzle_light(delta, firing)
+	_update_rig(delta)
 	queue_redraw()
+
+
+func _build_rig() -> void:
+	if not ResourceLoader.exists(RIG_PATH):
+		return
+	rig = CutoutRig.new()
+	rig.name = "Rig"
+	rig.rig_path = RIG_PATH
+	add_child(rig)
+	move_child(rig, 0)
+	rig.position = GRIP_LOCAL
+	# Under the arm (hero_visual.gd adds it after this gun), so Dave's fist
+	# wraps the grip; the parts keep their own order inside the rig. Dave's
+	# pixel rig (hero_rig_visual.gd) re-layers it between his upper arm and fist.
+	rig.z_index = -8
+	var s := 1.0 / maxf(absf(scale.x), 0.001)
+	rig.scale = Vector2(s, s)
+	for j in ["upper", "barrel"]:
+		if rig.joints.has(j):
+			_slide_rest[j] = rig.joints[j].position
+	# The muzzle marker follows the painted barrel's muzzle.
+	var sock: Dictionary = rig.sockets.get("muzzle", {})
+	if not sock.is_empty() and rig.joints.has(sock["joint"]):
+		var j: Node2D = rig.joints[sock["joint"]]
+		_muzzle.position = rig.position + (j.position + sock["pos"]) * s
+	_update_rig(0.0)
+
+
+## Recoil, the slide and the glows on the painted gun.
+func _update_rig(delta: float) -> void:
+	if rig == null:
+		return
+	_heat = maxf(0.0, _heat - delta / COIL_COOL)
+	var settings := get_node_or_null("/root/Settings")
+	var motion_scale: float = 0.5 if (settings and settings.get_reduced_motion()) else 1.0
+	var k: float = 0.0
+	if held and tuning and tuning.recoil_recovery_time > 0.0:
+		k = _recoil_timer / tuning.recoil_recovery_time
+	var push: float = tuning.recoil_distance * motion_scale * k if tuning else 0.0
+	var slide: float = SLIDE_BACK * k
+	if rig.pixel_art:
+		# A pixel-art gun recoils in whole art pixels (the node is scaled, the rig scaled back).
+		push = snappedf(push, rig.pixel_world / maxf(absf(scale.x), 0.001))
+		slide = snappedf(slide, rig.pixel_world)
+	rig.position = GRIP_LOCAL + Vector2(-push, 0.0)
+	for j in _slide_rest:
+		rig.joints[j].position = _slide_rest[j] + Vector2(-slide, 0.0)
+	rig.set_emissive("barrel", COIL_HOT, COIL_IDLE + COIL_SHOT * _heat * _heat)
+	# The charge light dips at a shot, then recovers.
+	var battery: float = (1.3 - 0.7 * _heat) * (QUICK_BATTERY_BOOST if _current_stage() >= 1 else 1.0)
+	rig.set_emissive("battery", CHARGE_TEAL, battery)
 
 
 func _current_stage() -> int:
@@ -117,13 +242,17 @@ func _try_fire() -> void:
 	if audio:
 		audio.play_sfx(&"pistol_fire_quick" if _current_stage() >= 1 else &"pistol_fire",
 				_muzzle.global_position)
-	KenneyPuff.spawn(&"muzzle_flash", _muzzle.global_position, _spawn_container())
-	_flash_muzzle_light(_muzzle.global_position)
+	_flash_muzzle_light()
 
 	var pivot: Node2D = get_parent()
 	var shoulder: Vector2 = pivot.global_position
 	var muzzle_pos: Vector2 = _muzzle.global_position
 	var forward: Vector2 = pivot.global_transform.x.normalized()
+	# C50: the arm and gun turn in 22.5-degree steps, but the shot goes exactly where the
+	# player points (the hero's shot_direction()), at most half a step off the barrel.
+	var hero := pivot.get_parent()
+	if hero and hero.has_method("shot_direction"):
+		forward = hero.shot_direction()
 
 	# Muzzle clamp: never spawn a bolt behind/inside world collision, and
 	# never skip past an enemy HitZone that already lies between the
@@ -148,8 +277,12 @@ func _try_fire() -> void:
 			if resolved_hit and collider.bleeds:
 				# Same rule as ScrapBolt: the target shows its own blood and
 				# plays its own hit sound, so no spark here.
+				GameFeel.hit_pause()
 				return
+		if resolved_hit:
+			GameFeel.hit_pause()
 		var spark := ImpactSpark.new()
+		spark.dir = forward
 		spark.color = ScrapBolt.HIT_COLOR if resolved_hit else ScrapBolt.BLOCK_COLOR
 		spark.shape = ImpactSpark.Shape.HIT if resolved_hit else ImpactSpark.Shape.BLOCKED
 		spark.global_position = block.position
@@ -163,6 +296,12 @@ func _try_fire() -> void:
 	bolt.setup(muzzle_pos, forward, tuning)
 
 	_recoil_timer = tuning.recoil_recovery_time
+	_heat = 1.0
+	_wheel_heat = 1.0
+	# Local to the muzzle, so the flash turns and flips with the aim. A bigger one with the Quickcycle.
+	PixelFx.spawn("muzzle_flash", Vector2.ZERO, _muzzle,
+			{"local": true, "scale_mul": QUICK_FLASH_SCALE if _current_stage() >= 1 else 1.0})
+	GameFeel.shot(self, forward)
 	fired.emit()
 
 
@@ -191,6 +330,17 @@ func _draw() -> void:
 	# never sweeps back far enough from AimPivot (hero.tscn, well below the
 	# head) to cross the head circle (R1-01: was clipping across the face at
 	# up-angled and even neutral aim).
+	if rig == null:
+		_draw_placeholder(o)
+
+	if held and _recoil_timer > 0.0 and tuning and tuning.recoil_recovery_time > 0.0 \
+			and not PixelFx.has_fx("muzzle_flash"):
+		_draw_flash(o, motion_scale)
+	_draw_tag(o)
+
+
+## The drawn gun, kept for when the painted rig is missing.
+func _draw_placeholder(o: Vector2) -> void:
 	var housing := Rect2(o + Vector2(-5, -8), Vector2(26, 16))
 	draw_rect(Rect2(o + Vector2(-5, 0), Vector2(26, 8)), LOWER_FILL)    # lower cream frame
 	draw_rect(Rect2(o + Vector2(-5, -8), Vector2(26, 8)), UPPER_FILL)   # upper rust-red housing
@@ -204,10 +354,22 @@ func _draw() -> void:
 	draw_rect(Rect2(o + Vector2(-8, -9), Vector2(5, 6)), OUTLINE, false, 1.5)
 	draw_circle(o + Vector2(22, 0), 5.5, OUTLINE, false, 2.0)
 
-	if held and _recoil_timer > 0.0 and tuning and tuning.recoil_recovery_time > 0.0:
-		var flash_k: float = _recoil_timer / tuning.recoil_recovery_time
-		draw_circle(o + Vector2(28, 0), (2.5 + 2.5 * flash_k) * motion_scale, AMBER)  # small muzzle flash
 
+## The muzzle flash (C37): an ivory starburst with a white core just past
+## the muzzle, longest along the shot, shrinking as the recoil settles.
+func _draw_flash(o: Vector2, motion_scale: float) -> void:
+	var flash_k: float = _recoil_timer / tuning.recoil_recovery_time
+	var f := (0.6 + 0.6 * flash_k) * motion_scale
+	var c := o + _muzzle.position + Vector2(6, 0)
+	var star := PackedVector2Array([
+		c + Vector2(12, 0) * f, c + Vector2(3, 2.5) * f, c + Vector2(4, 6) * f, c + Vector2(-1, 3) * f,
+		c + Vector2(-2, 0) * f, c + Vector2(-1, -3) * f, c + Vector2(4, -6) * f, c + Vector2(3, -2.5) * f,
+	])
+	draw_colored_polygon(star, Color(FLASH_IVORY, 0.9))
+	draw_circle(c + Vector2(1.5, 0) * f, 2.6 * f, FLASH_CORE)
+
+
+func _draw_tag(o: Vector2) -> void:
 	# AD-07 fix: this used to draw unconditionally, which put the tag on the
 	# hero's chest in every gameplay frame (held is true for the one instance
 	# actually mounted on the hero) — it duplicated the HUD's own weapon tag
@@ -239,22 +401,34 @@ func get_muzzle_global_position() -> Vector2:
 	return _muzzle.global_position
 
 
-## A brief smooth point light at the muzzle. It lives under the same
-## container as the bolts and sparks (not under this weapon), so it outlives a
-## freed gun and is freed with the scene; it fades over FLASH_TIME and frees
-## itself. It never moves, so it is drawn uninterpolated. Halved under
-## reduced motion, like the drawn flash.
-func _flash_muzzle_light(at: Vector2) -> void:
+## The muzzle light: one smooth point light on the muzzle, made on the first
+## shot. A shot flares it (halved under reduced motion); it fades over
+## FLASH_TIME, holding HOLD_ENERGY between shots while the trigger is held.
+func _flash_muzzle_light() -> void:
 	var settings := get_node_or_null("/root/Settings")
 	var k: float = 0.5 if (settings and settings.get_reduced_motion()) else 1.0
-	var light := SceneryDraw.make_light(_spawn_container(), SceneryDraw.smooth_disc_texture(),
-			Vector2.ZERO, FLASH_RADIUS, FLASH_COLOR, FLASH_ENERGY * k, FLASH_HEIGHT)
-	light.name = "MuzzleFlashLight"
-	light.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
-	light.global_position = at
-	var tween := light.create_tween()
-	tween.tween_property(light, "energy", 0.0, FLASH_TIME)
-	tween.tween_callback(light.queue_free)
+	if _muzzle_light == null:
+		_muzzle_light = SceneryDraw.make_light(_muzzle, SceneryDraw.smooth_disc_texture(),
+				Vector2.ZERO, FLASH_RADIUS, FLASH_COLOR, 0.0, FLASH_HEIGHT)
+		_muzzle_light.name = "MuzzleFlashLight"
+	var quick: bool = _current_stage() >= 1
+	_muzzle_light.color = QUICK_FLASH_COLOR if quick else FLASH_COLOR
+	_muzzle_light.energy = FLASH_ENERGY * k * (QUICK_FLASH_BOOST if quick else 1.0)
+	_muzzle_light.visible = true
+	_since_shot = 0.0
+
+
+func _update_muzzle_light(delta: float, firing: bool) -> void:
+	if _muzzle_light == null:
+		return
+	var settings := get_node_or_null("/root/Settings")
+	var k: float = 0.5 if (settings and settings.get_reduced_motion()) else 1.0
+	# Held while the trigger is down and the next shot is due.
+	var hold: bool = firing and _since_shot <= tuning.interval_for_stage(_current_stage()) + 0.05
+	var floor_e: float = HOLD_ENERGY * k if hold else 0.0
+	var e := move_toward(_muzzle_light.energy, floor_e, FLASH_ENERGY * k / FLASH_TIME * delta)
+	_muzzle_light.energy = maxf(e, floor_e)
+	_muzzle_light.visible = _muzzle_light.energy > 0.001
 
 
 ## Parent for spawned bolts/sparks (ENG-05): the current scene when one is

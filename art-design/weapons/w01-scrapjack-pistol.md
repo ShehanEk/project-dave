@@ -7,6 +7,12 @@
 **First appearance:** Level 1\
 **Design status:** Confirmed 2D rendering style (C11) and dark sci-fi mood (C15); C35 amends the rendering to flat paint lit in the engine (confirmed direction, validated by the approved lit-cutout test (2026-09-30)). The palette tokens (P21) and this asset's appearance and lore details are proposed. Dimensions are provisional art proportions, not engine specifications.
 
+## Visual reference status
+
+**Look chosen (2026-10-04):** [w01-scrapjack-look-v1.webp](../../concept-art/w01-scrapjack/w01-scrapjack-look-v1.webp), a lit concept with the C37 look. It is a look reference, not the source painting: the parts are painted flat from it with prompt 4 below, and the engine adds the light. It places two things differently from this brief, and the parts sheet follows the concept: the scrap feed window sits in the rust-red upper housing, and the battery cell is slung under the copper barrel ahead of the guard, piped to the coils. **Parts sheet in the game (2026-10-04):** [w01-scrapjack-parts-v1.webp](../../concept-art/w01-scrapjack/w01-scrapjack-parts-v1.webp), imported with `tools/art/import_parts_sheet.py scrapjack` as a lit rig of four parts (frame, upper housing, barrel, battery cell), about 26 px from grip to muzzle. Dave's fist wraps the grip; on each shot the upper housing and the barrel snap back together, the copper coils flash hot and cool, and the teal charge light dips and recovers.
+
+**Pixel parts sheet in the game (2026-10-07):** [w01-scrapjack-parts-pixel-v1.webp](../../concept-art/w01-scrapjack/w01-scrapjack-parts-pixel-v1.webp), the same four parts redrawn as pixel art in the pixel style block of the [play-plane brief](../environment/sunnyvale-play-plane.md) (Characters), imported with `import_parts_sheet.py scrapjack` (`build_prop_pixel`; the smooth sheet stays as `scrapjack_smooth`) as a `pixel_art` rig: 24 art pixels (36 world px) from the back of the grip to the muzzle, 5 generated pixels to one art pixel of 1.5 world px, the copper #D9884A coils and the teal #3FE0D0 charge light exact (the glow masks). The generator drew it about five times finer than the prompt's 26 pixels, so the importer could not keep the smooth gun's 26 world px without losing the teal light and a coil; it is 38% longer (muzzle 30 world px from the grip, was 22). The sheet's frame has no upper, barrel or battery, as asked; the barrel tucks under the housing and the battery hangs under both, as in the look.
+
 ## Identity and role
 
 Dave's dependable precision sidearm: a homemade coil pistol built from lab scrap after the lockout, visually personal and improvised rather than issued by Arcadia. Hand-wound copper coils, a taped grip and a salvaged Arcadia battery cell with a teal charge light make up its look, and it fires compacted scrap bolts. It is the weapon Dave starts with, for reliable, accurate shooting while running and jumping.
@@ -65,7 +71,16 @@ Anatomical left and right refer to the subject's own sides, not the viewer's. Do
 
 Main hand around the slanted grip; index finger clears the guard. Show a simple separate hand silhouette only on the handling sheet. No hands on the clean sprite reference.
 
-A squat faceted scrap bolt with a hot white core and a short copper-orange trail, kept clearly different from red tell effects and amber warning lights. Standard bolt stays small; Power Shot is a thicker brighter version with a brief ring at release.
+A compacted scrap slug fired as a kinetic round (C37): a short tracer-ivory streak (#F2EBD3) with a dark outline and a faint fading trail, never amber, gold or green, so it stays clearly different from red and amber tells and from blue-white energy shots. Standard slug stays small; Power Shot is a thicker, brighter version with a brief ring at release.
+
+## Shooting effects (C37)
+
+*Chosen by the user (2026-10-04).* All effects are separate from the gun's parts and drawn by the engine.
+
+- **Muzzle:** each shot flashes a short ivory flash at the muzzle with a brief ivory light (C35: firearm flashes are ivory; rapid fire holds one glow and never strobes). The copper coil bands glow hot for a beat and fade, and the teal charge light dips slightly, then recovers. A thin wisp of smoke lingers after a burst.
+- **Shot:** the ivory tracer slug above, with a small travelling light so it lights the scenery it passes.
+- **Hits:** armor, machines and walls throw white sparks and a few dark scrap chips; flesh shows the target's own blood (no spark). A blocked hit on armor reads as a glancing spark and a dull clank, never as a wound.
+- **Feel (punchy but clean):** a crisp arm recoil and the top block snapping back; a small camera kick per shot; a brief hit-pause (about 30 ms) and the enemy's hit flash on a hit; a stronger shake and burst on a kill. Reduced Motion halves the camera kick and shake and drops the hit-pause.
 
 ## Single-weapon gameplay rule
 
@@ -102,6 +117,17 @@ Base is stage 0. Stage 1 adds upgrade 1; stage 2 retains upgrade 1 and adds upgr
 **Visible change:** A rounded capacitor can sits on the top rear rail, behind the sight, with a small teal window that brightens toward white as the shot charges. Two thick insulated strips run into the housing, and a small square microchip module with thin gold contact edges is seated in the can's base plate. Charging opens one top vent; earlier upgrades remain visible.
 
 **Attachment location:** Top rear rail, clear of the gripping hand and sight.
+
+## Look prompt — lit concept (C37)
+
+A look test, not the source painting: lit concept art of the gun alone, so it shows how the Scrapjack should feel in the game. Approve one, then paint the parts flat from it with prompt 4.
+
+```text
+Original 2D concept art for DEAD EDEN, a mature dark sci-fi side-view platformer shooter. Look: light cyberpunk at night. Deep navy-black darks lit by practical lamps; strong, saturated colors against the dark; high contrast, never washed out, never pastel. Clean painted shapes with crisp near-black outlines, smooth realistic lighting with soft glows around light sources and a faint cool moonlight rim. Not photorealistic, not anime, not pixel art. No text, logos, watermark or UI.
+
+Subject: the Scrapjack, a homemade coil pistol a rogue AI researcher built from lab scrap, alone, in strict side view, muzzle pointing right, large and centered. About 0.38 m long and 0.24 m tall: a compact, chunky L silhouette. A rust-red upper housing (#B5533A) bolted to a mismatched pale lab-casing grey lower frame (#C4CAD0) with three large fastener heads and one broad top service seam; a recessed side feed window showing dark compacted scrap; a short, oversized round muzzle housing wrapped in two broad hand-wound copper coil bands (#D9884A) glowing faintly hot orange at their edges, ending in a plain dark steel muzzle ring (#56626C); a salvaged gunmetal battery cell (#59636D) held by a scrap strap in a recess on the frame ahead of the guard, with one small round teal charge light (#3FE0D0) and a blank scratched serial patch; a backward-slanted grip wrapped in charcoal cloth tape (#2B3138) with frayed pale edges; a rounded trigger guard; a small improvised sight on top. Wear at the grip, the muzzle rim and the housing corners. It looks personal and improvised, not factory-made.
+Setting: resting on a dark lab bench at night, lit from above-left by a cold white desk lamp (#D8E6F0) with a soft pool of light, the teal charge light and the warm coils the only other glows. No hand, no bullets, no muzzle flash, no text or logos.
+```
 
 ## Image prompt 1 — neutral design
 
@@ -163,6 +189,32 @@ Original 2D game art for DEAD EDEN, a mature dark sci-fi side-view shooter: real
 
 Create stage 3 of the approved DEAD EDEN Scrapjack Pistol weapon, using the attached approved base and previous stage as references. Keep the original silhouette, core body, grips, materials, and part orientation. Base identity: A compact, chunky L silhouette with a square scrap-feed housing, a short oversized round muzzle, and a backward-slanted taped grip. A small improvised sight sits high enough to read but does not dominate the outline. The copper coil bands and the battery cell sit inside this outline and do not change it. A rust-red upper housing is bolted to a mismatched pale lower frame cut from a lab equipment case. Use three large visible fastener heads on the left side, one broad top service seam, and a recessed side feed window containing abstract compacted scrap. Two broad hand-wound copper coil bands, drawn as bold curved stripes rather than realistic wire, wrap the short round muzzle housing, which ends in a plain steel muzzle ring around a thick dark inner ring, not realistic internal rifling. A salvaged battery cell, drawn as a chunky rounded rectangle held by a scrap strap, sits flush in a recess on the left flank of the lower frame ahead of the guard, with one round teal charge light and a blank scratched serial patch. The grip is wrapped in overlapping strips of dark cloth tape with frayed pale edges. A rounded guard leaves generous hand clearance. Show all cumulative attachments through this stage: 1. Quickcycle: A compact copper flywheel cover attaches flush to the anatomical left side of the rear housing, below the service seam. Its visible dial spins faster during firing; it does not add another barrel. A small square microchip module with thin gold contact edges is seated in a slot on the cover's rim. Mount: Left rear housing circular socket. 2. Punch-Through: A short dark sleeve with two broad forward ribs fits around the existing muzzle. It extends the nose only slightly and leaves the coil bands visible behind it. A small square microchip module with thin gold contact edges is seated in a slot on the sleeve's left flank. The Quickcycle cover remains fitted. Mount: Existing muzzle outer ring. 3. Power Shot: A rounded capacitor can sits on the top rear rail, behind the sight, with a small teal window that brightens toward white as the shot charges. Two thick insulated strips run into the housing, and a small square microchip module with thin gold contact edges is seated in the can's base plate. Charging opens one top vent; earlier upgrades remain visible. Mount: Top rear rail, clear of the gripping hand and sight. Do not include any later-stage attachment. Preserve rules: One muzzle, one grip, no stock or scope. Keep the taped grip, rust-red upper housing, pale lower frame, copper coil bands and single teal-lit battery cell in every stage. Fictional prop design only, with no fabrication cross-sections, no logos and no legible text. Use a clean 2D side drawing on a flat mid-grey (#808080) background, evenly lit with no baked shadows, with the same pose, canvas scale, line weight and palette as the base reference. No hands, firing effects, scenery, labels, text, logos, or exploded internals. Make upgrade additions readable, attached, and clear of hand contacts and moving parts.
 ```
+## Image prompt 4 — rig parts sheet
+
+Attach the approved look reference. This turns the lit concept into the flat source painting, already split into the gun's parts. Save it as a PNG for import: the coil bands get their own part so the engine can make them glow at each shot, and the teal charge light becomes a steady glow.
+
+```text
+Using the attached approved Scrapjack concept as the exact design reference, paint a 2D cutout-rig parts sheet of the same pistol for a side-view game. Same gun, same shapes, same proportions and same details (the rust-red upper housing with its fastener heads, scrap feed window and small sight, the pale grey lower frame with its trigger guard, the taped slanted grip, the copper coil barrel with its steel bands and muzzle ring, the battery cell under the barrel with its strap, teal light, blank serial patch and two small pipes up to the coils): not a redesign. Keep the rust and wear as flat painted marks. The reference is lit at night; this sheet is not. Convert it to flat, evenly lit base colors and remove the lamp light, reflections and shadows.
+
+Style: flat base colors, evenly lit. No shadows, no highlights, no rim light, no gradients, no glow. Paint the copper coils as flat copper with no hot glow, and the charge light as a flat teal disc.
+
+Color: keep every color at its exact hex value at full strength. Do not lighten, fade, desaturate or grey out the image. The grip tape is near-black, the steel bands and muzzle ring are mid-dark steel, the housing is a strong rust red, and the lower frame is the lightest large area.
+
+Outlines: crisp near-black (#0B0D10), about 4-6 px on the outer contour and 2 px inside.
+
+Background: transparent. If transparency is not possible, a flat solid mid-grey (#808080) with no texture, noise or vignette.
+
+Layout: a landscape canvas. Draw each part below as a separate, complete piece, as seen in the side view with the muzzle pointing right, all at the same scale (the assembled pistol would be about 900 px long). Leave at least 60 px of empty space between parts; no part may touch or overlap another. No labels, text, numbers, grid lines, frames or drop shadows.
+
+Parts, exactly these, once each:
+1. Frame: the pale grey lower frame with the taped slanted grip and the trigger guard (trigger inside), with no upper housing, no barrel and no battery cell attached. Paint it complete where the other parts will cover it.
+2. Upper housing: the rust-red top block with its fastener heads, the scrap feed window full of dark scrap, and the small sight, alone; its bottom edge extends a little so it overlaps the frame.
+3. Barrel: the round barrel with its two copper coil sections between steel bands and the steel muzzle ring at its right end; its left end extends a little so it tucks under the upper housing.
+4. Battery cell: the gunmetal cell in its scrap strap, with the flat teal charge light, the blank serial patch and the two short pipes that run up to the barrel.
+
+Palette: rust red #B5533A; lab-casing grey #C4CAD0; dark steel #56626C; copper #D9884A; tape charcoal #2B3138 with frayed edges #8B96A0; battery gunmetal #59636D; teal charge light #3FE0D0. No text or logos, no hand, no bullets, no muzzle flash.
+```
+
 ## Before sprite production
 
 - Use the approved neutral image, or approve one for this unpictured asset, before producing animation poses.

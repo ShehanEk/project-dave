@@ -28,7 +28,7 @@ For system-design work, read the [AI entry guide](../AI_START_HERE.md) and the r
 
 | Level | Brief | Setting | New weapon | New enemy types | Mini-boss | Draft duration |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | [Welcome to Sunnyvale](l01-welcome-to-sunnyvale.md) | Arcadia's campus at night | Scrapjack Pistol (carried at entry) | Night Guard, Patrol Rover, Staffer (at the alarm exit) | — | 10–14 minutes |
+| 1 | [Welcome to Eon City](l01-welcome-to-sunnyvale.md) | Arcadia's campus at night | Scrapjack Pistol (carried at entry) | Night Guard, Patrol Rover, Staffer (at the alarm exit) | — | 10–14 minutes |
 | 2 | [Curfew](l02-curfew.md) | Campus hedge maze and gardens | Boom Broom | Sidearm Guard, Security Drone, Hound | — | 12–16 minutes |
 | 3 | [Parade of Progress](l03-parade-of-progress.md) | Product showcase hall | — | Riot Officer, Rifleman | The Peacekeeper | 14–18 minutes including mini-boss |
 | 4 | [Roots and Rivets](l04-roots-and-rivets.md) | Rootworks server halls | Arc Welder | Sentry Turret, Freight Loader | — | 14–18 minutes |
@@ -77,3 +77,5 @@ The detailed briefs propose room layouts and encounter sequences, not new weapon
 - [Encounter and boss fairness](../design/04-world/encounter-and-boss-fairness.md)
 
 The editable Markdown and JSON files are the sources of truth.
+
+**Kept for later:** [the weapon swap pad, for Level 2](swap-pad-for-level-2.md) (taken out of Level 1, C51).

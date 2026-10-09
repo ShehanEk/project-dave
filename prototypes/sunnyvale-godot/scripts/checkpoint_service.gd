@@ -31,6 +31,8 @@ const TEMP_FILE := "checkpoint.tmp.json"
 ## versioned schema/whitelist here (unlike the checkpoint): a missing/invalid
 ## key just falls back to Settings.DEFAULTS, never a hard failure.
 const SETTINGS_FILE := "settings.json"
+## C53: the player's best completed run (rank points and time), beside the settings.
+const RECORDS_FILE := "records.json"
 
 ## Kept in sync with Session's own constants (session.gd). Not read directly
 ## from Session so this file's validation never depends on autoload order.
@@ -75,8 +77,8 @@ var _re_generic_id: RegEx
 
 
 func _ready() -> void:
-	_re_checkpoint = _compile("^(CP0[0-5]|UPG01)$")
-	_re_weapon_type = _compile("^W[0-9]{2}$")
+	_re_checkpoint = _compile("^(CP0[0-7]|UPG01)$")
+	_re_weapon_type = _compile("^(W[0-9]{2}|A01)$")  # weapons, and A01 Scrap Plating (C53)
 	_re_weapon_instance = _compile("^L01-W[0-9]{2}-P[0-9]{2}$")
 	_re_switch = _compile("^L01-SW[0-9]{2}$")
 	_re_evidence = _compile("^EF[0-9]{2}$")
@@ -295,7 +297,11 @@ func validate_snapshot(data: Variant) -> Dictionary:
 	# A committed checkpoint can never be dead (ADV-07): 0 would leave the
 	# hero permanently undamageable (Hero.take_damage() treats 0 as "already
 	# dying"), so the valid range starts at 1, not 0.
-	if health < 1 or health > MAX_HEALTH:
+	# Scrap Plating (upgrades "A01", C53) adds one segment.
+	var plating := 0
+	if typeof(data.get("upgrades")) == TYPE_DICTIONARY and data["upgrades"].has("A01"):
+		plating = clampi(int(data["upgrades"]["A01"]), 0, 1)
+	if health < 1 or health > MAX_HEALTH + plating:
 		return {"ok": false, "error": "health: out of range"}
 
 	if not _check_int(data, "wallet"):
@@ -459,6 +465,30 @@ func load_settings() -> Dictionary:
 	f.close()
 	var parsed = JSON.parse_string(text)
 	return parsed if typeof(parsed) == TYPE_DICTIONARY else {}
+
+
+## C53: the best-run record ({"points": int, "seconds": float, "rank": String}), or {}.
+func load_records() -> Dictionary:
+	var path := _save_dir.path_join(RECORDS_FILE)
+	if not FileAccess.file_exists(path):
+		return {}
+	var f := FileAccess.open(path, FileAccess.READ)
+	if f == null:
+		return {}
+	var parsed = JSON.parse_string(f.get_as_text())
+	f.close()
+	return parsed if typeof(parsed) == TYPE_DICTIONARY else {}
+
+
+func save_records(data: Dictionary) -> bool:
+	if not _ensure_dir():
+		return false
+	var writer := FileAccess.open(_save_dir.path_join(RECORDS_FILE), FileAccess.WRITE)
+	if writer == null:
+		return false
+	writer.store_string(JSON.stringify(data, "\t"))
+	writer.close()
+	return true
 
 
 ## Recursively deletes everything under `path`, including `path` itself.

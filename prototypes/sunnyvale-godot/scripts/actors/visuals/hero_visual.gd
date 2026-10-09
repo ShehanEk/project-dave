@@ -29,15 +29,22 @@ extends Node2D
 ##
 ## No class_name (hero.tscn attaches this by path; hero.gd calls it through
 ## an untyped `visual` reference).
+##
+## Since 2026-10-07 Dave is a pixel-art rig: hero.tscn attaches
+## hero_rig_visual.gd, which extends this script and falls back to it (these
+## Rook frames) only when the rig's art is missing; the Scrapjack is then at
+## scale 1 (hero.tscn) with its grip moved into this arm's fist.
 
 const Frames := preload("res://scripts/actors/visuals/rook_frames.gd")
 const SceneryDrawScript := preload("res://scripts/world/scenery_draw.gd")
 const LIT_SHADER := preload("res://assets/shaders/lit_part.gdshader")
 const NORMAL_DIR := "res://assets/characters/rook/normals/"
 const SPEC_PATH := NORMAL_DIR + "dave_spec.png"
-## Rook's unlit night level (the shader's `ambient`) and how far a light just
-## past an edge still grazes it (`wrap`).
-const AMBIENT := Vector3(0.3, 0.3, 0.36)
+## Rook's unlit night level (the shader's `ambient`), shared by every lit
+## character (cutout_rig.gd DEFAULT_AMBIENT) so skin tones and painted colors
+## still read away from the lamps, and how far a light just past an edge
+## still grazes it (`wrap`).
+const AMBIENT := Vector3(0.45, 0.45, 0.54)
 const WRAP := 0.3
 ## Lit characters sit on light masks 1 (the world's lights) and 2 (the
 ## moonlight).

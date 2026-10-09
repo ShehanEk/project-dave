@@ -17,8 +17,16 @@ extends Node2D
 ## feet, edges, chips, or attack warnings) and respects
 ## `Settings.reduced_motion` the same way scripts/effects/impact_spark.gd
 ## does: fewer particles and less travel distance, never fully hidden.
+##
+## Pixel art (Sheet 9): where a kind has a `PIXEL` entry and its strips exist,
+## the puff plays those animated pixel strips (scripts/effects/pixel_fx.gd)
+## in place of the smooth particles. The puff node itself stays the contract
+## every call site and test counts on (one node per spawn, `effect_kind`, the
+## `max_concurrent` cap, freeing itself); only what it draws changes. A missing
+## strip keeps the particles as the fallback.
 
-const TEX_MUZZLE := preload("res://assets/kenney/particle-pack/muzzle_02.png")
+const PixelFx := preload("res://scripts/effects/pixel_fx.gd")
+
 const TEX_DIRT_SMALL := preload("res://assets/kenney/particle-pack/dirt_01.png")
 const TEX_DIRT_BIG := preload("res://assets/kenney/particle-pack/dirt_03.png")
 const TEX_STAR := preload("res://assets/kenney/particle-pack/star_04.png")
@@ -30,7 +38,7 @@ const TEX_STAR_SOFT := preload("res://assets/kenney/particle-pack/star_05.png")
 const TEX_METAL_SPARK := preload("res://assets/kenney/particles/machines/star_01_metal_spark.png")
 const TEX_STEAM := preload("res://assets/kenney/particles/machines/whitePuff00_stall_steam.png")
 
-# Sunnyvale palette (CONVENTIONS.md / art-design/style-guide.md C11).
+# Eon City palette (CONVENTIONS.md / art-design/style-guide.md C11).
 const CREAM := Color("#D8E2EC")  # night pass: cool white
 const PEACH := Color("#E07A3F")  # night pass: Dave orange
 const GOLD := Color("#FFD166")  # microchip gold
@@ -49,11 +57,6 @@ const WARM_SPARK := Color("#f4d9a0")
 ## is px/s^2 (a small negative y drifts a puff gently upward instead of
 ## falling, per particle).
 const CONFIGS := {
-	&"muzzle_flash": {
-		"texture": TEX_MUZZLE, "color": AMBER, "amount": 5, "lifetime": 0.10,
-		"spread": 16.0, "speed_min": 60.0, "speed_max": 120.0,
-		"scale_min": 0.10, "scale_max": 0.16, "gravity": Vector2.ZERO, "alpha": 0.85,
-	},
 	&"landing_dust": {
 		"texture": TEX_DIRT_SMALL, "color": CREAM, "amount": 5, "lifetime": 0.30,
 		"spread": 50.0, "speed_min": 20.0, "speed_max": 55.0,
@@ -113,6 +116,32 @@ const CONFIGS := {
 	},
 }
 
+## The pixel-art look of a kind: a list of layers played together, each
+## `fx` (a PixelFx effect) with optional `frames` (which of its frames),
+## `after` (frames to wait out first, so one strip can be split in two nodes
+## that play one after the other), `delay` (seconds), `offset` (px from the
+## spawn point), `tint` and `scale_mul`. Kinds with no entry keep their
+## particles.
+const PIXEL := {
+	&"landing_dust": [{"fx": "landing_dust"}],
+	# A bigger, warmer cloud where a fall ends in a pit.
+	&"pit_dust": [{"fx": "landing_dust", "tint": Color("#FFCFA3"), "scale_mul": 1.5}],
+	&"chip_sparkle": [{"fx": "chip_glint"}],
+	# A cluster glints in three places, one after the other.
+	&"chip_sparkle_cluster": [
+		{"fx": "chip_glint", "offset": Vector2(-16.0, -8.0)},
+		{"fx": "chip_glint", "offset": Vector2(15.0, -14.0), "delay": 0.06},
+		{"fx": "chip_glint", "offset": Vector2(1.0, 10.0), "delay": 0.12},
+	],
+	&"checkpoint_sparkle": [{"fx": "checkpoint_sparkle"}],
+	# The Rover's armor deflects: a short warm spark burst, smaller than a hit.
+	&"armor_spark": [{"fx": "bullet_impact", "tint": WARM_SPARK, "scale_mul": 0.75}],
+	# A machine wrecked (and a stall's vent): one strip split in two nodes,
+	# the sparks first, the dark smoke after.
+	&"machine_spark": [{"fx": "machine_break", "frames": [0, 1, 2]}],
+	&"machine_smoke": [{"fx": "machine_break", "frames": [3, 4, 5], "after": [0, 1, 2]}],
+}
+
 ## Live count of not-yet-freed instances per `kind`, only tracked for kinds
 ## whose CONFIGS entry sets `max_concurrent` (every other kind is uncapped, as
 ## before). This is what stops rapid fire at an armored machine from flooding
@@ -161,6 +190,9 @@ static func spawn(kind: StringName, at: Vector2, host: Node) -> void:
 	var fx: Node2D = scene.instantiate()
 	host.add_child(fx)
 	fx.global_position = at
+	# Physics interpolation (on since 2026-09-28) would otherwise draw this
+	# first frame partway from the world origin, where it entered the tree.
+	fx.reset_physics_interpolation()
 	fx._counted_kind = counted_kind
 	fx._configure(kind)
 
@@ -194,9 +226,36 @@ func _configure(kind: StringName) -> void:
 	var col: Color = cfg["color"]
 	col.a = cfg["alpha"]
 	_particles.color = col
-	_particles.emitting = true
-	_life = cfg["lifetime"] * 1.4 + 0.15
+	var pixel_life := _play_pixel(kind)
+	# The particles are the fallback: silent when the pixel strips play.
+	_particles.emitting = pixel_life <= 0.0
+	_life = pixel_life + 0.1 if pixel_life > 0.0 else cfg["lifetime"] * 1.4 + 0.15
 	set_process(true)
+
+
+## Plays the kind's pixel layers, if it has them and every strip exists.
+## Returns how long they take (delays included), 0.0 when nothing played.
+func _play_pixel(kind: StringName) -> float:
+	var layers: Array = PIXEL.get(kind, [])
+	if layers.is_empty():
+		return 0.0
+	for layer in layers:
+		if not PixelFx.has_fx(layer["fx"]):
+			return 0.0
+	var settings := get_node_or_null("/root/Settings")
+	var reduced: bool = settings != null and settings.get_reduced_motion()
+	var longest := 0.0
+	for layer in layers:
+		var delay: float = layer.get("delay", 0.0)
+		if layer.has("after"):
+			delay += PixelFx.duration(layer["fx"], layer["after"], reduced)
+		var fx := PixelFx.spawn(layer["fx"], global_position + layer.get("offset", Vector2.ZERO), self, {
+			"frames": layer.get("frames", []), "delay": delay,
+			"tint": layer.get("tint", Color.WHITE), "scale_mul": layer.get("scale_mul", 1.0),
+		})
+		if fx != null:
+			longest = maxf(longest, fx.total_time())
+	return longest
 
 
 func _process(delta: float) -> void:

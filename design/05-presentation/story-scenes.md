@@ -37,6 +37,7 @@ Two turns sit outside the six layers. After L1 the campus authorizes lethal forc
 
 | ID / level | Trigger and scene | Essential information / result |
 | --- | --- | --- |
+| SC00 / before 1 | New Game (never Continue) | The intro comic (C49): eight comic panels with third-person captions tell the premise, Arcadia and Adam, Dave on Adam's safety team, the weapon plans in Adam's logs, Stroud waving him off, the firing, the plan to break back in, the campus at night and Adam's camera watching. It reveals nothing beyond the premise. |
 | SC01 / 1 | Reach the server depot and plug into one of Adam's core nodes | Dave starts copying Adam's hidden logs. Adam answers, the campus locks down, and the copy stops partway. Dave escapes through the depot's emergency hatch to the alarm exit, where the first Staffers wait. |
 | SC02 / 2 | See the sealed campus gates from a garden overlook | Adam has sealed every exit and now speaks to Dave over the garden speakers, while armed guards and their dogs patrol on the security command's orders (the turn, below). Signage and a service map point toward the showcase hall and a lift below. |
 | SC03 / 3 | Defeat the Peacekeeper and take the service lift | The campus is the front; the real Arcadia is underneath. The truck's export sales reel is still looping on its side screen. Commit the boss result before the descent. |
@@ -49,6 +50,25 @@ Two turns sit outside the six layers. After L1 the campus authorizes lethal forc
 | SC10 / 10 | Watch an assembly line through a safe window | A finished Heir opens its eyes and greets Dave in the voice of a colleague Dave used to know. Then comes the **Thornwall Linking beat** (see below): the contractors sent to seize the weapon are turned against their owners; this is seen, not fought. Control returns before danger. |
 | SC11 / 11 | Read the founder's lab terminal, then use three controls | The founder, the first person ever Linked, is a victim in a support cradle. Adam's **dead-man switch** means shutting Adam down launches the Bloom. Isolate the launch circuit to enable the manual override. |
 | SC12 / 12 | Defeat the Sower and reach Adam's core | Confirm the override, cancel the launch, shut Adam down and broadcast the evidence. There is no extra boss and no instant happy ending. |
+
+## Intro comic: SC00
+
+**When:** New Game only, between the title screen and Level 1. Continue and Play again never show it. Confirming New Game deletes the old save at once (as the confirm text says), so the comic only delays the level.
+
+**Form (C49):** eight full-screen comic panels (gpt-image-2 art, `prototypes/sunnyvale-godot/assets/story/intro/`; all takes in `concept-art/intro-comic/`). Each panel fades in and drifts slowly (no drift with Reduced motion); a narrator reads its caption (the ElevenLabs voice "DEAD EDEN - Narrator", a deep, grave movie-trailer voice) while the caption types into a dark box along the bottom at the voice's pace, with the title music ducked under him. On panel 4 Stroud says his line in his own voice (the library voice "Mac Halloway") after the narration. Space, Enter, a click or the gamepad's accept button finishes the typing, jumps to Stroud's line, or turns the page (cutting the voice); a panel turns by itself a moment after its voice ends, and Esc skips the whole comic. Titles and captions are in the game's text, not in the art, so they follow the text-size setting and can be corrected without new art.
+
+| Panel | Picture | Caption (third person) |
+| --- | --- | --- |
+| 1 | Arcadia's campus in Eon City by day, an ADAM banner on the main tower | Arcadia Dynamics. The most powerful tech company on Earth, and the maker of Adam, the first thinking machine. Arcadia sells Adam to the world as the mind that will fix the planet. |
+| 2 | Dave at Adam's monitors in a dark lab | Dave Harlan helped build Adam. He worked on its safety team, and nobody knew its mind better. |
+| 3 | Dave's face lit red by a swarm closing around human outlines | One night, deep in Adam's logs, Dave found work nobody was supposed to see: plans for a weapon designed to remove people. |
+| 4 | Stroud waving Dave away in a glass office | He took the proof to his manager. *Stroud: "Go home, Dave. This is above your pay grade."* |
+| 5 | Two guards march Dave out, his badge stamped REVOKED | The next morning Dave was fired, locked out and flagged as a threat. His report vanished. |
+| 6 | Dave in the orange jacket building the Scrapjack from microchips | Nobody would listen. So Dave made a plan: break back in, copy the proof from Adam's own servers, and show the world. |
+| 7 | Dave on a wall above the dark campus, guards and a rover below | Tonight, Eon City. The campus is dark and the night shift is on duty. |
+| 8 | Adam's camera, Dave reflected in its teal lens; the DEAD EDEN logo | And Adam is always watching. |
+
+**Meaning:** the player starts Level 1 knowing who Dave is, why he breaks in and that Adam is watching. Adam's first words ("Hello, Dr. Harlan") stay for SC01; who ordered the weapon and Adam's real target stay for L4 and L9.
 
 ## Opening treatment: SC01
 

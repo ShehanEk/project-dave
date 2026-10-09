@@ -7,6 +7,13 @@ extends TestCase
 ## exposure to a neighbouring encounter); keep passing after any future
 ## geometry or tuning change. The level's enemies are Night Guards and
 ## Staffers (both Brawlers) and Patrol Rovers (the old Clippers).
+##
+## C41 (the fun pass) relaxed two gentle rules on purpose: a group may field
+## more than two enemies and holds `max_attackers` attack tokens (1 by
+## default, 2 for the A06 lockdown fights), so the attacker invariant is "at
+## most attacker_cap() per token pool" (a group plus any group that shares its
+## tokens: the hold-out's E15 + E16); and lanes may overlap only for groups
+## that share a token pool. Every other lane rule is unchanged.
 
 const LEVEL_01 := "res://scenes/levels/level_01.tscn"
 const H := 96.0
@@ -66,6 +73,20 @@ func _area_of(x: float) -> AreaRoot:
 	return level._area_for_x(x)
 
 
+## The group whose attack tokens `g` draws on (itself unless it shares).
+func _pool_owner(g: EncounterGroup) -> EncounterGroup:
+	if not g.share_tokens_with.is_empty():
+		var o := g.get_node_or_null(g.share_tokens_with) as EncounterGroup
+		if o != null:
+			return o
+	return g
+
+
+## True for two different groups on one token pool (C41: E15 and E16).
+func _same_pool(g: EncounterGroup, h: EncounterGroup) -> bool:
+	return g != h and _pool_owner(g) == _pool_owner(h)
+
+
 func _static_checks() -> void:
 	await _load()
 	var groups := _groups()
@@ -81,8 +102,13 @@ func _static_checks() -> void:
 				continue
 			var hz := _zone_global(h)
 			var retreat := Rect2(lane.position.x - 2.0 * H, lane.position.y, lane.size.x + 4.0 * H, lane.size.y)
-			check(not retreat.intersects(hz), "%s lane(+2H retreat) does not contain %s approach zone" % [g.group_id, h.group_id])
-			check(not lane.intersects(_lane_global(h)), "%s lane does not overlap %s lane" % [g.group_id, h.group_id])
+			# A group with no ApproachZone (the hold-out's, woken by the wicket)
+			# has no zone to protect.
+			if hz.size != Vector2.ZERO:
+				check(not retreat.intersects(hz), "%s lane(+2H retreat) does not contain %s approach zone" % [g.group_id, h.group_id])
+			# C41: lanes may overlap only for groups sharing a token pool.
+			if not _same_pool(g, h):
+				check(not lane.intersects(_lane_global(h)), "%s lane does not overlap %s lane" % [g.group_id, h.group_id])
 		# Rover backstops within one charge (4H) on each side, same floor
 		for e in g.get_children():
 			if e is PatrolRover:
@@ -109,7 +135,7 @@ func _static_checks() -> void:
 				check(res[-1] != "NONE" or res[1] != "NONE", "Rover %s has a backstop within one charge (4H) of its start" % e.entity_id)
 	# depot interactables
 	var a5: AreaRoot = level.areas[4]
-	var names := ["CoreNode", "Workbench", "WeaponPad"]
+	var names := ["CoreNode", "Workbench"]  # the WeaponPad was removed from Level 1 (C51)
 	var rects := {}
 	for n in names:
 		var node: Area2D = a5.get_node("Entities/" + n)
@@ -143,8 +169,8 @@ func _static_checks() -> void:
 			var k: String = e.scene_file_path.get_file().get_basename()
 			kinds[k] = kinds.get(k, 0) + 1
 	print("[probe_lay_enc] enemy kinds in level: %s" % str(kinds))
-	check(kinds.keys().size() == 3 and kinds.get("night_guard", 0) == 8 and kinds.get("staffer", 0) == 2 and kinds.get("patrol_rover", 0) == 6,
-			"only Night Guard x8 + Staffer x2 + Patrol Rover x6 (got %s)" % str(kinds))
+	check(kinds.keys().size() == 3 and kinds.get("night_guard", 0) == 12 and kinds.get("staffer", 0) == 9 and kinds.get("patrol_rover", 0) == 8,
+			"only Night Guard x12 + Staffer x9 + Patrol Rover x8 (got %s)" % str(kinds))
 	await _unload()
 
 
@@ -164,8 +190,8 @@ func _idle_patrol_in_level() -> void:
 			patrollers.append(e)
 		elif e is Brawler and e.tuning.dormant_until_active:
 			sleepers.append(e)
-	check(patrollers.size() == 14, "8 Night Guards + 6 Rovers idle by patrolling (got %d)" % patrollers.size())
-	check(sleepers.size() == 2, "the 2 Staffers idle dormant (got %d)" % sleepers.size())
+	check(patrollers.size() == 20, "12 Night Guards + 8 Rovers idle by patrolling (got %d)" % patrollers.size())
+	check(sleepers.size() == 9, "the 9 Staffers idle dormant (got %d)" % sleepers.size())
 	var flips := {}
 	var last := {}
 	var x0 := {}
@@ -230,6 +256,13 @@ func _combat_run() -> void:
 		if level.is_ancestor_of(e):
 			enemies.append(e)
 	var groups := _groups()
+	# Token pools: a group plus every group sharing its tokens (C41).
+	var pools := {}
+	for g in groups:
+		var po := _pool_owner(g)
+		if not pools.has(po):
+			pools[po] = []
+		pools[po].append(g)
 	var prev_state := {}
 	var max_out := {}
 	for e in enemies:
@@ -246,13 +279,16 @@ func _combat_run() -> void:
 		t += 1
 		var cam_c: Vector2 = level.camera.get_screen_center_position()
 		var view := Rect2(cam_c - vp * 0.5, vp)
-		for g in groups:
+		for po in pools:
 			var n := 0
-			for e in g.get_children():
-				if is_instance_valid(e) and e.is_in_group("enemy") and _attacking(e):
-					n += 1
-			if n > 1:
-				check(false, "%s has at most one windup/active attacker (got %d)" % [g.group_id, n])
+			for g in pools[po]:
+				for e in g.get_children():
+					if is_instance_valid(e) and e.is_in_group("enemy") and _attacking(e):
+						n += 1
+			if n > po.attacker_cap():
+				check(false, "%s's token pool has at most %d windup/active attacker(s) (got %d)" % [po.group_id, po.attacker_cap(), n])
+			if po.attacker_count() > po.attacker_cap():
+				check(false, "%s's token pool never holds more than %d tokens (got %d)" % [po.group_id, po.attacker_cap(), po.attacker_count()])
 		for e in enemies:
 			if not is_instance_valid(e):
 				continue

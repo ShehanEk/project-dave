@@ -18,6 +18,12 @@ extends StaticBody2D
 ## ends carry a faint slate rim so a ledge's silhouette still reads against
 ## the night sky. Details never touch the top edge or the corners, and no
 ## non-walkable prop elsewhere uses this bright edge.
+##
+## Pixel-art terrain (C39): where the painted terrain piece for a kind exists
+## (scripts/world/terrain_skins.gd), the block draws that instead — the
+## piece's own lit edge sits on the block's top, so the walkable-edge
+## contract holds — and the code-drawn look below stays as the fallback (and
+## for the depot, which waits for its own painted layer).
 
 enum Kind { GROUND, PLATFORM, WALL, ROOF, BACKSTOP, PORCH, SCENERY_SOLID }
 
@@ -53,6 +59,10 @@ const DEPOT_AREA_ID := "L01-A05"
 const DEPOT_METAL := Color("#1B2735")
 const DEPOT_EDGE := Color("#3FE0D0")
 const DEPOT_BEVEL := Color("#2A5A62")
+const Skins := preload("res://scripts/world/terrain_skins.gd")
+## The roofs' backstop is the rooftop AC unit; every other backstop is the
+## stone planter.
+const ROOF_AREA_ID := "L01-A03"
 
 @export var size: Vector2 = Vector2(192, 48):
 	set(v):
@@ -77,11 +87,15 @@ const DEPOT_BEVEL := Color("#2A5A62")
 		queue_redraw()
 
 var _shape_node: CollisionShape2D
+## Whether a block in the same skin continues on the left (x) / right (y);
+## -1 until worked out (on the first draw, once every area is in the tree).
+var _join := Vector2i(-1, -1)
 
 
 func _ready() -> void:
 	collision_layer = 1  # world
 	collision_mask = 0
+	add_to_group("terrain_block")
 	_rebuild()
 
 
@@ -96,6 +110,7 @@ func _rebuild() -> void:
 	rect.size = size
 	_shape_node.shape = rect
 	_shape_node.position = size * 0.5
+	_join = Vector2i(-1, -1)
 	queue_redraw()
 
 
@@ -117,7 +132,55 @@ func _owner_area_id() -> String:
 	return ""
 
 
+## The painted terrain skin for this block, or "" for the code-drawn look.
+func skin_name() -> String:
+	if fill_override.a > 0.0:
+		return ""
+	var area_id := _owner_area_id()
+	if area_id == DEPOT_AREA_ID:
+		return ""
+	var skin := ""
+	match kind:
+		Kind.GROUND, Kind.PORCH:
+			skin = "walkway"
+		Kind.PLATFORM:
+			skin = "planter_ledge"
+		Kind.ROOF:
+			skin = "green_roof"
+		Kind.BACKSTOP:
+			skin = "ac_unit" if area_id == ROOF_AREA_ID else "stone_planter"
+		Kind.WALL:
+			skin = "retaining_wall"
+	return skin if skin != "" and Skins.has_skin(skin) else ""
+
+
+## Same-skinned blocks that meet edge to edge at the same top continue one
+## pattern, so neither draws an end cap there.
+func _joins(skin: String) -> Vector2i:
+	if _join.x >= 0 or not is_inside_tree():
+		return Vector2i(maxi(_join.x, 0), maxi(_join.y, 0))
+	var r := get_rect_global()
+	_join = Vector2i.ZERO
+	for n in get_tree().get_nodes_in_group("terrain_block"):
+		var b := n as Block
+		if b == null or b == self or absf(b.global_position.y - r.position.y) > 0.5 or b.skin_name() != skin:
+			continue
+		var br := b.get_rect_global()
+		if absf(br.end.x - r.position.x) < 0.5:
+			_join.x = 1
+		elif absf(br.position.x - r.end.x) < 0.5:
+			_join.y = 1
+	return _join
+
+
 func _draw() -> void:
+	var skin := skin_name()
+	if skin != "":
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		Skins.draw_block(self, skin, size, global_position.x, _joins(skin))
+		if kind == Kind.BACKSTOP and cracked:
+			_draw_stone_crack()
+		return
 	var fill: Color = fill_override if fill_override.a > 0.0 else FILL[kind]
 	var in_depot := fill_override.a <= 0.0 and _owner_area_id() == DEPOT_AREA_ID
 	var edge := TOP_EDGE

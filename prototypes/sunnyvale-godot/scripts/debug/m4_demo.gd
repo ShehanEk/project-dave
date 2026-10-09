@@ -96,7 +96,11 @@ func _run_sequence() -> void:
 	await _move_to(PAD_X)
 	await _tap_interact()
 	await _wait(0.7)
-	var pad: WeaponPad = area.get_node("Entities/WeaponPad")
+	# Level 1 has no swap pad since C51; place one where it used to stand for the demo.
+	var pad: WeaponPad = load("res://scenes/objects/weapon_pad.tscn").instantiate()
+	pad.pad_id = "L01-A05-PAD01"
+	pad.position = Vector2(1780, 0)
+	area.get_node("Entities").add_child(pad)
 	if pad._dialog:
 		pad._dialog._on_confirm()
 		await _wait(0.8)

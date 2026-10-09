@@ -58,6 +58,12 @@ enum Strike { SWING, LUNGE }
 @export var clip_windup: String = "windup"
 @export var clip_strike: String = "swing"
 @export var clip_recover: String = "recover"
+## A flinch played when a shot lands outside the windup and swing ("" = the
+## procedural jolt only). While walking he also stops for hit_stagger_time,
+## at most once every hit_stagger_cooldown, so rapid fire can't pin him.
+@export var clip_hit: String = ""
+@export var hit_stagger_time: float = 0.4
+@export var hit_stagger_cooldown: float = 1.5
 ## Joint the tell light hangs from, and where on it (joint-local px).
 @export var tell_joint: String = "baton"
 @export var tell_offset: Vector2 = Vector2(0.0, 25.5)

@@ -7,7 +7,7 @@ extends Node2D
 ## enemies, or landing edges.
 ##
 ## Revamp (C24) night pass: every kind is redrawn as its Arcadia-campus-at-
-## night equivalent (art-design/style-guide.md "Sunnyvale campus at night";
+## night equivalent (art-design/style-guide.md "Eon City campus at night";
 ## level brief "What the level looks like") in the same C11 rendering —
 ## confident dark outlines, flat colors, one or two crisp cel-shadow shapes,
 ## light drawn as flat glow shapes and rim light. Props never get the
@@ -26,8 +26,10 @@ extends Node2D
 ##   MAILBOX         card-reader / intercom post
 ##   PORTRAIT        framed family photo on the guard's desk
 ##   BREAKFAST       an abandoned coffee cup and tray
-##   SIGN            teal-lit corporate signage (`text`; exit signs green)
-##   CLOUD_PROJECTOR holographic billboard projector (`text`), amber
+##   SIGN            teal-lit corporate signage (`text`; exit signs green), a
+##                   painted panel with pixel-font text (see below)
+##   CLOUD_PROJECTOR holographic billboard projector (`text`), amber, on the
+##                   painted projector housing
 ##   DEPOT_DOOR      server-depot security door (open)
 ##   WORKBENCH       spare-parts workbench
 ##   RAIL            steel guide rail with amber chevrons
@@ -35,6 +37,8 @@ extends Node2D
 ##   GATE            the broken perimeter security gate
 ##   BEACON          alarm-red warning beacon (real, slowly pulsing light)
 ##   SUPPORT         steel column
+##   BENCH           modern outdoor bench
+##   BOLLARD         short bollard path light
 ##
 ## `kind`'s enum VALUES are never reordered — only appended to — because
 ## area scene files store `kind` as a plain integer; changing an existing
@@ -56,14 +60,48 @@ extends Node2D
 ## lit fixtures (signs, terminals, card readers) swap their teal for the
 ## lockdown color. A garden lamp outside any EnvironmentState group is never
 ## called and keeps its cold-white look forever.
+##
+## Painted (C42): outside the depot, the street furniture (lamp, railing,
+## guide rail, hedge, garden plant, planter, card reader, bench, bollard)
+## draws the user's pixel-art props sheet through PropSkins instead
+## (scripts/world/prop_skins.gd), crisp on the pixel grid. A painted lamp's
+## light sits at its lens; in lockdown its lens takes the lockdown colour and
+## its head still swivels. The depot keeps the code-drawn look until its own
+## sheet, like its blocks.
+##
+## Pixel signs (Sheet 10): a SIGN sets its `text` in the user's pixel font
+## (scripts/world/pixel_font.gd) on one of the buildings sheet's three sign
+## panels (scripts/world/sign_skins.gd, `painted_sign()`), the depot's signs
+## too: the panel's end caps stay and its plain column and row repeat, so a sign
+## of any size keeps pixel-exact edges; the text is 1 or 2 art pixels per font
+## pixel, wrapped onto two lines at a space if it has to be, in the sign's tint
+## (`sign_tint()`: teal, green for an exit sign, the lockdown colour in a
+## lockdown, the panel's frame recoloured to match). A CLOUD_PROJECTOR sets its
+## hologram text in the same font and hangs on the painted projector housing
+## (upside down, its lens at the cone's apex); the hologram, chevrons and
+## flicker stay code-drawn. Without the font or the PNGs, or for a character
+## the font lacks, the code-drawn board and smooth UI font are the fallback.
 
 enum Kind {
 	HOUSE, FENCE, SHRUB, FLOWER, CLOCK, FOUNTAIN, LAMP, PLANTER, MAILBOX,
 	PORTRAIT, BREAKFAST, SIGN, CLOUD_PROJECTOR, DEPOT_DOOR, WORKBENCH, RAIL, PANEL,
-	GATE, BEACON, SUPPORT,
+	GATE, BEACON, SUPPORT, BENCH, BOLLARD,
 }
 
 const OUTLINE := SceneryDraw.OUTLINE
+const TerrainSkins := preload("res://scripts/world/terrain_skins.gd")
+const PropSkins := preload("res://scripts/world/prop_skins.gd")
+const PixelFont := preload("res://scripts/world/pixel_font.gd")
+const SignSkins := preload("res://scripts/world/sign_skins.gd")
+## Props in the depot keep the code-drawn look (Block.DEPOT_AREA_ID).
+const DEPOT_AREA_ID := "L01-A05"
+## Each kind's painted piece (PropSkins.PIECES key).
+const PAINTED := {
+	Kind.LAMP: "lamp", Kind.FENCE: "fence", Kind.RAIL: "rail", Kind.SHRUB: "shrub",
+	Kind.FLOWER: "flower", Kind.PLANTER: "planter", Kind.MAILBOX: "mailbox",
+	Kind.BENCH: "bench", Kind.BOLLARD: "bollard", Kind.HOUSE: "booth", Kind.GATE: "gate",
+	Kind.FOUNTAIN: "pool", Kind.CLOCK: "landmark", Kind.DEPOT_DOOR: "depot_door",
+}
 const NIGHT := SceneryDraw.NIGHT
 const NAVY := SceneryDraw.NAVY
 const STEEL := SceneryDraw.STEEL
@@ -159,6 +197,8 @@ var _lockdown_tint: Color = AMBER
 var _tilt: float = 0.0
 var _tilt_tween: Tween
 var _seed: int = 0
+## The PropSkins piece this prop draws, or "" for the code-drawn look.
+var _painted: String = ""
 
 
 func _ready() -> void:
@@ -169,6 +209,9 @@ func _ready() -> void:
 	_seed = int(absf(position.x) * 7.0 + absf(position.y) * 13.0)
 	var settings := get_node_or_null("/root/Settings")
 	_reduced_motion = settings != null and settings.get_reduced_motion()
+	_painted = painted_piece()
+	if _painted != "" or painted_sign() != "" or _pixel_text():
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	match kind:
 		Kind.LAMP:
 			_setup_lamp()
@@ -186,6 +229,14 @@ func _ready() -> void:
 
 
 func _draw() -> void:
+	if _painted != "":
+		if kind == Kind.LAMP:
+			PropSkins.draw_lamp(self, size.y, _tilt, _lockdown_tint if _lockdown else Color.WHITE)
+		elif kind == Kind.CLOCK:
+			PropSkins.draw_landmark(self, maxf(-position.y, 0.0) + 40.0)
+		else:
+			PropSkins.draw(self, _painted, size)
+		return
 	match kind:
 		Kind.HOUSE: _draw_house()
 		Kind.FENCE: _draw_fence()
@@ -207,6 +258,55 @@ func _draw() -> void:
 		Kind.GATE: _draw_gate()
 		Kind.BEACON: _draw_beacon()
 		Kind.SUPPORT: _draw_support()
+		Kind.BENCH: _draw_bench()
+		Kind.BOLLARD: _draw_bollard()
+
+
+## The painted piece for this prop (PropSkins), or "" when it keeps the
+## code-drawn look: a kind with no piece, a prop in the depot, or an export
+## without the art.
+func painted_piece() -> String:
+	if not PAINTED.has(kind) or _area_id() == DEPOT_AREA_ID:
+		return ""
+	var key: String = PAINTED[kind]
+	if kind == Kind.DEPOT_DOOR and name.begins_with("AnnexDoor"):
+		key = "annex_door"
+	return key if PropSkins.has_piece(key) else ""
+
+
+## The painted piece this SIGN or CLOUD_PROJECTOR draws (Sheet 3 and 10): the
+## sign panel ("sign_s", "sign_m" or "sign_l") its `text` is set on in the
+## pixel font, or the projector housing ("projector"); "" keeps the code-drawn
+## look (no PNG or font in an export, a character the font lacks, or text that
+## fits no panel). Unlike painted_piece() it applies in the depot too.
+func painted_sign() -> String:
+	match kind:
+		Kind.SIGN:
+			var plan: Dictionary = SignSkins.plan(text, size)
+			return "" if plan.is_empty() else str(plan["piece"])
+		Kind.CLOUD_PROJECTOR:
+			return SignSkins.PROJECTOR if SignSkins.has_projector() else ""
+	return ""
+
+
+## The colour a SIGN's frame and text are lit in: signal green for an exit
+## sign, the lockdown colour while the lockdown is on, else teal.
+func sign_tint() -> Color:
+	return SIGNAL_GREEN if _is_exit_sign() else (_lockdown_tint if _lockdown else TEAL)
+
+
+## True when this prop's text draws in the pixel font.
+func _pixel_text() -> bool:
+	return kind in [Kind.SIGN, Kind.CLOUD_PROJECTOR] and text != "" and PixelFont.covers(text)
+
+
+func _area_id() -> String:
+	var n: Node = get_parent()
+	while n:
+		if "area_id" in n:
+			return str(n.area_id)
+		n = n.get_parent()
+	return ""
 
 
 func _rect_up(w: float, h: float) -> Rect2:
@@ -260,6 +360,7 @@ func _make_glow(tex: Texture2D, pos: Vector2, scale_v: Vector2, alpha: float, pa
 	s.z_index = -9
 	s.z_as_relative = true
 	s.light_mask = 0
+	s.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR   # smooth even under a painted (nearest) prop
 	var mat := CanvasItemMaterial.new()
 	mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	s.material = mat
@@ -267,20 +368,23 @@ func _make_glow(tex: Texture2D, pos: Vector2, scale_v: Vector2, alpha: float, pa
 	return s
 
 
+## Just above the lens (the light hangs 4 px below this, at the lens).
 func _lamp_head() -> Vector2:
+	if _painted != "":
+		return Vector2(0.0, PropSkins.lamp_lens_y(size.y) - 4.0)
 	return Vector2(0.0, -size.y * 0.9)
 
 
 ## How far the lamp's glow beam reaches from its head: to the ground line and
 ## 30 px into the floor's lit face.
 func _lamp_reach() -> float:
-	return size.y * 0.9 + 30.0
+	return -_lamp_head().y + 30.0
 
 
 ## How far the lamp's smooth light reaches from its head (see
 ## LAMP_REACH_RATIO): past the ground line, fading out as it goes.
 func _lamp_light_radius() -> float:
-	return clampf((size.y * 0.9 + 4.0) * LAMP_REACH_RATIO, LAMP_REACH_MIN, LAMP_REACH_MAX)
+	return clampf((-_lamp_head().y + 4.0) * LAMP_REACH_RATIO, LAMP_REACH_MIN, LAMP_REACH_MAX)
 
 
 ## A cold-white path lamp: a Kenney glow halo at the head, a faint beam, and
@@ -295,6 +399,7 @@ func _setup_lamp() -> void:
 	_lamp_pivot = Node2D.new()
 	_lamp_pivot.name = "LampPivot"
 	_lamp_pivot.position = head + Vector2(0.0, 4.0)
+	_lamp_pivot.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	add_child(_lamp_pivot)
 	_lamp_glow_beam = _make_glow(GLOW_CONE_UTILITY, Vector2.ZERO, Vector2.ONE, 0.1, _lamp_pivot)
 	_lamp_glow_beam.flip_v = true
@@ -342,7 +447,7 @@ func _pulse_beacon() -> void:
 
 ## The reflecting pool's teal underlight also lights whoever walks past it.
 func _setup_fountain_light() -> void:
-	var rim_h: float = maxf(16.0, size.y * 0.22)
+	var rim_h: float = 20.0 if _painted != "" else maxf(16.0, size.y * 0.22)
 	_fountain_light = SceneryDraw.make_light(self, SceneryDraw.smooth_disc_texture(),
 			Vector2(0.0, -rim_h - 10.0), size.x * 1.5, Color(0.5, 0.95, 0.9), FOUNTAIN_ENERGY,
 			FOUNTAIN_LIGHT_HEIGHT)
@@ -490,6 +595,14 @@ func _fit_font_size(text_v: String, available: float, start: int) -> int:
 
 
 func _draw_centered_text(text_v: String, rect: Rect2, color: Color, start_size: int) -> void:
+	# The pixel font (Sheet 10): the largest whole number of art pixels per font
+	# pixel that fits, wrapped onto two lines at a space if it has to be.
+	var pixel: Dictionary = PixelFont.fit(text_v, rect.size.x - 8.0, rect.size.y - 4.0)
+	if not pixel.is_empty():
+		var block: Vector2 = pixel["size"]
+		var top_left: Vector2 = rect.get_center() - block * 0.5
+		PixelFont.draw_block(self, pixel["lines"], top_left, block.x, pixel["scale"], color)
+		return
 	var font := ThemeDB.fallback_font
 	var available: float = rect.size.x - 8.0
 	var fsize := _fit_font_size(text_v, available, start_size)
@@ -640,6 +753,8 @@ func _draw_flower() -> void:
 
 
 func _clock_emblem_center() -> Vector2:
+	if _painted != "":
+		return Vector2(0.0, PropSkins.landmark_emblem_y())
 	var s: float = minf(size.x, size.y)
 	return Vector2(0.0, -s * 0.54)
 
@@ -850,10 +965,22 @@ func _is_exit_sign() -> bool:
 func _draw_sign() -> void:
 	var w: float = size.x
 	var h: float = size.y
-	var acc: Color = SIGNAL_GREEN if _is_exit_sign() else (_lockdown_tint if _lockdown else TEAL)
+	var acc: Color = sign_tint()
 	for lx in [-w * 0.32, w * 0.32]:
 		draw_rect(Rect2(Vector2(lx - 2.0, -h * 0.56), Vector2(4.0, h * 0.56)), SLATE)
 		draw_rect(Rect2(Vector2(lx - 2.0, -h * 0.56), Vector2(4.0, h * 0.56)), OUTLINE, false, 1.0)
+	var plan: Dictionary = SignSkins.plan(text, size)
+	if not plan.is_empty():
+		# The painted panel (Sheet 3) with the text in the pixel font (Sheet 10),
+		# both in the sign's tint; the faint glow stays smooth.
+		var cols: int = plan["cols"]
+		var rows: int = plan["rows"]
+		var at: Vector2 = SignSkins.board_origin(cols, -h)
+		draw_rect(Rect2(at, Vector2(cols, rows) * SignSkins.ART).grow(5.0), Color(acc, 0.07))
+		SignSkins.draw_panel(self, plan["piece"], cols, rows, at, acc)
+		var block: Vector2 = plan["block"]
+		PixelFont.draw_block(self, plan["lines"], at + Vector2(plan["text_at"]) * SignSkins.ART, block.x, plan["scale"], acc)
+		return
 	var board := Rect2(Vector2(-w * 0.5, -h), Vector2(w, h * 0.46))
 	draw_rect(board.grow(5.0), Color(acc, 0.07))
 	draw_rect(board, NAVY)
@@ -883,13 +1010,18 @@ func _draw_cloud_projector() -> void:
 	var col := AMBER
 	var f := _flicker_value()
 	var em := Vector2(0.0, r.end.y + 22.0)
+	var housing: bool = painted_sign() != ""
 	draw_colored_polygon(PackedVector2Array([
 		em + Vector2(-5.0, -6.0), em + Vector2(5.0, -6.0),
 		Vector2(r.end.x - 12.0, r.end.y), Vector2(r.position.x + 12.0, r.end.y),
 	]), Color(col, 0.07 * f))
-	draw_rect(Rect2(em + Vector2(-14.0, -4.0), Vector2(28.0, 9.0)), STEEL)
-	draw_rect(Rect2(em + Vector2(-14.0, -4.0), Vector2(28.0, 9.0)), OUTLINE, false, 1.5)
-	draw_circle(em + Vector2(0.0, -5.0), 3.0, col)
+	if housing:
+		# the painted projector, its lens at the cone's apex (Sheet 3)
+		SignSkins.draw_projector(self, em)
+	else:
+		draw_rect(Rect2(em + Vector2(-14.0, -4.0), Vector2(28.0, 9.0)), STEEL)
+		draw_rect(Rect2(em + Vector2(-14.0, -4.0), Vector2(28.0, 9.0)), OUTLINE, false, 1.5)
+		draw_circle(em + Vector2(0.0, -5.0), 3.0, col)
 	draw_rect(r, Color(col, 0.1 * f))
 	var y: float = r.position.y + 2.0
 	while y < r.end.y:
@@ -1129,6 +1261,10 @@ func _draw_support() -> void:
 	var h: float = size.y
 	if h <= 0.0:
 		return
+	# The painted lattice column (C39 terrain sheet), when it exists.
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	if TerrainSkins.draw_column(self, h):
+		return
 	var bw: float = clampf(w * 0.16, 5.0, 14.0)
 	var beams := [-w * 0.5 + bw * 0.5, w * 0.5 - bw * 0.5]
 	var braces: int = maxi(1, int(h / 90.0))
@@ -1147,3 +1283,25 @@ func _draw_support() -> void:
 	var footing := Rect2(Vector2(-w * 0.5 - 4.0, -10.0), Vector2(w + 8.0, 10.0))
 	draw_rect(footing, CONCRETE_DARK)
 	draw_rect(footing, OUTLINE, false, 1.5)
+
+
+## Fallbacks for an export without the painted props (the kinds came with
+## the props sheet, C42): a slatted bench and a short lit bollard.
+func _draw_bench() -> void:
+	var w: float = size.x
+	var h: float = size.y
+	for y in [-h, -h * 0.45]:
+		var slat := Rect2(Vector2(-w * 0.5, y), Vector2(w, 5.0))
+		draw_rect(slat, STEEL)
+		draw_rect(slat, OUTLINE, false, 1.5)
+	for x in [-w * 0.38, w * 0.38]:
+		draw_rect(Rect2(Vector2(x - 2.5, -h + 5.0), Vector2(5.0, h - 5.0)), SLATE)
+
+
+func _draw_bollard() -> void:
+	var w: float = size.x
+	var h: float = size.y
+	var post := Rect2(Vector2(-w * 0.5, -h), Vector2(w, h))
+	draw_rect(post, SLATE)
+	draw_rect(Rect2(post.position + Vector2(2.0, 3.0), Vector2(w - 4.0, 4.0)), PATH_WHITE)
+	draw_rect(post, OUTLINE, false, 1.5)

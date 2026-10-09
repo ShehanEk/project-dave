@@ -11,12 +11,38 @@ extends Node2D
 ## ("ground_lock"); machines are posed directly by their owner. Pure
 ## presentation: no collision, no gameplay state. No class_name
 ## (visual-script import-cache rule).
+##
+## A PIXEL-ART rig ("pixel_art": true in rig.json, made by
+## tools/art/import_parts_sheet.py from a pixel parts sheet) is drawn with
+## nearest filtering so its art pixels stay crisp (one art pixel is
+## `pixel_world` world px, enlarged 3x in the atlas), and kept on its pixel
+## grid: every joint is posed in steps that move the tip of everything hanging
+## from it by about one art pixel (_rotation_steps), so a limb changes its
+## pixels all at once instead of edge pixels flipping one by one, and the
+## pelvis, the root of the pose, sits on whole art pixels. The rig's world
+## position is NOT snapped: its owner moves smoothly (physics interpolation)
+## and, with the camera between pixels anyway (1.5 world px is 1.8 screen px at
+## the game's zoom), a snapped body would only stutter at a walk. The normal
+## and spec maps stay filtered, so lamps still light smoothly across the pixel
+## steps. A pixel-art PROP (the Scrapjack, kind "prop") is never posed: its
+## owner (scrapjack.gd) moves its joints in whole art pixels and turns the
+## whole node with the aim, continuously, so no rotation step is applied to it
+## and nothing about it snaps; nearest sampling lets its edges crawl by a third
+## of an art pixel as it sweeps, which reads as a rotated pixel sprite. A smooth
+## rig is untouched.
 
 const LitShader := preload("res://assets/shaders/lit_part.gdshader")
 const FAR_TINT := Color(0.74, 0.75, 0.8)
 const DEFAULT_SOLE_POINTS: Array[Vector2] = [Vector2(-3.9, 5.2), Vector2(4.0, 5.2), Vector2(12.6, 5.2)]
-## The night: how bright a part is with no light on it.
-const DEFAULT_AMBIENT := Color(0.17, 0.19, 0.25)
+## The night: how bright a part is with no light on it (about 45%). The same
+## level as Dave (hero_visual.gd AMBIENT), so a painted color, a skin tone
+## above all, reads the same on every character and still reads away from the
+## lamps; a bluer, darker night turned warm skin muddy brown.
+const DEFAULT_AMBIENT := Color(0.45, 0.45, 0.54)
+## A pixel-art rig poses a joint in steps that move the farthest point it
+## carries by one art pixel, kept between these limits (degrees).
+const ROT_STEP_MIN_DEG := 1.5
+const ROT_STEP_MAX_DEG := 5.0
 
 @export_file("*.json") var rig_path: String = ""
 
@@ -29,6 +55,11 @@ var order: Array[String] = []   # parents before children
 var sockets: Dictionary = {}
 var kind: String = "human"
 var texture_scale: float = 1.0 / 3.0
+## A pixel-art rig: nearest-filtered sprites, quantised rotations, the root
+## on whole art pixels. `pixel_world` is one art pixel in world px.
+var pixel_art: bool = false
+var pixel_world: float = 1.5
+var _rot_step: Dictionary = {}   # joint -> radians (pixel-art rigs only)
 ## Shared by every part that has no material of its own; painted emissive
 ## spots (status LEDs, lamp lenses, an implant light) glow in their own
 ## painted colour.
@@ -61,6 +92,8 @@ func build() -> void:
 	_spec = load(dir.path_join(data["spec"]))
 	texture_scale = 1.0 / float(data["texture_scale"])
 	kind = String(data.get("kind", "human"))
+	pixel_art = bool(data.get("pixel_art", false))
+	pixel_world = float(data.get("pixel_world", 1.5))
 	_ground_lock = bool(data.get("ground_lock", kind == "human"))
 	_sole_points = DEFAULT_SOLE_POINTS.duplicate()
 	if data.has("sole_points"):
@@ -96,12 +129,37 @@ func build() -> void:
 		s.z_index = int(j["z"])
 		s.z_as_relative = true
 		s.material = body_material
+		if pixel_art:
+			s.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		if j.get("far", false):
 			s.self_modulate = FAR_TINT
 		# World lights (bit 1) and the character-only moonlight rim (bit 2).
 		s.light_mask = 1 | 2
 		node.add_child(s)
 		sprites[jname] = s
+	if pixel_art:
+		_rotation_steps()
+
+
+## Per joint, the turn that moves the farthest point it carries (its own
+## collider and everything hanging from it) by one art pixel.
+func _rotation_steps() -> void:
+	var reach: Dictionary = {}
+	for i in range(order.size() - 1, -1, -1):
+		var jname: String = order[i]
+		var col: Dictionary = defs[jname]["collider"]
+		var d := 0.0
+		if col["type"] == "circle":
+			d = Vector2(col["c"][0], col["c"][1]).length() + float(col["r"])
+		else:
+			d = maxf(Vector2(col["a"][0], col["a"][1]).length(), Vector2(col["b"][0], col["b"][1]).length()) + float(col["r"])
+		reach[jname] = maxf(float(reach.get(jname, 0.0)), d)
+		var parent_name: String = defs[jname]["parent"]
+		if parent_name != "":
+			reach[parent_name] = maxf(float(reach.get(parent_name, 0.0)), (joints[jname] as Node2D).position.length() + float(reach[jname]))
+	for jname in order:
+		var step := rad_to_deg(atan(pixel_world / maxf(float(reach[jname]), 1.0)))
+		_rot_step[jname] = deg_to_rad(clampf(step, ROT_STEP_MIN_DEG, ROT_STEP_MAX_DEG))
 
 
 func _make_material() -> ShaderMaterial:
@@ -149,12 +207,23 @@ func joint_for_role(role: String) -> String:
 ## the root joint (world px). Joints missing from the pose keep rotation 0.
 func apply_pose(pose: Dictionary) -> void:
 	for jname in order:
-		joints[jname].rotation = pose.get(jname, 0.0)
+		var rot: float = pose.get(jname, 0.0)
+		joints[jname].rotation = snappedf(rot, _rot_step[jname]) if pixel_art else rot
 	var root_name: String = order[0]
 	var root: Node2D = joints[root_name]
 	root.position = _rest_pos[root_name] + (pose.get("root", Vector2.ZERO) as Vector2)
 	if _ground_lock:
 		root.position.y += _ground_error()
+	if pixel_art:
+		# On whole art pixels (a sole is then within half a pixel of the floor).
+		root.position = root.position.snapped(Vector2(pixel_world, pixel_world))
+
+
+## A joint rotation as apply_pose() would set it: on a pixel-art rig, in that
+## joint's rotation step (for an owner that poses a joint itself: Dave's aiming
+## arm, hero_rig_visual.gd).
+func snap_rotation(jname: String, rot: float) -> float:
+	return snappedf(rot, _rot_step[jname]) if pixel_art else rot
 
 
 ## How far the lowest sole point sits above (negative) or below (positive)
@@ -201,7 +270,7 @@ func joint_point(jname: String, local: Vector2) -> Vector2:
 
 ## The joint whose collider is closest to `global_pos` (for wounds and for
 ## where a killing shot pushes). `skip` names joints never chosen.
-func nearest_joint(global_pos: Vector2, skip: Array = ["baton"]) -> String:
+func nearest_joint(global_pos: Vector2, skip: Array = ["baton", "lanyard", "port"]) -> String:
 	var best := ""
 	var best_d := INF
 	for jname in order:

@@ -13,7 +13,7 @@ The [AI entry guide](../AI_START_HERE.md) identifies each system's owner. When r
 ## Fixed campaign structure
 
 - Twelve levels in four acts of three:
-  - the Sunnyvale campus at night;
+  - the Eon City campus at night;
   - the Rootworks;
   - the Arcadia Wellness Center;
   - the Garden.

@@ -54,7 +54,7 @@
       "reach a checkpoint",
       "upgrade"
     ],
-    "visual_style": "Hand-drawn 2D rendering (C11): clean outlines, flat painted colors, layered backgrounds; dark sci-fi palette and mood (C15). Enemies use a lit cutout rig with smooth realistic engine lighting, Mixamo motion and ragdoll deaths (C35), amending C11's flat cel light bands: confirmed direction, validation test in progress",
+    "visual_style": "Hand-drawn 2D rendering (C11): clean outlines, flat painted colors, layered backgrounds; dark sci-fi palette and mood (C15). Enemies use a lit cutout rig with smooth realistic engine lighting, hand-keyed motion (C38) and ragdoll deaths (C35), amending C11's flat cel light bands: confirmed direction, validation test in progress",
     "gameplay_plane": "2D side-scrolling",
     "companion_present": false,
     "player_party": "solo hero (Dave Harlan); no radio contact",
@@ -435,7 +435,7 @@
     {
       "level": 1,
       "act": 1,
-      "name": "Welcome to Sunnyvale",
+      "name": "Welcome to Eon City",
       "brief": "level-design/l01-welcome-to-sunnyvale.md",
       "new_weapon": "Scrapjack Pistol (carried at entry)",
       "mini_boss": null,
@@ -593,7 +593,7 @@
       "art-design/enemy-guns/": 9,
       "art-design/weapons/": 5
     },
-    "enemy_art_method": "Lit cutout rig (C35): painted parts plus normal maps, smooth realistic engine lighting, Mixamo motion, ragdoll deaths. Confirmed direction, validation test in progress."
+    "enemy_art_method": "Lit cutout rig (C35): painted parts plus normal maps, smooth realistic engine lighting, hand-keyed motion (C38), ragdoll deaths. Confirmed direction, validation test in progress."
   },
   "sections": [
     {
@@ -1259,7 +1259,7 @@
     "gallery": "concept-art/README.md",
     "current_selection": "None. The Clipper selection (C10) ended when the Clipper was removed (C32); the zombie and old daytime concept art was deleted (C23); the hero's placeholder sprite pack is not a selection",
     "unpictured_asset_appearances": "proposed until individually selected",
-    "sprite_animation_pipeline": "Lit cutout rig: painted parts plus normal maps, Mixamo clips converted to the 2D rig, ragdoll deaths (C35). A test build of one lit Night Guard is in progress."
+    "sprite_animation_pipeline": "Lit cutout rig: painted parts plus normal maps, hand-keyed motion (C38), ragdoll deaths (C35). A test build of one lit Night Guard is in progress."
   },
   "prototype_plans": [
     {

@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/area_root.gd" id="1_arearoot"]
 [ext_resource type="Script" path="res://scripts/world/block.gd" id="2_block"]
@@ -14,6 +14,10 @@
 [ext_resource type="PackedScene" path="res://scenes/objects/kill_plane.tscn" id="12_killplane"]
 [ext_resource type="PackedScene" path="res://scenes/objects/branch_zone.tscn" id="13_branch"]
 [ext_resource type="Script" path="res://scripts/world/visuals/area_backdrop.gd" id="50_backdrop"]
+[ext_resource type="PackedScene" path="res://scenes/objects/pit_hazard.tscn" id="14_pit"]
+[ext_resource type="PackedScene" path="res://scenes/actors/patrol_rover.tscn" id="15_rover"]
+[ext_resource type="Script" path="res://scripts/world/decal.gd" id="20_decal"]
+[ext_resource type="Script" path="res://scripts/world/visuals/foreground_layer.gd" id="21_foreground"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_approach"]
 size = Vector2(80, 1000)
@@ -39,13 +43,23 @@ mode = 1
 tile_width = 7050.0
 horizon_y = 0.0
 
+[node name="Foreground" type="Node2D" parent="."]
+script = ExtResource("21_foreground")
+tile_width = 7050.0
+
 [node name="Geometry" type="Node2D" parent="."]
 
 [node name="StreetGround" type="StaticBody2D" parent="Geometry"]
 position = Vector2(0, 0)
 script = ExtResource("2_block")
-size = Vector2(7050, 320)
 kind = 5
+size = Vector2(1880, 320)
+
+[node name="StreetLanding" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("2_block")
+kind = 5
+position = Vector2(6650, 0)
+size = Vector2(400, 320)
 
 [node name="Terrace1" type="StaticBody2D" parent="Geometry"]
 position = Vector2(570, -64)
@@ -79,12 +93,6 @@ pause_time = 0.6
 width = 160.0
 thickness = 20.0
 
-[node name="StreetLaneWall" type="StaticBody2D" parent="Geometry"]
-position = Vector2(2450, -160)
-script = ExtResource("2_block")
-size = Vector2(60, 160)
-kind = 2
-
 [node name="Terrace4a" type="StaticBody2D" parent="Geometry"]
 position = Vector2(2440, -216)
 script = ExtResource("2_block")
@@ -103,6 +111,12 @@ script = ExtResource("2_block")
 size = Vector2(620, 40)
 kind = 3
 
+[node name="E05Backstop" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("2_block")
+kind = 4
+position = Vector2(2856, -300)
+size = Vector2(100, 84)
+
 [node name="Terrace5" type="StaticBody2D" parent="Geometry"]
 position = Vector2(3620, -296)
 script = ExtResource("2_block")
@@ -110,15 +124,15 @@ size = Vector2(250, 40)
 kind = 3
 
 [node name="Terrace6" type="StaticBody2D" parent="Geometry"]
-position = Vector2(4010, -380)
+position = Vector2(4000, -380)
 script = ExtResource("2_block")
-size = Vector2(260, 40)
+size = Vector2(120, 40)
 kind = 3
 
 [node name="Terrace7" type="StaticBody2D" parent="Geometry"]
-position = Vector2(4410, -460)
+position = Vector2(4310, -460)
 script = ExtResource("2_block")
-size = Vector2(260, 40)
+size = Vector2(310, 40)
 kind = 3
 
 [node name="Terrace8" type="StaticBody2D" parent="Geometry"]
@@ -134,16 +148,71 @@ size = Vector2(250, 40)
 kind = 3
 
 [node name="Descent2" type="StaticBody2D" parent="Geometry"]
-position = Vector2(6050, -300)
+position = Vector2(6050, -220)
 script = ExtResource("2_block")
 size = Vector2(250, 40)
 kind = 3
 
 [node name="Descent3" type="StaticBody2D" parent="Geometry"]
-position = Vector2(6440, -180)
+position = Vector2(6440, -140)
 script = ExtResource("2_block")
 size = Vector2(250, 40)
 kind = 3
+
+[node name="Decals" type="Node2D" parent="."]
+
+[node name="PuddleC1" type="Node2D" parent="Decals"]
+position = Vector2(330, 16.5)
+script = ExtResource("20_decal")
+piece = "puddle_c"
+
+[node name="CrackA1" type="Node2D" parent="Decals"]
+position = Vector2(480, 25.5)
+script = ExtResource("20_decal")
+piece = "crack_a"
+flip = true
+
+[node name="Leaves1" type="Node2D" parent="Decals"]
+position = Vector2(573, 0)
+script = ExtResource("20_decal")
+piece = "leaves"
+
+[node name="PuddleA1" type="Node2D" parent="Decals"]
+position = Vector2(960, 16.5)
+script = ExtResource("20_decal")
+piece = "puddle_a"
+flip = true
+
+[node name="Leaves2" type="Node2D" parent="Decals"]
+position = Vector2(1080, 12)
+script = ExtResource("20_decal")
+piece = "leaves"
+
+[node name="CrackB1" type="Node2D" parent="Decals"]
+position = Vector2(1290, 27)
+script = ExtResource("20_decal")
+piece = "crack_b"
+
+[node name="PuddleB1" type="Node2D" parent="Decals"]
+position = Vector2(1560, 18)
+script = ExtResource("20_decal")
+piece = "puddle_b"
+
+[node name="Leaves3" type="Node2D" parent="Decals"]
+position = Vector2(1752, 6)
+script = ExtResource("20_decal")
+piece = "leaves"
+flip = true
+
+[node name="CrackA2" type="Node2D" parent="Decals"]
+position = Vector2(6786, 25.5)
+script = ExtResource("20_decal")
+piece = "crack_a"
+
+[node name="Leaves4" type="Node2D" parent="Decals"]
+position = Vector2(6894, 3)
+script = ExtResource("20_decal")
+piece = "leaves"
 
 [node name="Scenery" type="Node2D" parent="."]
 
@@ -179,7 +248,7 @@ kind = 6
 size = Vector2(30, 140)
 
 [node name="Shrub01" parent="Scenery" instance=ExtResource("7_scenery")]
-position = Vector2(4220, -380)
+position = Vector2(4560, -460)
 kind = 2
 size = Vector2(60, 60)
 
@@ -223,11 +292,6 @@ position = Vector2(1470, -216)
 kind = 6
 size = Vector2(30, 120)
 
-[node name="LandingLamp_ServiceLane" parent="Scenery" instance=ExtResource("7_scenery")]
-position = Vector2(2150, 0)
-kind = 6
-size = Vector2(30, 160)
-
 [node name="RoofLamp_T4a" parent="Scenery" instance=ExtResource("7_scenery")]
 position = Vector2(2455, -216)
 kind = 6
@@ -264,12 +328,12 @@ kind = 6
 size = Vector2(30, 120)
 
 [node name="RoofLamp_D2" parent="Scenery" instance=ExtResource("7_scenery")]
-position = Vector2(6070, -300)
+position = Vector2(6070, -220)
 kind = 6
 size = Vector2(30, 120)
 
 [node name="RoofLamp_D3" parent="Scenery" instance=ExtResource("7_scenery")]
-position = Vector2(6460, -180)
+position = Vector2(6460, -140)
 kind = 6
 size = Vector2(30, 120)
 
@@ -296,49 +360,49 @@ kind = 19
 size = Vector2(60, 176)
 
 [node name="Support_Terrace4a" parent="Scenery/Supports" instance=ExtResource("7_scenery")]
-position = Vector2(2560, 0)
 kind = 19
-size = Vector2(50, 176)
+position = Vector2(2560, 140)
+size = Vector2(50, 316)
 
 [node name="Support_Terrace4b" parent="Scenery/Supports" instance=ExtResource("7_scenery")]
-position = Vector2(3160, 0)
 kind = 19
-size = Vector2(70, 176)
+position = Vector2(3160, 140)
+size = Vector2(70, 316)
 
 [node name="Support_Terrace5" parent="Scenery/Supports" instance=ExtResource("7_scenery")]
-position = Vector2(3745, 0)
 kind = 19
-size = Vector2(55, 256)
+position = Vector2(3745, 140)
+size = Vector2(55, 396)
 
 [node name="Support_Terrace6" parent="Scenery/Supports" instance=ExtResource("7_scenery")]
-position = Vector2(4140, 0)
 kind = 19
-size = Vector2(55, 340)
+position = Vector2(4060, 140)
+size = Vector2(45, 480)
 
 [node name="Support_Terrace7" parent="Scenery/Supports" instance=ExtResource("7_scenery")]
-position = Vector2(4540, 0)
 kind = 19
-size = Vector2(55, 420)
+position = Vector2(4465, 140)
+size = Vector2(55, 560)
 
 [node name="Support_Terrace8" parent="Scenery/Supports" instance=ExtResource("7_scenery")]
-position = Vector2(5165, 0)
 kind = 19
-size = Vector2(80, 500)
+position = Vector2(5165, 140)
+size = Vector2(80, 640)
 
 [node name="Support_Descent1" parent="Scenery/Supports" instance=ExtResource("7_scenery")]
-position = Vector2(5785, 0)
 kind = 19
-size = Vector2(55, 380)
+position = Vector2(5785, 140)
+size = Vector2(55, 520)
 
 [node name="Support_Descent2" parent="Scenery/Supports" instance=ExtResource("7_scenery")]
-position = Vector2(6175, 0)
 kind = 19
-size = Vector2(55, 260)
+position = Vector2(6175, 140)
+size = Vector2(55, 320)
 
 [node name="Support_Descent3" parent="Scenery/Supports" instance=ExtResource("7_scenery")]
-position = Vector2(6565, 0)
 kind = 19
-size = Vector2(50, 140)
+position = Vector2(6565, 140)
+size = Vector2(50, 240)
 
 [node name="Entities" type="Node2D" parent="."]
 
@@ -358,9 +422,9 @@ entity_id = "L01-A03-G003"
 value = 1
 
 [node name="Chip_G004" parent="Entities" instance=ExtResource("4_chip")]
-position = Vector2(2950, -236)
 entity_id = "L01-A03-G004"
 value = 1
+position = Vector2(2906, -320)
 
 [node name="ChipCluster_GC01" parent="Entities" instance=ExtResource("4_chip")]
 position = Vector2(4060, -400)
@@ -368,7 +432,7 @@ entity_id = "L01-A03-GC01"
 value = 5
 
 [node name="Chip_G005" parent="Entities" instance=ExtResource("4_chip")]
-position = Vector2(5300, -560)
+position = Vector2(4215, -560)
 entity_id = "L01-A03-G005"
 value = 1
 
@@ -380,6 +444,78 @@ value = 20
 [node name="RecoveryStation_CP02" parent="Entities" instance=ExtResource("6_station")]
 position = Vector2(5420, -540)
 checkpoint_id = "CP02"
+
+[node name="RoofPit_S1" parent="Entities" instance=ExtResource("14_pit")]
+position = Vector2(2220, 100)
+damage = 1
+size = Vector2(680, 80)
+
+[node name="Reset" parent="Entities/RoofPit_S1"]
+position = Vector2(-390, -316)
+
+[node name="RoofPit_S2" parent="Entities" instance=ExtResource("14_pit")]
+position = Vector2(2860, 100)
+damage = 1
+size = Vector2(600, 80)
+
+[node name="Reset" parent="Entities/RoofPit_S2"]
+position = Vector2(-210, -316)
+
+[node name="RoofPit_S3" parent="Entities" instance=ExtResource("14_pit")]
+position = Vector2(3452.5, 100)
+damage = 1
+size = Vector2(585, 80)
+
+[node name="Reset" parent="Entities/RoofPit_S3"]
+position = Vector2(-12.5, -316)
+
+[node name="RoofPit_S4" parent="Entities" instance=ExtResource("14_pit")]
+position = Vector2(3942.5, 100)
+damage = 1
+size = Vector2(395, 80)
+
+[node name="Reset" parent="Entities/RoofPit_S4"]
+position = Vector2(-102.5, -396)
+
+[node name="RoofPit_S5" parent="Entities" instance=ExtResource("14_pit")]
+position = Vector2(4340, 100)
+damage = 1
+size = Vector2(400, 80)
+
+[node name="Reset" parent="Entities/RoofPit_S5"]
+position = Vector2(-280, -480)
+
+[node name="RoofPit_S6" parent="Entities" instance=ExtResource("14_pit")]
+position = Vector2(4852.5, 100)
+damage = 1
+size = Vector2(625, 80)
+
+[node name="Reset" parent="Entities/RoofPit_S6"]
+position = Vector2(-392.5, -560)
+
+[node name="RoofPit_S7" parent="Entities" instance=ExtResource("14_pit")]
+position = Vector2(5475, 100)
+damage = 1
+size = Vector2(620, 80)
+
+[node name="Reset" parent="Entities/RoofPit_S7"]
+position = Vector2(15, -640)
+
+[node name="RoofPit_S8" parent="Entities" instance=ExtResource("14_pit")]
+position = Vector2(5980, 100)
+damage = 1
+size = Vector2(390, 80)
+
+[node name="Reset" parent="Entities/RoofPit_S8"]
+position = Vector2(-100, -520)
+
+[node name="RoofPit_S9" parent="Entities" instance=ExtResource("14_pit")]
+damage = 1
+position = Vector2(6412.5, 100)
+size = Vector2(475, 80)
+
+[node name="Reset" parent="Entities/RoofPit_S9"]
+position = Vector2(-142.5, -320)
 
 [node name="KillPlane" parent="Entities" instance=ExtResource("12_killplane")]
 position = Vector2(3500, 900)
@@ -393,40 +529,51 @@ script = ExtResource("8_group")
 group_id = "L01-E05"
 lane_rect = Rect2(2850, -500, 620, 700)
 reactivate_cooldown = 0.35
+max_attackers = 2
 
 [node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E05"]
-position = Vector2(3100, -200)
 collision_layer = 0
 collision_mask = 2
 monitoring = true
 monitorable = false
+position = Vector2(3150, -200)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E05/ApproachZone"]
 shape = SubResource("RectangleShape2D_approach")
 
 [node name="NightGuard_SE01_01" parent="Encounters/EncounterGroup_E05" instance=ExtResource("9_guard")]
-position = Vector2(3230, -216)
 entity_id = "L01-E05-SE01-01"
+position = Vector2(3420, -216)
+
+[node name="PatrolRover_M01_01" parent="Encounters/EncounterGroup_E05" instance=ExtResource("15_rover")]
+entity_id = "L01-E05-M01-01"
+position = Vector2(3290, -216)
+patrol_min_x = 3230.0
+patrol_max_x = 3330.0
 
 [node name="EncounterGroup_E06" type="Node2D" parent="Encounters"]
 script = ExtResource("8_group")
 group_id = "L01-E06"
-lane_rect = Rect2(4810, -700, 290, 800)
 reactivate_cooldown = 0.35
+lane_rect = Rect2(4810, -700, 450, 800)
 
 [node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E06"]
-position = Vector2(4860, -300)
 collision_layer = 0
 collision_mask = 2
 monitoring = true
 monitorable = false
+position = Vector2(5060, -300)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E06/ApproachZone"]
 shape = SubResource("RectangleShape2D_approach")
 
 [node name="NightGuard_SE01_01" parent="Encounters/EncounterGroup_E06" instance=ExtResource("9_guard")]
-position = Vector2(5090, -540)
 entity_id = "L01-E06-SE01-01"
+position = Vector2(5180, -540)
+
+[node name="NightGuard_SE01_02" parent="Encounters/EncounterGroup_E06" instance=ExtResource("9_guard")]
+entity_id = "L01-E06-SE01-02"
+position = Vector2(5240, -540)
 
 [node name="Beats" type="Node2D" parent="."]
 
@@ -581,7 +728,7 @@ position = Vector2(2680, 0)
 script = ExtResource("11_routepoint")
 action = 1
 tolerance = 12.0
-hold_jump = 0.22
+hold_jump = 0.3
 
 [node name="RP11_T4bLand" type="Marker2D" parent="Route"]
 position = Vector2(2950, 0)
@@ -616,30 +763,30 @@ tolerance = 12.0
 hold_jump = 0.24
 
 [node name="RP16_T6Landed" type="Marker2D" parent="Route"]
-position = Vector2(4200, 0)
+position = Vector2(4060, 0)
 script = ExtResource("11_routepoint")
 action = 0
 tolerance = 12.0
 
 [node name="RP17_JumpT7" type="Marker2D" parent="Route"]
-position = Vector2(4270, 0)
+position = Vector2(4108, 0)
 script = ExtResource("11_routepoint")
 action = 1
 tolerance = 12.0
-hold_jump = 0.24
+hold_jump = 0.3
 
 [node name="RP18_T7Landed" type="Marker2D" parent="Route"]
-position = Vector2(4600, 0)
+position = Vector2(4440, 0)
 script = ExtResource("11_routepoint")
 action = 0
 tolerance = 12.0
 
 [node name="RP19_JumpT8" type="Marker2D" parent="Route"]
-position = Vector2(4670, 0)
+position = Vector2(4602, 0)
 script = ExtResource("11_routepoint")
 action = 1
 tolerance = 12.0
-hold_jump = 0.24
+hold_jump = 0.3
 
 [node name="RP20_T8Landed" type="Marker2D" parent="Route"]
 position = Vector2(4900, 0)

@@ -58,7 +58,7 @@ Color values are palette targets for later material work; image generators may a
 - **Attack:** it leaps to land 1.75 H past Dave, striking on both sides of its landing spot.
 - **Counter:** hold still or step back, then punish its blank landing pose. 4 hits.
 
-It walks upright with an even, slightly too smooth stride and its hands held low and open. Before the hop it crouches with the arms drawn back and the face flickering. The leap is one long fold through the air, and it lands with the arms swept out to both sides. After the landing it stands blank for a beat: mask empty, seams dim, arms hanging. Motion comes from Mixamo clips converted to the 2D rig, and its death is a ragdoll.
+It walks upright with an even, slightly too smooth stride and its hands held low and open. Before the hop it crouches with the arms drawn back and the face flickering. The leap is one long fold through the air, and it lands with the arms swept out to both sides. After the landing it stands blank for a beat: mask empty, seams dim, arms hanging. Its motion is hand-keyed for the side view (C38), and its death is a ragdoll.
 
 ## Openings and limitations
 
@@ -78,7 +78,7 @@ The Fitted Heir is the suggested body for the scene because it is the first Heir
 - **Normal maps:** one per part, green = up: matte ceramic plates with crisp seam grooves, a nearly flat soft mask panel, and wet, fibrous relief on the tissue overlays.
 - **Sockets:** no gun socket. Light sockets along the seams, on the hands and at the mask (the face projection, and the small amber point while hunting). The melee hit areas sit on the hands.
 - **Fluid:** grey-rose lymph: a drip from the hit part under gravity only, wound marks attached to the hit part and a floor pool, separate from the painted art.
-- **Motion and death:** Mixamo clips converted to the 2D rig for the walk, crouch, jump and landing. Death is a ragdoll: the parts become physics bodies pushed by the killing shot and stay joined at their pivots (no dismemberment, C29), the seams and the face projection go dark, and the body settles as a static corpse with a lymph pool.
+- **Motion and death:** hand-keyed on the rig for the side view (C38): the walk, crouch, jump and landing. Death is a ragdoll: the parts become physics bodies pushed by the killing shot and stay joined at their pivots (no dismemberment, C29), the seams and the face projection go dark, and the body settles as a static corpse with a lymph pool.
 
 Plan overlapping drawing layers and visible pivots for the rig. Keep blood, sparks, oil, glows, muzzle flashes, projectiles, attack trails, warning overlays, impacts and environmental props separate from the character. The cutout method is confirmed direction, validated by the approved lit-cutout test (2026-09-30) (C35); frame counts, timing and export remain later production choices.
 

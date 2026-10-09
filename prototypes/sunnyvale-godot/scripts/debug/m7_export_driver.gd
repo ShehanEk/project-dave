@@ -111,6 +111,8 @@ func _run_newgame() -> void:
 	# save routes through the confirm dialog, so the title node may already
 	# be gone here; that is success, not a failure.
 	if not is_instance_valid(title):
+		if not await _play_through_intro():
+			return
 		var level_now := await _find_level()
 		if level_now == null:
 			_fail("level never loaded after New Game")
@@ -123,11 +125,46 @@ func _run_newgame() -> void:
 		title.get_node("Panel/VBox/ConfirmView/ConfirmRow/ConfirmButton").pressed.emit()
 		await get_tree().process_frame
 
+	if not await _play_through_intro():
+		return
 	var level := await _find_level()
 	if level == null:
 		_fail("level never loaded after New Game")
 		return
 	await _drive_newgame_route(level)
+
+
+## New Game plays the SC00 intro comic (C49) before the level: step through every
+## panel the way a player pressing Space would, checking each panel's art loaded in
+## the exported build, then let it hand over to the level.
+func _play_through_intro() -> bool:
+	var intro: Node = null
+	var elapsed := 0.0
+	while intro == null and elapsed < HERO_TIMEOUT:
+		intro = get_tree().get_first_node_in_group("intro_comic")
+		if intro == null:
+			await get_tree().process_frame
+			elapsed += get_process_delta_time()
+	if intro == null:
+		_fail("intro comic never appeared after New Game")
+		return false
+	var count: int = intro.panel_count()
+	var seen := {}
+	var presses := 0
+	# Press through it like a player: finish each caption, cut to Stroud's line on
+	# panel 4, turn the page; record each panel's art as it shows.
+	while is_instance_valid(intro) and not intro.is_finished() and presses < 60:
+		if intro.current_texture() != null:
+			seen[intro.panel_index()] = true
+		intro.advance()
+		presses += 1
+		await get_tree().process_frame
+	var textured := seen.size()
+	print("[M7DRIVER] intro comic panels=", count, " with_art=", textured)
+	if textured != count:
+		_fail("intro comic art missing in the export (%d of %d panels)" % [textured, count])
+		return false
+	return true
 
 
 func _drive_newgame_route(level: Node) -> void:
@@ -235,6 +272,13 @@ func _run_continue() -> void:
 	while bot.points.size() > 0 and (bot.points[0] as RoutePoint).global_position.x < resume_x - 4.0:
 		bot.points.pop_front()
 		bot._point_areas.pop_front()
+	# The bot walks the route and never shoots back. Since the fun pass (C41)
+	# the lockdown fights and the wicket's 16 s hold-out are tuned for a
+	# player who fights, so a bot that only walks can be killed there; a death
+	# then rebuilds the area under it and it loops until the timeout. This
+	# check is about the exported build playing through, not combat, so the
+	# hero is kept up (as every route test's bot is).
+	level.hero.debug_invulnerable = true
 	bot.start(level.hero)
 	bot.failed.connect(func(msg: String, _idx: int, _pos: Vector2) -> void:
 		_fail("RouteBot failed en route to completion: %s" % msg)
@@ -243,15 +287,7 @@ func _run_continue() -> void:
 	var elapsed := 0.0
 	while elapsed < COMPLETION_TIMEOUT:
 		if completed_box[0]:
-			# Give the completion screen one more frame to actually draw
-			# before anything reads pixels off it / the process exits.
-			await get_tree().process_frame
-			await get_tree().process_frame
-			var screen := get_tree().root.find_child("CompletionScreen", true, false)
-			print("[M7DRIVER] completion screen present=", screen != null)
-			_log_session_state("post-completion")
-			print("[M7DRIVER] DONE ok")
-			get_tree().quit(0)
+			await _finish_completion()
 			return
 		await get_tree().process_frame
 		elapsed += get_process_delta_time()
@@ -259,12 +295,21 @@ func _run_continue() -> void:
 	# `await` right as `elapsed` crosses the timeout, so recheck once before
 	# giving up rather than reporting a same-frame finish as a timeout.
 	if completed_box[0]:
-		await get_tree().process_frame
-		await get_tree().process_frame
-		var screen := get_tree().root.find_child("CompletionScreen", true, false)
-		print("[M7DRIVER] completion screen present=", screen != null)
-		_log_session_state("post-completion")
-		print("[M7DRIVER] DONE ok")
-		get_tree().quit(0)
+		await _finish_completion()
 		return
 	_fail("level_completed never fired within %.0fs" % COMPLETION_TIMEOUT)
+
+
+## The Security PA line plays at the wicket first; the completion screen
+## opens LevelDirector.PA_BEAT later. Wait for it, then prove it is showing.
+func _finish_completion() -> void:
+	await get_tree().create_timer(LevelDirector.PA_BEAT + 0.5).timeout
+	await get_tree().process_frame
+	var screen := get_tree().root.find_child("CompletionScreen", true, false)
+	print("[M7DRIVER] completion screen present=", screen != null)
+	_log_session_state("post-completion")
+	if screen == null:
+		_fail("the completion screen never opened after the PA line")
+		return
+	print("[M7DRIVER] DONE ok")
+	get_tree().quit(0)

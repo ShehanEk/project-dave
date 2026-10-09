@@ -1,6 +1,8 @@
 extends TestCase
 ## M7 / 07-acceptance-and-playtesting.md T06 ("Mixed lane: at most two enemies
-## active; only one windup/active attacker; usable retreat remains"), proven
+## active; only one windup/active attacker; usable retreat remains"; the fun
+## pass, C41, lets the lockdown fights in A06 field three enemies with two
+## attacking at once, the group's `max_attackers`), proven
 ## on the REAL level encounter groups L01-E07 (scenes/levels/areas/
 ## a04_square.tscn) and L01-E11 (scenes/levels/areas/a06_exit.tscn) with a
 ## dwelling RouteBot for a sustained multi-attack-cycle sample (CONVENTIONS.md's
@@ -82,29 +84,24 @@ func _sample_group(area_path: String, group_path: String, label: String,
 	for c in group.get_children():
 		if c.is_in_group("enemy"):
 			enemies.append(c)
-	check(enemies.size() == 2, "%s has exactly 2 enemies (a brawler + a Patrol Rover) (got %d)" % [label, enemies.size()])
-	if enemies.size() != 2:
+	var has_rover := enemies.any(func(e): return e is PatrolRover)
+	var has_brawler := enemies.any(func(e): return e is Brawler)
+	check(enemies.size() >= 2 and has_rover and has_brawler,
+			"%s mixes a Patrol Rover with brawlers (%d enemies)" % [label, enemies.size()])
+	if enemies.size() < 2:
 		area.queue_free()
 		return
-	var brawler: Node2D = enemies[0] if enemies[0] is Brawler else enemies[1]
-	var rover: Node2D = enemies[0] if enemies[0] is PatrolRover else enemies[1]
-	check(brawler is Brawler and rover is PatrolRover,
-			"%s: group has exactly one brawler and one Patrol Rover" % label)
+	var cap: int = group.max_attackers
 
-	# Build: start -> [dwell at the real brawler / authored mid-lane terrain
-	# (backstop hop(s)) / dwell at the real rover, merged in x-order since
-	# the terrain can sit before, between, or after either enemy depending on
-	# the area] -> finish.
-	var items: Array = [
-		{"x": brawler.global_position.x, "points": [
-			{"pos": Vector2(brawler.global_position.x, 0.0), "tol": 24.0},
-			{"pos": Vector2(brawler.global_position.x, 0.0), "tol": 24.0, "action": RoutePoint.Action.WAIT_SECONDS, "seconds": DWELL_SECONDS},
-		]},
-		{"x": rover.global_position.x, "points": [
-			{"pos": Vector2(rover.global_position.x, 0.0), "tol": 24.0},
-			{"pos": Vector2(rover.global_position.x, 0.0), "tol": 24.0, "action": RoutePoint.Action.WAIT_SECONDS, "seconds": DWELL_SECONDS},
-		]},
-	]
+	# Build: start -> [dwell at each real enemy / authored mid-lane terrain
+	# (backstop hop(s)), merged in x-order since the terrain can sit before,
+	# between, or after any enemy depending on the area] -> finish.
+	var items: Array = []
+	for e in enemies:
+		items.append({"x": e.global_position.x, "points": [
+			{"pos": Vector2(e.global_position.x, 0.0), "tol": 24.0},
+			{"pos": Vector2(e.global_position.x, 0.0), "tol": 24.0, "action": RoutePoint.Action.WAIT_SECONDS, "seconds": DWELL_SECONDS},
+		]})
 	for m in mid_terrain:
 		items.append({"x": m.pos.x, "points": [m]})
 	items.sort_custom(func(a, b): return a.x < b.x)
@@ -142,8 +139,11 @@ func _sample_group(area_path: String, group_path: String, label: String,
 	bot.build_points(tmp, [])
 	bot.start(hero)
 
-	var attacks := {brawler: 0, rover: 0}
-	var was_active := {brawler: false, rover: false}
+	var attacks := {}
+	var was_active := {}
+	for e in enemies:
+		attacks[e] = 0
+		was_active[e] = false
 	var max_concurrent := 0
 	var violation_tick := -1
 	var t := 0
@@ -152,7 +152,7 @@ func _sample_group(area_path: String, group_path: String, label: String,
 		await get_tree().physics_frame
 		t += 1
 		var concurrent := 0
-		for e in [brawler, rover]:
+		for e in enemies:
 			if not is_instance_valid(e):
 				continue
 			var active: bool = _is_attacking(e)
@@ -162,25 +162,26 @@ func _sample_group(area_path: String, group_path: String, label: String,
 			if active:
 				concurrent += 1
 		max_concurrent = maxi(max_concurrent, concurrent)
-		if concurrent > 1 and violation_tick < 0:
+		if concurrent > cap and violation_tick < 0:
 			violation_tick = t
 	if bot.running:
 		bot.failure_message = "test timeout after %.1fs" % MAX_SECONDS
 		bot.running = false
 
 	var rep := bot.get_report()
-	print("[test_m7_encounter_fairness] %s: %.1fs run (success=%s, failure=%s), max_concurrent=%d, brawler_attacks=%d rover_attacks=%d" % [
-			label, t / 60.0, rep.success, rep.failure, max_concurrent, attacks[brawler], attacks[rover]])
-	check(rep.success, "%s: scripted hero completes the real lane past both enemies (failure=%s)" % [label, rep.failure])
+	var counts: Array = []
+	for e in enemies:
+		counts.append("%s=%d" % [e.entity_id, attacks[e]])
+	print("[test_m7_encounter_fairness] %s: %.1fs run (success=%s, failure=%s), max_concurrent=%d (cap %d), attacks %s" % [
+			label, t / 60.0, rep.success, rep.failure, max_concurrent, cap, ", ".join(counts)])
+	check(rep.success, "%s: scripted hero completes the real lane past every enemy (failure=%s)" % [label, rep.failure])
 	check(violation_tick < 0,
-			"%s: never more than one windup/active attacker at once (first violation at tick %d)" % [label, violation_tick])
-	check(max_concurrent <= 1, "%s: max concurrent windup/active attackers is <=1 (got %d)" % [label, max_concurrent])
-	check(attacks[brawler] >= 1,
-			"%s: %s actually got at least one attack turn (got %d) — proves the invariant was really exercised, not vacuously true" % [
-					label, brawler.entity_id, attacks[brawler]])
-	check(attacks[rover] >= 1,
-			"%s: %s actually got at least one attack turn (got %d) — proves the invariant was really exercised, not vacuously true" % [
-					label, rover.entity_id, attacks[rover]])
+			"%s: never more than %d windup/active attacker(s) at once (first violation at tick %d)" % [label, cap, violation_tick])
+	check(max_concurrent <= cap, "%s: max concurrent windup/active attackers is <=%d (got %d)" % [label, cap, max_concurrent])
+	for e in enemies:
+		check(attacks[e] >= 1,
+				"%s: %s actually got at least one attack turn (got %d) — proves the invariant was really exercised, not vacuously true" % [
+						label, e.entity_id, attacks[e]])
 	check(hero.input_enabled, "%s: hero input remains enabled throughout (never trapped/soft-locked by the encounter)" % label)
 
 	bot.queue_free()

@@ -28,6 +28,12 @@ var _immune_timer: float = 0.0
 var _knockback: Vector2 = Vector2.ZERO
 var _died_emitted: bool = false
 var _is_firing: bool = false
+var _move_dir: int = 0
+var _aim_face_timer: float = 0.0
+## The snapped aim direction (C50): -4 straight up .. 0 level .. 4 straight down.
+var aim_step: int = 0
+## The exact direction to the aim (unit vector), which the shots follow (C50).
+var _shot_dir: Vector2 = Vector2.RIGHT
 var _jumped_this_frame: bool = false
 
 ## M6.5 Kenney integration pass: seconds spent with `_was_on_floor` false,
@@ -41,14 +47,38 @@ const REAL_FALL_AIR_TIME := 0.12
 ## No class_name on the puff script (see its own doc comment) — reached
 ## through this plain preload + its static `spawn()`.
 const KenneyPuff := preload("res://scripts/effects/kenney/kenney_puff.gd")
+## The pixel UI helper (no class_name): backs PromptLabel with the pixel
+## prompt tag (`dress_prompt_label()`), keeping the plain label without the art.
+const PixelUi := preload("res://scripts/ui/pixel_ui.gd")
+## What he is standing on -> the footstep cue (no class_name, like PixelUi).
+const SurfaceMap := preload("res://scripts/world/surface_map.gd")
 
 # --- presentation-only state (M6): read by Visual, never by physics/logic ---
 const LAND_SQUASH_TIME := 0.12
 ## Horizontal distance (px) from the hero within which the aim no longer
 ## flips the facing (cursor straight above/below).
 const FACING_DEADZONE := 8.0
+## Seconds the body keeps facing the aim after the last shot, so tapping fire
+## while running away doesn't spin him round between shots.
+const FIRE_FACING_HOLD := 0.4
+## C50: the arm and the gun turn in 22.5-degree steps (16 directions round him: level,
+## three steps up and down on the side he faces, and straight up and down; behind him he
+## turns round), so the pixel arm holds a few clean poses instead of shimmering through
+## every angle. The shot still goes exactly where the player points (shot_direction()),
+## at most half a step off the barrel. The step is counted from level, negative up:
+## -4 straight up .. 4 straight down.
+const AIM_STEP := PI / 8.0
+const AIM_STEP_MIN := -4
+const AIM_STEP_MAX := 4
+## The step the gun rests at while he runs away from the aim (pointing ahead, a little down).
+const AIM_REST_STEP := 1
 const HIT_POSE_TIME := 0.2
 const INTERACT_POSE_TIME := 0.35
+## Horizontal speed (px/s) above which he counts as moving on the ground: the
+## run cycle plays, and footsteps are counted.
+const MOVING_SPEED := 4.0
+## Radians the run cycle's stride phase advances per px run (one cycle = TAU).
+const STRIDE_PHASE_PER_PX := 0.045
 var _stride_phase: float = 0.0
 var _land_squash_timer: float = 0.0
 var _hit_pose_timer: float = 0.0
@@ -67,7 +97,8 @@ var _interact_was_pressed: bool = false
 @onready var interact_sensor: Area2D = $InteractSensor
 @onready var prompt_label: Label = $PromptLabel
 @onready var aim_pivot: Node2D = $AimPivot
-## Untyped on purpose (M6 art pass adds no class_name — see hero_visual.gd):
+## Untyped on purpose (M6 art pass adds no class_name — see hero_visual.gd;
+## hero.tscn attaches hero_rig_visual.gd, which extends it):
 ## calling its update_pose()/setup() below is a dynamic dispatch that needs
 ## no static type resolved through the (unrefreshed during this pass) import
 ## cache.
@@ -84,6 +115,7 @@ func _ready() -> void:
 	platform_on_leave = CharacterBody2D.PLATFORM_ON_LEAVE_DO_NOTHING
 	if Session:
 		Session.health_changed.connect(_on_health_changed)
+	PixelUi.dress_prompt_label(prompt_label)
 	prompt_label.visible = false
 	if visual:
 		visual.setup(aim_pivot)
@@ -134,11 +166,12 @@ func _physics_process(delta: float) -> void:
 	_jump_buffer_timer = maxf(0.0, _jump_buffer_timer - delta)
 	_was_on_floor = is_on_floor()
 
-	_update_facing()
+	_update_facing(delta)
 	_update_immunity(delta)
 	# Visual first: it picks this tick's sprite frame, and AimPivot then
 	# snaps to that frame's shoulder (no one-tick lag between arm and body).
 	_update_visual_pose(delta)
+	_update_footsteps(delta)
 	_update_aim_pivot()
 
 
@@ -151,15 +184,76 @@ func _update_visual_pose(delta: float) -> void:
 	_hit_pose_timer = maxf(0.0, _hit_pose_timer - delta)
 	_interact_pose_timer = maxf(0.0, _interact_pose_timer - delta)
 
-	var moving := is_on_floor() and absf(velocity.x) > 4.0
+	var moving := is_on_floor() and absf(velocity.x) > MOVING_SPEED
 	if moving:
 		# Signed: moving toward the facing side advances the run cycle,
 		# moving away from it (backpedalling toward the aim) runs it backward.
-		_stride_phase += velocity.x * float(facing) * delta * 0.045
+		_stride_phase += velocity.x * float(facing) * delta * STRIDE_PHASE_PER_PX
 	if visual:
 		visual.update_pose(facing, moving, is_on_floor(), velocity.y, _stride_phase,
 				_is_firing, is_immune(), _died_emitted, _land_squash_timer,
 				_hit_pose_timer, _interact_pose_timer)
+
+
+# --- footsteps (presentation-only, like the stride above) -----------------------
+
+## Ground distance (px) between two footfalls: one foot contact of the run
+## cycle (the cycle is TAU of stride phase and plants a foot every half of it),
+## so the sound lands on the foot the rig plants. About 70 px, which is 5.5
+## steps a second at the 384 px/s run speed, the same cadence as the legs.
+const FOOTSTEP_STRIDE := PI / STRIDE_PHASE_PER_PX
+## Distance (px) after starting to move (or after a landing squash) to the
+## first step, so a walk sounds at once instead of a full stride later.
+const FIRST_FOOTSTEP_DISTANCE := 14.0
+## The floor probe: a ray from this far above his feet to this far below them,
+## on the world layer, run only when a step sounds.
+const FLOOR_PROBE_UP := 8.0
+const FLOOR_PROBE_DOWN := 16.0
+
+## Steps sounded so far and the cue of the latest one (tests read these).
+var footsteps_played: int = 0
+var last_footstep_cue: StringName = &""
+var _step_distance: float = FOOTSTEP_STRIDE - FIRST_FOOTSTEP_DISTANCE
+var _floor_probe: PhysicsRayQueryParameters2D = null
+
+
+## One footstep per FOOTSTEP_STRIDE of ground run under his own power. None
+## while standing, airborne, pushed against a wall, dead, with input off (a
+## modal or cutscene), or in the hurt, interact or landing poses, which are the
+## moments the rig is not showing the run cycle. Standing or airborne primes the
+## distance so the first step of the next run follows FIRST_FOOTSTEP_DISTANCE.
+func _update_footsteps(delta: float) -> void:
+	var running := (is_on_floor() and _move_dir != 0 and absf(velocity.x) > MOVING_SPEED
+			and not _died_emitted and _hit_pose_timer <= 0.0 and _interact_pose_timer <= 0.0
+			and _land_squash_timer <= 0.0)
+	if not running:
+		_step_distance = FOOTSTEP_STRIDE - FIRST_FOOTSTEP_DISTANCE
+		return
+	_step_distance += absf(velocity.x) * delta
+	if _step_distance >= FOOTSTEP_STRIDE:
+		_step_distance -= FOOTSTEP_STRIDE
+		_play_footstep()
+
+
+func _play_footstep() -> void:
+	var cue := _surface_cue()
+	footsteps_played += 1
+	last_footstep_cue = cue
+	Audio.play_sfx(cue, global_position)
+
+
+## The footstep cue for the floor under his feet (SurfaceMap): a short ray
+## down finds the block or platform, so the roofs' paving run-in and landing
+## differ from their slabs. DEFAULT (paving) when nothing is found, such as in
+## an isolated test scene with no AreaRoot.
+func _surface_cue() -> StringName:
+	if _floor_probe == null:
+		_floor_probe = PhysicsRayQueryParameters2D.new()
+		_floor_probe.collision_mask = 1  # layer 1: world
+	_floor_probe.from = global_position + Vector2(0.0, -FLOOR_PROBE_UP)
+	_floor_probe.to = global_position + Vector2(0.0, FLOOR_PROBE_DOWN)
+	var hit := get_world_2d().direct_space_state.intersect_ray(_floor_probe)
+	return SurfaceMap.for_collider(hit.get("collider", null))
 
 
 # --- movement ---------------------------------------------------------------
@@ -207,6 +301,7 @@ func _handle_horizontal(delta: float) -> void:
 			dir -= 1.0
 		if Input.is_action_pressed("move_right"):
 			dir += 1.0
+	_move_dir = int(dir)
 
 	var target_speed := dir * tuning.run_speed
 	var accel: float
@@ -227,13 +322,20 @@ func _apply_knockback_decay(delta: float) -> void:
 	_knockback = _knockback.move_toward(Vector2.ZERO, 900.0 * delta)
 
 
-## The body always faces the side the aim is on, so the gun arm never twists
-## back across the body; moving away from the aim backpedals (the run cycle
-## plays in reverse — see _update_visual_pose). Playtest change 2026-09-28:
-## G02 proposed "facing follows aim while firing and movement otherwise",
-## which left the arm pointing backwards whenever the mouse was behind a
-## moving hero. Within FACING_DEADZONE of straight up/down the facing holds.
-func _update_facing() -> void:
+## Running faces the way he runs; standing still, or shooting (and for
+## FIRE_FACING_HOLD after the last shot), faces the aim, so shooting while
+## backing off backpedals (the run cycle plays in reverse — see
+## _update_visual_pose). While he runs away from the aim the gun rests
+## pointing ahead (_update_aim_pivot), never backwards across his body.
+## Playtest 2026-09-30 ("going backward, he should face that way"); this is
+## G02's rule plus the rest pose that fixes the 2026-09-28 "hand points
+## backwards" report. Within FACING_DEADZONE of straight up/down the aim
+## holds the facing.
+func _update_facing(delta: float) -> void:
+	_aim_face_timer = FIRE_FACING_HOLD if _is_firing else maxf(0.0, _aim_face_timer - delta)
+	if _move_dir != 0 and _aim_face_timer <= 0.0:
+		facing = _move_dir
+		return
 	var dx := get_current_aim().x - global_position.x
 	if absf(dx) > FACING_DEADZONE:
 		facing = 1 if dx > 0.0 else -1
@@ -252,9 +354,11 @@ func set_firing(firing: bool) -> void:
 	_is_firing = firing
 
 
-## Rotates the weapon pivot toward the current aim; flips it vertically
-## (rather than upside-down) when aiming left, a standard 2D top-down/side
-## aim trick that keeps the held weapon's silhouette right-side up.
+## Turns the weapon pivot to the aim, snapped to the nearest 22.5-degree step (C50);
+## flips it vertically (rather than upside-down) when he faces left, a standard
+## 2D side-view trick that keeps the held weapon's silhouette right-side up. The
+## Scrapjack fires along shot_direction() (the exact aim), and each step has its own hold (the visual's gun_hold(): where the gun sits from the
+## shoulder, so the elbow bends and the gun never covers his face).
 func _update_aim_pivot() -> void:
 	if aim_pivot == null:
 		return
@@ -264,9 +368,31 @@ func _update_aim_pivot() -> void:
 	if visual and visual.has_method("shoulder_offset"):
 		aim_pivot.position = visual.shoulder_offset()
 	var to_aim := get_current_aim() - aim_pivot.global_position
-	if to_aim.length() > 0.5:
-		aim_pivot.rotation = to_aim.angle()
-		aim_pivot.scale.y = 1.0 if to_aim.x >= 0.0 else -1.0
+	if to_aim.x * facing < -FACING_DEADZONE:
+		# Aim behind him while he runs the other way: the gun rests ahead.
+		aim_step = AIM_REST_STEP
+		_shot_dir = Vector2.ZERO
+	elif to_aim.length() > 0.5:
+		_shot_dir = to_aim.normalized()
+		# The aim's angle on his facing side (0 level, negative up), clamped to straight
+		# up or down (inside FACING_DEADZONE the cursor may sit a little behind him).
+		var rel := clampf(Vector2(to_aim.x * facing, to_aim.y).angle(), -PI * 0.5, PI * 0.5)
+		aim_step = clampi(int(round(rel / AIM_STEP)), AIM_STEP_MIN, AIM_STEP_MAX)
+	var angle := float(aim_step) * AIM_STEP
+	aim_pivot.rotation = angle if facing > 0 else PI - angle
+	aim_pivot.scale.y = float(facing)
+	if visual and visual.has_method("gun_hold"):
+		var gun := aim_pivot.get_node_or_null("Scrapjack") as Node2D
+		if gun:
+			gun.position = visual.gun_hold(aim_step)
+
+
+## The direction a shot leaves in (C50): exactly toward the aim, which may be up to half
+## a step off the stepped gun; along the gun itself while it rests (aim behind him).
+func shot_direction() -> Vector2:
+	if _shot_dir == Vector2.ZERO and aim_pivot:
+		return aim_pivot.global_transform.x.normalized()
+	return _shot_dir
 
 
 # --- damage / health ---------------------------------------------------------
@@ -297,6 +423,9 @@ func take_damage(amount: int, source_position: Vector2) -> bool:
 	away = away.normalized() if away.length() > 0.001 else Vector2(-facing, 0.0)
 	_knockback = away * tuning.knockback_speed
 	velocity.y = -tuning.knockback_up_speed
+	# C53: a hit lands hard (shake and pause); the death beat (LevelDirector) takes over on a death.
+	if Session.get_health() > 0:
+		GameFeel.hurt(self)
 	return true
 
 
@@ -343,13 +472,19 @@ func _on_health_changed(current: int, _maximum: int) -> void:
 ## hurt pose is the main cue; this only marks the ~1 s immunity window.
 const IMMUNE_TINT := Color(1.0, 0.86, 0.8)
 const NORMAL_TINT := Color(1.0, 1.0, 1.0)
+## C53: one bright flash at the moment of a hit (a single flash, not a flicker), then the tint.
+const HURT_FLASH := Color(1.9, 1.75, 1.7)
+const HURT_FLASH_TIME := 0.08
 
 
 func _update_immunity(delta: float) -> void:
 	if _immune_timer > 0.0:
 		_immune_timer = maxf(0.0, _immune_timer - delta)
 	# A steady tint while immune, no rapid flashing (per CONVENTIONS.md).
-	modulate = IMMUNE_TINT if _immune_timer > 0.0 else NORMAL_TINT
+	if _immune_timer > 0.0 and _immune_timer > tuning.damage_immunity_time - HURT_FLASH_TIME:
+		modulate = HURT_FLASH
+	else:
+		modulate = IMMUNE_TINT if _immune_timer > 0.0 else NORMAL_TINT
 
 
 func is_immune() -> bool:
@@ -393,4 +528,5 @@ func _update_interact_prompt() -> void:
 		_interact_pose_timer = INTERACT_POSE_TIME
 	_interact_was_pressed = interact_pressed
 
-# --- visual: scripts/actors/visuals/hero_visual.gd (child node "Visual") ----
+# --- visual: scripts/actors/visuals/hero_rig_visual.gd (child node "Visual"; ----
+# --- Dave's pixel rig, falling back to hero_visual.gd's Rook frames) ---------

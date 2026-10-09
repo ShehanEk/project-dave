@@ -63,7 +63,8 @@ func _test_night_guard() -> void:
 		var planted := true
 		for k in 5:
 			rig.apply_pose(guard.anim.sample(clip, float(k) * 0.1))
-			planted = planted and absf(rig._ground_error()) < 0.05
+			# A pixel-art rig keeps its pelvis on whole art pixels: half a pixel.
+			planted = planted and absf(rig._ground_error()) < (0.05 if not rig.pixel_art else 0.5 * rig.pixel_world + 0.05)
 		check(planted, "the %s clip keeps the Night Guard's feet on the floor" % clip)
 
 	# A hit bleeds: a spray under the host and a wound on the part it struck.
@@ -145,14 +146,15 @@ func _test_staffer_dormant() -> void:
 	if rig == null:
 		group.queue_free()
 		return
-	check_eq(rig.order.size(), 15, "the Staffer rig has 15 parts")
+	check_eq(rig.order.size(), 17, "the Staffer rig has 17 parts (15 body parts, the Link port and the lanyard)")
 	check(_is_lit(rig), "every Staffer part draws with the lit shader and a normal atlas")
 	check(staffer.state == Brawler.State.DORMANT, "a Staffer waits dormant while its encounter is asleep")
 	for clip in ["dormant", "shamble", "windup", "lunge", "stumble"]:
 		var planted := true
 		for k in 5:
 			rig.apply_pose(staffer.anim.sample(clip, float(k) * 0.1))
-			planted = planted and absf(rig._ground_error()) < 0.05
+			# A pixel-art rig keeps its pelvis on whole art pixels: half a pixel.
+			planted = planted and absf(rig._ground_error()) < (0.05 if not rig.pixel_art else 0.5 * rig.pixel_world + 0.05)
 		check(planted, "the Staffer's %s clip keeps its feet on the floor" % clip)
 	group.is_active = true
 	await physics_frames(2)

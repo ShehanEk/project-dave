@@ -32,6 +32,7 @@ func _run_sequence() -> void:
 	await _wait(0.6)  # hold on the title screen
 
 	var title = main.get_node("TitleScreen")
+	main.play_intro = false  # this demo films the level, not the SC00 intro comic
 	title._on_new_game_pressed()
 	await get_tree().physics_frame
 	# A stale save under THIS demo's own redirected throwaway dir (see

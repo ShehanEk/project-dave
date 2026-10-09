@@ -15,10 +15,17 @@ const CHIP := Color("#FFD166")
 const HALO := Color(0.25, 0.88, 0.82, 0.18)
 const BOB_HEIGHT := 3.0
 const BOB_SPEED := 2.4
+## The painted pixel-art look (objects2 sheet), drawn through PickupSkins; the
+## code-drawn card below stays as the fallback. The halo grows to the painted
+## card's size (36 x 27 world px) and the bob moves in whole art pixels, so
+## the card's pixels never shimmer.
+const PickupSkins := preload("res://scripts/world/pickup_skins.gd")
+const PIECE := "keycard"
+const PAINTED_HALO := 28.0
 
 @export var entity_id: String = "L01-KC01-P"
 @export var keycard_id: String = "L01-KC01"
-@export var toast_text: String = "Clearance card taken"
+@export var toast_text: String = "Clearance card taken: it opens the exit wicket"  # C53: says what it is for
 
 var _t: float = 0.0
 var _reduced_motion: bool = false
@@ -42,7 +49,14 @@ func _ready() -> void:
 	_reduced_motion = settings != null and settings.get_reduced_motion()
 	body_entered.connect(_on_body_entered)
 	set_process(not _reduced_motion)
+	if painted_piece() != "":
+		PickupSkins.make_crisp(self)
 	queue_redraw()
+
+
+## The PickupSkins piece this card draws, or "" for the code-drawn look.
+func painted_piece() -> String:
+	return PIECE if PickupSkins.has_piece(PIECE) else ""
 
 
 func _process(delta: float) -> void:
@@ -63,6 +77,7 @@ func _on_body_entered(body: Node) -> void:
 			remove_child(_toast)
 			parent.add_child(_toast)
 			_toast.global_position = at
+			_toast.reset_physics_interpolation()
 			_toast.show_message(toast_text)
 		queue_free()
 
@@ -70,6 +85,11 @@ func _on_body_entered(body: Node) -> void:
 func _draw() -> void:
 	var bob := 0.0 if _reduced_motion else sin(_t * BOB_SPEED) * BOB_HEIGHT
 	var o := Vector2(0.0, bob)
+	if painted_piece() != "":
+		o.y = roundf(bob / PickupSkins.ART) * PickupSkins.ART
+		draw_circle(o, PAINTED_HALO, HALO)
+		PickupSkins.draw_centred(self, PIECE, o)
+		return
 	draw_circle(o, 24.0, HALO)
 	var card := Rect2(o + Vector2(-16.0, -11.0), Vector2(32.0, 22.0))
 	draw_rect(card, BODY)

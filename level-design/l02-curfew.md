@@ -6,7 +6,7 @@ System details are proposed in the [design pack](../design/README.md): movement,
 
 **ID:** L02
 
-**Campaign group:** Sunnyvale after dark
+**Campaign group:** Eon City after dark
 
 **Renamed from:** "Hedge Your Bets" (C34; the new name is proposal P22). The file was renamed from `l02-hedge-your-bets.md`.
 
@@ -14,7 +14,7 @@ System details are proposed in the [design pack](../design/README.md): movement,
 
 ## Standalone context
 
-DEAD EDEN is an original mature dark sci-fi 2D platformer shooter, not for kids (C28). Dave Harlan, a fired AI researcher who went rogue, works alone through the Sunnyvale campus of Arcadia Dynamics *(proposed name)* at night to expose Adam, Arcadia's sentient AI, which is secretly building a weapon to wipe out humanity. Dave fights human enemies (Arcadia Security's guards and, later, the contractors of Thornwall), the Linked (staff whose Link implants Adam drives), Adam's machines and cyborg dogs (C25, C30). Combat is lethal: every enemy bleeds according to what it is made of and stays where it falls (C28, C29). Since the lethal-force announcement at the end of level 1, Arcadia's guards shoot live rounds. The Heirs first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
+DEAD EDEN is an original mature dark sci-fi 2D platformer shooter, not for kids (C28). Dave Harlan, a fired AI researcher who went rogue, works alone through the Eon City campus of Arcadia Dynamics *(proposed name)* at night to expose Adam, Arcadia's sentient AI, which is secretly building a weapon to wipe out humanity. Dave fights human enemies (Arcadia Security's guards and, later, the contractors of Thornwall), the Linked (staff whose Link implants Adam drives), Adam's machines and cyborg dogs (C25, C30). Combat is lethal: every enemy bleeds according to what it is made of and stays where it falls (C28, C29). Since the lethal-force announcement at the end of level 1, Arcadia's guards shoot live rounds. The Heirs first appear in level 10. The campaign has twelve levels and unique mini-bosses only at 3, 6, 9, and 12. This is concept development, not implementation.
 
 Campus curfew falls over an ornamental garden at night. Arcadia's guards, their dogs and Adam's machines enforce it, and the hedge maze becomes a moving funnel that herds Dave toward the Arcadia Wellness Center, forcing him to clear safe landings while the first live rounds of the night are fired.
 
@@ -27,7 +27,7 @@ Confirmed gameplay: explore, fight, collect treasure, overcome an obstacle, reac
 | Main objective | Recover the Boom Broom, work through the reconfiguring hedge maze under curfew, take the level's keycard from the water-tower pavilion and open the Parade gate into the showcase hall. |
 | Intended difficulty | Easy (the first enemy gun is met alone, with cover beside it) |
 | First successful exploration target | 12–16 minutes; excludes repeated failures and exhaustive secret hunting |
-| New weapon | Boom Broom |
+| New weapon | Boom Broom (the swap pad taken out of Level 1 is ready for it: [swap pad for Level 2](swap-pad-for-level-2.md)) |
 | Weapon types introduced by level end | Scrapjack Pistol, Boom Broom |
 | New enemy types | Sidearm Guard, Security Drone, Hound (with a Night Guard handler) |
 | Enemy guns first faced | Pistol, AS-9 "Civic" (EG01), carried by the Sidearm Guards |

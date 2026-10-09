@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Summarize one Sunnyvale Telemetry JSONL playtest log into
+"""Summarize one Eon City Telemetry JSONL playtest log into
 07-acceptance-and-playtesting.md's report template fields.
 
 Usage:

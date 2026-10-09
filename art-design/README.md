@@ -2,7 +2,7 @@
 
 **Direction (C14–C35, 2026-09-29):** mature dark sci-fi — evil corporation Arcadia Dynamics, sentient AI Adam, rogue AI researcher Dave Harlan; human, cyborg and machine enemies with guns; visible blood; no zombies, no stealth. Enemy art: lit cutout rig with smooth realistic lighting ([style guide](style-guide.md)).
 
-Use the [visual style guide](style-guide.md) with every brief. The enemy art method is the lit cutout rig (C35): flat painted parts, a normal map for each part, smooth engine lighting, Mixamo motion and ragdoll deaths. Status: **confirmed direction, validated by the approved lit-cutout test (2026-09-30)**, with the Night Guard as the test subject. No enemy image is selected yet. The zombie and old daytime concept art was deleted (C23), and the [concept-art gallery](../concept-art/README.md) keeps only the hero's placeholder sprites.
+Use the [visual style guide](style-guide.md) with every brief. The enemy art method is the lit cutout rig (C35): flat painted parts, a normal map for each part, smooth engine lighting, hand-keyed motion (C38) and ragdoll deaths. Status: **confirmed direction, validated by the approved lit-cutout test (2026-09-30)**, with the Night Guard as the test subject. No enemy image is selected yet. The zombie and old daytime concept art was deleted (C23), and the [concept-art gallery](../concept-art/README.md) keeps only the hero's placeholder sprites.
 
 For the hero, see [Dave Harlan](../design/02-characters/hero.md). For the optional collectibles, see [evidence files](../design/03-progression/evidence-files.md). Use the [AI entry guide](../AI_START_HERE.md) to connect these visuals to the gameplay rules.
 
@@ -14,7 +14,7 @@ These are forty-three standalone asset briefs for image generation and later rig
 2. Open one asset brief and copy its **neutral design** prompt, which starts with the standard prompt opening, into your image generator. Ask for one evenly lit, flat-color, side-view full-body painting on a flat mid-grey or transparent background, with no baked shadows, no painted-in blood and no gun (unless the brief is a gun brief).
 3. Approve one result for the asset. Start with the Night Guard, the test subject.
 4. Split the approved painting into rig parts with hidden overlap under the joints. The brief's **Rig parts, normal maps and sockets** section lists the parts, pivots, the gun socket and the fluid type (blood, oil or lymph). Make a normal map for every part (green = up), pack the parts and maps into an atlas, and build the rig.
-5. Drive the rig with Mixamo clips converted to the 2D rig. Add the tell pose, the ragdoll death (machines and bosses burst into debris parts) and the blood layers (spray, wound marks, floor pools) separately.
+5. Hand-key the rig's moves for the side view (C38: motion capture flattens badly onto side-on cutouts). Add the tell pose, the ragdoll death (machines and bosses burst into debris parts) and the blood layers (spray, wound marks, floor pools) separately.
 6. Check every asset in the engine, under night lighting, at gameplay size, against a dark background and as a solid silhouette. The tell must read.
 
 These files contain art direction and prompts. There are no finished paintings, rigs or animations. Gameplay abilities follow the [game concept](../dead-eden-concept.md). Appearances, scales and attachments are proposals.
@@ -129,9 +129,13 @@ The shared kit of nine. Any enemy can carry any gun, and each gun is a separate 
 
 - [NPC01 — Sleepwalker](npcs/npc01-sleepwalker.md) — Staff with failing implants who repeat old routines. Harmless and protected: no combat, no hit zone, never a target.
 
+## Environment
+
+- [Eon City play plane](environment/sunnyvale-play-plane.md) — the review of Level 1's props, terrain and objects against the pixel-art backgrounds (C39), with the ChatGPT prompts for the sheets that repaint them, the sign lettering and the characters. The terrain (Sheet 1) and the street furniture (Sheet 2, C42) are in the game.
+
 ## Suggested review order
 
-1. **Night Guard first.** It is the test subject for the lit cutout rig (C35). Judge the smooth light, the proportions, the Mixamo motion and the ragdoll death on him before anything else is painted, next to Dave (the [hero brief](../design/02-characters/hero.md)), whose frames get normal maps too.
+1. **Night Guard first.** It is the test subject for the lit cutout rig (C35). Judge the smooth light, the proportions, the hand-keyed motion and the ragdoll death on him before anything else is painted, next to Dave (the [hero brief](../design/02-characters/hero.md)), whose frames get normal maps too.
 2. Add the other Level 1 enemies: the Staffer, which tests the Link light and implant sparks, and the Patrol Rover, the first rigid-part machine (sparks, oil and a debris burst).
 3. Add the first gun on a hand socket: the Sidearm Guard with the pistol and its muzzle-flash light. Then approve the rest of the gun kit.
 4. Develop the Scrapjack for Dave's equipment family.

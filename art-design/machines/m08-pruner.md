@@ -70,7 +70,7 @@ The open lens during the cooldown: the petals stay splayed, the lens ring goes d
 - **Normal maps:** one per part, green = up: raw ceramic with soft casting relief, petal ribs and spine seams, a domed lens.
 - **Sockets:** the head socket takes the [EG09](../enemy-guns/eg09-cutter-beam.md) lens unit, whose muzzle marker sits at the lens center; the sight line and the beam start there. Light sockets at the status lens (small, steady) and the lens ring (tell glow). Spark points at the joints and the lens; an oil drip point at the joint housing.
 - **Fluid:** white sparks and black oil where the machine parts show, plus ceramic chips. Never blood.
-- **Motion and death:** hand-keyed on the rigid parts (Mixamo clips are humanoid) *(proposed)*. On death it bursts into debris parts: the petals, head shell, lens unit and arm segments become physics bodies pushed by the killing shot, and the arm swings loose from the ceiling plate, which stays. The wreck hangs as a static corpse with a dark oil stain below.
+- **Motion and death:** hand-keyed on the rigid parts, like every enemy (C38). On death it bursts into debris parts: the petals, head shell, lens unit and arm segments become physics bodies pushed by the killing shot, and the arm swings loose from the ceiling plate, which stays. The wreck hangs as a static corpse with a dark oil stain below.
 
 Plan overlapping drawing layers and visible pivots for the rig. Keep blood, sparks, oil, glows, muzzle flashes, projectiles, attack trails, warning overlays, impacts and environmental props separate from the character. The cutout method is confirmed direction, validated by the approved lit-cutout test (2026-09-30) (C35); frame counts, timing and export remain later production choices.
 

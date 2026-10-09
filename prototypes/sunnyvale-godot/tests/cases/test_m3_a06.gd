@@ -4,6 +4,14 @@ extends TestCase
 ## wicket / exit seam, and the area's structure (beats, encounter groups,
 ## enemy roster, entities, seam floors, the B03 pit hazard's safe foothold)
 ## must match the design doc exactly. No optional branches in this area.
+## C41 (the fun pass): the lockdown is a real fight now — E13 (an ambush of
+## two Staffers at the entry), E10 (Rover + two Staffers), E14 (a Night Guard
+## on PlatformB), E11 (Staffer + Rover + Night Guard) and the exit wicket's
+## 16 s hold-out (E15, then E16 as reinforcements; the two share one attack
+## token pool capped at 2). Groups may field more than two enemies and
+## `max_attackers` (1 by default, 2 for E13/E10/E11/E15) is their attacker
+## cap. The wicket stays shut without the clearance keycard, so the route
+## test hands the hero the card first (as the A04 pickup would have).
 ## Run: cd prototypes/sunnyvale-godot && NOIMPORT=1 tools/test.sh m3_a06
 
 const AREA_SCENE := "res://scenes/levels/areas/a06_exit.tscn"
@@ -11,14 +19,21 @@ const AREA_SCENE := "res://scenes/levels/areas/a06_exit.tscn"
 const EXPECTED_BEATS: PackedStringArray = [
 	"L01-A06-B01", "L01-A06-B02", "L01-A06-B03", "L01-A06-B04", "L01-A06-B05",
 ]
-## Tree order: Encounters/EncounterGroup_E10 (Patrol Rover, Staffer), then
-## EncounterGroup_E11 (Staffer, Patrol Rover) — matches the encounter
-## registry row-by-row (L01-E10: 1 Rover + 1 Staffer; L01-E11: 1 Staffer +
-## 1 Rover). Both Staffers are Linked workers who walk out of an annex door
-## after the lockdown (C33).
+## Tree order: Encounters/EncounterGroup_E13, E10, E14, E11, E15, E16 —
+## matches the encounter registry row-by-row (L01-E13: 2 Staffers; L01-E10:
+## 1 Rover + 2 Staffers; L01-E14: 1 Night Guard; L01-E11: 1 Staffer + 1 Rover
+## + 1 Night Guard; L01-E15 and L01-E16: 2 Staffers each, the hold-out). The
+## E10/E11 Staffers are Linked workers who walk out of an annex door after
+## the lockdown (C33).
 const EXPECTED_ENEMIES: PackedStringArray = [
-	"L01-E10-M01-01", "L01-E10-LK01-01", "L01-E11-LK01-01", "L01-E11-M01-01",
+	"L01-E13-LK01-01", "L01-E13-LK01-02",
+	"L01-E10-M01-01", "L01-E10-LK01-01", "L01-E10-LK01-02",
+	"L01-E14-SE01-01",
+	"L01-E11-LK01-01", "L01-E11-M01-01", "L01-E11-SE01-01",
+	"L01-E15-LK01-01", "L01-E15-LK01-02",
+	"L01-E16-LK01-01", "L01-E16-LK01-02",
 ]
+const KEYCARD := "L01-KC01"
 ## 0 chips on the main route; the only Entities-container id is the HS03
 ## capsule (no cache/evidence/switch/station/workbench/pad in this area).
 const EXPECTED_ENTITIES: PackedStringArray = [
@@ -35,8 +50,12 @@ func run() -> void:
 
 func _test_main_route_reaches_exit() -> void:
 	Session.new_run()
+	# The wicket's gate stays shut without the clearance card (the A04 pickup,
+	# worth 0 chips), so this isolated-area run starts with it in hand.
+	Session.take_keycard(KEYCARD, "L01-KC01-P")
 	var harness = load("res://tests/area_harness.gd").new()
-	var result: Dictionary = await harness.run_area(self, AREA_SCENE, [], 60.0)
+	# The route's last wait is the wicket's 16 s hold-out (RP14b_HoldOut).
+	var result: Dictionary = await harness.run_area(self, AREA_SCENE, [], 90.0)
 	check(result.reached_exit,
 			"A06 main route reaches the exit seam (failure=%s, pos=%s)"
 			% [result.failure, result.hero_final_position])
@@ -72,45 +91,82 @@ func _test_structure_and_ids() -> void:
 	check(entity_ids == EXPECTED_ENTITIES,
 			"entity ids match: 0 chips/caches/evidence/switches, 1 med-patch (got %s)" % [entity_ids])
 
-	# Encounter groups: exact group_id and per-group enemy composition
-	# (E10: 1 Rover + 1 Staffer; E11: 1 Staffer + 1 Rover, one-attacker rule).
+	# Encounter groups: exact group_id, per-group composition and attacker cap.
+	# C41: E13 (ambush), E10, E14, E11 and the hold-out's E15 + E16.
 	var encounters := area.get_node("Encounters")
+	check(encounters.get_child_count() == 6,
+			"A06 has exactly 6 encounter groups: E13, E10, E14, E11, E15, E16 (got %d)" % encounters.get_child_count())
+	var group_e13: EncounterGroup = encounters.get_node("EncounterGroup_E13")
 	var group_e10: EncounterGroup = encounters.get_node("EncounterGroup_E10")
+	var group_e14: EncounterGroup = encounters.get_node("EncounterGroup_E14")
 	var group_e11: EncounterGroup = encounters.get_node("EncounterGroup_E11")
-	check(group_e10.group_id == "L01-E10", "E10 group_id is exactly L01-E10")
-	check(group_e11.group_id == "L01-E11", "E11 group_id is exactly L01-E11")
+	var group_e15: EncounterGroup = encounters.get_node("EncounterGroup_E15")
+	var group_e16: EncounterGroup = encounters.get_node("EncounterGroup_E16")
+	for pair in [[group_e13, "L01-E13"], [group_e10, "L01-E10"], [group_e14, "L01-E14"],
+			[group_e11, "L01-E11"], [group_e15, "L01-E15"], [group_e16, "L01-E16"]]:
+		check(pair[0].group_id == pair[1], "%s group_id is exactly %s" % [pair[1], pair[1]])
 
-	var e10_types := _enemy_types(group_e10)
-	check(e10_types.size() == 2 and e10_types.count("Rover") == 1 and e10_types.count("Staffer") == 1,
-			"E10 has exactly 1 Rover + 1 Staffer (got %s)" % [e10_types])
+	var expected_types := {
+		group_e13: ["Staffer", "Staffer"],
+		group_e10: ["Rover", "Staffer", "Staffer"],
+		group_e14: ["Night Guard"],
+		group_e11: ["Staffer", "Rover", "Night Guard"],
+		group_e15: ["Staffer", "Staffer"],
+		group_e16: ["Staffer", "Staffer"],
+	}
+	for g in expected_types:
+		var types := _enemy_types(g)
+		var want: Array = expected_types[g]
+		types.sort()
+		want.sort()
+		check(types == want, "%s has exactly %s (got %s)" % [g.group_id, want, types])
 
-	var e11_types := _enemy_types(group_e11)
-	check(e11_types.size() == 2 and e11_types.count("Staffer") == 1 and e11_types.count("Rover") == 1,
-			"E11 has exactly 1 Staffer + 1 Rover (got %s)" % [e11_types])
+	# Attacker caps: two for the lockdown fights, one for the lone-guard E14;
+	# E16 draws on E15's token pool, so the whole hold-out never fields more
+	# than two attackers (C41).
+	check(group_e13.max_attackers == 2 and group_e10.max_attackers == 2 and group_e11.max_attackers == 2
+			and group_e15.max_attackers == 2,
+			"E13, E10, E11 and E15 allow two attackers at once")
+	check(group_e14.max_attackers == 1, "E14's lone Night Guard is the only attacker (cap 1)")
+	check(not group_e16.share_tokens_with.is_empty() and group_e16.get_node(group_e16.share_tokens_with) == group_e15,
+			"E16 shares E15's attack tokens")
+	check(group_e16.attacker_cap() == 2 and group_e15.attacker_cap() == 2,
+			"the hold-out's token pool (E15 + E16) is capped at 2 attackers (E15 %d, E16 %d)"
+			% [group_e15.attacker_cap(), group_e16.attacker_cap()])
 
-	# Each Staffer is dormant in its own annex door until its group's
-	# ApproachZone fires: it stands at the door's x, asleep (DORMANT).
-	for pair in [[group_e10, "AnnexDoor_E10"], [group_e11, "AnnexDoor_E11"]]:
+	# The E10/E11 Staffers are dormant in their own annex door until the
+	# group's ApproachZone fires: they stand inside the door's span, asleep
+	# (DORMANT). Find the Staffers by scene (Night Guards share the Brawler
+	# script); a group can have several Staffers at one door.
+	for pair in [[group_e10, "AnnexDoor_E10", 2], [group_e11, "AnnexDoor_E11", 1]]:
 		var group: EncounterGroup = pair[0]
 		var door: Node2D = area.get_node("Scenery/AnnexDoors/" + pair[1])
-		var staffer: Brawler = null
-		for child in group.get_children():
-			if child is Brawler:
-				staffer = child
-		check(staffer != null, "%s has a Staffer to walk out of %s" % [group.group_id, pair[1]])
-		if staffer != null:
-			check(absf(area.to_local(staffer.global_position).x - area.to_local(door.global_position).x) < 1.0,
-					"%s's Staffer stands in %s (x %.0f vs door x %.0f)" % [group.group_id, pair[1],
-							area.to_local(staffer.global_position).x, area.to_local(door.global_position).x])
-			check(staffer.tuning.dormant_until_active and staffer.state == Brawler.State.DORMANT,
-					"%s's Staffer is dormant while its encounter is inactive (state %d)" % [group.group_id, staffer.state])
+		var staffers := _staffers(group)
+		check(staffers.size() == pair[2],
+				"%s has %d Staffer(s) to walk out of %s (got %d)" % [group.group_id, pair[2], pair[1], staffers.size()])
+		for staffer in staffers:
+			var dx: float = absf(area.to_local(staffer.global_position).x - area.to_local(door.global_position).x)
+			check(dx <= door.size.x * 0.5,
+					"%s's Staffer %s stands in %s (x %.0f vs door x %.0f, door half-width %.0f)" % [group.group_id,
+							staffer.entity_id, pair[1], area.to_local(staffer.global_position).x,
+							area.to_local(door.global_position).x, door.size.x * 0.5])
 
-	# Both groups have an ApproachZone (visible-approach activation, per
-	# CONVENTIONS.md: "no enemy attack begins ... from an unpreviewed region").
-	check(group_e10.has_node("ApproachZone") and not group_e10.is_active,
-			"E10 starts inactive behind its ApproachZone")
-	check(group_e11.has_node("ApproachZone") and not group_e11.is_active,
-			"E11 starts inactive behind its ApproachZone")
+	# Every Staffer in the area is dormant while its group is inactive.
+	for group in [group_e13, group_e10, group_e11, group_e15, group_e16]:
+		for staffer in _staffers(group):
+			check(staffer.tuning.dormant_until_active and staffer.state == Brawler.State.DORMANT,
+					"%s's Staffer %s is dormant while its encounter is inactive (state %d)" % [group.group_id,
+							staffer.entity_id, staffer.state])
+
+	# Visible-approach activation (CONVENTIONS.md: "no enemy attack begins ...
+	# from an unpreviewed region"): E13/E10/E14/E11 sleep behind an
+	# ApproachZone; the hold-out's E15/E16 have none and wait for the wicket.
+	for group in [group_e13, group_e10, group_e14, group_e11]:
+		check(group.has_node("ApproachZone") and not group.is_active,
+				"%s starts inactive behind its ApproachZone" % group.group_id)
+	for group in [group_e15, group_e16]:
+		check(group.wait_for_trigger and not group.is_active and not group.has_node("ApproachZone"),
+				"%s waits for the wicket's override (wait_for_trigger, inactive, no ApproachZone)" % group.group_id)
 
 	# Rover backstops: a solid BACKSTOP block sits in each Rover's lane.
 	var backstop_e10 := area.get_node("Geometry/BackstopE10")
@@ -147,6 +203,19 @@ func _test_structure_and_ids() -> void:
 	check(absf(area.to_local(wicket.global_position).x - (area.width - 300.0)) < 1.0,
 			"exit wicket sits at x ~= width-300 (got %.1f)" % area.to_local(wicket.global_position).x)
 
+	# C41: the wicket runs a hold-out (16 s override) that wakes E15, then E16.
+	check(is_equal_approx(wicket.override_time, 16.0), "the wicket's override takes 16 s (got %.1f)" % wicket.override_time)
+	check(wicket.override_groups.size() == 1 and wicket.get_node(wicket.override_groups[0]) == group_e15,
+			"the override wakes E15")
+	check(wicket.reinforcement_groups.size() == 1 and wicket.get_node(wicket.reinforcement_groups[0]) == group_e16,
+			"the override's reinforcements are E16")
+	check(wicket.reinforcement_delay < wicket.override_time,
+			"E16 arrives before the override finishes (%.1f s < %.1f s)" % [wicket.reinforcement_delay, wicket.override_time])
+	var station07 := area.get_node_or_null("Entities/RecoveryStation_CP07")
+	check(station07 != null and station07.checkpoint_id == "CP07", "CP07 recovery station (before the hold-out) is present")
+	check(area.has_node("Markers/Respawn_CP07"), "CP07 has its Respawn_CP07 marker")
+	check(area.has_node("Scenery/AnnexDoors/AnnexDoor_Yard"), "the hold-out yard has its AnnexDoor_Yard scenery")
+
 	# AD-12/AD-17 regression (m7-tscn-comment-swallows-next-node): a `##`
 	# doc-comment placed on the line right after a `[node ...]` header
 	# silently ate the FIRST following sibling's entire node declaration on
@@ -179,3 +248,13 @@ func _enemy_types(group: Node) -> Array:
 		elif child is Brawler:
 			types.append("Staffer" if child.scene_file_path == "res://scenes/actors/staffer.tscn" else "Night Guard")
 	return types
+
+
+## The Staffers directly under `group`, found by scene file (the Night Guard
+## is a Brawler too).
+func _staffers(group: Node) -> Array:
+	var out: Array = []
+	for child in group.get_children():
+		if child is Brawler and child.scene_file_path == "res://scenes/actors/staffer.tscn":
+			out.append(child)
+	return out

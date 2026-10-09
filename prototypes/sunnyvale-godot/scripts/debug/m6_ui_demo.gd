@@ -36,7 +36,11 @@ func _ready() -> void:
 func _run_sequence() -> void:
 	var depot: AreaRoot = level.areas[DEPOT_AREA_INDEX]
 	var workbench: Workbench = depot.get_node("Entities/Workbench")
-	var pad: WeaponPad = depot.get_node("Entities/WeaponPad")
+	# Level 1 has no swap pad since C51; place one where it used to stand for the demo.
+	var pad: WeaponPad = load("res://scenes/objects/weapon_pad.tscn").instantiate()
+	pad.pad_id = "L01-A05-PAD01"
+	pad.position = Vector2(1780, 0)
+	depot.get_node("Entities").add_child(pad)
 
 	# Ordinary gameplay HUD: partial health, a nonzero wallet, Quickcycle not
 	# yet owned (readable partial-loss/chip/fire-readiness state, not just the

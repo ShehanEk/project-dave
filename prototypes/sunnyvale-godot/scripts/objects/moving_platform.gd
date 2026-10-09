@@ -26,6 +26,19 @@ const TOP_BEVEL := Color("#5A718C")
 const TRACK := Color(0.36, 0.45, 0.56, 0.55)
 const RUNNING_LIGHT := Color("#3FE0D0")
 
+## The painted pixel-art look (objects2 sheet), drawn through PickupSkins: the
+## steel plate with three teal lights under it, stretched to `width` without
+## scaling a pixel (plain plate repeats around the middle light). The plate is
+## about as thick as the collision, with the lights hanging below it. The
+## sheet's plate has a dark top edge, so the cold-white lit edge (the
+## walkable cue) is drawn over its top rows, and the lights get a soft glow.
+## The track and end stops stay code-drawn; the code-drawn deck, struts and
+## drive housing stay as the fallback. Columns in art px of the piece.
+const PickupSkins := preload("res://scripts/world/pickup_skins.gd")
+const PIECE := "moving_platform"
+const LIGHT_COLS := [14, 48, 82]
+const LIGHT_ROW := 15.5
+
 var _progress: float = 0.0  # 0 at point_a, 1 at point_b
 var _dir: int = 1
 var _pause_timer: float = 0.0
@@ -42,7 +55,14 @@ func _ready() -> void:
 	rect.size = Vector2(width, thickness)
 	_shape_node.shape = rect
 	add_child(_shape_node)  # generated, not saved
+	if painted_piece() != "":
+		PickupSkins.make_crisp(self)
 	queue_redraw()
+
+
+## The PickupSkins piece this platform draws, or "" for the code-drawn look.
+func painted_piece() -> String:
+	return PIECE if PickupSkins.has_piece(PIECE) else ""
 
 
 func _physics_process(delta: float) -> void:
@@ -108,6 +128,9 @@ func _draw() -> void:
 	for p in [local_a, local_b]:
 		draw_rect(Rect2(p - Vector2(4.0, 4.0), Vector2(8.0, 8.0)), FACE)
 		draw_rect(Rect2(p - Vector2(4.0, 4.0), Vector2(8.0, 8.0)), TRACK, false, 1.5)
+	if painted_piece() != "":
+		_draw_painted()
+		return
 
 	# support struts and a small drive housing under the deck: a solid,
 	# driven platform, not floating debris.
@@ -128,3 +151,19 @@ func _draw() -> void:
 	# the walkable edge goes on last, over the outline's inner half.
 	draw_rect(Rect2(rect.position + Vector2(0.0, 2.0), Vector2(width, minf(3.0, thickness - 2.0))), TOP_BEVEL)
 	draw_rect(Rect2(rect.position, Vector2(width, minf(2.0, thickness))), TOP_EDGE)
+
+
+func _draw_painted() -> void:
+	var a := PickupSkins.ART
+	var top_left := Vector2(-width * 0.5, -thickness * 0.5)
+	var left := PickupSkins.draw_sized(self, PIECE, top_left, Vector2(width, PickupSkins.piece_size(PIECE).y))
+	var painted_w := 2.0 * roundf(width / (2.0 * a)) * a
+	# the walkable edge, over the plate's dark top rows (the corners stay round)
+	var edge_x := left + 2.0 * a
+	var edge_w := painted_w - 4.0 * a
+	draw_rect(Rect2(Vector2(edge_x, top_left.y + a), Vector2(edge_w, a)), TOP_BEVEL)
+	draw_rect(Rect2(Vector2(edge_x, top_left.y), Vector2(edge_w, a)), TOP_EDGE)
+	for col in LIGHT_COLS:
+		var x := PickupSkins.column_x(PIECE, width, col)
+		if not is_nan(x):
+			draw_circle(Vector2(top_left.x + x, top_left.y + LIGHT_ROW * a), 10.0, Color(RUNNING_LIGHT, 0.15))

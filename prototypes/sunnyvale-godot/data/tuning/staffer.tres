@@ -6,7 +6,7 @@
 script = ExtResource("1_brawler")
 health = 2
 damage = 1
-approach_speed_h_per_s = 0.8
+approach_speed_h_per_s = 1.25
 patrol_speed_h_per_s = 0.0
 notice_range = 520.0
 engage_range = 108.0
@@ -30,7 +30,7 @@ clip_windup = "windup"
 clip_strike = "lunge"
 clip_recover = "stumble"
 tell_joint = "near_hand"
-tell_offset = Vector2(0.5, 3.5)
+tell_offset = Vector2(0.5, 8.9)
 tell_emissive = false
 tell_hand_glow = true
 link_joint = "head"

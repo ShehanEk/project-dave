@@ -5,6 +5,9 @@ extends TestCase
 ## reachable if enemies are bypassed"). Proves the main route reaches the
 ## exit seam, every beat/entity/enemy id matches 02 exactly, and reports the
 ## bot's per-beat timing (NOT pacing evidence, just for the record).
+## C41 (the fun pass): E08 gained a Patrol Rover (with its E08Backstop), E09
+## gained a second Night Guard, and a new recovery station CP06 sits at the
+## start of the E08 plaza, so the population is 5 Night Guards + 3 Rovers.
 
 const AREA := "res://scenes/levels/areas/a04_square.tscn"
 
@@ -15,8 +18,8 @@ const EXPECTED_BEATS := [
 const EXPECTED_GROUP_IDS := ["L01-E07", "L01-E08", "L01-E09"]
 const EXPECTED_ENEMY_IDS := [
 	"L01-E07-SE01-01", "L01-E07-M01-01",
-	"L01-E08-SE01-01", "L01-E08-SE01-02",
-	"L01-E09-SE01-01", "L01-E09-M01-01",
+	"L01-E08-SE01-01", "L01-E08-SE01-02", "L01-E08-M01-01",
+	"L01-E09-SE01-01", "L01-E09-M01-01", "L01-E09-SE01-02",
 ]
 const EXPECTED_CHIP_IDS := [
 	"L01-A04-G001", "L01-A04-G002", "L01-A04-G003", "L01-A04-G004",
@@ -60,8 +63,8 @@ func _test_main_route_reaches_exit_and_ids_match() -> void:
 			guard_count += 1
 		elif id.contains("-M01-"):
 			rover_count += 1
-	check(guard_count == 4, "A04 population: 4 Night Guards (got %d)" % guard_count)
-	check(rover_count == 2, "A04 population: 2 Patrol Rovers (got %d)" % rover_count)
+	check(guard_count == 5, "A04 population: 5 Night Guards (got %d)" % guard_count)
+	check(rover_count == 3, "A04 population: 3 Patrol Rovers (got %d)" % rover_count)
 
 	var group_ids: Array = []
 	var encounters := probe.get_node("Encounters")
@@ -76,6 +79,11 @@ func _test_main_route_reaches_exit_and_ids_match() -> void:
 	for id in EXPECTED_CHIP_IDS:
 		check(entity_ids.has(id), "chip/cluster id %s present" % id)
 	check(entity_ids.has("L01-HS02"), "med-patch L01-HS02 present")
+	var station06 := probe.get_node_or_null("Entities/RecoveryStation_CP06")
+	check(station06 != null and station06.checkpoint_id == "CP06", "CP06 recovery station (start of the E08 plaza) is present")
+	check(probe.has_node("Markers/Respawn_CP06"), "CP06 has its Respawn_CP06 marker")
+	var backstop08 := probe.get_node_or_null("Geometry/E08Backstop")
+	check(backstop08 != null and backstop08.kind == 4, "E08's Patrol Rover has its BACKSTOP block (E08Backstop)")
 
 	check(probe.has_floor_at(50.0), "seam contract: solid floor near local x=50 (entry seam)")
 	check(probe.has_floor_at(probe.width - 50.0), "seam contract: solid floor near local x=width-50 (exit seam)")

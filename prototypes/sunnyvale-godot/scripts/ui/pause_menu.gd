@@ -25,6 +25,8 @@ extends CanvasLayer
 ## reachable from the main view's own "Controls" button, subject to the same
 ## `_can_open()` gating.
 
+const PixelUi := preload("res://scripts/ui/pixel_ui.gd")
+
 signal restart_from_checkpoint_confirmed
 signal quit_to_title_confirmed
 
@@ -128,12 +130,28 @@ func _ready() -> void:
 	_music_slider.value_changed.connect(_on_music_changed)
 	_sfx_slider.value_changed.connect(_on_sfx_changed)
 
+	_add_pixel_icons()
 	_apply_view()
 	_collect_text_size_bases(_panel)
 	_apply_text_size()
 	var settings := get_node_or_null("/root/Settings")
 	if settings and not settings.changed.is_connected(_apply_text_size):
 		settings.changed.connect(_apply_text_size)
+
+
+## Pixel UI (Sheet 12): the gear on the Settings button, at 3 px per UI pixel
+## (the Settings view's own rows carry the subtitle and speaker icons in
+## pause.tscn). Every main-view button gets the same height so the one with an
+## icon does not stand taller. Nothing changes without the PNG.
+func _add_pixel_icons() -> void:
+	var gear := PixelUi.scaled_texture("gear")
+	if gear == null:
+		return
+	_settings_button.icon = gear
+	var h: float = _settings_button.get_combined_minimum_size().y
+	for b in _main_view.get_children():
+		if b is Button:
+			b.custom_minimum_size.y = maxf(b.custom_minimum_size.y, h)
 
 
 func _exit_tree() -> void:
@@ -232,7 +250,10 @@ func _open(view: View) -> void:
 	_refresh_settings_controls()
 	_controls_view.refresh()
 	_apply_view()
-	_play_sfx(&"ui_move")
+	# The menu-opening whoosh (N05; Pause, Tab's Journal and F1's Controls all
+	# open here). It carries its own tick, so it replaces the old ui_move; closing
+	# keeps ui_back (see _resume).
+	_play_sfx(&"ui_pause")
 	var telemetry := get_node_or_null("/root/Telemetry")
 	if telemetry:
 		telemetry.pause_start()

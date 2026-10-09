@@ -1,8 +1,9 @@
 extends RefCounted
-## SE01 Night Guard: hand-keyed placeholder clips for the human lit rig
-## (degrees; see rig_animator.gd for the conventions). A converted Mixamo
-## clip of the same name in assets/characters/lit/night_guard/mocap/
-## replaces one of these automatically.
+## SE01 Night Guard: hand-keyed clips for the human lit rig (degrees; see
+## rig_animator.gd for the conventions). All hand-keyed (C38): the Mixamo
+## clips flattened badly onto the side-on cutouts (the arm thrown straight
+## up, a deep bow for a flinch, both arms reaching out in the recovery), so
+## every move is posed here for the side view.
 
 const IDLE_A := {"pelvis": 0, "torso": 2, "head": -2, "near_upper_arm": 6, "near_forearm": -28, "near_hand": 8,
 		"baton": -48, "far_upper_arm": -4, "far_forearm": -14, "near_thigh": -3, "near_shin": 4,
@@ -10,6 +11,19 @@ const IDLE_A := {"pelvis": 0, "torso": 2, "head": -2, "near_upper_arm": 6, "near
 const IDLE_B := {"pelvis": 0, "torso": 3.4, "head": -3.6, "near_upper_arm": 7.5, "near_forearm": -30,
 		"near_hand": 8, "baton": -46, "far_upper_arm": -5.5, "far_forearm": -16, "near_thigh": -3,
 		"near_shin": 4, "far_thigh": 4, "far_shin": 3, "root": Vector2(0, 0.3)}
+
+const RECOVER_A := {"pelvis": 5, "torso": 11, "head": -6, "near_upper_arm": -8, "near_forearm": -14,
+		"near_hand": 6, "baton": -72, "far_upper_arm": -22, "far_forearm": 8, "far_hand": -16,
+		"near_thigh": -14, "near_shin": 22, "far_thigh": 8, "far_shin": 18, "root": Vector2(3.0, 0.8)}
+const RECOVER_B := {"pelvis": 6, "torso": 15, "head": -9, "near_upper_arm": -6, "near_forearm": -12,
+		"near_hand": 6, "baton": -74, "far_upper_arm": -24, "far_forearm": 10, "far_hand": -16,
+		"near_thigh": -15, "near_shin": 24, "far_thigh": 8, "far_shin": 20, "root": Vector2(3.0, 1.4)}
+const HIT_A := {"pelvis": -3, "torso": -10, "head": -14, "near_upper_arm": -38, "near_forearm": -70,
+		"near_hand": 0, "baton": -52, "far_upper_arm": -48, "far_forearm": -52, "near_thigh": 6,
+		"near_shin": 14, "far_thigh": -8, "far_shin": 18, "root": Vector2(-3.0, 1.5)}
+const HIT_B := {"pelvis": -4, "torso": -13, "head": -17, "near_upper_arm": -42, "near_forearm": -72,
+		"near_hand": 0, "baton": -54, "far_upper_arm": -52, "far_forearm": -54, "near_thigh": 8,
+		"near_shin": 16, "far_thigh": -10, "far_shin": 20, "root": Vector2(-3.8, 2.0)}
 
 const CLIPS := {
 	"idle": {"length": 3.2, "loop": true, "keys": [[0.0, IDLE_A], [1.6, IDLE_B], [3.2, IDLE_A]]},
@@ -68,15 +82,17 @@ const CLIPS := {
 		[0.22, {"pelvis": 6, "torso": 22, "head": -4, "near_upper_arm": -64, "near_forearm": -20,
 			"near_hand": 6, "baton": -36, "far_upper_arm": 26, "far_forearm": -22, "near_thigh": -28,
 			"near_shin": 24, "far_thigh": 16, "far_shin": 16, "root": Vector2(5.0, 0)}]]},
-	# Winded after the swing: the punish window.
+	# Winded after the swing: the punish window. Bent at the waist and
+	# breathing hard, but head up and watching Dave, the baton hanging and
+	# the free hand braced on the knee.
 	"recover": {"length": 1.2, "loop": true, "keys": [
-		[0.0, {"pelvis": 8, "torso": 24, "head": 8, "near_upper_arm": -14, "near_forearm": -22,
-			"near_hand": 6, "baton": -70, "far_upper_arm": -26, "far_forearm": -46, "far_hand": -20,
-			"near_thigh": -16, "near_shin": 28, "far_thigh": 6, "far_shin": 24, "root": Vector2(4.0, 0)}],
-		[0.6, {"pelvis": 8, "torso": 29, "head": 12, "near_upper_arm": -10, "near_forearm": -18,
-			"near_hand": 6, "baton": -74, "far_upper_arm": -30, "far_forearm": -50, "far_hand": -20,
-			"near_thigh": -18, "near_shin": 30, "far_thigh": 6, "far_shin": 26, "root": Vector2(4.0, 0)}],
-		[1.2, {"pelvis": 8, "torso": 24, "head": 8, "near_upper_arm": -14, "near_forearm": -22,
-			"near_hand": 6, "baton": -70, "far_upper_arm": -26, "far_forearm": -46, "far_hand": -20,
-			"near_thigh": -16, "near_shin": 28, "far_thigh": 6, "far_shin": 24, "root": Vector2(4.0, 0)}]]},
+		[0.0, RECOVER_A], [0.6, RECOVER_B], [1.2, RECOVER_A]]},
+	# Shot: the head snaps back and he rocks back a step, arms jolting up,
+	# then he gathers himself into the stalk.
+	"hit": {"length": 0.45, "loop": false, "keys": [
+		[0.0, HIT_A],
+		[0.12, HIT_B],
+		[0.45, {"pelvis": 4, "torso": 9, "head": -8, "near_thigh": -26, "near_shin": 8, "far_thigh": 20,
+			"far_shin": 16, "near_upper_arm": -24, "near_forearm": -62, "near_hand": 4, "baton": -62,
+			"far_upper_arm": -22, "far_forearm": -30, "near_foot": 10, "far_foot": -12}]]},
 }

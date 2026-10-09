@@ -16,9 +16,9 @@ No double jump, dash, climb, ladder, fall-through floor, or reload input is need
 | --- | --- |
 | Basic shot | 1 damage; finite visible bolt; one valid hit then despawn |
 | Base interval | 0.32s |
-| Quickcycle interval | 0.24s |
+| Quickcycle interval | 0.18s (was 0.24s until C52, 2026-10-08: too small to notice) |
 | Ammo / reload | Unlimited basic fire / none |
-| Upgrade | Stage 1 Quickcycle; 40 microchips; buy once per run |
+| Upgrade | Stage 1 Quickcycle, 40 microchips; Scrap Plating (+1 max health), 25 microchips (C53); each once per run |
 | Stage 2 / 3 | Not purchasable in L01; no extra ability or attachment implemented |
 | Collision | Stops at solid scenery; use swept movement/raycast validation to prevent tunneling |
 | Lifetime | Despawn out of range/offscreen after a short bounded flight |
@@ -59,7 +59,7 @@ Every enemy dies, and none is merely disabled. Humans (the Night Guard and the S
 
 ## Combat fairness
 
-At most two enemies may be active in a group and one may hold the attack token through its windup/active attack. Others can approach without contact damage but must not body-block every exit. After that attack, release the token fairly; do not let one enemy monopolize it. Player damage is from explicit attack hitboxes, not every sprite overlap.
+At most two enemies may be active in a group and one may hold the attack token through its windup/active attack. **C41 (the fun pass) relaxes this:** a group may field up to four enemies, and a group's `max_attackers` (one by default) sets how many may hold a token at once — two in the A06 lockdown fights. Groups that wake at different times in one yard share one token pool. Others can approach without contact damage but must not body-block every exit. After that attack, release the token fairly; do not let one enemy monopolize it. Player damage is from explicit attack hitboxes, not every sprite overlap.
 
 No cross-group pursuit, attacks from unseen camera regions, random spawns, or damage while returning control after a scene. A shot shows hit/blocked feedback distinctly. Each enemy is defeated once; no random currency drops. Every tell is carried by motion, sound and shape as well as by the reserved tell colors (red means attack now), and darkness must never hide one.
 
@@ -86,7 +86,7 @@ Each campaign level's exit door needs that level's clearance card (P19, the *Dan
 
 SC01 prerequisites: hero in the safe depot, no active encounter, awakening_done false. Ordinary interaction with the core node's maintenance port ("Plug in") starts the copy scene. Completion **and skip** set awakening_done=true (Adam has answered and the lockdown has begun; the flag keeps its original name), core_installed=true, hatch_open=true, objective="Escape through the service wicket.", and CP04 together. The workbench unlocks from that state. A repeated interaction only shows a short status line ("Uplink severed. Lockdown active.").
 
-The objective sequence is "Reach the server depot." → "Plug into Adam's core node." (set on first entering A05) → "Escape through the service wicket." (SC01) → "Sunnyvale complete." (the wicket). Reaching the wicket with the card also plays one Security PA line as a subtitle, "All teams: lethal force is authorized. Harlan is armed." The run is already committed and input is off; the level-ended signal fires at once and the completion screen opens 3.2 s later (`LevelDirector.PA_BEAT`).
+The objective sequence is "Reach the server depot." → "Plug into Adam's core node." (set on first entering A05) → "Escape through the service wicket." (SC01) → "Eon City complete." (the wicket). Reaching the wicket with the card also plays one Security PA line as a subtitle, "All teams: lethal force is authorized. Harlan is armed." The run is already committed and input is off; the level-ended signal fires at once and the completion screen opens 3.2 s later (`LevelDirector.PA_BEAT`).
 
 UI minimum: six health segments, one weapon/stage, readiness cue, microchip wallet, keycard indicator (shown once the card is held), current objective, highlighted single interaction, subtitle panel. Pause contains resume, journal (objective and evidence file), controls, settings, restart checkpoint, and quit; explain rollback before restart. Completion totals derive from unique collected IDs, so spending does not lower "chips found."
 

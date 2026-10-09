@@ -4,6 +4,9 @@ extends TestCase
 ## the wicket refuses to end the level until it is held; the HUD shows a
 ## card icon while it is; the save accepts only whitelisted keycard ids; a
 ## rollback to a checkpoint from before the pickup puts the card back.
+## C41: even with the card the wicket now runs a hold-out (the override takes
+## `override_time` seconds while the lockdown staffers attack), and the level
+## ends only once it finishes with Dave in the gate.
 
 const LEVEL_01 := "res://scenes/levels/level_01.tscn"
 const PLAZA_INDEX := 3
@@ -47,9 +50,14 @@ func _test_wicket_locked_then_unlocked() -> void:
 
 	level.hero.global_position = wicket.global_position + Vector2(-400.0, 0.0)
 	await physics_frames(3)
+	# The hold-out is a fight; this test is about the lock, so keep Dave up.
+	level.hero.debug_invulnerable = true
 	level.hero.global_position = wicket.global_position
 	await physics_frames(4)
-	check(level.level_ended_flag, "with the card, the wicket ends the level")
+	check(wicket.is_overriding() and not level.level_ended_flag,
+			"with the card, entering the wicket starts the override instead of ending the level at once")
+	await seconds(wicket.override_time + 1.0)
+	check(wicket.is_open() and level.level_ended_flag, "with the card, the wicket ends the level once the override finishes")
 	level.queue_free()
 	await physics_frames(2)
 

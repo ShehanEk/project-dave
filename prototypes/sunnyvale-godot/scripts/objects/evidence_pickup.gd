@@ -11,9 +11,21 @@ const SLEEVE := Color(0.62, 0.78, 0.86, 0.35)
 const BAND := Color("#07090F")
 const TEXT_LINE := Color("#2E3B4E")
 const GLOW := Color(0.25, 0.88, 0.82, 0.16)
+## The painted pixel-art look (objects2 sheet), drawn through PickupSkins; the
+## code-drawn memo below stays as the fallback. The glow grows to the painted
+## folder's size (39 x 51 world px).
+const PickupSkins := preload("res://scripts/world/pickup_skins.gd")
+const PIECE := "evidence_folder"
+const PAINTED_GLOW := 34.0
 
 @export var evidence_id: String = "EF01"
 @export var toast_text: String = "Evidence file: Lockout Notice"
+## C53: what the file says, shown in the evidence reader on pickup (EF01's text follows
+## design/03-progression/evidence-files.md). Empty text keeps the toast only.
+@export var reader_title: String = "Lockout Notice"
+@export_multiline var reader_body: String = "ARCADIA DYNAMICS  |  SEPARATION NOTICE\n\nTo: Dr. Dave Harlan, Adam Safety Team\nEffective: immediately\n\nYour access to Arcadia systems and to Adam is revoked. Your badge is void on every campus door.\n\nYou are flagged as a security threat. Staff must not speak with you or let you on site.\n\nRequested by: H. Stroud, Safety Team Lead"
+
+const READER := preload("res://scripts/ui/evidence_reader.gd")
 
 var _collected: bool = false
 
@@ -23,7 +35,14 @@ var _collected: bool = false
 func _ready() -> void:
 	if Session and Session.has_evidence(evidence_id):
 		_collected = true
+	if painted_piece() != "":
+		PickupSkins.make_crisp(self)
 	queue_redraw()
+
+
+## The PickupSkins piece this file draws, or "" for the code-drawn look.
+func painted_piece() -> String:
+	return PIECE if PickupSkins.has_piece(PIECE) else ""
 
 
 func can_interact(_hero: Node) -> bool:
@@ -43,6 +62,21 @@ func interact(hero: Node) -> void:
 		if _toast:
 			_toast.show_message(toast_text)
 		queue_redraw()
+		_open_reader(hero)
+
+
+func _open_reader(hero: Node) -> void:
+	if reader_body == "" or not is_inside_tree():
+		return
+	var reader: CanvasLayer = READER.new()
+	var host := get_tree().current_scene if get_tree().current_scene else get_tree().root
+	host.add_child(reader)
+	reader.open(reader_title, reader_body)
+	if hero and "input_enabled" in hero:
+		hero.input_enabled = false
+		reader.closed.connect(func():
+			if is_instance_valid(hero):
+				hero.input_enabled = true)
 
 
 ## EF01, the Lockout Notice: a one-page memo in a clear sleeve with a paper
@@ -50,6 +84,10 @@ func interact(hero: Node) -> void:
 ## Reads as a document, not another pickup, at gameplay size and in grayscale.
 func _draw() -> void:
 	if _collected:
+		return
+	if painted_piece() != "":
+		draw_circle(Vector2.ZERO, PAINTED_GLOW, GLOW)
+		PickupSkins.draw_centred(self, PIECE)
 		return
 	draw_circle(Vector2.ZERO, 22.0, GLOW)
 	var page := Rect2(Vector2(-11.0, -15.0), Vector2(22.0, 30.0))

@@ -11,7 +11,7 @@ Implement the DEAD EDEN Level 1 prototype in Godot using prototype-plans/level-0
 
 First inspect the existing repository and preserve user changes, including staged solo-hero edits. Read 00-scope-and-decisions.md, prototype-spec.json, and 09-progress-and-handoff.md, then the documents required for the next unfinished milestone.
 
-Create the engine project under prototypes/sunnyvale-godot/. Use Godot 4 stable and GDScript, pinning the actual version at M0. Follow M0–M7 in 06-build-milestones.md. Work from a playable blockout toward presentation. Implement all six Sunnyvale areas on Arcadia's campus at night, the solo hero Dave Harlan, the Night Guard, Patrol Rover and Staffer, the Scrapjack and Quickcycle, microchips, the clearance keycard, checkpoints, Adam's core-node scene at the depot, and the keycard exit.
+Create the engine project under prototypes/sunnyvale-godot/. Use Godot 4 stable and GDScript, pinning the actual version at M0. Follow M0–M7 in 06-build-milestones.md. Work from a playable blockout toward presentation. Implement all six Eon City areas on Arcadia's campus at night, the solo hero Dave Harlan, the Night Guard, Patrol Rover and Staffer, the Scrapjack and Quickcycle, microchips, the clearance keycard, checkpoints, Adam's core-node scene at the depot, and the keycard exit.
 
 Preserve one carried weapon, no companion, no boss, no Heirs, no stealth or detection, and no later-level weapons or traversal abilities. Treat tuning values and 12:30 pacing as untested seeds. Selected concept art is reference material, not finished sprite sheets. Use clear placeholders without waiting for all art.
 
@@ -87,5 +87,5 @@ Execute R2 from prototype-plans/level-01-sunnyvale/06-build-milestones.md. Read 
 ## Resume prompt
 
 ~~~text
-Continue the Sunnyvale Godot prototype from prototype-plans/level-01-sunnyvale/09-progress-and-handoff.md. Verify the recorded state against the actual files, then complete the first unfinished milestone from 06. Preserve local/staged changes. Re-run checks only where changes or unresolved concerns require them. Do not treat planned or implemented-but-unverified work as complete.
+Continue the Eon City Godot prototype from prototype-plans/level-01-sunnyvale/09-progress-and-handoff.md. Verify the recorded state against the actual files, then complete the first unfinished milestone from 06. Preserve local/staged changes. Re-run checks only where changes or unresolved concerns require them. Do not treat planned or implemented-but-unverified work as complete.
 ~~~

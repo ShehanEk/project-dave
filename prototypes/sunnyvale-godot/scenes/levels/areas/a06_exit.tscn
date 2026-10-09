@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/area_root.gd" id="1_arearoot"]
 [ext_resource type="Script" path="res://scripts/world/block.gd" id="2_block"]
@@ -14,9 +14,16 @@
 [ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="12_routepoint"]
 [ext_resource type="Script" path="res://scripts/world/environment_state.gd" id="13_envstate"]
 [ext_resource type="Script" path="res://scripts/world/visuals/area_backdrop.gd" id="50_backdrop"]
+[ext_resource type="PackedScene" path="res://scenes/actors/night_guard.tscn" id="14_guard"]
+[ext_resource type="PackedScene" path="res://scenes/objects/recovery_station.tscn" id="15_station"]
+[ext_resource type="Script" path="res://scripts/world/decal.gd" id="20_decal"]
+[ext_resource type="Script" path="res://scripts/world/visuals/foreground_layer.gd" id="21_foreground"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_approach"]
 size = Vector2(80, 900)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_e13zone"]
+size = Vector2(560, 900)
 
 [node name="A06Exit" type="Node2D"]
 script = ExtResource("1_arearoot")
@@ -38,6 +45,10 @@ script = ExtResource("50_backdrop")
 mode = 1
 tile_width = 6200.0
 horizon_y = 0.0
+
+[node name="Foreground" type="Node2D" parent="."]
+script = ExtResource("21_foreground")
+tile_width = 6200.0
 
 [node name="Geometry" type="Node2D" parent="."]
 
@@ -106,6 +117,68 @@ position = Vector2(5260, 0)
 script = ExtResource("2_block")
 size = Vector2(940, 300)
 kind = 0
+
+[node name="Decals" type="Node2D" parent="."]
+
+[node name="PuddleA1" type="Node2D" parent="Decals"]
+position = Vector2(450, 16.5)
+script = ExtResource("20_decal")
+piece = "puddle_a"
+
+[node name="CrackB1" type="Node2D" parent="Decals"]
+position = Vector2(800, 27)
+script = ExtResource("20_decal")
+piece = "crack_b"
+
+[node name="Leaves1" type="Node2D" parent="Decals"]
+position = Vector2(1080, 0)
+script = ExtResource("20_decal")
+piece = "leaves"
+
+[node name="PuddleB1" type="Node2D" parent="Decals"]
+position = Vector2(1770, 18)
+script = ExtResource("20_decal")
+piece = "puddle_b"
+flip = true
+
+[node name="CrackA1" type="Node2D" parent="Decals"]
+position = Vector2(1910, 25.5)
+script = ExtResource("20_decal")
+piece = "crack_a"
+
+[node name="CrackA2" type="Node2D" parent="Decals"]
+position = Vector2(2500, 25.5)
+script = ExtResource("20_decal")
+piece = "crack_a"
+flip = true
+
+[node name="Leaves2" type="Node2D" parent="Decals"]
+position = Vector2(2700, 12)
+script = ExtResource("20_decal")
+piece = "leaves"
+
+[node name="PuddleC1" type="Node2D" parent="Decals"]
+position = Vector2(4050, 16.5)
+script = ExtResource("20_decal")
+piece = "puddle_c"
+
+[node name="Leaves3" type="Node2D" parent="Decals"]
+position = Vector2(4452, 0)
+script = ExtResource("20_decal")
+piece = "leaves"
+
+[node name="CrackB2" type="Node2D" parent="Decals"]
+position = Vector2(4560, 27)
+script = ExtResource("20_decal")
+piece = "crack_b"
+flip = true
+
+[node name="Box1" type="Node2D" parent="Decals"]
+position = Vector2(6081, 0)
+script = ExtResource("20_decal")
+piece = "box"
+flip = true
+tint = Color(0.78, 0.8, 0.9, 1)
 
 [node name="Scenery" type="Node2D" parent="."]
 
@@ -236,6 +309,11 @@ kind = 11
 size = Vector2(120, 40)
 text = "STAFF ANNEX"
 
+[node name="AnnexDoor_Yard" parent="Scenery/AnnexDoors" instance=ExtResource("3_scenery")]
+position = Vector2(5620, 0)
+kind = 13
+size = Vector2(96, 150)
+
 [node name="LockdownVisuals" type="Node2D" parent="Scenery"]
 
 [node name="Rail1" parent="Scenery/LockdownVisuals" instance=ExtResource("3_scenery")]
@@ -313,8 +391,16 @@ position = Vector2(3800, -20)
 entity_id = "L01-HS03"
 heal = 2
 
+[node name="RecoveryStation_CP07" parent="Entities" instance=ExtResource("15_station")]
+position = Vector2(5420, 0)
+checkpoint_id = "CP07"
+
 [node name="ExitWicket" parent="Entities" instance=ExtResource("6_wicket")]
 position = Vector2(5900, 0)
+override_time = 16.0
+override_groups = Array[NodePath]([NodePath("../../Encounters/EncounterGroup_E15")])
+reinforcement_groups = Array[NodePath]([NodePath("../../Encounters/EncounterGroup_E16")])
+reinforcement_delay = 7.0
 
 [node name="KillPlaneA" parent="Entities" instance=ExtResource("7_kill")]
 position = Vector2(1550, 900)
@@ -328,11 +414,37 @@ reset_target = NodePath("../../Markers/Spawn_CP00")
 
 [node name="Encounters" type="Node2D" parent="."]
 
+[node name="EncounterGroup_E13" type="Node2D" parent="Encounters"]
+script = ExtResource("8_group")
+group_id = "L01-E13"
+reactivate_cooldown = 0.35
+max_attackers = 2
+lane_rect = Rect2(0, -400, 700, 700)
+
+[node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E13"]
+position = Vector2(280, 0)
+collision_layer = 0
+collision_mask = 2
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E13/ApproachZone"]
+shape = SubResource("RectangleShape2D_e13zone")
+
+[node name="Staffer" parent="Encounters/EncounterGroup_E13" instance=ExtResource("10_staffer")]
+position = Vector2(250, 0)
+entity_id = "L01-E13-LK01-01"
+
+[node name="Staffer2" parent="Encounters/EncounterGroup_E13" instance=ExtResource("10_staffer")]
+entity_id = "L01-E13-LK01-02"
+position = Vector2(640, 0)
+
 [node name="EncounterGroup_E10" type="Node2D" parent="Encounters"]
 script = ExtResource("8_group")
 group_id = "L01-E10"
 lane_rect = Rect2(950, -400, 1410, 700)
 reactivate_cooldown = 0.35
+max_attackers = 2
 
 [node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E10"]
 position = Vector2(950, 0)
@@ -349,14 +461,40 @@ position = Vector2(1600, 0)
 entity_id = "L01-E10-M01-01"
 
 [node name="Staffer" parent="Encounters/EncounterGroup_E10" instance=ExtResource("10_staffer")]
-position = Vector2(2080, 0)
 entity_id = "L01-E10-LK01-01"
+position = Vector2(2050, 0)
+
+[node name="Staffer2" parent="Encounters/EncounterGroup_E10" instance=ExtResource("10_staffer")]
+entity_id = "L01-E10-LK01-02"
+position = Vector2(2110, 0)
+
+[node name="EncounterGroup_E14" type="Node2D" parent="Encounters"]
+script = ExtResource("8_group")
+group_id = "L01-E14"
+lane_rect = Rect2(3360, -500, 340, 700)
+reactivate_cooldown = 0.35
+max_attackers = 1
+
+[node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E14"]
+position = Vector2(3160, 0)
+collision_layer = 0
+collision_mask = 2
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E14/ApproachZone"]
+shape = SubResource("RectangleShape2D_approach")
+
+[node name="NightGuard" parent="Encounters/EncounterGroup_E14" instance=ExtResource("14_guard")]
+entity_id = "L01-E14-SE01-01"
+position = Vector2(3615, -64)
 
 [node name="EncounterGroup_E11" type="Node2D" parent="Encounters"]
 script = ExtResource("8_group")
 group_id = "L01-E11"
 lane_rect = Rect2(3900, -400, 1360, 700)
 reactivate_cooldown = 0.35
+max_attackers = 2
 
 [node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E11"]
 position = Vector2(3960, 0)
@@ -375,6 +513,42 @@ entity_id = "L01-E11-LK01-01"
 [node name="PatrolRover" parent="Encounters/EncounterGroup_E11" instance=ExtResource("9_rover")]
 position = Vector2(4750, 0)
 entity_id = "L01-E11-M01-01"
+
+[node name="NightGuard" parent="Encounters/EncounterGroup_E11" instance=ExtResource("14_guard")]
+position = Vector2(4950, 0)
+entity_id = "L01-E11-SE01-01"
+
+[node name="EncounterGroup_E15" type="Node2D" parent="Encounters"]
+script = ExtResource("8_group")
+group_id = "L01-E15"
+lane_rect = Rect2(5270, -400, 620, 700)
+reactivate_cooldown = 0.35
+max_attackers = 2
+wait_for_trigger = true
+
+[node name="Staffer" parent="Encounters/EncounterGroup_E15" instance=ExtResource("10_staffer")]
+position = Vector2(5560, 0)
+entity_id = "L01-E15-LK01-01"
+
+[node name="Staffer2" parent="Encounters/EncounterGroup_E15" instance=ExtResource("10_staffer")]
+position = Vector2(5800, 0)
+entity_id = "L01-E15-LK01-02"
+
+[node name="EncounterGroup_E16" type="Node2D" parent="Encounters"]
+script = ExtResource("8_group")
+group_id = "L01-E16"
+lane_rect = Rect2(5270, -400, 620, 700)
+reactivate_cooldown = 0.35
+wait_for_trigger = true
+share_tokens_with = NodePath("../EncounterGroup_E15")
+
+[node name="Staffer" parent="Encounters/EncounterGroup_E16" instance=ExtResource("10_staffer")]
+position = Vector2(5480, 0)
+entity_id = "L01-E16-LK01-01"
+
+[node name="Staffer2" parent="Encounters/EncounterGroup_E16" instance=ExtResource("10_staffer")]
+position = Vector2(5700, 0)
+entity_id = "L01-E16-LK01-02"
 
 [node name="Beats" type="Node2D" parent="."]
 
@@ -407,6 +581,9 @@ size = Vector2(940, 600)
 
 [node name="Spawn_CP00" type="Marker2D" parent="Markers"]
 position = Vector2(96, -4)
+
+[node name="Respawn_CP07" type="Marker2D" parent="Markers"]
+position = Vector2(5420, -4)
 
 [node name="Respawn_CP05" type="Marker2D" parent="Markers"]
 position = Vector2(5850, 0)
@@ -457,7 +634,7 @@ position = Vector2(3160, -64)
 script = ExtResource("12_routepoint")
 action = 1
 tolerance = 10.0
-hold_jump = 0.45
+hold_jump = 0.22
 
 [node name="RP07_OnPlatformB" type="Marker2D" parent="Route"]
 position = Vector2(3430, -64)
@@ -509,11 +686,24 @@ script = ExtResource("12_routepoint")
 action = 0
 tolerance = 12.0
 
+[node name="RP13b_UseCP07" type="Marker2D" parent="Route"]
+position = Vector2(5420, 0)
+script = ExtResource("12_routepoint")
+action = 3
+tolerance = 16.0
+
 [node name="RP14_ApproachWicket" type="Marker2D" parent="Route"]
 position = Vector2(5850, 0)
 script = ExtResource("12_routepoint")
 action = 0
 tolerance = 12.0
+
+[node name="RP14b_HoldOut" type="Marker2D" parent="Route"]
+position = Vector2(5892, 0)
+script = ExtResource("12_routepoint")
+action = 4
+tolerance = 10.0
+seconds = 17.5
 
 [node name="RP15_ToExit" type="Marker2D" parent="Route"]
 position = Vector2(6150, 0)
