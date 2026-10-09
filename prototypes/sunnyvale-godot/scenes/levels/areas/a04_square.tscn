@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3]
+[gd_scene load_steps=22 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/area_root.gd" id="1_arearoot"]
 [ext_resource type="Script" path="res://scripts/world/block.gd" id="2_block"]
@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" path="res://scenes/objects/beat_zone.tscn" id="13_beat"]
 [ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="14_routepoint"]
 [ext_resource type="PackedScene" path="res://scenes/objects/kill_plane.tscn" id="15_killplane"]
+[ext_resource type="PackedScene" path="res://scenes/objects/pit_hazard.tscn" id="22_pit"]
 [ext_resource type="Script" path="res://scripts/world/visuals/area_backdrop.gd" id="50_backdrop"]
 [ext_resource type="PackedScene" path="res://scenes/objects/keycard.tscn" id="51_keycard"]
 [ext_resource type="Script" path="res://scripts/world/decal.gd" id="20_decal"]
@@ -98,18 +99,6 @@ kind = 1
 position = Vector2(2000, 140)
 script = ExtResource("2_block")
 size = Vector2(150, 40)
-kind = 0
-
-[node name="FlowerbedCatch2" type="StaticBody2D" parent="Geometry"]
-position = Vector2(2350, 140)
-script = ExtResource("2_block")
-size = Vector2(140, 40)
-kind = 0
-
-[node name="FlowerbedCatch3" type="StaticBody2D" parent="Geometry"]
-position = Vector2(2670, 140)
-script = ExtResource("2_block")
-size = Vector2(130, 40)
 kind = 0
 
 [node name="FlowerbedCatch4" type="StaticBody2D" parent="Geometry"]
@@ -431,7 +420,7 @@ entity_id = "L01-A04-G004"
 value = 1
 
 [node name="Chip_G005" parent="Entities" instance=ExtResource("4_chip")]
-position = Vector2(2250, 0)
+position = Vector2(2420, -110)
 entity_id = "L01-A04-G005"
 value = 1
 
@@ -441,9 +430,25 @@ entity_id = "L01-A04-G006"
 value = 1
 
 [node name="Chip_G007" parent="Entities" instance=ExtResource("4_chip")]
-position = Vector2(2900, 20)
+position = Vector2(2735, -50)
 entity_id = "L01-A04-G007"
 value = 1
+
+[node name="FlowerbedPit_2" parent="Entities" instance=ExtResource("22_pit")]
+position = Vector2(2420, 260)
+damage = 1
+size = Vector2(140, 80)
+
+[node name="Reset" parent="Entities/FlowerbedPit_2"]
+position = Vector2(-120, -240)
+
+[node name="FlowerbedPit_3" parent="Entities" instance=ExtResource("22_pit")]
+position = Vector2(2735, 260)
+damage = 1
+size = Vector2(130, 80)
+
+[node name="Reset" parent="Entities/FlowerbedPit_3"]
+position = Vector2(-155, -164)
 
 [node name="Chip_G008" parent="Entities" instance=ExtResource("4_chip")]
 position = Vector2(3500, 76)
@@ -508,6 +513,7 @@ script = ExtResource("10_group")
 group_id = "L01-E07"
 lane_rect = Rect2(0, -500, 1500, 900)
 reactivate_cooldown = 0.35
+max_attackers = 2
 
 [node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E07"]
 position = Vector2(60, 0)
@@ -535,6 +541,7 @@ script = ExtResource("10_group")
 group_id = "L01-E08"
 reactivate_cooldown = 0.35
 lane_rect = Rect2(0, -500, 780, 900)
+max_attackers = 2
 
 [node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E08"]
 position = Vector2(260, 0)
@@ -566,6 +573,7 @@ script = ExtResource("10_group")
 group_id = "L01-E09"
 lane_rect = Rect2(0, -500, 1600, 900)
 reactivate_cooldown = 0.35
+max_attackers = 2
 
 [node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E09"]
 position = Vector2(150, 0)

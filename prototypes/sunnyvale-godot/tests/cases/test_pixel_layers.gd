@@ -205,7 +205,12 @@ func _objects(level: Node2D) -> void:
 	var bench: Workbench = a5.get_node("Entities/Workbench")
 	check_eq(bench.painted_piece(), "workbench", "the depot's workbench is painted")
 	check_eq(bench.texture_filter, CanvasItem.TEXTURE_FILTER_NEAREST, "crisp too")
-	check_eq((a5.get_node("Entities/WeaponPad") as WeaponPad).painted_piece(), "weapon_pad", "so is its weapon pad")
+	# Level 1 has no swap pad since C51 (kept for Level 2): check the pad's paint on one placed here.
+	var pad: WeaponPad = load("res://scenes/objects/weapon_pad.tscn").instantiate()
+	pad.pad_id = "L01-A05-PAD01"
+	a5.get_node("Entities").add_child(pad)
+	check_eq(pad.painted_piece(), "weapon_pad", "so is a weapon pad")
+	pad.free()
 	var core: CoreNode = a5.get_node("Entities/CoreNode")
 	check_eq(core.painted_piece(), "core_calm", "the core node is calm teal before the lockdown")
 	check_eq(core.texture_filter, CanvasItem.TEXTURE_FILTER_NEAREST, "crisp")

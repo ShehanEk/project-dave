@@ -57,6 +57,12 @@ var _health_segments: Array[Control] = []
 var _shown_health := -1
 var _flash_from := 0
 var _flash_to := 0
+## C53 low-health warning: at LOW_HEALTH or less the health row pulses red, slowly
+## (LOW_HEALTH_HZ, well under any flashing limit); with Reduced Motion it holds a steady red.
+const LOW_HEALTH := 2
+const LOW_HEALTH_HZ := 1.4
+const LOW_HEALTH_TINT := Color(1.0, 0.42, 0.38)
+var _low_health_t := 0.0
 var _flash_left := 0.0
 
 @onready var _health_row: HBoxContainer = $TopBar/HealthRow
@@ -69,8 +75,9 @@ var _flash_left := 0.0
 @onready var _objective_banner: Control = $ObjectiveLabel/Banner
 @onready var _keycard_icon: Control = $TopBar/KeycardIcon
 @onready var _toast: ToastLabel = $Toast
-## A Quickcycle was just bought; the next checkpoint toast says so instead of "Progress saved".
-var _quickcycle_pending := false
+## An upgrade was just bought ("W01" Quickcycle or "A01" Scrap Plating, "" none); the next
+## checkpoint toast says so instead of "Progress saved".
+var _upgrade_pending := ""
 
 
 func _ready() -> void:
@@ -80,6 +87,13 @@ func _ready() -> void:
 		if child is Control and child.has_method("set_piece"):
 			child.fallback_outline = HEALTH_OUTLINE
 			_health_segments.append(child)
+	# C53: a spare segment for Scrap Plating (+1 max health), shown only once it is fitted.
+	if not _health_segments.is_empty():
+		var extra: Control = _health_segments[-1].duplicate()
+		extra.name = "Health%d" % _health_segments.size()
+		_health_row.add_child(extra)
+		extra.fallback_outline = HEALTH_OUTLINE
+		_health_segments.append(extra)
 	_weapon_pip.set_piece("pip_lit", QUICKCYCLE_COLOR)
 	_objective_label.resized.connect(_layout_objective_banner)
 	if Session:
@@ -94,7 +108,7 @@ func _ready() -> void:
 		Session.keycard_taken.connect(_on_keycard_taken)
 		Session.snapshot_restored.connect(_on_snapshot_restored)
 		Session.run_reset.connect(_on_run_reset)
-		_on_health_changed(Session.get_health(), Session.MAX_HEALTH)
+		_on_health_changed(Session.get_health(), Session.max_health())
 		_on_wallet_changed(Session.get_wallet())
 		_on_objective_changed(Session.get_objective())
 	_refresh_weapon()
@@ -173,6 +187,26 @@ func _process(delta: float) -> void:
 		_flash_left -= delta
 		if _flash_left <= 0.0:
 			_show_health(_shown_health)
+	_update_low_health(delta)
+
+
+## True while the health row is showing the low-health warning.
+func is_low_health_warning() -> bool:
+	return _shown_health > 0 and _shown_health <= LOW_HEALTH
+
+
+func _update_low_health(delta: float) -> void:
+	if not is_low_health_warning():
+		_low_health_t = 0.0
+		_health_row.modulate = Color.WHITE
+		return
+	_low_health_t += delta
+	var settings := get_node_or_null("/root/Settings")
+	if settings and settings.get_reduced_motion():
+		_health_row.modulate = LOW_HEALTH_TINT
+		return
+	var p := 0.5 + 0.5 * sin(_low_health_t * TAU * LOW_HEALTH_HZ)
+	_health_row.modulate = Color.WHITE.lerp(LOW_HEALTH_TINT, p)
 
 
 ## Lights the fire-readiness light (bright green) or darkens it (dark steel).
@@ -196,7 +230,9 @@ func _on_health_changed(current: int, _maximum: int) -> void:
 
 
 func _show_health(current: int) -> void:
+	var max_hp: int = Session.max_health() if Session else _health_segments.size()
 	for i in _health_segments.size():
+		_health_segments[i].visible = i < max_hp
 		if i < current:
 			_health_segments[i].set_piece(PIECE_HEALTH_FULL, HEALTH_FULL)
 		elif _flash_left > 0.0 and i >= _flash_from and i < _flash_to:
@@ -251,8 +287,9 @@ func _on_weapon_changed(_old_id: String, _new_id: String) -> void:
 func _on_upgrade_changed(weapon_type: String, stage: int) -> void:
 	_refresh_weapon()
 	# C52: the generic "Progress saved" that follows the purchase (UPG01) gives way to this.
-	if weapon_type == "W01" and stage >= 1:
-		_quickcycle_pending = true
+	if stage >= 1 and (weapon_type == "W01" or weapon_type == "A01"):
+		_upgrade_pending = weapon_type
+		_refresh_health_row()
 
 
 ## "Quickcycle online": raised when the bench is bought from and again when its panel closes.
@@ -265,6 +302,19 @@ func announce_quickcycle() -> void:
 	_play_sfx(&"ready_click")
 
 
+## "Scrap Plating fitted" (C53): raised like the Quickcycle's.
+func announce_plating() -> void:
+	if _toast == null:
+		return
+	_toast.show_message("Scrap Plating fitted: %d health" % Session.max_health(), 2.4, ToastLabel.FADE_TIME, "pip_lit")
+	_play_sfx(&"ready_click")
+
+
+func _refresh_health_row() -> void:
+	if Session:
+		_show_health(Session.get_health())
+
+
 ## sc01-double-toast: CP04 is CoreNode's own SC01 completion commit, which
 ## already shows its own specific "Partial copy saved..." (or the honest
 ## save-failed) toast at the exact same instant — showing the generic
@@ -274,9 +324,13 @@ func announce_quickcycle() -> void:
 func _on_checkpoint_committed(checkpoint_id: String) -> void:
 	if checkpoint_id == "CP04":
 		return
-	if _quickcycle_pending:
-		_quickcycle_pending = false
-		announce_quickcycle()
+	if _upgrade_pending != "":
+		var which := _upgrade_pending
+		_upgrade_pending = ""
+		if which == "A01":
+			announce_plating()
+		else:
+			announce_quickcycle()
 		return
 	if _toast:
 		_toast.show_message("Progress saved", ToastLabel.HOLD_TIME, ToastLabel.FADE_TIME, "save")

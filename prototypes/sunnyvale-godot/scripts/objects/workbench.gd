@@ -66,10 +66,13 @@ func _on_panel_closed(hero: Node) -> void:
 	# C52: a Quickcycle bought in this visit is announced on the HUD once the panel is gone,
 	# where it can be read (the one raised at the purchase faded behind the panel).
 	var bought: bool = _panel != null and _panel.bought
+	var bought_plating: bool = _panel != null and _panel.bought_plating
 	_panel = null
-	if bought and get_tree():
+	if (bought or bought_plating) and get_tree():
 		var hud := get_tree().get_first_node_in_group("hud")
-		if hud and hud.has_method("announce_quickcycle"):
+		if hud and bought_plating and hud.has_method("announce_plating"):
+			hud.announce_plating()
+		elif hud and hud.has_method("announce_quickcycle"):
 			hud.announce_quickcycle()
 	if hero and "input_enabled" in hero:
 		hero.input_enabled = true

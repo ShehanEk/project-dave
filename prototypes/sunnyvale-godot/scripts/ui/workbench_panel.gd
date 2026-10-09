@@ -6,17 +6,20 @@ extends CanvasLayer
 ## (`hero.input_enabled = false`) while this is open; this node re-enables
 ## it via `closed` regardless of what the player chose.
 ##
-## C52 layout: two numbered sections, one per thing the bench does. 1. REPAIR AND SAVE
-## (free: heal fully, save here) and 2. WEAPON UPGRADE (the Quickcycle: what it does as
-## shots per second on two bars, what it costs, what is left after, one Buy button). The
-## chip count sits in the header. Each button says what it does ("Repair and save",
-## "Buy Quickcycle (40 chips)", "Close"), and the line at the bottom says what just happened.
+## C52/C53 layout: numbered sections, one per thing the bench does. 1. REPAIR AND SAVE (free:
+## heal fully, save here) and 2. UPGRADES: the Quickcycle (fire rate as two bars) and Scrap
+## Plating (+1 max health), each with its state and its own Buy button. The line under them
+## says what the chips can buy (C53: the main route pays about 45 chips, the two cost 65
+## together, so a player who skipped the 20-chip cache picks one). The chip count sits in the
+## header, and the line at the bottom says what just happened.
 
 signal closed
 
 const WEAPON_TYPE := "W01"
 const TARGET_STAGE := 1
 const PRICE := 40
+const PLATING_TYPE := "A01"
+const PLATING_PRICE := 25
 ## The numbers shown come from the same tuning the Scrapjack fires by.
 const TUNING_PATH := "res://data/tuning/w01_scrapjack.tres"
 const ICON_FILL_NOW := Color(0.66, 0.73, 0.8, 1)
@@ -30,16 +33,17 @@ const AMBER := Color(1, 0.69, 0.18, 1)
 @onready var _wallet_label: Label = $Panel/VBox/HeaderRow/WalletLabel
 @onready var _service_button: Button = $Panel/VBox/ServiceRow/ServiceButton
 @onready var _service_info: Label = $Panel/VBox/ServiceRow/ServiceInfo
-@onready var _state_label: Label = $Panel/VBox/UpgradeRow/Info/NameRow/StateLabel
-@onready var _now_name: Label = $Panel/VBox/UpgradeRow/Info/RateGrid/NowName
-@onready var _now_fill: ColorRect = $Panel/VBox/UpgradeRow/Info/RateGrid/NowBar/Fill
-@onready var _now_value: Label = $Panel/VBox/UpgradeRow/Info/RateGrid/NowValue
-@onready var _quick_name: Label = $Panel/VBox/UpgradeRow/Info/RateGrid/QuickName
-@onready var _quick_value: Label = $Panel/VBox/UpgradeRow/Info/RateGrid/QuickValue
-@onready var _cost_row: Control = $Panel/VBox/CostRow
-@onready var _cost_label: Label = $Panel/VBox/CostRow/CostLabel
-@onready var _balance_label: Label = $Panel/VBox/CostRow/BalanceLabel
+@onready var _state_label: Label = $Panel/VBox/QuickcycleCard/Info/NameRow/StateLabel
+@onready var _now_name: Label = $Panel/VBox/QuickcycleCard/Info/RateGrid/NowName
+@onready var _now_fill: ColorRect = $Panel/VBox/QuickcycleCard/Info/RateGrid/NowBar/Fill
+@onready var _now_value: Label = $Panel/VBox/QuickcycleCard/Info/RateGrid/NowValue
+@onready var _quick_name: Label = $Panel/VBox/QuickcycleCard/Info/RateGrid/QuickName
+@onready var _quick_value: Label = $Panel/VBox/QuickcycleCard/Info/RateGrid/QuickValue
+@onready var _plating_state: Label = $Panel/VBox/PlatingCard/Info/NameRow/StateLabel
+@onready var _plating_effect: Label = $Panel/VBox/PlatingCard/Info/EffectLabel
+@onready var _balance_label: Label = $Panel/VBox/BalanceLabel
 @onready var _confirm_button: Button = $Panel/VBox/UpgradeRowButtons/ConfirmButton
+@onready var _plating_button: Button = $Panel/VBox/UpgradeRowButtons/PlatingButton
 @onready var _decline_button: Button = $Panel/VBox/UpgradeRowButtons/DeclineButton
 @onready var _status_label: Label = $Panel/VBox/StatusLabel
 
@@ -47,6 +51,8 @@ var _pause_was_pressed: bool = false
 ## True once a Quickcycle was bought in this visit; the bench reads it on `closed` so the
 ## HUD can announce it after the panel is gone.
 var bought: bool = false
+## True once Scrap Plating was bought in this visit.
+var bought_plating: bool = false
 var _tuning: WeaponTuning = null
 
 
@@ -55,15 +61,18 @@ func _ready() -> void:
 	_tuning = load(TUNING_PATH)
 	_service_button.pressed.connect(_on_service_pressed)
 	_confirm_button.pressed.connect(_on_confirm_pressed)
+	_plating_button.pressed.connect(_on_plating_pressed)
 	_decline_button.pressed.connect(_on_decline_pressed)
 	if Session:
 		Session.wallet_changed.connect(_on_state_changed)
 		Session.health_changed.connect(_on_health_changed)
 		Session.upgrade_purchased.connect(_on_upgrade_purchased)
 	_refresh("")
-	# Land on the useful button: Buy when it can be pressed, else Close.
+	# Land on the useful button: a Buy that can be pressed, else Close.
 	if _confirm_button.visible and not _confirm_button.disabled:
 		_confirm_button.grab_focus()
+	elif _plating_button.visible and not _plating_button.disabled:
+		_plating_button.grab_focus()
 	else:
 		_decline_button.grab_focus()
 
@@ -102,15 +111,26 @@ func _on_service_pressed() -> void:
 
 
 func _on_confirm_pressed() -> void:
-	if Session == null:
-		_play_sfx(&"ui_confirm")
-		return
-	var result: Dictionary = Session.purchase_upgrade(WEAPON_TYPE, TARGET_STAGE, PRICE)
-	if result.get("ok", false):
-		_play_sfx(&"ui_confirm")
+	if _buy(WEAPON_TYPE, PRICE):
 		bought = true
 		_refresh("Quickcycle installed. It fires %.1f shots a second now." % _rate(TARGET_STAGE))
-		return
+
+
+func _on_plating_pressed() -> void:
+	if _buy(PLATING_TYPE, PLATING_PRICE):
+		bought_plating = true
+		_refresh("Scrap Plating fitted. %d health segments now." % Session.max_health())
+
+
+## One purchase through Session; on a refusal says why. True when it went through.
+func _buy(upgrade_type: String, price: int) -> bool:
+	if Session == null:
+		_play_sfx(&"ui_confirm")
+		return false
+	var result: Dictionary = Session.purchase_upgrade(upgrade_type, TARGET_STAGE, price)
+	if result.get("ok", false):
+		_play_sfx(&"ui_confirm")
+		return true
 	# AD-14 (partial): audio-direction.md calls for a distinct failed-purchase
 	# cue; this used to play the same "ui_confirm" success chime on a refusal
 	# (insufficient funds/locked/etc.), with nothing else to tell the two
@@ -124,12 +144,13 @@ func _on_confirm_pressed() -> void:
 		"insufficient_funds":
 			message = "Not enough chips"
 		"already_owned":
-			message = "Quickcycle already installed"
+			message = "Already installed"
 		"locked":
 			message = "Workbench offline"
 		_:
 			message = "Purchase unavailable"
 	_refresh(message)
+	return false
 
 
 func _on_decline_pressed() -> void:
@@ -163,23 +184,22 @@ func _rate(stage: int) -> float:
 func _refresh(status: String) -> void:
 	if Session == null:
 		return
-	var stage := Session.weapon_stage(WEAPON_TYPE)
-	var owned := stage >= TARGET_STAGE
+	var owned := Session.weapon_stage(WEAPON_TYPE) >= TARGET_STAGE
+	var plated := Session.weapon_stage(PLATING_TYPE) >= TARGET_STAGE
 	var wallet := Session.get_wallet()
 	_wallet_label.text = "%d" % wallet
 
 	# 1. Repair and save.
 	_service_info.text = "Free. Heals you fully (health %d of %d now) and saves your progress here." \
-			% [Session.get_health(), Session.MAX_HEALTH]
+			% [Session.get_health(), Session.max_health()]
 
-	# 2. The Quickcycle: what it does, as two bars on one scale (the fast one is full).
+	# 2a. The Quickcycle: what it does, as two bars on one scale (the fast one is full).
 	var base_rate := _rate(0)
 	var quick_rate := _rate(TARGET_STAGE)
 	_now_fill.anchor_right = base_rate / quick_rate
 	_now_value.text = "%.1f shots/s" % base_rate
 	_quick_value.text = "%.1f shots/s  (+%d%%)" % [quick_rate, roundi((quick_rate / base_rate - 1.0) * 100.0)]
-	_state_label.text = "INSTALLED" if owned else "NOT INSTALLED"
-	_state_label.add_theme_color_override("font_color", TEAL if owned else DIM_TEXT)
+	_set_state(_state_label, owned)
 	# The row you have now reads white, the offer teal; once bought the old row dims.
 	for l in [_now_name, _now_value]:
 		l.add_theme_color_override("font_color", DIM_TEXT if owned else BRIGHT_TEXT)
@@ -187,27 +207,51 @@ func _refresh(status: String) -> void:
 		l.add_theme_color_override("font_color", BRIGHT_TEXT if owned else TEAL)
 	_now_fill.color = ICON_FILL_NOW.darkened(0.45) if owned else ICON_FILL_NOW
 
-	# Price, what is left, and the one Buy button.
-	_cost_row.visible = not owned
-	if owned:
-		_confirm_button.visible = false
-		_confirm_button.disabled = true
-		_decline_button.text = "Close"
-		_decline_button.grab_focus()
-	else:
-		_cost_label.text = "Price: %d chips" % PRICE
-		_cost_label.add_theme_color_override("font_color", AMBER)
-		if wallet < PRICE:
-			_balance_label.text = "You have %d. Find %d more chips." % [wallet, PRICE - wallet]
-			_balance_label.add_theme_color_override("font_color", WARN)
+	# 2b. Scrap Plating.
+	_set_state(_plating_state, plated)
+	_plating_effect.text = ("Max health %d. One more hit before you go down." % Session.max_health()) if plated \
+			else ("Max health %d -> %d: one more hit before you go down." % [Session.MAX_HEALTH, Session.MAX_HEALTH + 1])
+
+	# What the chips buy, and one Buy button per upgrade still to buy.
+	_balance_label.remove_theme_color_override("font_color")
+	if owned and plated:
+		_balance_label.text = "Everything here is fitted."
+	elif owned or plated:
+		var left_price := PLATING_PRICE if owned else PRICE
+		if wallet >= left_price:
+			_balance_label.text = "You have %d chips: %d left after buying." % [wallet, wallet - left_price]
 		else:
-			_balance_label.text = "You have %d. %d left after buying." % [wallet, wallet - PRICE]
-			_balance_label.remove_theme_color_override("font_color")
-		_confirm_button.visible = true
-		_confirm_button.disabled = wallet < PRICE
-		_confirm_button.text = "Buy Quickcycle (%d chips)" % PRICE
-		_decline_button.text = "Close"
+			_balance_label.text = "You have %d chips. Find %d more for the other upgrade." % [wallet, left_price - wallet]
+	elif wallet >= PRICE + PLATING_PRICE:
+		_balance_label.text = "You have %d chips: enough for both." % wallet
+	elif wallet >= PRICE:
+		_balance_label.text = "You have %d chips: enough for one of them. Choose." % wallet
+		_balance_label.add_theme_color_override("font_color", AMBER)
+	elif wallet >= PLATING_PRICE:
+		_balance_label.text = "You have %d chips: enough for the Plating. %d more for the Quickcycle." % [wallet, PRICE - wallet]
+	else:
+		_balance_label.text = "You have %d chips. Find %d more for the Plating." % [wallet, PLATING_PRICE - wallet]
+		_balance_label.add_theme_color_override("font_color", WARN)
+	_confirm_button.visible = not owned
+	_confirm_button.disabled = owned or wallet < PRICE
+	_confirm_button.text = "Buy Quickcycle (%d)" % PRICE
+	_plating_button.visible = not plated
+	_plating_button.disabled = plated or wallet < PLATING_PRICE
+	_plating_button.text = "Buy Plating (%d)" % PLATING_PRICE
+	_decline_button.text = "Close"
+	# A button just hidden or disabled hands focus on to the next one that works.
+	var focused: Control = get_viewport().gui_get_focus_owner() if is_inside_tree() else null
+	if focused != null and (not focused.visible or (focused is Button and focused.disabled)):
+		for b in [_confirm_button, _plating_button, _decline_button]:
+			if b.visible and not b.disabled:
+				b.grab_focus()
+				break
 	_status_label.text = status
+
+
+func _set_state(label: Label, installed: bool) -> void:
+	label.text = "INSTALLED" if installed else "NOT INSTALLED"
+	label.add_theme_color_override("font_color", TEAL if installed else DIM_TEXT)
 
 
 func _close() -> void:

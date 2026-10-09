@@ -90,6 +90,11 @@ func say(speaker: String, text: String) -> void:
 	_text_label.text = text
 
 
+## The line on screen now ("" when none).
+func current_line() -> String:
+	return _text_label.text if _panel.visible else ""
+
+
 func clear_line() -> void:
 	_panel.visible = false
 	_speaker_label.text = ""

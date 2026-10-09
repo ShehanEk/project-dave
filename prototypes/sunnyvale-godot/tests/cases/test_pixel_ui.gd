@@ -121,8 +121,10 @@ func _theme() -> void:
 func _hud_pieces() -> void:
 	Session.new_run()
 	var hud: Hud = await spawn(HUD_SCENE)
-	var segs: Array = hud.get_node("TopBar/HealthRow").get_children()
+	# Six shown; a seventh (Scrap Plating, C53) waits hidden until the upgrade is fitted.
+	var segs: Array = hud.get_node("TopBar/HealthRow").get_children().filter(func(c): return c.visible)
 	check_eq(segs.size(), 6, "six health segments")
+	check_eq(hud.get_node("TopBar/HealthRow").get_child_count(), 7, "one spare segment for Scrap Plating")
 	for s in segs:
 		check(s.has_art() and s.piece == "health_full", "%s draws the pixel full segment at full health" % s.name)
 		check_eq(s.custom_minimum_size, Vector2(27, 36), "%s is 9 x 12 UI px at 3 px each" % s.name)

@@ -423,6 +423,9 @@ func take_damage(amount: int, source_position: Vector2) -> bool:
 	away = away.normalized() if away.length() > 0.001 else Vector2(-facing, 0.0)
 	_knockback = away * tuning.knockback_speed
 	velocity.y = -tuning.knockback_up_speed
+	# C53: a hit lands hard (shake and pause); the death beat (LevelDirector) takes over on a death.
+	if Session.get_health() > 0:
+		GameFeel.hurt(self)
 	return true
 
 
@@ -469,13 +472,19 @@ func _on_health_changed(current: int, _maximum: int) -> void:
 ## hurt pose is the main cue; this only marks the ~1 s immunity window.
 const IMMUNE_TINT := Color(1.0, 0.86, 0.8)
 const NORMAL_TINT := Color(1.0, 1.0, 1.0)
+## C53: one bright flash at the moment of a hit (a single flash, not a flicker), then the tint.
+const HURT_FLASH := Color(1.9, 1.75, 1.7)
+const HURT_FLASH_TIME := 0.08
 
 
 func _update_immunity(delta: float) -> void:
 	if _immune_timer > 0.0:
 		_immune_timer = maxf(0.0, _immune_timer - delta)
 	# A steady tint while immune, no rapid flashing (per CONVENTIONS.md).
-	modulate = IMMUNE_TINT if _immune_timer > 0.0 else NORMAL_TINT
+	if _immune_timer > 0.0 and _immune_timer > tuning.damage_immunity_time - HURT_FLASH_TIME:
+		modulate = HURT_FLASH
+	else:
+		modulate = IMMUNE_TINT if _immune_timer > 0.0 else NORMAL_TINT
 
 
 func is_immune() -> bool:

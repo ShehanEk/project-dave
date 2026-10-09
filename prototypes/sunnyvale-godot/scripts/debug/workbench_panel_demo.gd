@@ -1,6 +1,6 @@
 extends Node2D
 ## C52 capture demo (tools/capture.sh): the redesigned workbench panel in its three states, one
-## second each: enough chips, not enough chips, Quickcycle installed. Throwaway save dir, never a
+## second each: enough for one, not enough, Quickcycle bought, both bought. Throwaway save dir, never a
 ## test and never the real save.
 
 const PANEL := "res://scenes/ui/workbench_panel.tscn"
@@ -29,4 +29,8 @@ func _run() -> void:
 	Session.state["wallet"] = 45
 	Session.wallet_changed.emit(45)
 	panel._on_confirm_pressed()
+	await get_tree().create_timer(1.0).timeout
+	Session.state["wallet"] = 25
+	Session.wallet_changed.emit(25)
+	panel._on_plating_pressed()
 	await get_tree().create_timer(1.0).timeout

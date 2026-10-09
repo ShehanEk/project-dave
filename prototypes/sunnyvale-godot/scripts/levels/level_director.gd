@@ -65,6 +65,15 @@ const PA_LINE := "All teams: lethal force is authorized. Harlan is armed."
 ## plus a beat; a longer clip would extend the hold further (see
 ## `_on_wicket_reached()`).
 const PA_BEAT := 4.0
+## C53: between the intro comic and SC01 nobody spoke. The campus Security PA now marks the
+## route, text only, once per run, before the depot event (Adam's first words stay for SC01,
+## story-scenes.md). Keyed by pacing beat; each line stays up ROUTE_PA_HOLD seconds.
+const ROUTE_PA_LINES := {
+	"L01-A02-B01": "Night shift, be advised: a flagged former employee is on campus. Dave Harlan. Detain on sight.",
+	"L01-A03-B01": "Rooftop cameras have Harlan heading for the server depot. All units, cut him off.",
+	"L01-A04-B01": "Reminder to staff: your Link keeps you calm and safe. Please stay at your workstations.",
+}
+const ROUTE_PA_HOLD := 5.5
 ## N05, the lockdown announcement: once Adam's scene is over and the player has
 ## control back, the same Security PA reads this caption with the
 ## `pa_remain_calm` clip, once per lockdown (never on Continue: it keys off the
@@ -103,6 +112,14 @@ const CHECKPOINT_MARKERS := {
 ## N05: which ambience bed plays where the hero is (the decision table).
 const AmbienceMap := preload("res://scripts/audio/ambience_map.gd")
 
+## C53 death beat: a death used to reset the level in the same frame, before the player
+## could see what hit them. Now the killing blow shakes and pauses, Dave stays down for
+## DEATH_HOLD seconds, the screen fades to black over DEATH_FADE, the level is restored
+## behind the black and fades back in. Off in the headless test runner (frame-counted).
+static var death_beat_enabled: bool = true
+const DEATH_HOLD := 0.75
+const DEATH_FADE := 0.3
+const DEATH_FADE_IN := 0.35
 const KILL_PLANE_Y := 2000.0
 const KILL_PLANE_MARGIN := 2000.0
 ## px/s the camera's own top/bottom limits are allowed to move when the
@@ -127,6 +144,8 @@ var _completion_screen: CanvasLayer = null
 ## smoothed _area_for_x tracking so a camera-limit lerp never affects when an
 ## event fires.
 var _telemetry_area: AreaRoot = null
+var _death_fade: ColorRect = null
+var _route_pa_said := {}
 ## N05: whether the hero is in the depot's core room (sticky near its edge).
 var _in_core_room: bool = false
 ## N05: where the lockdown announcement is (a LockdownPa step) and the seconds
@@ -140,6 +159,8 @@ var _pa_lethal_active: bool = false
 func _ready() -> void:
 	if Session:
 		Session.story_state_changed.connect(_on_story_state_changed)
+		Session.run_reset.connect(_on_run_reset_route_pa)
+	BeatHub.get_instance().beat_entered.connect(_on_beat_entered_route_pa)
 	_build_areas()
 
 	hero = load(HERO_SCENE).instantiate()
@@ -228,6 +249,11 @@ func _physics_process(delta: float) -> void:
 func _exit_tree() -> void:
 	if Session and Session.story_state_changed.is_connected(_on_story_state_changed):
 		Session.story_state_changed.disconnect(_on_story_state_changed)
+	if Session and Session.run_reset.is_connected(_on_run_reset_route_pa):
+		Session.run_reset.disconnect(_on_run_reset_route_pa)
+	var hub := BeatHub.get_instance()
+	if hub.beat_entered.is_connected(_on_beat_entered_route_pa):
+		hub.beat_entered.disconnect(_on_beat_entered_route_pa)
 	# Leaving the level mid-announcement (Quit to title) must not leave a PA voice
 	# talking over the title screen.
 	if (_lockdown_pa == LockdownPa.SPEAKING or _pa_lethal_active) and is_instance_valid(Audio):
@@ -427,8 +453,53 @@ func _on_hero_died() -> void:
 		var area := _area_for_x(hero.global_position.x)
 		telemetry.death(hero.global_position, area.area_id if area else "", "health_zero")
 	hero.input_enabled = false
+	if death_beat_enabled:
+		GameFeel.death(hero)
+		await get_tree().create_timer(DEATH_HOLD, false).timeout
+		await _fade_death(1.0, DEATH_FADE)
+		if not is_inside_tree():
+			return
 	Session.restore_committed()
-	_finish_death_rebuild()
+	await _finish_death_rebuild()
+	if death_beat_enabled and is_inside_tree():
+		_fade_death(0.0, DEATH_FADE_IN)
+
+
+func _on_run_reset_route_pa() -> void:
+	_route_pa_said.clear()
+
+
+func _on_beat_entered_route_pa(beat_id: String, _area_id: String) -> void:
+	if not ROUTE_PA_LINES.has(beat_id) or _route_pa_said.has(beat_id):
+		return
+	if Session and Session.get_story("awakening_done") == true:
+		return
+	var subtitles := get_tree().get_first_node_in_group("subtitle_panel") if is_inside_tree() else null
+	if subtitles == null:
+		return
+	_route_pa_said[beat_id] = true
+	var line: String = ROUTE_PA_LINES[beat_id]
+	subtitles.say(PA_SPEAKER, line)
+	await get_tree().create_timer(ROUTE_PA_HOLD, false).timeout
+	if is_instance_valid(subtitles) and subtitles.current_line() == line:
+		subtitles.clear_line()
+
+
+## The black over the level while a death resets it (made on first use).
+func _fade_death(to_alpha: float, seconds: float) -> void:
+	if _death_fade == null:
+		var layer := CanvasLayer.new()
+		layer.name = "DeathFade"
+		layer.layer = 18
+		add_child(layer)
+		_death_fade = ColorRect.new()
+		_death_fade.color = Color(0.0, 0.0, 0.0, 0.0)
+		_death_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_death_fade.set_anchors_preset(Control.PRESET_FULL_RECT)
+		layer.add_child(_death_fade)
+	var tw := create_tween()
+	tw.tween_property(_death_fade, "color:a", to_alpha, seconds)
+	await tw.finished
 
 
 ## Pause menu's "Restart from checkpoint" (M5 part 2): same rollback +

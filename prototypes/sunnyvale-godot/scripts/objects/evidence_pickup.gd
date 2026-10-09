@@ -20,6 +20,12 @@ const PAINTED_GLOW := 34.0
 
 @export var evidence_id: String = "EF01"
 @export var toast_text: String = "Evidence file: Lockout Notice"
+## C53: what the file says, shown in the evidence reader on pickup (EF01's text follows
+## design/03-progression/evidence-files.md). Empty text keeps the toast only.
+@export var reader_title: String = "Lockout Notice"
+@export_multiline var reader_body: String = "ARCADIA DYNAMICS  |  SEPARATION NOTICE\n\nTo: Dr. Dave Harlan, Adam Safety Team\nEffective: immediately\n\nYour access to Arcadia systems and to Adam is revoked. Your badge is void on every campus door.\n\nYou are flagged as a security threat. Staff must not speak with you or let you on site.\n\nRequested by: H. Stroud, Safety Team Lead"
+
+const READER := preload("res://scripts/ui/evidence_reader.gd")
 
 var _collected: bool = false
 
@@ -56,6 +62,21 @@ func interact(hero: Node) -> void:
 		if _toast:
 			_toast.show_message(toast_text)
 		queue_redraw()
+		_open_reader(hero)
+
+
+func _open_reader(hero: Node) -> void:
+	if reader_body == "" or not is_inside_tree():
+		return
+	var reader: CanvasLayer = READER.new()
+	var host := get_tree().current_scene if get_tree().current_scene else get_tree().root
+	host.add_child(reader)
+	reader.open(reader_title, reader_body)
+	if hero and "input_enabled" in hero:
+		hero.input_enabled = false
+		reader.closed.connect(func():
+			if is_instance_valid(hero):
+				hero.input_enabled = true)
 
 
 ## EF01, the Lockout Notice: a one-page memo in a clear sleeve with a paper

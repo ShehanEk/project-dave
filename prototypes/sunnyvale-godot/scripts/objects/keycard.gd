@@ -25,7 +25,7 @@ const PAINTED_HALO := 28.0
 
 @export var entity_id: String = "L01-KC01-P"
 @export var keycard_id: String = "L01-KC01"
-@export var toast_text: String = "Clearance card taken"
+@export var toast_text: String = "Clearance card taken: it opens the exit wicket"  # C53: says what it is for
 
 var _t: float = 0.0
 var _reduced_motion: bool = false

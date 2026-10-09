@@ -59,21 +59,23 @@ func run() -> void:
 
 ## --- 2b: hint after exactly 2 ineffective frontal hits ---------------------
 
+## C53: the hint now comes on the FIRST blocked shot (was the second), so the player learns
+## the Rover's armor before wasting a volley.
 func _test_hint_after_exactly_two_blocked_hits() -> void:
 	var rover := await _make_rover(Vector2(500, 560))
-	check(rover.tuning.frontal_hint_threshold == 2,
-			"patrol_rover.tres seeds frontal_hint_threshold=2 (got %d)" % rover.tuning.frontal_hint_threshold)
+	check(rover.tuning.frontal_hint_threshold == 1,
+			"patrol_rover.tres seeds frontal_hint_threshold=1 (got %d)" % rover.tuning.frontal_hint_threshold)
 
 	var hint_count := [0]
 	rover.hint_requested.connect(func(_t): hint_count[0] += 1)
 
 	var outcome1: StringName = rover.front_hit_zone.take_hit(1, rover.global_position, Vector2.LEFT)
 	check(outcome1 == &"blocked", "1st frontal hit is blocked")
-	check(hint_count[0] == 0, "the hint has not fired after only 1 ineffective hit")
+	check(hint_count[0] == 1, "the hint fires on the 1st ineffective hit (got %d)" % hint_count[0])
 
 	var outcome2: StringName = rover.front_hit_zone.take_hit(1, rover.global_position, Vector2.LEFT)
 	check(outcome2 == &"blocked", "2nd frontal hit is blocked")
-	check(hint_count[0] == 1, "the hint fires exactly once after the 2nd ineffective hit (got %d)" % hint_count[0])
+	check(hint_count[0] == 1, "the hint does not fire again on the 2nd (got %d)" % hint_count[0])
 	check(rover.hint_label.visible, "the hint is shown on screen")
 	check(rover.hint_label.text == PatrolRover.HINT_TEXT, "the hint text is the Rover's armored/solid-wall/battery line")
 	check(PatrolRover.HINT_TEXT.contains("Armored") and PatrolRover.HINT_TEXT.contains("battery"),

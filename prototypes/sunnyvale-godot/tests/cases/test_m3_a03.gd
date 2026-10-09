@@ -140,8 +140,10 @@ func _test_static_population_matches_blueprint() -> void:
 	check(e05_end <= e06_start,
 			"E05's lane (ends at x=%.0f) does not overlap E06's lane (starts at x=%.0f)"
 			% [e05_end, e06_start])
-	check(e05.max_attackers == 1 and e06.max_attackers == 1,
-			"E05 and E06 keep the default one-attacker token (C41 only widens the A06 lockdown fights)")
+	# C53: the mixed Guard + Rover group attacks two at a time (the fights were a queue of
+	# duels); the two-Guard E06 keeps one at a time.
+	check(e05.max_attackers == 2 and e06.max_attackers == 1,
+			"E05 (Guard + Rover) lets two attack at once, E06 keeps one (got %d, %d)" % [e05.max_attackers, e06.max_attackers])
 
 	# Each Night Guard starts at least 2H (192px) beyond the edge of its own
 	# lane closest to the approach, i.e. away from where the hero lands.

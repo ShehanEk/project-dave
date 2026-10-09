@@ -18,7 +18,7 @@ No double jump, dash, climb, ladder, fall-through floor, or reload input is need
 | Base interval | 0.32s |
 | Quickcycle interval | 0.18s (was 0.24s until C52, 2026-10-08: too small to notice) |
 | Ammo / reload | Unlimited basic fire / none |
-| Upgrade | Stage 1 Quickcycle; 40 microchips; buy once per run |
+| Upgrade | Stage 1 Quickcycle, 40 microchips; Scrap Plating (+1 max health), 25 microchips (C53); each once per run |
 | Stage 2 / 3 | Not purchasable in L01; no extra ability or attachment implemented |
 | Collision | Stops at solid scenery; use swept movement/raycast validation to prevent tunneling |
 | Lifetime | Despawn out of range/offscreen after a short bounded flight |

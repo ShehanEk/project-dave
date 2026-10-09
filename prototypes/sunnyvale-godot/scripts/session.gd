@@ -49,6 +49,9 @@ const SCHEMA_VERSION := 3
 const BUILD := "sunnyvale-proto-revamp"
 const LEVEL := "L01"
 const MAX_HEALTH := 6
+## C53: Scrap Plating, the workbench's second upgrade, adds one health segment. It is kept in
+## `upgrades` under its own type id beside the weapons ("A01", stage 0 or 1).
+const PLATING_TYPE := "A01"
 const STARTING_WEAPON := "L01-W01-P01"
 ## Objective progression (05-content-and-assets.md / 03-gameplay-systems.md
 ## "Story states and UI"). Exactly one of these is ever `state["objective"]`.
@@ -108,7 +111,7 @@ static func default_state() -> Dictionary:
 		# Clearance keycards taken this run (exit locks, never inventory items).
 		"keycards": [],
 		# weapon type -> earned type-wide stage
-		"upgrades": {"W01": 0},
+		"upgrades": {"W01": 0, PLATING_TYPE: 0},
 		"equipped_weapon": STARTING_WEAPON,
 		# world weapon instance id -> pad id it rests on
 		"world_weapons": {"L01-W01-P02": "L01-A05-PAD01"},
@@ -253,7 +256,7 @@ func _persist(snapshot: Dictionary) -> bool:
 
 
 func _emit_all() -> void:
-	health_changed.emit(state["health"], MAX_HEALTH)
+	health_changed.emit(state["health"], max_health())
 	wallet_changed.emit(state["wallet"])
 	objective_changed.emit(state["objective"])
 
@@ -264,26 +267,31 @@ func get_health() -> int:
 	return state["health"]
 
 
+## MAX_HEALTH, plus one with Scrap Plating fitted.
+func max_health() -> int:
+	return MAX_HEALTH + weapon_stage(PLATING_TYPE)
+
+
 func apply_damage(amount: int) -> int:
 	state["health"] = maxi(0, state["health"] - amount)
-	health_changed.emit(state["health"], MAX_HEALTH)
+	health_changed.emit(state["health"], max_health())
 	return state["health"]
 
 
 ## Returns the amount actually restored.
 func heal(amount: int) -> int:
 	var before: int = state["health"]
-	state["health"] = mini(MAX_HEALTH, before + amount)
-	health_changed.emit(state["health"], MAX_HEALTH)
+	state["health"] = mini(max_health(), before + amount)
+	health_changed.emit(state["health"], max_health())
 	return state["health"] - before
 
 
 func heal_full() -> void:
-	heal(MAX_HEALTH)
+	heal(max_health())
 
 
 func is_full_health() -> bool:
-	return state["health"] >= MAX_HEALTH
+	return state["health"] >= max_health()
 
 
 # --- treasure / pickups --------------------------------------------------------
@@ -472,6 +480,9 @@ func purchase_upgrade(weapon_type: String, target_stage: int, price: int) -> Dic
 	var upgrades: Dictionary = candidate["upgrades"].duplicate(true)
 	upgrades[weapon_type] = target_stage
 	candidate["upgrades"] = upgrades
+	# Scrap Plating comes fitted with its new segment full.
+	if weapon_type == PLATING_TYPE:
+		candidate["health"] = int(candidate["health"]) + (target_stage - current_stage)
 	candidate["checkpoint_id"] = "UPG01"
 	candidate["active_seconds"] = float(run_meta.get("active_seconds", 0.0))
 
@@ -483,5 +494,7 @@ func purchase_upgrade(weapon_type: String, target_stage: int, price: int) -> Dic
 	committed = candidate.duplicate(true)
 	wallet_changed.emit(state["wallet"])
 	upgrade_purchased.emit(weapon_type, target_stage)
+	if weapon_type == PLATING_TYPE:
+		health_changed.emit(state["health"], max_health())
 	checkpoint_committed.emit("UPG01")
 	return {"ok": true, "reason": ""}

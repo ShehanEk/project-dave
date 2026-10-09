@@ -310,10 +310,17 @@ func _enter_windup(dir: int) -> void:
 	Audio.play_sfx(&"rover_windup", global_position)
 
 
+## C53: a Rover that missed (braked at its full run or at a ledge) turns and comes again with
+## a shorter windup, so stepping aside once is not the end of it; a stall resets it.
+const FOLLOWUP_WINDUP_SCALE := 0.6
+var _followup := false
+
+
 func _tick_windup(delta: float) -> void:
 	velocity.x = 0.0
 	_state_timer += delta
-	if _state_timer >= tuning.windup_time:
+	if _state_timer >= tuning.windup_time * (FOLLOWUP_WINDUP_SCALE if _followup else 1.0):
+		_followup = false
 		_enter_charge()
 
 
@@ -346,6 +353,7 @@ func _tick_charge_post() -> void:
 
 func _enter_stall(wall: Node = null) -> void:
 	state = State.STALL
+	_followup = false
 	attack_box.active = false
 	velocity = Vector2.ZERO
 	_state_timer = 0.0
@@ -372,6 +380,7 @@ func _tick_stall(delta: float) -> void:
 
 
 func _enter_brake_recovery() -> void:
+	_followup = true
 	attack_box.active = false
 	velocity.x = 0.0
 	state = State.RECOVERY

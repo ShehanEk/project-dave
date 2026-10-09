@@ -99,23 +99,23 @@ func _panel() -> void:
 	await physics_frames(2)
 	var vb := "Panel/VBox/"
 	check(panel.get_node(vb + "ServiceHeader").text.contains("REPAIR AND SAVE"), "section 1 is named: repair and save")
-	check(panel.get_node(vb + "UpgradeHeader").text.contains("WEAPON UPGRADE"), "section 2 is named: weapon upgrade")
+	check(panel.get_node(vb + "UpgradeHeader").text.contains("UPGRADES"), "section 2 is named: upgrades")
 	check_eq(panel.get_node(vb + "ServiceRow/ServiceButton").text, "Repair and save", "the service button says what it does")
 	check_eq(panel.get_node(vb + "HeaderRow/WalletLabel").text, "45", "the header shows the chip count")
-	check_eq(panel.get_node(vb + "UpgradeRow/Info/NameRow/StateLabel").text, "NOT INSTALLED", "before buying: not installed")
-	check(panel.get_node(vb + "UpgradeRow/Info/RateGrid/NowValue").text.begins_with("3.1"), "the base rate is shown (3.1 shots/s)")
-	check(panel.get_node(vb + "UpgradeRow/Info/RateGrid/QuickValue").text.begins_with("5.6"), "the Quickcycle rate is shown (5.6 shots/s)")
-	var now_frac: float = panel.get_node(vb + "UpgradeRow/Info/RateGrid/NowBar/Fill").anchor_right
+	check_eq(panel.get_node(vb + "QuickcycleCard/Info/NameRow/StateLabel").text, "NOT INSTALLED", "before buying: not installed")
+	check(panel.get_node(vb + "QuickcycleCard/Info/RateGrid/NowValue").text.begins_with("3.1"), "the base rate is shown (3.1 shots/s)")
+	check(panel.get_node(vb + "QuickcycleCard/Info/RateGrid/QuickValue").text.begins_with("5.6"), "the Quickcycle rate is shown (5.6 shots/s)")
+	var now_frac: float = panel.get_node(vb + "QuickcycleCard/Info/RateGrid/NowBar/Fill").anchor_right
 	check(absf(now_frac - 0.32 / 0.32 * 0.18 / 0.32) < 0.01, "the base bar is the base rate as a share of the Quickcycle's (%.2f)" % now_frac)
 	var buy: Button = panel.get_node(vb + "UpgradeRowButtons/ConfirmButton")
 	check(buy.visible and not buy.disabled, "with 45 chips Buy can be pressed")
 	check(buy.text.contains("40"), "the Buy button names the price (%s)" % buy.text)
-	check(panel.get_node(vb + "CostRow/BalanceLabel").text.contains("5 left"), "it says what is left after buying")
+	check(panel.get_node(vb + "BalanceLabel").text.contains("Choose"), "with 45 chips it says you can buy one of the two")
 
 	Session.state["wallet"] = 12
 	Session.wallet_changed.emit(12)
 	check(buy.disabled, "with 12 chips Buy is disabled")
-	check(panel.get_node(vb + "CostRow/BalanceLabel").text.contains("28"), "it says how many chips are missing (28)")
+	check(panel.get_node(vb + "BalanceLabel").text.contains("13"), "it says how many chips are missing for the cheaper one (13)")
 
 	Session.state["wallet"] = 45
 	Session.wallet_changed.emit(45)
@@ -123,9 +123,8 @@ func _panel() -> void:
 	check_eq(Session.weapon_stage("W01"), 1, "buying fits the Quickcycle")
 	check_eq(Session.get_wallet(), 5, "the 40 chips are spent")
 	check(panel.bought, "the panel remembers a buy (the bench announces it on close)")
-	check_eq(panel.get_node(vb + "UpgradeRow/Info/NameRow/StateLabel").text, "INSTALLED", "after buying: installed")
+	check_eq(panel.get_node(vb + "QuickcycleCard/Info/NameRow/StateLabel").text, "INSTALLED", "after buying: installed")
 	check(not buy.visible, "no Buy button once installed")
-	check(not panel.get_node(vb + "CostRow").visible, "no price row once installed")
 	check(panel.get_node(vb + "StatusLabel").text.begins_with("Quickcycle installed"), "the line at the bottom says what happened")
 	check_eq(panel.get_node(vb + "HeaderRow/WalletLabel").text, "5", "the header chip count follows")
 
