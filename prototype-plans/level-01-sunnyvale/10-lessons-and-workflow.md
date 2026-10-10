@@ -104,6 +104,7 @@ We learn along the way: after every pass, add a line to the [log](#6-learning-lo
 - **Signal order matters for toasts.** A purchase emits `upgrade_purchased` and then `checkpoint_committed`; later toasts replace earlier ones, so the HUD remembers the pending upgrade and announces it in place of "Progress saved".
 - **UI built in code** (`intro_comic.gd`, `evidence_reader.gd`) uses the shared theme `assets/ui/c11_theme.tres`, joins a group so tests can find it, and polls input edges in `_physics_process` (tests drive input with `Input.action_press()`, which sends no events). A key held when a modal opens must be released before it can close it.
 - **Release builds strip debug drivers** (`OS.is_debug_build()`), and unsigned Mac exports show a broken resource seal; ad-hoc signing lets them open.
+- **Lit characters can clip to white under a close lamp.** Light from several sources adds up (lamp, moonlight, glow). `lit_part.gdshader` has a soft limit per light (`knee_start`, `knee_soft`); Dave and the Patrol Rover (pale shell) use a lower one, Dave also little shine (`hero_rig_visual.gd`, `patrol_rover.gd`). `enemy_lamp_demo.tscn` puts every enemy under a lamp for checking. Check a new character standing under a lamp before calling its lighting done.
 - **Reports go stale.** `reports/pacing-risk.md` still lists old enemy counts and bot times; measure again before trusting a number.
 
 ## 5. Process lessons
@@ -129,5 +130,6 @@ Add one row per pass: date, decision, what worked, what did not. Newest at the b
 | 2026-10-08 | C52 Quickcycle and workbench | Big change plus feedback on every channel; capture demo for the menu | The 0.24 s version was never felt in play |
 | 2026-10-09 | Shareable builds | Mac (signed ad hoc) and Windows zips with how-to notes; Windows data tested with `--main-pack` | The Windows .exe itself has not been run on Windows |
 | 2026-10-09 | C53 fun pass, first batch | Lens reviewers plus checking; tests and export green | The long roof jump needed two tries; a C51 test had been passing while broken |
+| 2026-10-10 | Dave under street lamps | A still capture demo (`lamp_light_demo.tscn`) and measured pixel values showed the clip; fixed in two tries | First guess (one soft limit for everyone) was not enough: moonlight and the lamp glow add on top, and his hair had leather-like gloss in its shine map |
 
 [Prototype plan index](README.md) · [Decision register](../../design/decisions.md)

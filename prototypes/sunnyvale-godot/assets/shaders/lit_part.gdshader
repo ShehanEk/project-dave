@@ -15,6 +15,13 @@ uniform float normals_on = 1.0;
 // Soft wrap so a light just behind the edge still grazes it.
 uniform float wrap = 0.2;
 uniform float spec_gain = 1.0;
+// Soft highlight limit (2026-10-10): a lamp right above a character used to push bright
+// paint (Dave's face) past white, so it read as a flat white patch. Each light's strength on
+// a part rises normally up to `knee_start`, then flattens out (`knee_soft` = how quickly), so
+// a close lamp still lights the side it is on but keeps the paint's own shading. The highlight
+// (spec) is limited the same way.
+uniform float knee_start = 0.7;
+uniform float knee_soft = 2.5;
 // Emissive areas glow in their own painted colour (tint 0) or in
 // `emissive_color` (tint 1, the baton's amber-then-red tell).
 uniform vec3 emissive_color : source_color = vec3(1.0);
@@ -37,6 +44,11 @@ void fragment() {
 	COLOR = vec4(albedo.rgb * (ambient + vec3(flash)) + emissive, albedo.a);
 }
 
+vec3 soft_limit(vec3 k) {
+	vec3 over = max(k - vec3(knee_start), vec3(0.0));
+	return min(k, vec3(knee_start)) + over / (vec3(1.0) + over * knee_soft);
+}
+
 void light() {
 	float ndl = dot(NORMAL, LIGHT_DIRECTION);
 	float diff = clamp((ndl + wrap) / (1.0 + wrap), 0.0, 1.0);
@@ -45,5 +57,5 @@ void light() {
 	float shin = exp2(spec_v.g * 10.0 + 1.0);
 	float s = pow(max(dot(NORMAL, h), 0.0), shin) * spec_v.r * (shin + 8.0) / 25.0 * spec_gain;
 	s *= step(0.0, ndl);
-	LIGHT = vec4((albedo_v.rgb * diff + vec3(s)) * lc, LIGHT_COLOR.a);
+	LIGHT = vec4(albedo_v.rgb * soft_limit(diff * lc) + soft_limit(vec3(s) * lc), LIGHT_COLOR.a);
 }

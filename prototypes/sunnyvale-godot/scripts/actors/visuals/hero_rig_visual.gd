@@ -38,6 +38,13 @@ const RIG_PATH := "res://assets/characters/lit/dave/rig.json"
 const GUN_Z := 7
 ## Dave's lights wrap a little further round an edge than the enemies' (0.2).
 const RIG_WRAP := 0.3
+## Dave under a street lamp (2026-10-10): his parts sheet gives his hair the gloss of leather,
+## so a lamp above him put a white patch on his hair, and his pale painted skin at full lamp
+## light read as flat white. His shine is cut right down and his light levels off earlier
+## than the enemies' (the shader's soft limit, knee_start 0.7 for everyone else).
+const RIG_SPEC_GAIN := 0.12
+const RIG_KNEE_START := 0.3
+const RIG_KNEE_SOFT := 4.0
 ## Crossfade into each clip (s).
 const BLEND := {&"idle": 0.15, &"run": 0.08, &"jump_rise": 0.06, &"jump_fall": 0.1, &"land": 0.03,
 		&"hurt": 0.03, &"interact": 0.06, &"defeated": 0.08}
@@ -81,6 +88,9 @@ func _ready() -> void:
 	add_child(rig)
 	for m in rig._materials:
 		(m as ShaderMaterial).set_shader_parameter("wrap", RIG_WRAP)
+		(m as ShaderMaterial).set_shader_parameter("spec_gain", RIG_SPEC_GAIN)
+		(m as ShaderMaterial).set_shader_parameter("knee_start", RIG_KNEE_START)
+		(m as ShaderMaterial).set_shader_parameter("knee_soft", RIG_KNEE_SOFT)
 	anim = AnimatorScript.new(Clips.CLIPS)
 	anim.play("idle", true, 0.0)
 	rig.apply_pose(anim.advance(0.0))

@@ -25,6 +25,9 @@ const Lights := preload("res://scripts/actors/lit/lights.gd")
 
 enum State { PATROL, WINDUP, CHARGE, STALL, RECOVERY, DEFEATED }
 
+const RIG_KNEE_START := 0.4
+const RIG_KNEE_SOFT := 3.0
+
 const H := 96.0
 ## The imported machine (2026-10-03) is a long, low patrol car: the body
 ## box spans the chassis, and the bumper reaches its front edge.
@@ -165,6 +168,11 @@ func _build_visual() -> void:
 	rig.rig_path = tuning.rig_path
 	add_child(rig)
 	rig.facing = facing
+	# Its pale shell went pure white on top under a street lamp (2026-10-10): its light levels
+	# off earlier than the shader's default (knee_start 0.7), like Dave's.
+	for m in rig._materials:
+		(m as ShaderMaterial).set_shader_parameter("knee_start", RIG_KNEE_START)
+		(m as ShaderMaterial).set_shader_parameter("knee_soft", RIG_KNEE_SOFT)
 	_tell_light = PointLight2D.new()
 	_tell_light.name = "TellLight"
 	_tell_light.texture = Lights.soft_disc()
