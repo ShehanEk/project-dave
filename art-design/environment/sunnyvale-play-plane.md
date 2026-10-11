@@ -238,6 +238,26 @@ The letters must be **plain white**: the game tints them (teal for signs, green 
 
 > Pixel art bitmap font sheet for a 2D game. A strict grid of cells, 13 columns by 4 rows, each cell the same size with clear empty space around its glyph and no grid lines drawn. Transparent background. Every glyph is drawn in pure white (#FFFFFF) only: no outline, no shadow, no glow, no colour, no anti-aliasing. Each glyph is exactly 5 pixels wide and 7 pixels tall (capital letters sit on the same baseline; Q and comma may hang 2 pixels below it), drawn with crisp, square, equal-sized pixels, strokes one pixel thick, in a clean, slightly squared sans-serif style like a classic 5 x 7 pixel font, easy to read at small size. Row 1: A B C D E F G H I J K L M. Row 2: N O P Q R S T U V W X Y Z. Row 3: 0 1 2 3 4 5 6 7 8 9 and then two empty cells. Row 4: . , ! ? - ' : / + & ( ) and one empty cell. Nothing else on the sheet: no title, no labels, no sample words.
 
+## Sheet 14: story props (planned 2026-10-10)
+
+**Stored 2026-10-11 (not imported):** [sunnyvale-story-v1.webp](../../concept-art/env-sunnyvale/sunnyvale-story-v1.webp), gpt-image-2, first of two variations (369 credits for both), generated without a style reference, so its palette and pixels are only described in the prompt. 1280 x 720 on a noisy magenta (about #FA02F9, so key it with a tolerance, not exactly #FF00FF). The three props are 307, 410 and 188 px wide; the desk lamp's glow is tinted by the magenta and should be cropped, the game draws its own. Its pixels are finer and softer than the campus layer's, so the importer needs the grid measurement (`--measure`) before a size is chosen. **In the game (2026-10-11, C54):** imported with `tools/art/import_pixel_sheet.py story` (a `key` of 40 clears the magenta and the lamp halo; each piece has its own `pixel` so it lands at the old drawing's size at 1.5 world px per art pixel). Where each piece is used:
+
+- **Breakfast table (48 x 50 art px, 72 x 75 world px):** `Scenery` BREAKFAST in A02 and A04, as `breakfast`. Smaller than the old 110 px wide drawing because the generated table is as tall as it is wide.
+- **Guard's desk (59 x 60 art px, 89 x 90 world px):** `Scenery` PORTRAIT in A02 and A04, as `portrait_desk`. The lamp's smooth glow is drawn over its head in code. The photo's two figures are a soft shape at this pixel size.
+- **Evidence folder (28 x 36 art px, 42 x 54 world px):** `EvidencePickup`, as `evidence_folder_v2` (the objects2 folder stays the fallback).
+- Both props are dimmed (tint 0.8 and 0.74) and the folder 0.84, so a street lamp over them does not clip them to white. The depot keeps its code drawing.
+
+The three props that still look code-drawn at night (the user's screenshot of A02/A04): the abandoned breakfast table, the guard's desk with the family photo and desk lamp, and the evidence folder (the painted one is a blank cream shape that glares at night). Placed today as `Scenery` PORTRAIT and BREAKFAST (A02 at x 3400/3540 and A04 at x 6900/7150, sizes 110 x 70, 70 x 90, 90 x 110 and 90 x 60 world px) and the `EvidencePickup` folder (39 x 51 world px).
+
+Sizes below are in generated pixels at the campus layer's pixel size (3 world px each), so the table lands at the old 110 x 70 world px. Attach the campus layer as the style reference, and the objects sheet (`sunnyvale-objects-v1.webp`) so the props match the station and workbench.
+
+> [shared style text] This sheet holds three story props, side by side, left to right, with clear empty space between them:
+> 1. An abandoned breakfast table, about 36 x 23 pixels: a small round steel side table on one pedestal leg, seen from the side. On it a meal tray holding a wrapped sandwich (grey-brown paper, one corner open) and a white ceramic coffee cup with a handle. The coffee is cold: no steam. Cool slate and steel, the cup and tray catching a little cold light.
+> 2. A security guard's desk, about 30 x 37 pixels: a plain steel desk with a drawer front. On it a small framed photograph (a dark frame, 10 x 12 pixels; inside, the pale silhouettes of two people, an adult and a child, standing together) and a small cold-white adjustable desk lamp with its head tilted toward the photograph, a faint cool glow under its shade.
+> 3. A paper evidence folder, about 13 x 17 pixels: a cream manila folder standing up, a darker tab at the top, a paper clip, a black band across the lower third (the "revoked" mark), and two or three grey lines of text on the face (no readable letters). Slightly muted, not pure white, so it doesn't glare under a lamp.
+
+**Import (when the sheet arrives):** save it as `concept-art/env-sunnyvale/sunnyvale-story-v1.webp`, add a `story` entry to `tools/art/import_pixel_sheet.py` (grid 1 x 3, names `breakfast`, `portrait_desk`, `evidence_folder_v2`), add the three pieces to `scripts/world/prop_skins.gd` (the desk's lamp lens kept as the glow anchor) and swap `_draw_portrait` / `_draw_breakfast` and the folder's PIECE to the painted pieces, with the code drawing left as the fallback.
+
 ## Characters
 
 The characters are smooth painted cutout rigs (C35) with hand-keyed motion (C38), so they also look different from the pixel world. **The user asked for the prompts (2026-10-05).** The way to match keeps the rigs:

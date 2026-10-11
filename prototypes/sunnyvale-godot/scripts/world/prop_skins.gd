@@ -20,6 +20,9 @@ const DIR := "res://assets/environment/sunnyvale/props/"
 ## The buildings sheet (C42): drawn at the campus's own pixel size, so each of
 ## its pieces was imported with 2 x 2 art pixels per generated pixel.
 const BUILDINGS := "res://assets/environment/sunnyvale/buildings/"
+## The story sheet (Sheet 14): the breakfast table and the guard's desk, drawn
+## at 1.5 world px per art px like the props, cut to the old drawings' size.
+const STORY := "res://assets/environment/sunnyvale/story/"
 
 ## tex: piece name; units: the columns [u0, u1) of one bay, repeated as many
 ## times as fit, after the left end [0, u0) and before the right end
@@ -46,6 +49,11 @@ const PIECES := {
 	"depot_door": {"tex": "depot_door", "dir": BUILDINGS},
 	"annex_door": {"tex": "annex_door", "dir": BUILDINGS},
 	"landmark": {"tex": "landmark", "dir": BUILDINGS},
+	# The story sheet: drawn as they are, whatever the prop's `size`.
+	# Dimmed like the planters and hedges: under a street lamp their pale steel
+	# and the desk lamp's shade would clip to white.
+	"breakfast": {"tex": "breakfast", "dir": STORY, "tint": Color(0.8, 0.84, 0.92)},
+	"portrait_desk": {"tex": "portrait_desk", "dir": STORY, "tint": Color(0.74, 0.78, 0.88)},
 }
 
 ## The landmark tower: the sign head [0, LANDMARK_HEAD) carrying the emblem,

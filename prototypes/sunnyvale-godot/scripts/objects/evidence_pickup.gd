@@ -13,10 +13,14 @@ const TEXT_LINE := Color("#2E3B4E")
 const GLOW := Color(0.25, 0.88, 0.82, 0.16)
 ## The painted pixel-art look (objects2 sheet), drawn through PickupSkins; the
 ## code-drawn memo below stays as the fallback. The glow grows to the painted
-## folder's size (39 x 51 world px).
+## folder's size (39 x 51 world px; the story sheet's redrawn folder, with its
+## paper lines and revoked band, is 42 x 54 and is used when it is present).
 const PickupSkins := preload("res://scripts/world/pickup_skins.gd")
 const PIECE := "evidence_folder"
+const STORY_PIECE := "evidence_folder_v2"
 const PAINTED_GLOW := 34.0
+## The story folder's cream dimmed a little, so a lamp over it never clips it to white.
+const STORY_TINT := Color(0.84, 0.86, 0.92)
 
 @export var evidence_id: String = "EF01"
 @export var toast_text: String = "Evidence file: Lockout Notice"
@@ -42,6 +46,8 @@ func _ready() -> void:
 
 ## The PickupSkins piece this file draws, or "" for the code-drawn look.
 func painted_piece() -> String:
+	if PickupSkins.has_piece(STORY_PIECE):
+		return STORY_PIECE
 	return PIECE if PickupSkins.has_piece(PIECE) else ""
 
 
@@ -87,7 +93,7 @@ func _draw() -> void:
 		return
 	if painted_piece() != "":
 		draw_circle(Vector2.ZERO, PAINTED_GLOW, GLOW)
-		PickupSkins.draw_centred(self, PIECE)
+		PickupSkins.draw_centred(self, painted_piece(), Vector2.ZERO, STORY_TINT)
 		return
 	draw_circle(Vector2.ZERO, 22.0, GLOW)
 	var page := Rect2(Vector2(-11.0, -15.0), Vector2(22.0, 30.0))

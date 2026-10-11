@@ -101,6 +101,7 @@ const PAINTED := {
 	Kind.FLOWER: "flower", Kind.PLANTER: "planter", Kind.MAILBOX: "mailbox",
 	Kind.BENCH: "bench", Kind.BOLLARD: "bollard", Kind.HOUSE: "booth", Kind.GATE: "gate",
 	Kind.FOUNTAIN: "pool", Kind.CLOCK: "landmark", Kind.DEPOT_DOOR: "depot_door",
+	Kind.PORTRAIT: "portrait_desk", Kind.BREAKFAST: "breakfast",
 }
 const NIGHT := SceneryDraw.NIGHT
 const NAVY := SceneryDraw.NAVY
@@ -111,6 +112,8 @@ const AMBER := SceneryDraw.AMBER
 const ALARM := SceneryDraw.ALARM
 const SIGNAL_GREEN := SceneryDraw.SIGNAL_GREEN
 const PATH_WHITE := SceneryDraw.PATH_WHITE
+## Where the painted desk's lamp head sits, relative to the desk's foot.
+const PORTRAIT_LAMP_HEAD := Vector2(8.0, -78.0)
 const STEEL_HI := Color("#3E5068")
 ## A dim rim for prop tops — deliberately far below a walkable Block's
 ## cold-white edge.
@@ -236,6 +239,8 @@ func _draw() -> void:
 			PropSkins.draw_landmark(self, maxf(-position.y, 0.0) + 40.0)
 		else:
 			PropSkins.draw(self, _painted, size)
+			if kind == Kind.PORTRAIT:   # the desk lamp's soft glow stays smooth, over the lamp's head
+				draw_circle(PORTRAIT_LAMP_HEAD, 16.0, Color(PATH_WHITE, 0.1))
 		return
 	match kind:
 		Kind.HOUSE: _draw_house()

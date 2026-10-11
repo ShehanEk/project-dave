@@ -22,6 +22,9 @@ extends RefCounted
 
 const ART := 1.5
 const DIR := "res://assets/environment/sunnyvale/objects2/"
+## Pieces from the story sheet (Sheet 14, 2026-10-11) live in their own folder.
+const STORY_DIR := "res://assets/environment/sunnyvale/story/"
+const STORY_PIECES := ["evidence_folder_v2"]
 
 ## How a sized piece stretches, in art px of the imported PNG. `cols` and `rows`
 ## list segments (from, to, repeats): a fixed one is drawn once, a repeating
@@ -57,7 +60,7 @@ static var _textures := {}
 
 static func texture(piece: String) -> Texture2D:
 	if not _textures.has(piece):
-		var path: String = DIR + piece + ".png"
+		var path: String = (STORY_DIR if piece in STORY_PIECES else DIR) + piece + ".png"
 		_textures[piece] = load(path) if ResourceLoader.exists(path) else null
 	return _textures[piece]
 

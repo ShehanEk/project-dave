@@ -26,6 +26,7 @@ Run from the project root:
   python3 tools/art/import_pixel_sheet.py paving
   python3 tools/art/import_pixel_sheet.py details
   python3 tools/art/import_pixel_sheet.py foreground
+  python3 tools/art/import_pixel_sheet.py story
 """
 import os
 import sys
@@ -112,6 +113,20 @@ SHEETS = {
     # pieces below one another. `join` grows the opaque mask this many px for
     # finding pieces, so the leaves (loose, 10 px apart) and each crack's stray
     # specks stay one piece; the box then trims back to the real pixels.
+    # The story props (Sheet 14, 2026-10-11): generated on a noisy magenta
+    # ground with no style reference, so its pixels are softer and finer
+    # (about 3 px) than the campus's. `key` clears every pixel whose red and
+    # blue both beat its green by more than that much (the magenta, and the
+    # violet halo around the desk lamp, which the game draws itself). Each
+    # piece's `pixel` is the generated px per art px that lands it at the old
+    # code drawing's size at 1.5 world px per art px (the folder is the
+    # objects2 folder's 26 x 34).
+    "story": {
+        "sheet": "concept-art/env-sunnyvale/sunnyvale-story-v1.webp", "key": 40, "colors": 48,
+        "pixel": {"breakfast": 6.5, "portrait_desk": 6.9, "evidence_folder_v2": 7.2},
+        "grid": (1, 3),
+        "names": ["breakfast", "portrait_desk", "evidence_folder_v2"],
+    },
     "details": {
         "sheet": "concept-art/env-sunnyvale/sunnyvale-details-v1.webp", "pixel": 5.5, "colors": 48,
         "join": 14,
@@ -290,6 +305,11 @@ def main():
     name = sys.argv[1]
     cfg = SHEETS[name]
     src = np.asarray(Image.open(os.path.join(REPO, cfg["sheet"])).convert("RGBA"))
+    if "key" in cfg:   # a flat magenta ground instead of an alpha channel
+        rgb = src[..., :3].astype(np.int32)
+        magenta = np.minimum(rgb[..., 0], rgb[..., 2]) - rgb[..., 1] > cfg["key"]
+        src = src.copy()
+        src[magenta, 3] = 0
     solid = src[..., 3] > 128
     if "join" in cfg:
         boxes = trim_boxes(find_pieces(join_mask(solid, cfg["join"])), solid)
@@ -314,10 +334,13 @@ def main():
             piece_name = piece_name[len(taken)]   # boxes arrive in any order: fixed below by y
         if piece_name in pieces:
             raise SystemExit("two pieces landed in cell %d (%s)" % (cell, piece_name))
-        m = int(2 * cfg.get("block", cfg.get("pixel", 0)))
+        px = cfg.get("pixel", 0)
+        if isinstance(px, dict):
+            px = px[piece_name]
+        m = int(2 * cfg.get("block", px))
         crop = src[max(y0 - m, 0):y1 + m, max(x0 - m, 0):x1 + m]
         if "pixel" in cfg:
-            piece = reduce_detected(crop, cfg["pixel"])
+            piece = reduce_detected(crop, px)
             k = cfg.get("upscale", 1)
             pieces[piece_name] = piece.repeat(k, axis=0).repeat(k, axis=1) if k > 1 else piece
         else:

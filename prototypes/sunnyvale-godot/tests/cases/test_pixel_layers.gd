@@ -108,6 +108,12 @@ func _props(level: Node2D) -> void:
 	check_eq((a2.get_node("Scenery/Shrub1") as Scenery).painted_piece(), "shrub", "hedges draw the painted hedge")
 	check_eq((level.areas[4].get_node("Scenery/UtilityLampA") as Scenery).painted_piece(), "",
 			"the depot keeps its code-drawn lamps until its own art")
+	# Sheet 14 (2026-10-11): the breakfast table and the guard's desk are painted.
+	check_eq((a2.get_node("Scenery/Breakfast") as Scenery).painted_piece(), "breakfast", "the breakfast table is painted")
+	check_eq((a2.get_node("Scenery/Portrait") as Scenery).painted_piece(), "portrait_desk", "the guard's desk is painted")
+	for piece in ["breakfast", "portrait_desk"]:
+		var tex: Texture2D = lamp.PropSkins.texture(piece, lamp.PropSkins.STORY)
+		check(tex != null and tex.get_height() * 1.5 < 94.0, "%s stands shorter than Dave (94 px)" % piece)
 
 
 ## The painted buildings (C42 buildings sheet): the guard booth, entry gate,
@@ -256,7 +262,7 @@ func _pickups(level: Node2D) -> void:
 	check_eq((card.get_node("Toast") as Label).texture_filter, CanvasItem.TEXTURE_FILTER_LINEAR, "while its toast text stays smooth")
 	check_eq((level.find_child("MedPatch_HS01", true, false) as MedPatch).painted_piece(), "med_patch", "med-patches are painted")
 	var folder: EvidencePickup = level.find_child("EvidencePickup_A01", true, false)
-	check_eq(folder.painted_piece(), "evidence_folder", "the evidence file is the painted folder")
+	check_eq(folder.painted_piece(), "evidence_folder_v2", "the evidence file is the story sheet's painted folder")
 	check_eq((folder.get_node("Toast") as Label).texture_filter, CanvasItem.TEXTURE_FILTER_LINEAR, "its toast stays smooth")
 	var cache: ChipCache = level.find_child("ChipCache_OPT02", true, false)
 	check_eq(cache.painted_piece(), "chip_cache", "the chip cache is painted, closed and opened")
