@@ -1,0 +1,615 @@
+{
+ "name": "SE01 Night Guard (the young guard)",
+ "kind": "human",
+ "texture_scale": 4,
+ "albedo": "albedo.png",
+ "normal": "normal.png",
+ "spec": "spec.png",
+ "ground_lock": true,
+ "sole_points": [
+  [
+   -3.74,
+   10.18
+  ],
+  [
+   4.57,
+   10.38
+  ],
+  [
+   13.14,
+   9.45
+  ]
+ ],
+ "parts": {
+  "head": {
+   "rect": [
+    311,
+    4,
+    70,
+    82
+   ],
+   "pivot": [
+    34.7,
+    72.3
+   ]
+  },
+  "torso": {
+   "rect": [
+    4,
+    4,
+    66,
+    106
+   ],
+   "pivot": [
+    36.1,
+    100.7
+   ]
+  },
+  "pelvis": {
+   "rect": [
+    74,
+    4,
+    73,
+    97
+   ],
+   "pivot": [
+    36.1,
+    63.3
+   ]
+  },
+  "upper_arm": {
+   "rect": [
+    151,
+    4,
+    37,
+    92
+   ],
+   "pivot": [
+    18.5,
+    11.0
+   ]
+  },
+  "forearm": {
+   "rect": [
+    385,
+    4,
+    29,
+    79
+   ],
+   "pivot": [
+    14.3,
+    10.4
+   ]
+  },
+  "hand_grip": {
+   "rect": [
+    81,
+    114,
+    37,
+    45
+   ],
+   "pivot": [
+    10.0,
+    5.4
+   ]
+  },
+  "hand_open": {
+   "rect": [
+    418,
+    4,
+    34,
+    56
+   ],
+   "pivot": [
+    9.6,
+    5.6
+   ]
+  },
+  "thigh": {
+   "rect": [
+    192,
+    4,
+    56,
+    92
+   ],
+   "pivot": [
+    25.1,
+    10.8
+   ]
+  },
+  "shin": {
+   "rect": [
+    252,
+    4,
+    37,
+    90
+   ],
+   "pivot": [
+    17.4,
+    9.8
+   ]
+  },
+  "foot": {
+   "rect": [
+    4,
+    114,
+    73,
+    51
+   ],
+   "pivot": [
+    17.9,
+    7.9
+   ]
+  },
+  "baton": {
+   "rect": [
+    293,
+    4,
+    14,
+    89
+   ],
+   "pivot": [
+    7.1,
+    14.7
+   ]
+  }
+ },
+ "joints": [
+  {
+   "name": "pelvis",
+   "part": "pelvis",
+   "parent": "",
+   "pos": [
+    0.0,
+    -46.26
+   ],
+   "z": 3,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -4.0,
+     -4.0
+    ],
+    "b": [
+     4.0,
+     -4.0
+    ],
+    "r": 6.0
+   },
+   "mass": 12.0,
+   "limit": null,
+   "rest_dir": -90
+  },
+  {
+   "name": "torso",
+   "part": "torso",
+   "parent": "pelvis",
+   "pos": [
+    0.26,
+    -9.71
+   ],
+   "z": 5,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     -2.0
+    ],
+    "b": [
+     -0.335,
+     -16.96
+    ],
+    "r": 5.61
+   },
+   "mass": 25.0,
+   "limit": [
+    -35,
+    75
+   ],
+   "rest_dir": -90
+  },
+  {
+   "name": "head",
+   "part": "head",
+   "parent": "torso",
+   "pos": [
+    -0.67,
+    -21.96
+   ],
+   "z": 6,
+   "far": false,
+   "collider": {
+    "type": "circle",
+    "c": [
+     0.52,
+     -7.27
+    ],
+    "r": 7.0
+   },
+   "mass": 5.0,
+   "limit": [
+    -40,
+    45
+   ],
+   "rest_dir": -90
+  },
+  {
+   "name": "far_upper_arm",
+   "part": "upper_arm",
+   "parent": "torso",
+   "pos": [
+    -4.98,
+    -15.84
+   ],
+   "z": 1,
+   "far": true,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     0.16,
+     17.76
+    ],
+    "r": 2.96
+   },
+   "mass": 2.5,
+   "limit": [
+    -175,
+    70
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "far_forearm",
+   "part": "forearm",
+   "parent": "far_upper_arm",
+   "pos": [
+    0.16,
+    17.76
+   ],
+   "z": 1,
+   "far": true,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     0.21,
+     15.06
+    ],
+    "r": 2.17
+   },
+   "mass": 1.8,
+   "limit": [
+    -145,
+    0
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "far_hand",
+   "part": "hand_open",
+   "parent": "far_forearm",
+   "pos": [
+    0.21,
+    15.06
+   ],
+   "z": 1,
+   "far": true,
+   "collider": {
+    "type": "circle",
+    "c": [
+     0.0,
+     4.67
+    ],
+    "r": 2.8
+   },
+   "mass": 0.7,
+   "limit": [
+    -60,
+    60
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "far_thigh",
+   "part": "thigh",
+   "parent": "pelvis",
+   "pos": [
+    0.0,
+    0.0
+   ],
+   "z": 2,
+   "far": true,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     1.04,
+     18.07
+    ],
+    "r": 5.6
+   },
+   "mass": 8.0,
+   "limit": [
+    -110,
+    40
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "far_shin",
+   "part": "shin",
+   "parent": "far_thigh",
+   "pos": [
+    1.04,
+    18.07
+   ],
+   "z": 2,
+   "far": true,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     0.26,
+     17.81
+    ],
+    "r": 3.33
+   },
+   "mass": 4.0,
+   "limit": [
+    0,
+    150
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "far_foot",
+   "part": "foot",
+   "parent": "far_shin",
+   "pos": [
+    0.26,
+    17.81
+   ],
+   "z": 2,
+   "far": true,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -1.7400000000000002,
+     7.98
+    ],
+    "b": [
+     11.14,
+     7.98
+    ],
+    "r": 2.3
+   },
+   "mass": 1.5,
+   "limit": [
+    -40,
+    35
+   ],
+   "rest_dir": 0
+  },
+  {
+   "name": "near_thigh",
+   "part": "thigh",
+   "parent": "pelvis",
+   "pos": [
+    0.0,
+    0.0
+   ],
+   "z": 4,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     1.04,
+     18.07
+    ],
+    "r": 5.6
+   },
+   "mass": 8.0,
+   "limit": [
+    -110,
+    40
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "near_shin",
+   "part": "shin",
+   "parent": "near_thigh",
+   "pos": [
+    1.04,
+    18.07
+   ],
+   "z": 4,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     0.26,
+     17.81
+    ],
+    "r": 3.33
+   },
+   "mass": 4.0,
+   "limit": [
+    0,
+    150
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "near_foot",
+   "part": "foot",
+   "parent": "near_shin",
+   "pos": [
+    0.26,
+    17.81
+   ],
+   "z": 4,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -1.7400000000000002,
+     7.98
+    ],
+    "b": [
+     11.14,
+     7.98
+    ],
+    "r": 2.3
+   },
+   "mass": 1.5,
+   "limit": [
+    -40,
+    35
+   ],
+   "rest_dir": 0
+  },
+  {
+   "name": "near_upper_arm",
+   "part": "upper_arm",
+   "parent": "torso",
+   "pos": [
+    -4.98,
+    -15.84
+   ],
+   "z": 7,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     0.16,
+     17.76
+    ],
+    "r": 2.96
+   },
+   "mass": 2.5,
+   "limit": [
+    -175,
+    70
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "near_forearm",
+   "part": "forearm",
+   "parent": "near_upper_arm",
+   "pos": [
+    0.16,
+    17.76
+   ],
+   "z": 8,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     0.21,
+     15.06
+    ],
+    "r": 2.17
+   },
+   "mass": 1.8,
+   "limit": [
+    -145,
+    0
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "near_hand",
+   "part": "hand_grip",
+   "parent": "near_forearm",
+   "pos": [
+    0.21,
+    15.06
+   ],
+   "z": 10,
+   "far": false,
+   "collider": {
+    "type": "circle",
+    "c": [
+     0.0,
+     4.67
+    ],
+    "r": 2.8
+   },
+   "mass": 0.7,
+   "limit": [
+    -60,
+    60
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "baton",
+   "part": "baton",
+   "parent": "near_hand",
+   "pos": [
+    2.6,
+    4.67
+   ],
+   "z": 9,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     -3.0
+    ],
+    "b": [
+     0.0,
+     17.5
+    ],
+    "r": 1.9
+   },
+   "mass": 0.6,
+   "limit": null,
+   "rest_dir": 90
+  }
+ ],
+ "sockets": {
+  "tell": {
+   "joint": "baton",
+   "pos": [
+    0.0,
+    17.5
+   ]
+  }
+ },
+ "source": "concept-art/se01-night-guard/se01-night-guard-parts-hd-b-v1.webp"
+}

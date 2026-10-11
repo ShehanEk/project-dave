@@ -1,0 +1,66 @@
+{
+ "lamp_post": {
+  "scale": 0.26,
+  "anchor_x": 41.5,
+  "head": 43,
+  "pole": [
+   43,
+   438
+  ],
+  "lens": [
+   81,
+   29,
+   177,
+   41
+  ]
+ },
+ "bench": {
+  "scale": 0.30423,
+  "anchor_x": 178.0
+ },
+ "planter": {
+  "scale": 0.27675,
+  "anchor_x": 136.0
+ },
+ "hedge": {
+  "scale": 0.25263,
+  "anchor_x": 143.0
+ },
+ "railing": {
+  "scale": 0.273,
+  "anchor_x": 223.5,
+  "units": [
+   13,
+   211
+  ]
+ },
+ "bollard": {
+  "scale": 0.329,
+  "anchor_x": 34.5
+ },
+ "intercom": {
+  "scale": 0.323,
+  "anchor_x": 38.0
+ },
+ "booth": {
+  "scale": 0.433,
+  "anchor_x": 196.0
+ },
+ "gate": {
+  "scale": 0.394,
+  "anchor_x": 339.5
+ },
+ "landmark": {
+  "scale": 0.49,
+  "anchor_x": 74.5,
+  "head": 196,
+  "shaft": [
+   196,
+   356
+  ],
+  "emblem": [
+   75,
+   66
+  ]
+ }
+}

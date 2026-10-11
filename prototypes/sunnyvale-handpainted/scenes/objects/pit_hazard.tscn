@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/objects/pit_hazard.gd" id="1_pit"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pit"]
+size = Vector2(160, 40)
+
+[node name="PitHazard" type="Area2D"]
+script = ExtResource("1_pit")
+damage = 1
+size = Vector2(160, 40)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_pit")
+
+[node name="Reset" type="Marker2D" parent="."]
+position = Vector2(-120, 0)

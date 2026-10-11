@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/weapons/scrapjack.gd" id="1_gun"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/scrap_bolt.tscn" id="2_bolt"]
+
+[node name="Scrapjack" type="Node2D"]
+script = ExtResource("1_gun")
+bolt_scene = ExtResource("2_bolt")
+
+[node name="Muzzle" type="Marker2D" parent="."]
+position = Vector2(22, 0)
+
+[node name="Quickcycle" type="Node2D" parent="."]
+position = Vector2(-3, 5)
+visible = false
+
+[node name="Disc" type="Polygon2D" parent="Quickcycle"]
+polygon = PackedVector2Array(4, 0, 2.83, 2.83, 0, 4, -2.83, 2.83, -4, 0, -2.83, -2.83, 0, -4, 2.83, -2.83)
+color = Color(0.663, 0.443, 0.29, 1)
+
+[node name="Rim" type="Line2D" parent="Quickcycle"]
+points = PackedVector2Array(4, 0, 2.83, 2.83, 0, 4, -2.83, 2.83, -4, 0, -2.83, -2.83, 0, -4, 2.83, -2.83, 4, 0)
+width = 1.2
+default_color = Color(0.2, 0.164, 0.125, 1)
+
+[node name="Spoke" type="Polygon2D" parent="Quickcycle"]
+polygon = PackedVector2Array(-0.6, -4.2, 0.6, -4.2, 0.6, 0, -0.6, 0)
+color = Color(0.2, 0.164, 0.125, 1)

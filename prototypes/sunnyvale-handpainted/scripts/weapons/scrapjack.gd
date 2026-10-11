@@ -1,0 +1,443 @@
+class_name Scrapjack
+extends Node2D
+## W01 Scrapjack pistol — the hero's one equipped weapon, mounted on the
+## hero's AimPivot (this node's parent). Holding "fire" repeats at the
+## interval for the currently earned W01 stage (Session.weapon_stage).
+## Infinite shots; no magazine/reload/ammo of any kind.
+##
+## Visuals only (M6, C11 hand-drawn style per w01-scrapjack-pistol.md): a
+## chunky L silhouette — rust-red upper housing bolted to an aged-cream lower
+## frame, a dark-steel muzzle ring, a teal-wrapped grip, and three visible
+## fastener heads — with the Quickcycle flywheel cover attached flush to the
+## left rear housing once earned (Session.weapon_stage). `held` (M6, purely
+## cosmetic) switches between the aim-pivot-mounted firing pose and a resting
+## ground/pad pose (no recoil/flash, small contact shadow); cadence, damage,
+## the muzzle clamp and its ray logic are untouched by any of this.
+
+signal fired
+
+@export var tuning: WeaponTuning
+@export var bolt_scene: PackedScene
+## M6 (cosmetic only): true while mounted on the hero's AimPivot and fired
+## normally; false draws the same weapon resting flat (ground/pad look, per
+## 05-content-and-assets.md), with no recoil/flash and a small contact
+## shadow. Never read by _try_fire()/cadence/damage/the muzzle-clamp ray.
+@export var held: bool = true
+
+@onready var _muzzle: Marker2D = $Muzzle
+@onready var _quickcycle: Node2D = $Quickcycle
+
+var _cooldown: float = 0.0
+var _recoil_timer: float = 0.0
+var _hero: Node = null
+var _quickcycle_spin: float = 0.0
+var _wheel_heat: float = 0.0
+
+const OUTLINE := Color("#332a20")        # warm charcoal (C11 contour)
+const UPPER_FILL := Color("#b96b4c")     # rust-red upper housing
+const LOWER_FILL := Color("#dcceaf")     # aged-cream lower frame
+const STEEL_FILL := Color("#424a4d")     # dark steel (muzzle ring, fasteners)
+const GRIP_FILL := Color("#438f88")      # teal wrap
+const QUICKCYCLE_FILL := Color("#a9714a")  # copper flywheel cover
+
+## C35 lit cutouts: each shot also flashes a smooth light at the muzzle,
+## warm ivory like every firearm flash, so Dave and anyone near him are lit,
+## through their normal maps, from the muzzle's real position and height.
+## C37: one light, held at the muzzle; each shot flares it and it fades over
+## FLASH_TIME, but while the trigger is held it never drops below
+## HOLD_ENERGY between shots, so rapid fire holds one glow and never strobes.
+const FLASH_COLOR := Color("#FFE4BD")
+## C52: with the Quickcycle fitted a shot flares brighter and cold teal-white, with a bigger drawn
+## flash, and the flywheel spins up and glows teal while firing, so the upgrade shows on screen.
+const QUICK_FLASH_COLOR := Color("#C9FFF4")
+const QUICK_FLASH_BOOST := 1.45
+const QUICK_FLASH_SCALE := 1.3
+const QUICK_WHEEL_GLOW := Color(1.5, 2.3, 2.1)
+const QUICK_WHEEL_SPIN := 26.0
+const QUICK_BATTERY_BOOST := 1.6
+const FLASH_TIME := 0.07
+const FLASH_ENERGY := 2.4
+const HOLD_ENERGY := 0.8
+const FLASH_HEIGHT := 26.0
+const FLASH_RADIUS := 140.0
+## The drawn flash at the muzzle (C37): tracer ivory with a white core.
+const FLASH_IVORY := Color("#F2EBD3")
+const FLASH_CORE := Color("#FFFDF4")
+
+var _muzzle_light: PointLight2D
+var _since_shot: float = 999.0
+
+## How long after a pad swap the new gun's ready click plays, seconds: after
+## the `swap` clunk and the dialog closing, before the player fires again.
+const READY_CLICK_DELAY := 0.25
+
+## The painted gun (C37): the user's generated parts sheet as a lit cutout
+## rig (tools/art/import_parts_sheet.py scrapjack), its origin where Dave's
+## fist holds the grip. Falls back to the drawn placeholder without it.
+const RIG_PATH := "res://assets/characters/lit/scrapjack/rig.json"
+const CutoutRig := preload("res://scripts/actors/lit/cutout_rig.gd")
+## The muzzle flash is the user's pixel-art strip (Sheet 9), played at the
+## muzzle on each shot; the drawn starburst below is the fallback without it.
+const PixelFx := preload("res://scripts/effects/pixel_fx.gd")
+## Where the fist holds the grip, in this node's space. hero.tscn keeps the
+## node at scale 1 since Dave became a pixel rig (2026-10-07), so the gun's art
+## pixels stay 1.5 world px; a scaled node's rig is scaled back to its
+## imported size.
+const GRIP_LOCAL := Vector2(2.0, 3.0)
+## How far the upper housing and the barrel (one sliding block, so no gap
+## opens between them) snap back on a shot, world px. (The pixel-art gun
+## moves in whole art pixels, 1.5 world px, so the slide and the arm's kick
+## step instead of gliding: see _update_rig.)
+const SLIDE_BACK := 1.2
+## The coils glow hot on a shot and cool over COIL_COOL seconds.
+const COIL_HOT := Color("#FF8A3D")
+const COIL_IDLE := 0.12
+const COIL_SHOT := 1.6
+const COIL_COOL := 0.28
+const CHARGE_TEAL := Color("#3FE0D0")
+var rig: Node2D
+var _slide_rest: Dictionary = {}   # joint -> rest position
+var _heat: float = 0.0
+
+
+func _ready() -> void:
+	if tuning == null:
+		tuning = load("res://data/tuning/w01_scrapjack.tres")
+	if bolt_scene == null:
+		bolt_scene = load("res://scenes/weapons/scrap_bolt.tscn")
+	_build_rig()
+	# Fixed scene shape is Hero > AimPivot > Scrapjack; resolved lazily
+	# (not here) since child _ready() runs before the Hero's own _ready().
+	if held and Session and not Session.weapon_swapped.is_connected(_on_weapon_swapped):
+		Session.weapon_swapped.connect(_on_weapon_swapped)
+
+
+func _exit_tree() -> void:
+	if Session and Session.weapon_swapped.is_connected(_on_weapon_swapped):
+		Session.weapon_swapped.disconnect(_on_weapon_swapped)
+
+
+## Audio only (N05): a pad swap trades the held gun for the one on the pad; the
+## exchange itself is the `swap` cue (Audio plays it on this signal), and a beat
+## later the new gun clicks home, ready to fire. It happens once per swap, never
+## per shot, and nothing here touches cooldown, cadence or input.
+func _on_weapon_swapped(_old_id: String, _new_id: String) -> void:
+	if held and is_inside_tree():
+		get_tree().create_timer(READY_CLICK_DELAY).timeout.connect(_play_ready_click)
+
+
+func _play_ready_click() -> void:
+	var audio := get_node_or_null("/root/Audio")
+	if audio and is_inside_tree():
+		audio.play_sfx(&"ready_click", global_position)
+
+
+func _physics_process(delta: float) -> void:
+	if _quickcycle:
+		_quickcycle.visible = _current_stage() >= 1
+		# Visible dial spin (w01-scrapjack-pistol.md "spins faster during
+		# firing"), purely cosmetic: idle tick plus a burst while recoil is
+		# still settling from a shot.
+		# C52: the wheel winds up on every shot and glows teal while it spins; at the
+		# Quickcycle's rate the trigger held keeps it spun up, and it winds down once idle.
+		_wheel_heat = maxf(0.0, _wheel_heat - delta / (COIL_COOL * 2.0))
+		var spin_rate: float = 1.4 + QUICK_WHEEL_SPIN * _wheel_heat
+		_quickcycle_spin = wrapf(_quickcycle_spin + spin_rate * delta, 0.0, TAU)
+		_quickcycle.rotation = _quickcycle_spin
+		_quickcycle.modulate = Color.WHITE.lerp(QUICK_WHEEL_GLOW, _wheel_heat)
+	# M6 (cosmetic): a resting ground/pad instance (held = false) never reads
+	# input or fires — only the hero's own held instance does. Untouched
+	# below this guard: cadence/cooldown/recoil timing and the fire path.
+	if not held:
+		queue_redraw()
+		return
+	if _hero == null:
+		_hero = get_parent().get_parent()  # AimPivot -> Hero
+	_cooldown = maxf(0.0, _cooldown - delta)
+	_recoil_timer = maxf(0.0, _recoil_timer - delta)
+	_since_shot += delta
+
+	var input_ok: bool = _hero == null or _hero.input_enabled
+	var firing: bool = input_ok and Input.is_action_pressed("fire")
+	if firing and _cooldown <= 0.0:
+		_try_fire()
+	_update_muzzle_light(delta, firing)
+	_update_rig(delta)
+	queue_redraw()
+
+
+func _build_rig() -> void:
+	if not ResourceLoader.exists(RIG_PATH):
+		return
+	rig = CutoutRig.new()
+	rig.name = "Rig"
+	rig.rig_path = RIG_PATH
+	add_child(rig)
+	move_child(rig, 0)
+	rig.position = GRIP_LOCAL
+	# Under the arm (hero_visual.gd adds it after this gun), so Dave's fist
+	# wraps the grip; the parts keep their own order inside the rig. Dave's
+	# pixel rig (hero_rig_visual.gd) re-layers it between his upper arm and fist.
+	rig.z_index = -8
+	var s := 1.0 / maxf(absf(scale.x), 0.001)
+	rig.scale = Vector2(s, s)
+	for j in ["upper", "barrel"]:
+		if rig.joints.has(j):
+			_slide_rest[j] = rig.joints[j].position
+	# The muzzle marker follows the painted barrel's muzzle.
+	var sock: Dictionary = rig.sockets.get("muzzle", {})
+	if not sock.is_empty() and rig.joints.has(sock["joint"]):
+		var j: Node2D = rig.joints[sock["joint"]]
+		_muzzle.position = rig.position + (j.position + sock["pos"]) * s
+	_update_rig(0.0)
+
+
+## Recoil, the slide and the glows on the painted gun.
+func _update_rig(delta: float) -> void:
+	if rig == null:
+		return
+	_heat = maxf(0.0, _heat - delta / COIL_COOL)
+	var settings := get_node_or_null("/root/Settings")
+	var motion_scale: float = 0.5 if (settings and settings.get_reduced_motion()) else 1.0
+	var k: float = 0.0
+	if held and tuning and tuning.recoil_recovery_time > 0.0:
+		k = _recoil_timer / tuning.recoil_recovery_time
+	var push: float = tuning.recoil_distance * motion_scale * k if tuning else 0.0
+	var slide: float = SLIDE_BACK * k
+	if rig.pixel_art:
+		# A pixel-art gun recoils in whole art pixels (the node is scaled, the rig scaled back).
+		push = snappedf(push, rig.pixel_world / maxf(absf(scale.x), 0.001))
+		slide = snappedf(slide, rig.pixel_world)
+	rig.position = GRIP_LOCAL + Vector2(-push, 0.0)
+	for j in _slide_rest:
+		rig.joints[j].position = _slide_rest[j] + Vector2(-slide, 0.0)
+	rig.set_emissive("barrel", COIL_HOT, COIL_IDLE + COIL_SHOT * _heat * _heat)
+	# The charge light dips at a shot, then recovers.
+	var battery: float = (1.3 - 0.7 * _heat) * (QUICK_BATTERY_BOOST if _current_stage() >= 1 else 1.0)
+	rig.set_emissive("battery", CHARGE_TEAL, battery)
+
+
+func _current_stage() -> int:
+	return Session.weapon_stage(tuning.weapon_type) if Session else 0
+
+
+## The held instance's small workshop tag (e.g. "P01"), read fresh from
+## Session every draw so a pad swap updates it immediately (weapon-swaps.md
+## "Distinguish instances by a small workshop tag").
+func _current_tag() -> String:
+	if Session == null:
+		return ""
+	var parts := Session.equipped_weapon().split("-")
+	return parts[-1] if parts.size() > 0 else ""
+
+
+## True while the next shot can fire immediately (HUD fire-readiness cue).
+func is_ready() -> bool:
+	return _cooldown <= 0.0
+
+
+func _try_fire() -> void:
+	_cooldown = tuning.interval_for_stage(_current_stage())
+	var audio := get_node_or_null("/root/Audio")
+	if audio:
+		audio.play_sfx(&"pistol_fire_quick" if _current_stage() >= 1 else &"pistol_fire",
+				_muzzle.global_position)
+	_flash_muzzle_light()
+
+	var pivot: Node2D = get_parent()
+	var shoulder: Vector2 = pivot.global_position
+	var muzzle_pos: Vector2 = _muzzle.global_position
+	var forward: Vector2 = pivot.global_transform.x.normalized()
+	# C50: the arm and gun turn in 22.5-degree steps, but the shot goes exactly where the
+	# player points (the hero's shot_direction()), at most half a step off the barrel.
+	var hero := pivot.get_parent()
+	if hero and hero.has_method("shot_direction"):
+		forward = hero.shot_direction()
+
+	# Muzzle clamp: never spawn a bolt behind/inside world collision, and
+	# never skip past an enemy HitZone that already lies between the
+	# shoulder and the muzzle (ENG-01) — e.g. an enemy the hero is
+	# overlapping, since enemies and the hero never body-block each other.
+	# Ray from the shoulder to the muzzle tip against world OR hittable; the
+	# first thing it finds resolves the shot right there instead of letting
+	# ScrapBolt's own sweep start beyond it.
+	var space_state := get_world_2d().direct_space_state
+	var params := PhysicsRayQueryParameters2D.create(shoulder, muzzle_pos)
+	params.collision_mask = 1 | 16  # layer1 world | layer5 hittable
+	params.collide_with_areas = true
+	params.collide_with_bodies = true
+	params.hit_from_inside = true
+	var block := space_state.intersect_ray(params)
+	if not block.is_empty():
+		var collider = block.get("collider")
+		var resolved_hit := false
+		if collider is HitZone:
+			var outcome: StringName = collider.take_hit(tuning.damage, block.position, forward)
+			resolved_hit = outcome == &"hit"
+			if resolved_hit and collider.bleeds:
+				# Same rule as ScrapBolt: the target shows its own blood and
+				# plays its own hit sound, so no spark here.
+				GameFeel.hit_pause()
+				return
+		if resolved_hit:
+			GameFeel.hit_pause()
+		var spark := ImpactSpark.new()
+		spark.dir = forward
+		spark.color = ScrapBolt.HIT_COLOR if resolved_hit else ScrapBolt.BLOCK_COLOR
+		spark.shape = ImpactSpark.Shape.HIT if resolved_hit else ImpactSpark.Shape.BLOCKED
+		spark.global_position = block.position
+		_spawn_container().add_child(spark)
+		if audio:
+			audio.play_sfx(&"bolt_hit" if resolved_hit else &"bolt_blocked", block.position)
+		return
+
+	var bolt: ScrapBolt = bolt_scene.instantiate()
+	_spawn_container().add_child(bolt)
+	bolt.setup(muzzle_pos, forward, tuning)
+
+	_recoil_timer = tuning.recoil_recovery_time
+	_heat = 1.0
+	_wheel_heat = 1.0
+	# Local to the muzzle, so the flash turns and flips with the aim. A bigger one with the Quickcycle.
+	PixelFx.spawn("muzzle_flash", Vector2.ZERO, _muzzle,
+			{"local": true, "scale_mul": QUICK_FLASH_SCALE if _current_stage() >= 1 else 1.0})
+	GameFeel.shot(self, forward)
+	fired.emit()
+
+
+func _draw() -> void:
+	var settings := get_node_or_null("/root/Settings")
+	var motion_scale: float = 0.5 if (settings and settings.get_reduced_motion()) else 1.0
+
+	var kick: float = 0.0
+	if held and tuning and tuning.recoil_recovery_time > 0.0:
+		kick = -tuning.recoil_distance * motion_scale * (_recoil_timer / tuning.recoil_recovery_time)
+	var o := Vector2(kick, 0.0)
+
+	if not held:
+		# Ground/pad resting pose: a small flat contact shadow reads as
+		# "resting here", never drawn while mounted/firing on the hero.
+		draw_set_transform(o + Vector2(6, 11), 0.0, Vector2(1.6, 0.4))
+		draw_circle(Vector2.ZERO, 10.0, Color(0.0, 0.0, 0.0, 0.22))
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+	# Chunky L silhouette (w01-scrapjack-pistol.md): rust-red upper housing
+	# bolted to an aged-cream lower frame, three visible fastener heads, a
+	# recessed side feed window, a dark-steel muzzle ring with a thick inner
+	# ring, and a teal-wrapped grip. Overall footprint (x -9..27.5, y -9..8)
+	# matches the earlier blockout exactly, kept close to AimPivot (this
+	# node's parent) so its full rotated reach — however the hero is aiming —
+	# never sweeps back far enough from AimPivot (hero.tscn, well below the
+	# head) to cross the head circle (R1-01: was clipping across the face at
+	# up-angled and even neutral aim).
+	if rig == null:
+		_draw_placeholder(o)
+
+	if held and _recoil_timer > 0.0 and tuning and tuning.recoil_recovery_time > 0.0 \
+			and not PixelFx.has_fx("muzzle_flash"):
+		_draw_flash(o, motion_scale)
+	_draw_tag(o)
+
+
+## The drawn gun, kept for when the painted rig is missing.
+func _draw_placeholder(o: Vector2) -> void:
+	var housing := Rect2(o + Vector2(-5, -8), Vector2(26, 16))
+	draw_rect(Rect2(o + Vector2(-5, 0), Vector2(26, 8)), LOWER_FILL)    # lower cream frame
+	draw_rect(Rect2(o + Vector2(-5, -8), Vector2(26, 8)), UPPER_FILL)   # upper rust-red housing
+	draw_rect(Rect2(o + Vector2(6, -4), Vector2(8, 6)), STEEL_FILL)     # recessed side feed window
+	for i in 3:
+		draw_circle(o + Vector2(-2, -6 + i * 6), 1.3, STEEL_FILL)       # 3 fastener heads
+	draw_rect(Rect2(o + Vector2(-8, -9), Vector2(5, 6)), GRIP_FILL)     # teal-wrapped grip
+	draw_circle(o + Vector2(22, 0), 5.5, STEEL_FILL)                    # muzzle ring
+	draw_circle(o + Vector2(22, 0), 2.6, OUTLINE)                       # thick dark inner ring
+	draw_rect(housing, OUTLINE, false, 2.0)
+	draw_rect(Rect2(o + Vector2(-8, -9), Vector2(5, 6)), OUTLINE, false, 1.5)
+	draw_circle(o + Vector2(22, 0), 5.5, OUTLINE, false, 2.0)
+
+
+## The muzzle flash (C37): an ivory starburst with a white core just past
+## the muzzle, longest along the shot, shrinking as the recoil settles.
+func _draw_flash(o: Vector2, motion_scale: float) -> void:
+	var flash_k: float = _recoil_timer / tuning.recoil_recovery_time
+	var f := (0.6 + 0.6 * flash_k) * motion_scale
+	var c := o + _muzzle.position + Vector2(6, 0)
+	var star := PackedVector2Array([
+		c + Vector2(12, 0) * f, c + Vector2(3, 2.5) * f, c + Vector2(4, 6) * f, c + Vector2(-1, 3) * f,
+		c + Vector2(-2, 0) * f, c + Vector2(-1, -3) * f, c + Vector2(4, -6) * f, c + Vector2(3, -2.5) * f,
+	])
+	draw_colored_polygon(star, Color(FLASH_IVORY, 0.9))
+	draw_circle(c + Vector2(1.5, 0) * f, 2.6 * f, FLASH_CORE)
+
+
+func _draw_tag(o: Vector2) -> void:
+	# AD-07 fix: this used to draw unconditionally, which put the tag on the
+	# hero's chest in every gameplay frame (held is true for the one instance
+	# actually mounted on the hero) — it duplicated the HUD's own weapon tag
+	# and read as a stray label on the character. "Distinguish instances by a
+	# small workshop tag" (weapon-swaps.md) only matters for a RESTING
+	# instance (ground/pad) where more than one tag could be on screen; the
+	# held gun's tag is already covered by the HUD.
+	var tag := _current_tag()
+	if not held and tag != "":
+		var font := ThemeDB.fallback_font
+		# M6 integration fix: when held (mounted on the hero's AimPivot),
+		# this node inherits AimPivot's own rotation + facing-flip
+		# (hero.gd `_update_aim_pivot()`, unchanged) so the housing can point
+		# any direction. Left unchecked, that same transform mirrors/rotates
+		# this draw_string call too — readable while aiming right, garbled
+		# (reversed glyphs) while aiming left/up/down. Counter it for the tag
+		# ONLY (never the housing/flash/shadow above, which are meant to
+		# rotate with the weapon): draw at a fixed global position with zero
+		# rotation/scale by feeding draw_set_transform_matrix() the inverse of
+		# this node's own accumulated global transform composed with the
+		# desired upright placement.
+		var desired_global: Vector2 = global_transform * (o + Vector2(-8, -12))
+		draw_set_transform_matrix(global_transform.affine_inverse() * Transform2D(0.0, desired_global))
+		draw_string(font, Vector2.ZERO, tag, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("#efe0be"))
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+
+func get_muzzle_global_position() -> Vector2:
+	return _muzzle.global_position
+
+
+## The muzzle light: one smooth point light on the muzzle, made on the first
+## shot. A shot flares it (halved under reduced motion); it fades over
+## FLASH_TIME, holding HOLD_ENERGY between shots while the trigger is held.
+func _flash_muzzle_light() -> void:
+	var settings := get_node_or_null("/root/Settings")
+	var k: float = 0.5 if (settings and settings.get_reduced_motion()) else 1.0
+	if _muzzle_light == null:
+		_muzzle_light = SceneryDraw.make_light(_muzzle, SceneryDraw.smooth_disc_texture(),
+				Vector2.ZERO, FLASH_RADIUS, FLASH_COLOR, 0.0, FLASH_HEIGHT)
+		_muzzle_light.name = "MuzzleFlashLight"
+	var quick: bool = _current_stage() >= 1
+	_muzzle_light.color = QUICK_FLASH_COLOR if quick else FLASH_COLOR
+	_muzzle_light.energy = FLASH_ENERGY * k * (QUICK_FLASH_BOOST if quick else 1.0)
+	_muzzle_light.visible = true
+	_since_shot = 0.0
+
+
+func _update_muzzle_light(delta: float, firing: bool) -> void:
+	if _muzzle_light == null:
+		return
+	var settings := get_node_or_null("/root/Settings")
+	var k: float = 0.5 if (settings and settings.get_reduced_motion()) else 1.0
+	# Held while the trigger is down and the next shot is due.
+	var hold: bool = firing and _since_shot <= tuning.interval_for_stage(_current_stage()) + 0.05
+	var floor_e: float = HOLD_ENERGY * k if hold else 0.0
+	var e := move_toward(_muzzle_light.energy, floor_e, FLASH_ENERGY * k / FLASH_TIME * delta)
+	_muzzle_light.energy = maxf(e, floor_e)
+	_muzzle_light.visible = _muzzle_light.energy > 0.001
+
+
+## Parent for spawned bolts/sparks (ENG-05): the current scene when one is
+## loaded, so a level rebuild (Session.restore_committed() then the level
+## re-instanced, per CONVENTIONS) frees them along with everything else,
+## instead of leaving them parented under the tree root where they'd outlive
+## the rollback and keep sweeping stale coordinates. Falls back to root for
+## isolated test/demo scenes run directly with `-s`, which never set a
+## current_scene.
+func _spawn_container() -> Node:
+	var scene := get_tree().current_scene
+	return scene if scene != null else get_tree().root

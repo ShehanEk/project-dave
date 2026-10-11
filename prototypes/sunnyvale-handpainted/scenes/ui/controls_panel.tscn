@@ -1,0 +1,35 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/controls_panel.gd" id="1_controls"]
+
+[node name="ControlsPanel" type="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 14
+script = ExtResource("1_controls")
+
+[node name="TitleLabel" type="Label" parent="."]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.247, 0.878, 0.816, 1)
+theme_override_font_sizes/font_size = 26
+text = "Controls"
+
+[node name="Scroll" type="ScrollContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+custom_minimum_size = Vector2(0, 200)
+
+[node name="Content" type="VBoxContainer" parent="Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Table" type="GridContainer" parent="Scroll/Content"]
+layout_mode = 2
+columns = 3
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 4
+
+[node name="BackButton" type="Button" parent="."]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Back"
