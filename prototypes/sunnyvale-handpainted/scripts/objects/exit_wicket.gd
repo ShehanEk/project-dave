@@ -46,10 +46,11 @@ const ObjectSkins := preload("res://scripts/world/object_skins.gd")
 const LOCKED_PIECE := "gate_locked"
 const OPEN_PIECE := "gate_open"
 const SHUT_PIECE := "gate_shut"
+# (The hand-painted layout, batch 2 2026-10-11: tools/art/import_hd_env.py --batch2.)
 const LENS_ART := {
-	"gate_locked": Vector2(66.0, 45.0), "gate_open": Vector2(63.0, 43.0), "gate_shut": Vector2(64.0, 44.0),
+	"gate_locked": Vector2(70.8, 27.3), "gate_open": Vector2(69.5, 24.8), "gate_shut": Vector2(74.9, 27.3),
 }
-const SHUT_LENS := Rect2(60.0, 40.0, 8.0, 8.0)
+const SHUT_LENS := Rect2(73.4, 25.8, 3.0, 3.0)
 
 @export var required_keycard: String = "L01-KC01"
 @export var denied_text: String = "Clearance card required"

@@ -15,6 +15,13 @@ extends RefCounted
 ## drawing node's own `texture_filter` is (text keeps the node's filter). The
 ## theme (assets/ui/c11_theme.tres) wraps its x3 frames the same way.
 ##
+## Hand-painted (batch 3, C56, tools/art/import_hd_ui.py): when a piece has a painted twin under
+## assets/ui/hd/ (HD_K texels per UI pixel), `texture()` and `scaled_texture()` hand out the
+## painted one, smooth and mipmapped, still reporting the pixel piece's size (an ImageTexture size
+## override), so every caller lays it out exactly as before. The key caps are built the same way
+## with their legends set in the Rajdhani font, and `font()` is Rajdhani SemiBold in place of the
+## bitmap font. `image()` stays the pixel piece (layouts are measured on it).
+##
 ## Fallback: `texture()` is null and `has_piece()` false when a PNG is missing
 ## (an export without the art, or `use_dir()` pointed at an empty folder in a
 ## test); every caller then keeps its code-drawn look or its text.
@@ -51,6 +58,18 @@ static var _scaled := {}
 static var _font: FontFile = null
 static var _font_built := false
 
+const HD_DIR := "res://assets/ui/hd/"
+## Painted texels per UI pixel (tools/art/import_hd_ui.py UI_K).
+const HD_K := 6
+const HD_FONT := "res://assets/fonts/Rajdhani-SemiBold.ttf"
+## Outline (canvas px) round the HUD's Rajdhani text, so it reads over the world unbacked.
+const HD_OUTLINE := 6
+static var hd_enabled := true
+static var _hd_dir := HD_DIR
+static var _hd_font := HD_FONT
+static var _font_is_hd := false
+static var _hd_images := {}
+
 
 ## Points the pieces at another folder (tests simulate a missing export with a
 ## folder that does not exist) and forgets everything built; `use_dir()` with
@@ -58,6 +77,10 @@ static var _font_built := false
 ## `PixelFont.use_dir()` too.
 static func use_dir(dir: String = DIR) -> void:
 	_dir = dir
+	_hd_dir = HD_DIR if dir == DIR else dir + "hd/"
+	_hd_font = HD_FONT if dir == DIR else dir + "Rajdhani-SemiBold.ttf"
+	_hd_images = {}
+	_font_is_hd = false
 	_textures = {}
 	_images = {}
 	_caps = {}
@@ -72,8 +95,51 @@ static func texture(piece: String) -> Texture2D:
 	if not _textures.has(piece):
 		var path: String = _dir + piece + ".png"
 		var png: Texture2D = load(path) if ResourceLoader.exists(path) else null
-		_textures[piece] = crisp(png) if png else null
+		var tex: Texture2D = null
+		if png:
+			tex = hd_texture(piece, Vector2i(png.get_size()))
+			if tex == null:
+				tex = crisp(png)
+		_textures[piece] = tex
 	return _textures[piece]
+
+
+## The painted twin of `piece` (RGBA8, HD_K texels per UI pixel), null when there is none.
+static func hd_image(piece: String) -> Image:
+	if not hd_enabled:
+		return null
+	if not _hd_images.has(piece):
+		var path: String = _hd_dir + piece + ".png"
+		var img: Image = null
+		if ResourceLoader.exists(path):
+			var png: Texture2D = load(path)
+			img = _rgba(png.get_image() if png else null)
+		_hd_images[piece] = img
+	return _hd_images[piece]
+
+
+## `img` as a smooth, mipmapped texture that reports `size` (its layout size; it draws all of
+## `img` over it).
+static func smooth(img: Image, size: Vector2i) -> Texture2D:
+	var big: Image = img.duplicate()
+	big.generate_mipmaps()
+	var it := ImageTexture.create_from_image(big)
+	it.set_size_override(size)
+	var ct := CanvasTexture.new()
+	ct.diffuse_texture = it
+	ct.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	return ct
+
+
+## The painted `piece` reporting `size`, null when it has no painted twin.
+static func hd_texture(piece: String, size: Vector2i) -> Texture2D:
+	var img := hd_image(piece)
+	return smooth(img, size) if img != null else null
+
+
+## True when `tex` is a painted piece (smooth, not nearest).
+static func is_hd(tex: Texture2D) -> bool:
+	return tex is CanvasTexture and (tex as CanvasTexture).texture_filter == CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 
 
 static func has_piece(piece: String) -> bool:
@@ -164,7 +230,9 @@ static func scaled_texture(piece: String, px: int = SCALE) -> Texture2D:
 	if not _scaled.has(key):
 		var img := image(piece)
 		var tex: Texture2D = null
-		if img != null:
+		if img != null and hd_image(piece) != null:
+			tex = smooth(hd_image(piece), img.get_size() * px)
+		elif img != null:
 			var big: Image = img.duplicate()
 			big.resize(img.get_width() * px, img.get_height() * px, Image.INTERPOLATE_NEAREST)
 			tex = crisp(ImageTexture.create_from_image(big))
@@ -184,6 +252,12 @@ static func font() -> FontFile:
 	if _font_built:
 		return _font
 	_font_built = true
+	_font_is_hd = false
+	if hd_enabled and PixelFont.has_font() and ResourceLoader.exists(_hd_font):
+		_font = load(_hd_font)
+		_font_is_hd = _font != null
+		if _font_is_hd:
+			return _font
 	if not PixelFont.has_font():
 		return null
 	var atlas := _rgba(PixelFont.texture().get_image())
@@ -250,6 +324,12 @@ static func use_font(label: Label) -> bool:
 	if not label.has_meta(&"ui_outline_size"):
 		label.set_meta(&"ui_outline_size", label.get_theme_constant("outline_size"))
 	var f := font()
+	if f != null and _font_is_hd:
+		label.add_theme_font_override("font", f)
+		var own: int = int(label.get_meta(&"ui_outline_size"))
+		label.add_theme_constant_override("outline_size", own if own > 0 else HD_OUTLINE)
+		label.texture_filter = CanvasItem.TEXTURE_FILTER_PARENT_NODE
+		return true
 	if f != null and PixelFont.covers(label.text):
 		label.add_theme_font_override("font", f)
 		# The outline is baked into the glyphs; a bitmap font draws no other.
@@ -286,9 +366,123 @@ static func key_cap(label: String) -> Texture2D:
 	if _caps.has(label):
 		return _caps[label]
 	var img := _build_cap(label)
-	var tex: Texture2D = crisp(ImageTexture.create_from_image(img)) if img else null
+	var tex: Texture2D = null
+	if img != null:
+		var hd := _build_cap_hd(label, img.get_size())
+		tex = smooth(hd, img.get_size()) if hd != null else crisp(ImageTexture.create_from_image(img))
 	_caps[label] = tex
 	return tex
+
+
+## The painted cap for `label` at HD_K texels per UI pixel of the pixel cap's `size`: the blank
+## painted cap nine-sliced to it, the legend (Rajdhani, or the painted arrow) inked on its face.
+## Null when a painted piece or the font is missing.
+static func _build_cap_hd(label: String, size: Vector2i) -> Image:
+	var arrow: bool = ARROW_PIECES.has(label)
+	var base := "key_cap" if arrow or label.length() == 1 else "key_wide"
+	var src := hd_image(base)
+	if src == null:
+		return null
+	var w: int = size.x * HD_K
+	var h: int = size.y * HD_K
+	var out := nine_image(src, w, h)
+	# The face: inside the outline, above the cap's darker lower bevel.
+	var face := Rect2i(HD_K * 2, HD_K, w - HD_K * 4, (CAP_FACE_ROWS + 1) * HD_K)
+	var legend: Image = null
+	if arrow:
+		legend = hd_image(ARROW_PIECES[label])
+		if legend != null:
+			legend = legend.duplicate()
+			var lb: Rect2i = legend.get_used_rect()
+			legend = legend.get_region(lb)
+			var ls: float = float(face.size.y) * 0.62 / float(maxi(lb.size.y, 1))
+			legend.resize(maxi(1, roundi(lb.size.x * ls)), maxi(1, roundi(lb.size.y * ls)), Image.INTERPOLATE_LANCZOS)
+	else:
+		legend = text_image(label.to_upper(), roundi(face.size.y * 0.58))
+	if legend == null:
+		return null
+	_ink_over(out, legend, face.position + (face.size - legend.get_size()) / 2)
+	return out
+
+
+## `legend`'s coverage drawn in INK over `dst` at `at`.
+static func _ink_over(dst: Image, legend: Image, at: Vector2i) -> void:
+	for y in legend.get_height():
+		for x in legend.get_width():
+			var a: float = legend.get_pixel(x, y).a
+			var px := at + Vector2i(x, y)
+			if a <= 0.0 or px.x < 0 or px.y < 0 or px.x >= dst.get_width() or px.y >= dst.get_height():
+				continue
+			var under: Color = dst.get_pixel(px.x, px.y)
+			dst.set_pixel(px.x, px.y, Color(under.lerp(INK, a), maxf(under.a, a)))
+
+
+## `src` nine-sliced to `w` x `h`: its corners (0.3 of its shorter side) kept at one scale, its
+## edges and face stretched.
+static func nine_image(src: Image, w: int, h: int) -> Image:
+	var sw: int = src.get_width()
+	var sh: int = src.get_height()
+	var cs: int = int(mini(sw, sh) * 0.3)
+	var d: int = clampi(roundi(cs * minf(float(w) / sw, float(h) / sh)), 1, mini(w, h) / 2 - 1)
+	var sx := [0, cs, sw - cs, sw]
+	var sy := [0, cs, sh - cs, sh]
+	var dx := [0, d, w - d, w]
+	var dy := [0, d, h - d, h]
+	var out := Image.create_empty(w, h, false, Image.FORMAT_RGBA8)
+	for j in 3:
+		for i in 3:
+			var r := Rect2i(sx[i], sy[j], sx[i + 1] - sx[i], sy[j + 1] - sy[j])
+			var dw: int = dx[i + 1] - dx[i]
+			var dh: int = dy[j + 1] - dy[j]
+			if r.size.x <= 0 or r.size.y <= 0 or dw <= 0 or dh <= 0:
+				continue
+			var part: Image = src.get_region(r)
+			part.resize(dw, dh, Image.INTERPOLATE_BILINEAR)
+			out.blit_rect(part, Rect2i(Vector2i.ZERO, part.get_size()), Vector2i(dx[i], dy[j]))
+	return out
+
+
+## `text` (one line) set in the HUD font (Rajdhani) as white coverage on clear, its capitals
+## `cap_px` tall; null without the painted font.
+static func text_image(text: String, cap_px: int) -> Image:
+	var f := font()
+	if f == null or not _font_is_hd or text == "":
+		return null
+	# Rajdhani's capitals are about 0.62 of the font size (measured on "H").
+	var fs: int = maxi(8, roundi(float(cap_px) / 0.62))
+	var sz := Vector2i(fs, 0)
+	f.render_range(0, sz, 0x20, 0x7E)
+	var glyphs := []
+	var pen := 0.0
+	var top := 0
+	var bottom := 0
+	for i in text.length():
+		var g: int = f.get_glyph_index(fs, text.unicode_at(i), 0)
+		var off: Vector2 = f.get_glyph_offset(0, sz, g)
+		var gs: Vector2 = f.get_glyph_size(0, sz, g)
+		glyphs.append([g, pen, off, gs])
+		top = mini(top, int(off.y))
+		bottom = maxi(bottom, int(off.y + gs.y))
+		pen += f.get_glyph_advance(0, fs, g).x
+	var out := Image.create_empty(maxi(1, ceili(pen) + 2), maxi(1, bottom - top), false, Image.FORMAT_RGBA8)
+	for e in glyphs:
+		var gs: Vector2 = e[3]
+		if gs.x <= 0.0 or gs.y <= 0.0:
+			continue
+		var atlas: Image = f.get_texture_image(0, sz, f.get_glyph_texture_idx(0, sz, e[0]))
+		if atlas == null:
+			continue
+		var uv: Rect2 = f.get_glyph_uv_rect(0, sz, e[0])
+		var gx: int = int(e[1] + e[2].x) + 1
+		var gy: int = int(e[2].y) - top
+		for y in int(uv.size.y):
+			for x in int(uv.size.x):
+				var a: float = atlas.get_pixel(int(uv.position.x) + x, int(uv.position.y) + y).a
+				var p := Vector2i(gx + x, gy + y)
+				if a > 0.0 and p.x >= 0 and p.y >= 0 and p.x < out.get_width() and p.y < out.get_height():
+					out.set_pixel(p.x, p.y, Color(1, 1, 1, maxf(a, out.get_pixel(p.x, p.y).a)))
+	var used: Rect2i = out.get_used_rect()
+	return out.get_region(used) if used.size.x > 0 else null
 
 
 static func _build_cap(label: String) -> Image:

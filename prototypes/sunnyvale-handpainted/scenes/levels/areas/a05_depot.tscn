@@ -20,6 +20,7 @@ area_id = "L01-A05"
 width = 2700.0
 camera_top = -360.0
 camera_bottom = 100.0
+indoors = true
 
 [node name="Background" type="Node2D" parent="."]
 
@@ -95,9 +96,9 @@ piece = "hose"
 [node name="Scenery" type="Node2D" parent="."]
 
 [node name="DepotDoor" parent="Scenery" instance=ExtResource("10_scenery")]
-position = Vector2(20, 0)
+position = Vector2(-100, 0)
 kind = 13
-size = Vector2(70, 150)
+size = Vector2(140, 190)
 
 [node name="EntrySign" parent="Scenery" instance=ExtResource("10_scenery")]
 position = Vector2(128, 0)

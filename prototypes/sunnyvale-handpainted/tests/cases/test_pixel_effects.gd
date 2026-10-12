@@ -98,7 +98,9 @@ func _test_plays_once_and_frees() -> void:
 	check(fx != null and fx.get_script() == PixelFx, "spawn returns the one-shot node")
 	check_eq(host.get_child_count(), 1, "exactly one node is added")
 	check(fx.global_position.is_equal_approx(Vector2(120.0, 80.0)), "it sits on the spawn point")
-	check_eq(fx.texture_filter, CanvasItem.TEXTURE_FILTER_NEAREST, "drawn crisp, pixel for pixel")
+	var hd_on: bool = PixelFx.hd_strip("bullet_impact")[0] != null
+	check_eq(fx.texture_filter, CanvasItem.TEXTURE_FILTER_LINEAR if hd_on else CanvasItem.TEXTURE_FILTER_NEAREST,
+			"drawn crisp, pixel for pixel (smooth when painted)")
 	check(fx.region_enabled and not fx.centered, "a frame of the strip, its anchor on the origin")
 	check_eq(fx.current_frame(), 0, "it starts on the first frame")
 	var seen := {}
@@ -239,8 +241,9 @@ func _test_muzzle_flash_follows_aim() -> void:
 		check(xs.dot(dir.normalized()) > 0.97, "and points the way the gun does")
 		# upright when aiming left: the flash's up stays up
 		check(fx.global_transform.y.normalized().y < 0.0 or absf(dir.y) < 0.5 and fx.global_transform.y.normalized().y > -1.0, "it is not turned upside down")
-		check(absf(fx.global_transform.get_scale().x - PixelFx.FX["muzzle_flash"]["px"]) < 0.01,
-				"it keeps its size in the world (%.2f world px per art px)" % fx.global_transform.get_scale().x)
+		var k: float = PixelFx.hd_strip("muzzle_flash")[1]
+		check(absf(fx.global_transform.get_scale().x * k - PixelFx.FX["muzzle_flash"]["px"]) < 0.01,
+				"it keeps its size in the world (%.2f world px per art px)" % (fx.global_transform.get_scale().x * k))
 		await seconds(0.3)
 		check(not is_instance_valid(fx), "it frees itself")
 	hero.queue_free()

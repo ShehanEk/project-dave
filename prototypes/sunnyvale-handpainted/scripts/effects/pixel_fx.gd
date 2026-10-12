@@ -22,6 +22,11 @@ extends Sprite2D
 ## No `class_name` (M6 art-pass import-cache rule): callers preload it by path.
 
 const DIR := "res://assets/effects/pixel/"
+## The hand-painted strips (batch 3, tools/art/import_hd_ui.py): per effect `k` texels per art px,
+## its frame `cell` in texels and its frame count. Drawn smooth in place of the pixel strip, at the
+## same size and anchor (the pixel effects.json still gives both).
+const HD_DIR := "res://assets/effects/hd/"
+static var hd_enabled := true
 
 ## Per effect: seconds per frame, additive blend, world px per art px, z index
 ## (combat effects above the actors' rigs, which reach z 11; the rest where the
@@ -40,6 +45,8 @@ const REDUCED_GLOW := 0.6
 static var _meta: Dictionary = {}
 static var _meta_loaded := false
 static var _textures := {}
+static var _hd_meta: Dictionary = {}
+static var _hd_loaded := false
 static var _additive: CanvasItemMaterial
 
 var effect: String = ""
@@ -52,6 +59,8 @@ var _size := Vector2i.ZERO     # frame size in art px
 var _anchor := Vector2i.ZERO
 var _crop := Rect2i()          # the part of the frame drawn (the whole frame by default)
 var _reduced_motion := false
+var _k := 1.0                  # strip texels per art px (1 for the pixel strip)
+var _cell := Vector2i.ZERO     # one frame's size in strip texels
 
 
 static func _load_meta() -> Dictionary:
@@ -63,6 +72,32 @@ static func _load_meta() -> Dictionary:
 			if parsed is Dictionary:
 				_meta = parsed
 	return _meta
+
+
+static func _load_hd() -> Dictionary:
+	if not _hd_loaded:
+		_hd_loaded = true
+		var f := FileAccess.open(HD_DIR + "effects.json", FileAccess.READ)
+		if f != null:
+			var parsed = JSON.parse_string(f.get_as_text())
+			if parsed is Dictionary:
+				_hd_meta = parsed
+	return _hd_meta
+
+
+## The painted strip and its texels per art px, or [null, 1.0] when there is none (or it does not
+## have the pixel strip's frame count).
+static func hd_strip(fx_name: String) -> Array:
+	if not hd_enabled:
+		return [null, 1.0]
+	var m: Dictionary = _load_hd().get(fx_name, {})
+	var path: String = HD_DIR + fx_name + ".png"
+	if m.is_empty() or int(m.get("frames", 0)) != frame_count(fx_name) or not ResourceLoader.exists(path):
+		return [null, 1.0]
+	var key := "hd:" + fx_name
+	if not _textures.has(key):
+		_textures[key] = load(path)
+	return [_textures[key], float(m["k"])]
 
 
 static func strip_texture(fx_name: String) -> Texture2D:
@@ -162,11 +197,20 @@ func _setup(fx_name: String, opts: Dictionary) -> void:
 		_crop = Rect2i(0, _anchor.y, _size.x, _size.y - _anchor.y)
 	texture = strip_texture(fx_name)
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_k = 1.0
+	_cell = _size
+	var hd: Array = hd_strip(fx_name)
+	if hd[0] != null:
+		texture = hd[0]
+		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+		_k = hd[1]
+		var c: Array = _load_hd()[fx_name]["cell"]
+		_cell = Vector2i(int(c[0]), int(c[1]))
 	centered = false
 	region_enabled = true
 	flip_h = opts.get("flip", false)
 	z_index = cfg["z"]
-	var px: float = float(cfg["px"]) * float(opts.get("scale_mul", 1.0))
+	var px: float = float(cfg["px"]) * float(opts.get("scale_mul", 1.0)) / _k
 	scale = Vector2(px, px)
 	var glow: float = REDUCED_GLOW if (_reduced_motion and cfg["add"]) else 1.0
 	modulate = Color(opts.get("tint", Color.WHITE))
@@ -195,11 +239,12 @@ func _show(i: int) -> void:
 	if _frames.is_empty():
 		return
 	_shown = i
-	region_rect = Rect2(_frames[i] * _size.x + _crop.position.x, _crop.position.y, _crop.size.x, _crop.size.y)
+	region_rect = Rect2(_frames[i] * _cell.x + _crop.position.x * _k, _crop.position.y * _k,
+			_crop.size.x * _k, _crop.size.y * _k)
 	# The anchor sits on the node's origin; a mirrored frame is mirrored about it.
-	var left: float = float(_crop.position.x - _anchor.x)
-	var top: float = float(_crop.position.y - _anchor.y)
-	offset = Vector2(-(left + _crop.size.x) if flip_h else left, top)
+	var left: float = float(_crop.position.x - _anchor.x) * _k
+	var top: float = float(_crop.position.y - _anchor.y) * _k
+	offset = Vector2(-(left + _crop.size.x * _k) if flip_h else left, top)
 
 
 func _process(delta: float) -> void:

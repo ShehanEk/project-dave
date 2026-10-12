@@ -55,6 +55,8 @@ const NIGHT_OVERLAY_SCENE := "res://scenes/world/night_overlay.tscn"
 ## C35: the character-only moonlight that rims Dave and the lit enemies.
 ## Optional in the same way as the overlay (scripts/world/night_lighting.gd).
 const NIGHT_LIGHTING_SCENE := "res://scenes/world/night_lighting.tscn"
+## Optional in the same way: rain and the neon glow (scripts/world/atmosphere.gd, C58).
+const ATMOSPHERE_SCENE := "res://scenes/world/atmosphere.tscn"
 ## C28, the turn to lethal force: as Dave badges out, security command's
 ## flat PA voice (not Adam's) gives its one line; the completion screen
 ## opens after it. The run is already committed and input is off.
@@ -189,6 +191,8 @@ func _ready() -> void:
 		add_child(load(NIGHT_OVERLAY_SCENE).instantiate())
 	if ResourceLoader.exists(NIGHT_LIGHTING_SCENE):
 		add_child(load(NIGHT_LIGHTING_SCENE).instantiate())
+	if ResourceLoader.exists(ATMOSPHERE_SCENE):
+		add_child(load(ATMOSPHERE_SCENE).instantiate())
 
 	_place_hero_at_checkpoint(String(Session.state.get("checkpoint_id", "CP00")))
 	var start_rect := _camera_target_rect_for_area(_area_for_x(hero.global_position.x))

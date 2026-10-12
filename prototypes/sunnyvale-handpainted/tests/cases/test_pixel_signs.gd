@@ -149,7 +149,7 @@ func _level_signs() -> void:
 				continue
 			check_eq(s.painted_sign(), plan["piece"], "%s (%s) draws the painted panel %s" % [s.name, s.text, plan["piece"]])
 			check(str(s.painted_sign()).begins_with("sign_"), "%s draws one of the three sign panels" % s.name)
-			check_eq(s.texture_filter, CanvasItem.TEXTURE_FILTER_NEAREST, "%s is drawn crisp, pixel for pixel" % s.name)
+			check_eq(s.texture_filter, (CanvasItem.TEXTURE_FILTER_LINEAR if PixelFont.smooth_font() != null else CanvasItem.TEXTURE_FILTER_NEAREST), "%s is drawn crisp (smooth once its text is set in Rajdhani)" % s.name)
 			var cols: int = plan["cols"]
 			var rows: int = plan["rows"]
 			check(float(cols) * ART <= s.size.x + 0.01, "%s's board (%.0f px) stays inside the sign's width (%.0f px)" % [s.name, float(cols) * ART, s.size.x])
@@ -174,7 +174,7 @@ func _level_signs() -> void:
 			projectors += 1
 			texts[s.text] = true
 			check_eq(s.painted_sign(), "projector", "%s hangs on the painted projector" % s.name)
-			check_eq(s.texture_filter, CanvasItem.TEXTURE_FILTER_NEAREST, "%s is drawn crisp" % s.name)
+			check_eq(s.texture_filter, (CanvasItem.TEXTURE_FILTER_LINEAR if PixelFont.smooth_font() != null else CanvasItem.TEXTURE_FILTER_NEAREST), "%s is drawn crisp (smooth with Rajdhani)" % s.name)
 			var rect_w: float = s.size.x - 8.0
 			var rect_h: float = s.size.y * 0.72 - 4.0
 			var fit: Dictionary = PixelFont.fit(s.text, rect_w, rect_h)

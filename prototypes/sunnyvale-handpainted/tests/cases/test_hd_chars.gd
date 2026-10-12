@@ -12,6 +12,9 @@ extends TestCase
 ##   3. The three guard looks share one skeleton (the same joints and parts), each guard picks
 ##      one by its entity id (the same id the same look), every look is used, the tell light rides
 ##      on the drawn baton tip and the baton tip glows (spec emissive).
+##   5. Batch 2: the Staffer's three looks and the Patrol Rover's two liveries share one skeleton
+##      each, every look is used, and they keep the joints and sockets their scripts read (the
+##      Staffer's port and grips, the Rover's wheels, lightbar tell, battery and hatch).
 ##   4. The Scrapjack's muzzle is about 30 px ahead of the grip, as the pixel gun's (point-blank
 ##      shots on a stalled rover depend on where the muzzle and the shoulder are).
 
@@ -31,13 +34,14 @@ func run() -> void:
 	_rig_files()
 	await _dave()
 	await _guards()
+	await _staffers_and_rovers()
 
 
 func _rig_files() -> void:
 	var dave := _rig("dave")
 	check(not dave.is_empty(), "Dave's rig.json loads")
 	check(not dave.get("pixel_art", false), "Dave's rig is smooth (hand-painted), not pixel art")
-	check(String(dave.get("source", "")).ends_with("h01-dave-parts-hd-v2.webp"), "from his HD parts sheet")
+	check(String(dave.get("source", "")).ends_with("h01-dave-parts-hd-v3.webp"), "from his HD parts sheet (v3, C58)")
 	var names := []
 	for j in dave.get("joints", []):
 		names.append(j["name"])
@@ -146,3 +150,58 @@ func _guards() -> void:
 	check_eq(seen.size(), 3, "all three guard looks are used")
 	for g in guards:
 		g.queue_free()
+
+
+func _same_skeleton(looks: Array) -> bool:
+	var first := []
+	for jj in _rig(looks[0]).get("joints", []):
+		first.append([jj["name"], jj["part"], jj["parent"]])
+	for look in looks:
+		var a := []
+		for jj in _rig(look).get("joints", []):
+			a.append([jj["name"], jj["part"], jj["parent"]])
+		if a != first:
+			return false
+	return true
+
+
+func _staffers_and_rovers() -> void:
+	var staffers := ["staffer_hd_a", "staffer_hd_b", "staffer_hd_c"]
+	var rovers := ["patrol_rover_hd_a", "patrol_rover_hd_b"]
+	check(_same_skeleton(staffers), "the three Staffer looks share one skeleton")
+	check(_same_skeleton(rovers), "the two Rover liveries share one skeleton")
+	for look in staffers:
+		var d := _rig(look)
+		check(not d.get("pixel_art", false), "%s: a smooth rig" % look)
+		for sn in ["port_light", "spark_port", "grip_near", "grip_far"]:
+			check(d.get("sockets", {}).has(sn), "%s: the %s socket" % [look, sn])
+	for look in rovers:
+		var d := _rig(look)
+		var names := []
+		for jj in d.get("joints", []):
+			names.append(jj["name"])
+		for jn in ["chassis", "wheel_near_front", "wheel_near_rear", "lightbar", "battery", "hatch", "sensor", "bumper"]:
+			check(jn in names, "%s: the %s joint" % [look, jn])
+		for sn in ["tell", "lens_light", "core", "spark_bumper", "oil_drip"]:
+			check(d.get("sockets", {}).has(sn), "%s: the %s socket" % [look, sn])
+	var seen := {}
+	var made := []
+	for n in 9:
+		var st: Brawler = load("res://scenes/actors/staffer.tscn").instantiate()
+		st.entity_id = "HDSTAFF_%d" % n
+		add_child(st)
+		st.global_position = Vector2(-9000 - n * 300, -1)
+		made.append(st)
+	for n in 6:
+		var rv: PatrolRover = load("res://scenes/actors/patrol_rover.tscn").instantiate()
+		rv.entity_id = "HDROVER_%d" % n
+		add_child(rv)
+		rv.global_position = Vector2(-14000 - n * 400, -1)
+		made.append(rv)
+	await physics_frames(2)
+	for e in made:
+		seen[e.rig_path_for_look()] = true
+		check(e.rig != null and e.rig.rig_path == e.rig_path_for_look(), "%s draws the look its id picks" % e.entity_id)
+	check_eq(seen.size(), 5, "all three Staffer looks and both Rover liveries are used")
+	for e in made:
+		e.queue_free()

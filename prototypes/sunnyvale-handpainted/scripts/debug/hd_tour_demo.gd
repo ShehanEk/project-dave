@@ -5,6 +5,10 @@ extends Node2D
 
 const LEVEL_01 := "res://scenes/levels/level_01.tscn"
 const SPOTS := [160.0, 640.0, 1150.0, 1700.0, 2150.0, 2750.0, 3250.0, 3700.0, 4300.0]
+## The whole level (the areas follow one another: A02 from 3400, A03 10000, A04 17050, A05 24850,
+## A06 27550) when the scene is run with "-- --full".
+const FULL_STEP := 750.0
+const FULL_END := 33600.0
 
 var level: LevelDirector
 
@@ -21,7 +25,14 @@ func _ready() -> void:
 
 
 func _run() -> void:
-	for x in SPOTS:
+	var spots: Array = SPOTS
+	if "--full" in OS.get_cmdline_user_args():
+		spots = []
+		var x := 200.0
+		while x < FULL_END:
+			spots.append(x)
+			x += FULL_STEP
+	for x in spots:
 		level.hero.respawn_at(Vector2(x, -300.0))
 		level.camera.reset_position()
-		await get_tree().create_timer(0.6).timeout
+		await get_tree().create_timer(0.4 if spots.size() > 20 else 0.6).timeout

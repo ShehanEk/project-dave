@@ -214,6 +214,8 @@ func apply_pose(pose: Dictionary) -> void:
 	root.position = _rest_pos[root_name] + (pose.get("root", Vector2.ZERO) as Vector2)
 	if _ground_lock:
 		root.position.y += _ground_error()
+	# Off the floor on purpose (a running flight, a hop), after the ground lock.
+	root.position.y -= float(pose.get("lift", 0.0))
 	if pixel_art:
 		# On whole art pixels (a sole is then within half a pixel of the floor).
 		root.position = root.position.snapped(Vector2(pixel_world, pixel_world))

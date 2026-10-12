@@ -20,6 +20,7 @@ extends RefCounted
 ## says which columns and rows stay and which repeat. A missing PNG makes
 ## `has_piece()` false and the object falls back to its code-drawn look.
 
+const HdSkins := preload("res://scripts/world/hd_skins.gd")
 const ART := 1.5
 const DIR := "res://assets/environment/sunnyvale/objects2/"
 ## Pieces from the story sheet (Sheet 14, 2026-10-11) live in their own folder.
@@ -40,18 +41,19 @@ const STORY_PIECES := ["evidence_folder_v2"]
 ##   rails repeat when it is taller, and are cropped from the bottom when it
 ##   is shorter (the lower rail hides the cut).
 const LAYOUTS := {
+	# (The hand-painted layouts, batch 2 2026-10-11: tools/art/import_hd_env.py --batch2.)
 	"service_walkway": {
-		"cols": [Vector3i(0, 6, 0), Vector3i(6, 70, 1), Vector3i(134, 140, 0)],
+		"cols": [Vector3i(0, 6, 0), Vector3i(6, 310, 1), Vector3i(310, 316, 0)],
 		"rows": [Vector3i(0, 8, 0), Vector3i(8, 10, 1), Vector3i(10, 12, 0)],
 	},
 	"moving_platform": {
-		"cols": [Vector3i(0, 26, 0), Vector3i(26, 36, 1), Vector3i(36, 60, 0), Vector3i(60, 70, 1), Vector3i(70, 98, 0)],
-		"rows": [Vector3i(0, 20, 0)],
+		"cols": [Vector3i(0, 33, 0), Vector3i(33, 40, 1), Vector3i(40, 59, 0), Vector3i(59, 66, 1), Vector3i(66, 99, 0)],
+		"rows": [Vector3i(0, 15, 0)],
 	},
 	"pit_cover": {
-		"cols": [Vector3i(0, 6, 0), Vector3i(6, 52, 1), Vector3i(120, 124, 0)],
-		"rows": [Vector3i(0, 10, 0), Vector3i(10, 26, 1), Vector3i(26, 36, 0)],
-		"shift": 14,
+		"cols": [Vector3i(0, 4, 0), Vector3i(4, 57, 1), Vector3i(274, 278, 0)],
+		"rows": [Vector3i(0, 6, 0), Vector3i(6, 30, 1), Vector3i(30, 36, 0)],
+		"shift": 22,   # the painted stripes run about 22 art px along per 24 rows
 	},
 }
 
@@ -78,14 +80,14 @@ static func piece_size(piece: String) -> Vector2:
 ## Draws the piece centred on `at` (world px, default the canvas origin).
 static func draw_centred(c: CanvasItem, piece: String, at: Vector2 = Vector2.ZERO, tint: Color = Color.WHITE) -> void:
 	var tex := texture(piece)
-	c.draw_texture_rect(tex, Rect2(at - piece_size(piece) * 0.5, piece_size(piece)), false, tint)
+	c.draw_texture_rect(HdSkins.swap(tex)[0], Rect2(at - piece_size(piece) * 0.5, piece_size(piece)), false, tint)
 
 
 ## Draws the piece standing on `at`: bottom-centre on it.
 static func draw_standing(c: CanvasItem, piece: String, at: Vector2 = Vector2.ZERO, tint: Color = Color.WHITE) -> void:
 	var tex := texture(piece)
 	var s := piece_size(piece)
-	c.draw_texture_rect(tex, Rect2(at - Vector2(s.x * 0.5, s.y), s), false, tint)
+	c.draw_texture_rect(HdSkins.swap(tex)[0], Rect2(at - Vector2(s.x * 0.5, s.y), s), false, tint)
 
 
 ## Where the piece's art-px point `art` (from its top-left corner) lands,
@@ -100,7 +102,8 @@ static func standing_at(piece: String, art: Vector2) -> Vector2:
 static func blit(c: CanvasItem, piece: String, src: Rect2, at: Vector2, tint: Color = Color.WHITE) -> void:
 	if src.size.x <= 0.0 or src.size.y <= 0.0:
 		return
-	c.draw_texture_rect_region(texture(piece), Rect2(at, src.size * ART), src, tint)
+	# The hand-painted pieces (C56) draw in place of the pixel ones, with the same layout.
+	HdSkins.blit(c, texture(piece), Rect2(at, src.size * ART), src, tint)
 
 
 ## Makes `node` draw crisp pixels while its own text children (a toast) stay

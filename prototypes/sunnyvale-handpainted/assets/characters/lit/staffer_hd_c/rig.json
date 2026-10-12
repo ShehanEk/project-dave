@@ -1,0 +1,688 @@
+{
+ "name": "LK01 Staffer (the older woman)",
+ "kind": "human",
+ "texture_scale": 4,
+ "albedo": "albedo.png",
+ "normal": "normal.png",
+ "spec": "spec.png",
+ "ground_lock": true,
+ "sole_points": [
+  [
+   -1.18,
+   8.29
+  ],
+  [
+   7.42,
+   8.72
+  ],
+  [
+   14.69,
+   7.21
+  ]
+ ],
+ "parts": {
+  "head": {
+   "rect": [
+    158,
+    4,
+    72,
+    91
+   ],
+   "pivot": [
+    34.6,
+    80.9
+   ]
+  },
+  "port": {
+   "rect": [
+    105,
+    116,
+    9,
+    9
+   ],
+   "pivot": [
+    4.5,
+    4.5
+   ]
+  },
+  "torso": {
+   "rect": [
+    4,
+    4,
+    71,
+    108
+   ],
+   "pivot": [
+    36.6,
+    101.8
+   ]
+  },
+  "pelvis": {
+   "rect": [
+    391,
+    4,
+    60,
+    64
+   ],
+   "pivot": [
+    29.3,
+    32.1
+   ]
+  },
+  "upper_arm": {
+   "rect": [
+    350,
+    4,
+    37,
+    73
+   ],
+   "pivot": [
+    15.7,
+    13.1
+   ]
+  },
+  "forearm": {
+   "rect": [
+    269,
+    4,
+    28,
+    76
+   ],
+   "pivot": [
+    14.0,
+    10.5
+   ]
+  },
+  "forearm_bare": {
+   "rect": [
+    234,
+    4,
+    31,
+    85
+   ],
+   "pivot": [
+    11.8,
+    12.3
+   ]
+  },
+  "hand_grip": {
+   "rect": [
+    455,
+    4,
+    37,
+    55
+   ],
+   "pivot": [
+    14.6,
+    6.2
+   ]
+  },
+  "hand_open": {
+   "rect": [
+    301,
+    4,
+    45,
+    74
+   ],
+   "pivot": [
+    17.2,
+    6.5
+   ]
+  },
+  "thigh": {
+   "rect": [
+    79,
+    4,
+    39,
+    94
+   ],
+   "pivot": [
+    18.7,
+    9.7
+   ]
+  },
+  "shin": {
+   "rect": [
+    122,
+    4,
+    32,
+    94
+   ],
+   "pivot": [
+    16.1,
+    9.9
+   ]
+  },
+  "foot": {
+   "rect": [
+    4,
+    116,
+    79,
+    40
+   ],
+   "pivot": [
+    17.0,
+    4.5
+   ]
+  },
+  "lanyard": {
+   "rect": [
+    87,
+    116,
+    14,
+    19
+   ],
+   "pivot": [
+    7.3,
+    0.6
+   ]
+  }
+ },
+ "joints": [
+  {
+   "name": "pelvis",
+   "part": "pelvis",
+   "parent": "",
+   "pos": [
+    0.0,
+    -46.48
+   ],
+   "z": 3,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -4.0,
+     -4.0
+    ],
+    "b": [
+     4.0,
+     -4.0
+    ],
+    "r": 6.0
+   },
+   "mass": 11.0,
+   "limit": null,
+   "rest_dir": -90
+  },
+  {
+   "name": "torso",
+   "part": "torso",
+   "parent": "pelvis",
+   "pos": [
+    0.11,
+    -6.99
+   ],
+   "z": 5,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     -2.0
+    ],
+    "b": [
+     0.055,
+     -18.3
+    ],
+    "r": 6.04
+   },
+   "mass": 22.0,
+   "limit": [
+    -35,
+    75
+   ],
+   "rest_dir": -90
+  },
+  {
+   "name": "lanyard",
+   "part": "lanyard",
+   "parent": "torso",
+   "pos": [
+    3.17,
+    -19.1
+   ],
+   "z": 6,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.05,
+     0.81
+    ],
+    "b": [
+     0.05,
+     3.64
+    ],
+    "r": 0.96
+   },
+   "mass": 0.4,
+   "limit": [
+    -130,
+    130
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "head",
+   "part": "head",
+   "parent": "torso",
+   "pos": [
+    0.11,
+    -23.3
+   ],
+   "z": 6,
+   "far": false,
+   "collider": {
+    "type": "circle",
+    "c": [
+     0.97,
+     -11.41
+    ],
+    "r": 7.2
+   },
+   "mass": 5.0,
+   "limit": [
+    -40,
+    45
+   ],
+   "rest_dir": -90
+  },
+  {
+   "name": "far_upper_arm",
+   "part": "upper_arm",
+   "parent": "torso",
+   "pos": [
+    -6.46,
+    -17.16
+   ],
+   "z": 2,
+   "far": true,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     1.83,
+     12.32
+    ],
+    "r": 2.96
+   },
+   "mass": 2.3,
+   "limit": [
+    -175,
+    70
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "far_forearm",
+   "part": "forearm",
+   "parent": "far_upper_arm",
+   "pos": [
+    1.83,
+    12.32
+   ],
+   "z": 1,
+   "far": true,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     0.16,
+     14.79
+    ],
+    "r": 2.1
+   },
+   "mass": 1.6,
+   "limit": [
+    -145,
+    0
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "far_hand",
+   "part": "hand_open",
+   "parent": "far_forearm",
+   "pos": [
+    0.16,
+    14.79
+   ],
+   "z": 1,
+   "far": true,
+   "collider": {
+    "type": "circle",
+    "c": [
+     0.0,
+     8.5
+    ],
+    "r": 2.8
+   },
+   "mass": 0.6,
+   "limit": [
+    -60,
+    60
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "far_thigh",
+   "part": "thigh",
+   "parent": "pelvis",
+   "pos": [
+    0.0,
+    0.0
+   ],
+   "z": 2,
+   "far": true,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     0.75,
+     18.94
+    ],
+    "r": 3.9
+   },
+   "mass": 7.5,
+   "limit": [
+    -110,
+    40
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "far_shin",
+   "part": "shin",
+   "parent": "far_thigh",
+   "pos": [
+    0.75,
+    18.94
+   ],
+   "z": 2,
+   "far": true,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     0.32,
+     18.83
+    ],
+    "r": 2.88
+   },
+   "mass": 3.6,
+   "limit": [
+    0,
+    150
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "far_foot",
+   "part": "foot",
+   "parent": "far_shin",
+   "pos": [
+    0.32,
+    18.83
+   ],
+   "z": 2,
+   "far": true,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.8200000000000001,
+     6.32
+    ],
+    "b": [
+     12.69,
+     6.32
+    ],
+    "r": 2.3
+   },
+   "mass": 1.2,
+   "limit": [
+    -40,
+    35
+   ],
+   "rest_dir": 0
+  },
+  {
+   "name": "near_thigh",
+   "part": "thigh",
+   "parent": "pelvis",
+   "pos": [
+    0.0,
+    0.0
+   ],
+   "z": 4,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     0.75,
+     18.94
+    ],
+    "r": 3.9
+   },
+   "mass": 7.5,
+   "limit": [
+    -110,
+    40
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "near_shin",
+   "part": "shin",
+   "parent": "near_thigh",
+   "pos": [
+    0.75,
+    18.94
+   ],
+   "z": 4,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     0.32,
+     18.83
+    ],
+    "r": 2.88
+   },
+   "mass": 3.6,
+   "limit": [
+    0,
+    150
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "near_foot",
+   "part": "foot",
+   "parent": "near_shin",
+   "pos": [
+    0.32,
+    18.83
+   ],
+   "z": 4,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.8200000000000001,
+     6.32
+    ],
+    "b": [
+     12.69,
+     6.32
+    ],
+    "r": 2.3
+   },
+   "mass": 1.2,
+   "limit": [
+    -40,
+    35
+   ],
+   "rest_dir": 0
+  },
+  {
+   "name": "near_upper_arm",
+   "part": "upper_arm",
+   "parent": "torso",
+   "pos": [
+    -6.46,
+    -17.16
+   ],
+   "z": 7,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     1.83,
+     12.32
+    ],
+    "r": 2.96
+   },
+   "mass": 2.3,
+   "limit": [
+    -175,
+    70
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "near_forearm",
+   "part": "forearm_bare",
+   "parent": "near_upper_arm",
+   "pos": [
+    1.83,
+    12.32
+   ],
+   "z": 6,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     1.99,
+     15.98
+    ],
+    "r": 2.32
+   },
+   "mass": 1.6,
+   "limit": [
+    -145,
+    0
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "near_hand",
+   "part": "hand_grip",
+   "parent": "near_forearm",
+   "pos": [
+    1.99,
+    15.98
+   ],
+   "z": 10,
+   "far": false,
+   "collider": {
+    "type": "circle",
+    "c": [
+     0.0,
+     8.5
+    ],
+    "r": 2.8
+   },
+   "mass": 0.6,
+   "limit": [
+    -60,
+    60
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "port",
+   "part": "port",
+   "parent": "head",
+   "pos": [
+    -3.82,
+    -9.47
+   ],
+   "z": 7,
+   "far": false,
+   "collider": {
+    "type": "circle",
+    "c": [
+     0.0,
+     0.0
+    ],
+    "r": 1.5
+   },
+   "mass": 0.3,
+   "limit": [
+    -10,
+    10
+   ],
+   "rest_dir": 90
+  }
+ ],
+ "sockets": {
+  "port_light": {
+   "joint": "port",
+   "pos": [
+    0.0,
+    0.0
+   ]
+  },
+  "spark_port": {
+   "joint": "port",
+   "pos": [
+    0.0,
+    0.0
+   ]
+  },
+  "grip_near": {
+   "joint": "near_hand",
+   "pos": [
+    1.08,
+    8.5
+   ]
+  },
+  "grip_far": {
+   "joint": "far_hand",
+   "pos": [
+    1.08,
+    9.52
+   ]
+  }
+ },
+ "source": "concept-art/lk01-staffer/lk01-staffer-parts-hd-c-v2.webp"
+}

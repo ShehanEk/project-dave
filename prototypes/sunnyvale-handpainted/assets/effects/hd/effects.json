@@ -1,0 +1,50 @@
+{
+ "bullet_impact": {
+  "cell": [
+   132,
+   132
+  ],
+  "frames": 5,
+  "k": 7.3333
+ },
+ "checkpoint_sparkle": {
+  "cell": [
+   105,
+   142
+  ],
+  "frames": 6,
+  "k": 7.4444
+ },
+ "chip_glint": {
+  "cell": [
+   164,
+   151
+  ],
+  "frames": 4,
+  "k": 12.5833
+ },
+ "landing_dust": {
+  "cell": [
+   172,
+   79
+  ],
+  "frames": 5,
+  "k": 7.8182
+ },
+ "machine_break": {
+  "cell": [
+   146,
+   140
+  ],
+  "frames": 6,
+  "k": 6.0833
+ },
+ "muzzle_flash": {
+  "cell": [
+   183,
+   147
+  ],
+  "frames": 4,
+  "k": 12.2
+ }
+}

@@ -30,7 +30,9 @@ static func _canvas_texture(path: String) -> CanvasTexture:
 		ct.normal_texture = load(nrm)
 	ct.specular_color = Color(0.3, 0.32, 0.38)
 	ct.specular_shininess = 0.3
-	ct.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+	# Mipmapped: the paintings are drawn several times smaller than painted, and without mip levels
+	# their fine brushwork aliases into noise.
+	ct.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	return ct
 
 
@@ -79,10 +81,11 @@ static func prop_texture(name: String) -> CanvasTexture:
 
 
 ## Texture rows [r0, r1) of prop `name` drawn with their top at world y `y`, the anchor column on x 0.
-static func prop_rows(c: CanvasItem, name: String, r0: float, r1: float, y: float, tint: Color = Color.WHITE) -> void:
+static func prop_rows(c: CanvasItem, name: String, r0: float, r1: float, y: float, tint: Color = Color.WHITE,
+		scale: float = 0.0) -> void:
 	var p := prop(name)
 	var tex := prop_texture(name)
-	var s: float = p["scale"]
+	var s: float = scale if scale > 0.0 else float(p["scale"])
 	var w: float = tex.get_width()
 	c.draw_texture_rect_region(tex, Rect2(Vector2(-float(p["anchor_x"]) * s, y), Vector2(w * s, (r1 - r0) * s)),
 			Rect2(0.0, r0, w, r1 - r0), tint)

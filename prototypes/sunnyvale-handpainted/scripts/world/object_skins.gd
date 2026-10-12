@@ -17,6 +17,7 @@ extends RefCounted
 ## The depot draws them too. A missing PNG makes `has_piece()` false and the
 ## object falls back to its code-drawn look.
 
+const HdSkins := preload("res://scripts/world/hd_skins.gd")
 const ART := 1.5
 const DIR := "res://assets/environment/sunnyvale/objects/"
 
@@ -25,17 +26,18 @@ const DIR := "res://assets/environment/sunnyvale/objects/"
 ## lever's two states are the same plate, so both put the plate's
 ## bottom-centre 4 art px (6 world px) above the origin: the plate never
 ## moves between states and the lowered lever's tip rests on the ground.
+# (The hand-painted layout, batch 2 2026-10-11: tools/art/import_hd_env.py --batch2.)
 const ANCHORS := {
-	"lever_up": Vector2(14.0, 42.0),
-	"lever_down": Vector2(13.0, 34.0),
+	"lever_up": Vector2(12.1, 39.6),
+	"lever_down": Vector2(12.1, 27.6),
 }
 
 ## A taller piece repeats a band of its rows [from, to) (art px) to reach the
 ## height of the thing it stands for, so no pixel is scaled. The hatch's band
 ## is one stripe period of its hazard posts, between the header and the handle.
 const BANDS := {
-	"hatch_closed": Vector2i(20, 34),
-	"hatch_open": Vector2i(18, 32),
+	"hatch_closed": Vector2i(27, 48),
+	"hatch_open": Vector2i(27, 48),
 }
 
 static var _textures := {}
@@ -76,7 +78,7 @@ static func at(piece: String, art: Vector2) -> Vector2:
 ## Draws the piece standing on the canvas origin.
 static func draw(c: CanvasItem, piece: String, tint: Color = Color.WHITE) -> void:
 	var tex := texture(piece)
-	c.draw_texture_rect(tex, Rect2(_top_left(piece) * ART, Vector2(tex.get_width(), tex.get_height()) * ART), false, tint)
+	c.draw_texture_rect(HdSkins.swap(tex)[0], Rect2(_top_left(piece) * ART, Vector2(tex.get_width(), tex.get_height()) * ART), false, tint)
 
 
 ## How many more copies of the piece's BANDS rows it takes to come close to a
@@ -119,4 +121,4 @@ static func _top_left(piece: String) -> Vector2:
 
 
 static func _blit(c: CanvasItem, tex: Texture2D, src: Rect2, at_art: Vector2, tint: Color = Color.WHITE) -> void:
-	c.draw_texture_rect_region(tex, Rect2(at_art * ART, src.size * ART), src, tint)
+	HdSkins.blit(c, tex, Rect2(at_art * ART, src.size * ART), src, tint)

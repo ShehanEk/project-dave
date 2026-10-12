@@ -46,10 +46,12 @@ const RIG_SPEC_GAIN := 0.12
 const RIG_KNEE_START := 0.3
 const RIG_KNEE_SOFT := 4.0
 ## Crossfade into each clip (s).
-const BLEND := {&"idle": 0.15, &"run": 0.08, &"jump_rise": 0.06, &"jump_fall": 0.1, &"land": 0.03,
+const BLEND := {&"idle": 0.15, &"run": 0.08, &"backpedal": 0.1, &"jump_rise": 0.06, &"jump_fall": 0.1, &"land": 0.03,
 		&"hurt": 0.03, &"interact": 0.06, &"defeated": 0.08}
 ## The run clip's length: one stride cycle (TAU of hero.gd's stride phase).
 const RUN_LENGTH := 1.0
+## True while the stride phase runs backward (backing off toward the aim).
+var _backpedal := false
 ## Where the Scrapjack's grip is when the gun has no rig (its GRIP_LOCAL).
 const GUN_GRIP_LOCAL := Vector2(2.0, 3.0)
 ## The fallback (the Rook frames' smooth arm): where the gun goes so its grip
@@ -62,13 +64,13 @@ const BLOOD_SOCKETS := ["blood_head", "blood_chest", "blood_belly", "blood_arm",
 ## full reach, so the elbow bends; straight up holds the gun forward of his face, straight
 ## down forward of his legs. Set for every other step; the steps between take the middle.
 const GUN_HOLD := {
-	# Straight up a little closer than the pixel rig's (21, 20): the HD arm (C56) is shorter,
-	# and the elbow must stay bent.
-	-4: Vector2(19.0, 17.0),
-	-2: Vector2(26.0, 5.0),
-	0: Vector2(27.0, 2.0),
-	2: Vector2(26.0, -2.0),
-	4: Vector2(21.0, -17.0),
+	# C57: held close (the elbow bent, the gun in front of his chest like the pixel art's), the
+	# painted gun drawn at 0.85 of its imported size (scrapjack.gd ART_SCALE).
+	-4: Vector2(15.0, 16.0),
+	-2: Vector2(20.0, 5.0),
+	0: Vector2(21.0, 3.0),
+	2: Vector2(20.0, 0.0),
+	4: Vector2(16.0, -17.0),
 }
 
 @export_file("*.json") var rig_path: String = RIG_PATH
@@ -138,6 +140,10 @@ func update_pose(p_facing: int, p_moving: bool, p_grounded: bool, p_vertical_vel
 	moving = p_moving
 	grounded = p_grounded
 	vertical_velocity = p_vertical_velocity
+	if p_moving and not is_equal_approx(p_stride_phase, stride_phase):
+		_backpedal = p_stride_phase < stride_phase
+	elif not p_moving:
+		_backpedal = false
 	stride_phase = p_stride_phase
 	is_firing = p_is_firing
 	immune = p_immune
@@ -158,7 +164,7 @@ func _pose(delta: float) -> void:
 		anim.play(String(want), true, blend)
 		_state = want
 	_was_defeated = defeated
-	if _state == &"run":
+	if _state == &"run" or _state == &"backpedal":
 		# The cycle follows the stride (distance run), so its cadence is his speed's and it plays
 		# backward when he backpedals.
 		anim.speed = 0.0
@@ -194,7 +200,8 @@ func _pick_state() -> StringName:
 	if land_squash_timer > 0.0:
 		return &"land"
 	if moving:
-		return &"run"
+		# Backing off toward the aim (the stride phase running backward): the backpedal (C57).
+		return &"backpedal" if _backpedal else &"run"
 	return &"idle"
 
 

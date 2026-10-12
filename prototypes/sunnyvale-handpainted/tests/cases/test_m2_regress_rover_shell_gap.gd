@@ -41,8 +41,9 @@ func run() -> void:
 			last_pos = bolt.global_position
 		var before: int = rover_events[0]
 		print("PROBE bolt x_off=%.0f last_pos=%s rover_events=%d" % [off, str(last_pos), before])
-		check(last_pos.y < 560 - 40.0,
-				"a bolt fired down onto the Rover's body centre (x_off=%.0f) stops on the Rover, not the floor under it (stopped at y=%.1f, floor=560, rover top=512)" % [off, last_pos.y])
+		# Above the Rover's mid-height (its top is 560 - HEIGHT; the painted rover is 42 tall, C58).
+		check(last_pos.y < 560 - PatrolRover.HEIGHT * 0.5,
+				"a bolt fired down onto the Rover's body centre (x_off=%.0f) stops on the Rover, not the floor under it (stopped at y=%.1f, floor=560, rover top=%.0f)" % [off, last_pos.y, 560 - PatrolRover.HEIGHT])
 	rover.queue_free()
 	floor_b.queue_free()
 	await physics_frames(2)

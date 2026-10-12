@@ -53,9 +53,9 @@ func _pieces() -> void:
 					peak = maxf(peak, maxf(c.r, maxf(c.g, c.b)))
 					if c.b > 0.15:
 						lit += 1
-		check_eq(soft, 0, "%s is a true pixel grid (no soft alpha)" % p)
+		# The hand-painted prototype (C56): the pieces are smooth paintings, not pixel grids with a
+		# one-pixel rim, so only "almost black" still applies.
 		check(peak <= 0.4, "%s stays almost black (brightest channel %.2f)" % [p, peak])
-		check(lit > 0 and lit * 2 < opaque, "%s has only a faint rim lit on its upward edges, a dark body (%d of %d pixels)" % [p, lit, opaque])
 		var h_world: float = tex.get_height() * FG.ART_WORLD
 		tallest = maxf(tallest, h_world)
 		check(h_world <= 90.0, "%s is no taller than 90 world px (%.0f)" % [p, h_world])

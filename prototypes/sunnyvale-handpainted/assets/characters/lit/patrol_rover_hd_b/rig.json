@@ -1,0 +1,403 @@
+{
+ "name": "M01 Patrol Rover (dark navy)",
+ "kind": "machine",
+ "texture_scale": 4,
+ "albedo": "albedo.png",
+ "normal": "normal.png",
+ "spec": "spec.png",
+ "ground_lock": false,
+ "parts": {
+  "chassis": {
+   "rect": [
+    4,
+    4,
+    357,
+    119
+   ],
+   "pivot": [
+    175.4,
+    111.2
+   ]
+  },
+  "wheel": {
+   "rect": [
+    365,
+    4,
+    92,
+    92
+   ],
+   "pivot": [
+    45.7,
+    46.2
+   ]
+  },
+  "bumper": {
+   "rect": [
+    95,
+    127,
+    73,
+    59
+   ],
+   "pivot": [
+    5.2,
+    29.3
+   ]
+  },
+  "sensor": {
+   "rect": [
+    4,
+    127,
+    87,
+    62
+   ],
+   "pivot": [
+    38.1,
+    47.4
+   ]
+  },
+  "lightbar": {
+   "rect": [
+    316,
+    127,
+    128,
+    20
+   ],
+   "pivot": [
+    64.2,
+    18.1
+   ]
+  },
+  "hatch": {
+   "rect": [
+    172,
+    127,
+    79,
+    42
+   ],
+   "pivot": [
+    69.8,
+    3.2
+   ]
+  },
+  "battery": {
+   "rect": [
+    255,
+    127,
+    57,
+    39
+   ],
+   "pivot": [
+    28.1,
+    19.3
+   ]
+  }
+ },
+ "joints": [
+  {
+   "name": "chassis",
+   "part": "chassis",
+   "parent": "",
+   "pos": [
+    -2.16,
+    -11.14
+   ],
+   "z": 3,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -31.13,
+     -12.92
+    ],
+    "b": [
+     32.68,
+     -12.92
+    ],
+    "r": 12.22
+   },
+   "mass": 45.0,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "chassis"
+  },
+  {
+   "name": "wheel_far_rear",
+   "part": "wheel",
+   "parent": "chassis",
+   "pos": [
+    -24.28,
+    0.0
+   ],
+   "z": 1,
+   "far": true,
+   "collider": {
+    "type": "circle",
+    "c": [
+     0.07,
+     -0.05
+    ],
+    "r": 10.45
+   },
+   "mass": 5.0,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "wheel_far_rear"
+  },
+  {
+   "name": "wheel_far_front",
+   "part": "wheel",
+   "parent": "chassis",
+   "pos": [
+    24.28,
+    0.0
+   ],
+   "z": 1,
+   "far": true,
+   "collider": {
+    "type": "circle",
+    "c": [
+     0.07,
+     -0.05
+    ],
+    "r": 10.45
+   },
+   "mass": 5.0,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "wheel_far_front"
+  },
+  {
+   "name": "wheel_near_rear",
+   "part": "wheel",
+   "parent": "chassis",
+   "pos": [
+    -24.28,
+    0.0
+   ],
+   "z": 4,
+   "far": false,
+   "collider": {
+    "type": "circle",
+    "c": [
+     0.07,
+     -0.05
+    ],
+    "r": 10.45
+   },
+   "mass": 5.0,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "wheel_near_rear"
+  },
+  {
+   "name": "wheel_near_front",
+   "part": "wheel",
+   "parent": "chassis",
+   "pos": [
+    24.28,
+    0.0
+   ],
+   "z": 4,
+   "far": false,
+   "collider": {
+    "type": "circle",
+    "c": [
+     0.07,
+     -0.05
+    ],
+    "r": 10.45
+   },
+   "mass": 5.0,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "wheel_near_front"
+  },
+  {
+   "name": "lightbar",
+   "part": "lightbar",
+   "parent": "chassis",
+   "pos": [
+    -15.35,
+    -26.79
+   ],
+   "z": 2,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -13.85,
+     -2.03
+    ],
+    "b": [
+     13.75,
+     -2.03
+    ],
+    "r": 1.7
+   },
+   "mass": 2.5,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "lightbar"
+  },
+  {
+   "name": "battery",
+   "part": "battery",
+   "parent": "chassis",
+   "pos": [
+    -12.94,
+    -21.97
+   ],
+   "z": 4,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -2.81,
+     0.05
+    ],
+    "b": [
+     3.01,
+     0.05
+    ],
+    "r": 3.72
+   },
+   "mass": 9.0,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "battery"
+  },
+  {
+   "name": "hatch",
+   "part": "hatch",
+   "parent": "chassis",
+   "pos": [
+    -5.32,
+    -26.39
+   ],
+   "z": 5,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -12.91,
+     4.45
+    ],
+    "b": [
+     -2.24,
+     4.45
+    ],
+    "r": 4.04
+   },
+   "mass": 3.0,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "hatch"
+  },
+  {
+   "name": "sensor",
+   "part": "sensor",
+   "parent": "chassis",
+   "pos": [
+    27.19,
+    -23.08
+   ],
+   "z": 6,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -3.89,
+     -2.85
+    ],
+    "b": [
+     4.34,
+     -2.85
+    ],
+    "r": 4.89
+   },
+   "mass": 4.0,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "dome"
+  },
+  {
+   "name": "bumper",
+   "part": "bumper",
+   "parent": "chassis",
+   "pos": [
+    31.1,
+    -5.32
+   ],
+   "z": 2,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     5.04,
+     0.05
+    ],
+    "b": [
+     10.61,
+     0.05
+    ],
+    "r": 5.84
+   },
+   "mass": 7.0,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "bumper"
+  }
+ ],
+ "sockets": {
+  "lens_light": {
+   "joint": "sensor",
+   "pos": [
+    6.58,
+    -2.46
+   ]
+  },
+  "tell": {
+   "joint": "lightbar",
+   "pos": [
+    0.0,
+    -2.83
+   ]
+  },
+  "core": {
+   "joint": "battery",
+   "pos": [
+    0.0,
+    0.0
+   ]
+  },
+  "spark_bumper": {
+   "joint": "bumper",
+   "pos": [
+    16.33,
+    0.0
+   ]
+  },
+  "spark_hatch": {
+   "joint": "hatch",
+   "pos": [
+    -9.88,
+    0.0
+   ]
+  },
+  "spark_dome": {
+   "joint": "sensor",
+   "pos": [
+    0.0,
+    -7.73
+   ]
+  },
+  "oil_drip": {
+   "joint": "chassis",
+   "pos": [
+    0.0,
+    1.4
+   ]
+  }
+ },
+ "source": "concept-art/m01-patrol-rover/m01-patrol-rover-parts-hd-b-v2.webp"
+}

@@ -1,54 +1,54 @@
 {
  "lamp_post": {
-  "scale": 0.26,
-  "anchor_x": 41.5,
-  "head": 43,
+  "scale": 0.28673,
+  "anchor_x": 40.0,
+  "head": 40,
   "pole": [
-   43,
-   438
+   40,
+   261
   ],
   "lens": [
-   81,
-   29,
-   177,
-   41
+   69,
+   15,
+   157,
+   24
   ]
  },
  "bench": {
-  "scale": 0.30423,
-  "anchor_x": 178.0
+  "scale": 0.33953,
+  "anchor_x": 159.5
  },
  "planter": {
-  "scale": 0.27675,
-  "anchor_x": 136.0
+  "scale": 0.30979,
+  "anchor_x": 121.5
  },
  "hedge": {
-  "scale": 0.25263,
-  "anchor_x": 143.0
+  "scale": 0.34736,
+  "anchor_x": 104.0
  },
  "railing": {
-  "scale": 0.273,
-  "anchor_x": 223.5,
+  "scale": 0.42222,
+  "anchor_x": 210.0,
   "units": [
-   13,
-   211
+   19,
+   210
   ]
  },
  "bollard": {
-  "scale": 0.329,
+  "scale": 0.40543,
   "anchor_x": 34.5
  },
  "intercom": {
-  "scale": 0.323,
-  "anchor_x": 38.0
+  "scale": 0.4391,
+  "anchor_x": 39.5
  },
  "booth": {
-  "scale": 0.433,
-  "anchor_x": 196.0
+  "scale": 0.43644,
+  "anchor_x": 204.5
  },
  "gate": {
-  "scale": 0.394,
-  "anchor_x": 339.5
+  "scale": 0.36399,
+  "anchor_x": 367.5
  },
  "landmark": {
   "scale": 0.49,
@@ -61,6 +61,42 @@
   "emblem": [
    75,
    66
+  ]
+ },
+ "pool": {
+  "scale": 0.28169,
+  "anchor_x": 426.0
+ },
+ "depot_door": {
+  "scale": 0.30769,
+  "anchor_x": 306.0
+ },
+ "annex_door": {
+  "scale": 0.41584,
+  "anchor_x": 102.0
+ },
+ "glow_plant": {
+  "scale": 0.31858,
+  "anchor_x": 79.0
+ },
+ "guide_rail": {
+  "scale": 0.24771,
+  "anchor_x": 227.5,
+  "units": [
+   56,
+   400
+  ]
+ },
+ "breakfast": {
+  "scale": 0.10398,
+  "anchor_x": 228.5
+ },
+ "portrait_desk": {
+  "scale": 0.10264,
+  "anchor_x": 324.0,
+  "lamp_head": [
+   7.7,
+   -58.7
   ]
  }
 }

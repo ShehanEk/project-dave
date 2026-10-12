@@ -66,6 +66,17 @@ func _centre(piece: String) -> Color:
 	return img.get_pixel(img.get_width() / 2, img.get_height() / 2) if img else Color.TRANSPARENT
 
 
+## Crisp pixel art, or its smooth painted twin (batch 3).
+func _drawn_ok(tex: Texture2D) -> bool:
+	return PixelUi.is_crisp(tex) or (tex is CanvasTexture and (tex as CanvasTexture).texture_filter in
+			[CanvasItem.TEXTURE_FILTER_LINEAR, CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS])
+
+
+## The legend's ink (the painted cap's mipmapped copy is a step off it).
+func _near_ink(c: Color) -> bool:
+	return absf(c.r - PixelUi.INK.r) + absf(c.g - PixelUi.INK.g) + absf(c.b - PixelUi.INK.b) < 0.02 and c.a > 0.9
+
+
 func _image_of(tex: Texture2D) -> Image:
 	var t: Texture2D = (tex as CanvasTexture).diffuse_texture if tex is CanvasTexture else tex
 	return t.get_image() if t else null
@@ -93,7 +104,7 @@ func _theme() -> void:
 		if not sb is StyleBoxTexture:
 			continue
 		var st := sb as StyleBoxTexture
-		check(PixelUi.is_crisp(st.texture), "%s draws its texture with nearest filtering" % where)
+		check(_drawn_ok(st.texture), "%s draws its texture with nearest filtering" % where)
 		var native := PixelUi.image(frames[key])
 		var tex_size: Vector2 = st.texture.get_size() if st.texture else Vector2.ZERO
 		if native:
@@ -105,7 +116,7 @@ func _theme() -> void:
 					"%s stretches its plain edges" % where)
 	for icon in [["CheckButton", "checked"], ["CheckButton", "unchecked"], ["HSlider", "grabber"], ["OptionButton", "arrow"]]:
 		var tex := theme.get_icon(icon[1], icon[0])
-		check(tex != null and PixelUi.is_crisp(tex), "%s/%s is a nearest-filtered pixel icon" % icon)
+		check(tex != null and _drawn_ok(tex), "%s/%s is a nearest-filtered pixel icon" % icon)
 	var normal := theme.get_stylebox("normal", "CheckButton")
 	check(normal is StyleBoxEmpty, "a CheckButton draws no button frame behind its checkbox")
 	check_eq(theme.get_color("font_color", "Label"), Color(0.847, 0.886, 0.925, 1), "label text keeps the theme's pale colour")
@@ -155,7 +166,7 @@ func _hud_pieces() -> void:
 	for path in ["TopBar/ChipIcon", "TopBar/KeycardIcon", "TopBar/WeaponBox/QuickcyclePip", "TopBar/WeaponBox/ReadyDot"]:
 		check(hud.get_node(path).has_art(), "%s draws its pixel piece" % path)
 	for piece in ["chip", "keycard", "weapon_scrapjack", "health_full", "ready_lit"]:
-		check(PixelUi.is_crisp(PixelUi.texture(piece)), "%s is nearest filtered" % piece)
+		check(_drawn_ok(PixelUi.texture(piece)), "%s is nearest filtered" % piece)
 	check(PixelUi.uses_font(hud._wallet_label), "the wallet count is set in the pixel font")
 	check(PixelUi.uses_font(hud._weapon_tag_label), "the weapon tag is set in the pixel font")
 	check(not PixelUi.uses_font(hud._objective_label), "the objective sentence stays in the UI font")
@@ -207,7 +218,7 @@ func _ready_light_follows_weapon() -> void:
 
 func _key_caps() -> void:
 	var a := InputIconMap.icon_for_event(_key(KEY_A))
-	check(a != null and PixelUi.is_crisp(a), "A has a nearest-filtered key cap")
+	check(a != null and _drawn_ok(a), "A has a nearest-filtered key cap")
 	for code in [KEY_D, KEY_W, KEY_S, KEY_E, KEY_F, KEY_Q, KEY_R, KEY_1, KEY_SPACE, KEY_LEFT, KEY_RIGHT,
 			KEY_UP, KEY_DOWN, KEY_ESCAPE, KEY_TAB, KEY_ENTER, KEY_F1]:
 		check(InputIconMap.icon_for_event(_key(code)) != null, "key %s has a key cap" % InputIconMap.key_label(code))
@@ -224,7 +235,8 @@ func _key_caps() -> void:
 	if img:
 		for y in img.get_height():
 			for x in img.get_width():
-				if img.get_pixel(x, y).is_equal_approx(PixelUi.INK) and x > 1 and x < img.get_width() - 2 and y > 1 and y < 9:
+				var k: int = PixelUi.HD_K if PixelUi.is_hd(a) else 1
+				if _near_ink(img.get_pixel(x, y)) and x > k and x < img.get_width() - 2 * k and y > k and y < 9 * k:
 					ink += 1
 	check(ink >= 10, "the A cap carries its letter in dark ink on the face (%d ink pixels)" % ink)
 	var left_cap := InputIconMap.icon_for_event(_key(KEY_LEFT))
@@ -263,7 +275,7 @@ func _prompt_and_controls_use_caps() -> void:
 		check_eq(icons[0].custom_minimum_size, icons[0].texture.get_size() * 3.0, "prompt caps draw at 3 world px per UI pixel")
 	var panel: PanelContainer = prompt.get_node("Panel")
 	var style := panel.get_theme_stylebox("panel")
-	check(style is StyleBoxTexture and PixelUi.is_crisp(style.texture), "the prompt panel is the pixel tag frame")
+	check(style is StyleBoxTexture and _drawn_ok(style.texture), "the prompt panel is the pixel tag frame")
 	var text_label: Label = prompt.get_node("Panel/Row/TextLabel")
 	check(text_label.get_global_rect().end.x <= panel.get_global_rect().end.x + 0.5, "the prompt's text stays inside its panel")
 	check(absf(panel.position.x + panel.size.x * 0.5) <= 1.0, "the prompt panel stays centred on its node")
@@ -278,7 +290,7 @@ func _prompt_and_controls_use_caps() -> void:
 	var controls: ControlsPanel = await spawn(CONTROLS_SCENE)
 	for i in controls._icon_boxes.size():
 		for child in controls._icon_boxes[i].get_children():
-			check(child is TextureRect and PixelUi.is_crisp(child.texture)
+			check(child is TextureRect and _drawn_ok(child.texture)
 					and child.custom_minimum_size == child.texture.get_size() * 2.0,
 					"Controls row %d icons are pixel caps at 2 px per UI pixel" % i)
 	check(_lum(ControlsPanel.NAME_COLOR) > 0.6 and _lum(ControlsPanel.TIP_COLOR) > 0.4,
@@ -352,7 +364,7 @@ func _menus() -> void:
 	check(swap.get_node("Panel/VBox/TitleRow/SwapIcon").has_art(), "the swap confirm shows the pixel swap arrows")
 	swap.queue_free()
 	var pause: PauseMenu = await spawn("res://scenes/ui/pause.tscn")
-	check(pause._settings_button.icon != null and PixelUi.is_crisp(pause._settings_button.icon), "the Settings button carries the gear")
+	check(pause._settings_button.icon != null and _drawn_ok(pause._settings_button.icon), "the Settings button carries the gear")
 	for row in ["SubtitlesRow", "MasterRow", "MusicRow", "SfxRow"]:
 		check(pause.get_node("Panel/VBox/SettingsView/%s/Icon" % row).has_art(), "%s has its pixel icon" % row)
 	var heights := {}

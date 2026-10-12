@@ -25,7 +25,8 @@ const ObjectSkins := preload("res://scripts/world/object_skins.gd")
 const PIECE := "workbench"
 const LOCKED_PAINT := Color(0.55, 0.58, 0.66)
 ## The status lamp's centre, art px from the piece's top-left corner.
-const LAMP_ART := Vector2(126.0, 10.0)
+# (The hand-painted layout, batch 2 2026-10-11: tools/art/import_hd_env.py --batch2.)
+const LAMP_ART := Vector2(139.4, 4.0)
 
 var _panel: CanvasLayer = null
 

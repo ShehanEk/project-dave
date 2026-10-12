@@ -214,7 +214,8 @@ func _ready() -> void:
 	_reduced_motion = settings != null and settings.get_reduced_motion()
 	_painted = painted_piece()
 	if _painted != "" or painted_sign() != "" or _pixel_text():
-		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		# Smooth when the sign text is set in Rajdhani (batch 3); the painted pieces carry their own filter.
+		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if PixelFont.smooth_font() != null else CanvasItem.TEXTURE_FILTER_NEAREST
 	match kind:
 		Kind.LAMP:
 			_setup_lamp()
@@ -240,7 +241,9 @@ func _draw() -> void:
 		else:
 			PropSkins.draw(self, _painted, size)
 			if kind == Kind.PORTRAIT:   # the desk lamp's soft glow stays smooth, over the lamp's head
-				draw_circle(PORTRAIT_LAMP_HEAD, 16.0, Color(PATH_WHITE, 0.1))
+				var hd: Dictionary = PropSkins.hd("portrait_desk")
+				var head: Vector2 = Vector2(hd["lamp_head"][0], hd["lamp_head"][1]) if hd.has("lamp_head") else PORTRAIT_LAMP_HEAD
+				draw_circle(head, 16.0, Color(PATH_WHITE, 0.1))
 		return
 	match kind:
 		Kind.HOUSE: _draw_house()
@@ -271,7 +274,10 @@ func _draw() -> void:
 ## code-drawn look: a kind with no piece, a prop in the depot, or an export
 ## without the art.
 func painted_piece() -> String:
-	if not PAINTED.has(kind) or _area_id() == DEPOT_AREA_ID:
+	if not PAINTED.has(kind):
+		return ""
+	# The depot keeps its code-drawn props, but for the hand-painted doors and guide rail (C56).
+	if _area_id() == DEPOT_AREA_ID and not (kind in [Kind.DEPOT_DOOR, Kind.RAIL] and not PropSkins.hd(PAINTED[kind]).is_empty()):
 		return ""
 	var key: String = PAINTED[kind]
 	if kind == Kind.DEPOT_DOOR and name.begins_with("AnnexDoor"):

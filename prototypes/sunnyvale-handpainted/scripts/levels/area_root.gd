@@ -24,6 +24,8 @@ extends Node2D
 ## fed to GameCamera.world_limits as a world-space Rect2 via get_camera_limits().
 @export var camera_top: float = -640.0
 @export var camera_bottom: float = 96.0
+## Under a roof (the depot): no rain falls here (scripts/world/atmosphere.gd).
+@export var indoors: bool = false
 
 const CONTAINER_NAMES: Array[String] = [
 	"Geometry", "Scenery", "Entities", "Encounters", "Beats", "Route", "Markers",

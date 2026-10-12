@@ -31,6 +31,10 @@ signal quit_requested
 enum View { MAIN, NEW_GAME_CONFIRM, CONTROLS }
 
 const LOGO_PATH := "res://assets/ui/pixel/title_logo.png"
+## The hand-painted logo (batch 3), drawn smooth at the pixel logo's width (150 layout px) when it
+## exists; the pixel logo stays the fallback.
+const HD_LOGO_PATH := "res://assets/ui/hd/title_logo.png"
+const PixelUiForLogo := preload("res://scripts/ui/pixel_ui.gd")
 const BACKDROP_PATH := "res://assets/ui/pixel/title_backdrop.png"
 
 ## The composition is authored against the project's base canvas.
@@ -140,6 +144,12 @@ func _load_art() -> void:
 	_backdrop.visible = _has_backdrop
 	_glow.visible = _has_backdrop
 	var logo_tex: Texture2D = _load_texture(logo_path)
+	if logo_tex != null and logo_path == LOGO_PATH and PixelUiForLogo.hd_enabled and ResourceLoader.exists(HD_LOGO_PATH):
+		var img: Image = (load(HD_LOGO_PATH) as Texture2D).get_image()
+		if img.is_compressed():
+			img.decompress()
+		var w := int(logo_tex.get_width())
+		logo_tex = PixelUiForLogo.smooth(img, Vector2i(w, roundi(float(w) * img.get_height() / img.get_width())))
 	_has_logo = logo_tex != null
 	_logo.texture = logo_tex
 

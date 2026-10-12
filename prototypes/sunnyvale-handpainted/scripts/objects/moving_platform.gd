@@ -36,8 +36,8 @@ const RUNNING_LIGHT := Color("#3FE0D0")
 ## drive housing stay as the fallback. Columns in art px of the piece.
 const PickupSkins := preload("res://scripts/world/pickup_skins.gd")
 const PIECE := "moving_platform"
-const LIGHT_COLS := [14, 48, 82]
-const LIGHT_ROW := 15.5
+const LIGHT_COLS := [24, 50, 74]   # the hand-painted platform (batch 2)
+const LIGHT_ROW := 10.8
 
 var _progress: float = 0.0  # 0 at point_a, 1 at point_b
 var _dir: int = 1

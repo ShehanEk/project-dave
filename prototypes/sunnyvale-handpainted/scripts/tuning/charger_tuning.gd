@@ -22,6 +22,9 @@ extends Resource
 ## Frontal (blocked) hits before the one-time battery hint is shown.
 @export var frontal_hint_threshold: int = 2
 @export_file("*.json") var rig_path: String = "res://assets/characters/lit/patrol_rover/rig.json"
+## Look variants (C56): rig.json paths sharing one layout and joints; each rover draws the one
+## its entity id picks (rig_path when the list is empty). Looks only.
+@export var rig_variants: PackedStringArray = []
 
 const H := 96.0
 

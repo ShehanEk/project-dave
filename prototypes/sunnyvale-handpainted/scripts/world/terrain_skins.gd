@@ -10,7 +10,7 @@ extends RefCounted
 ## pixel: the end caps stay, the middle columns repeat sideways (in phase
 ## with the block's global x, so two blocks that meet continue one pattern
 ## and skip their caps there), and vertically the piece's walkable lit edge
-## (`edge`) sits on the block's top, with anything above it (hedges, grass)
+## (`edge`) sits on the block's top, with anything above it (a parapet, rooftop kit)
 ## hanging over. A block taller than the piece repeats its `body` rows
 ## (keeping the bottom rows at the bottom), or, for a skin without a body,
 ## continues with the wall face (`below`) and then plain shadow. A block
@@ -18,8 +18,10 @@ extends RefCounted
 ##
 ## The walkway and the wall face under it come from the wet-paving sheet
 ## (concept-art/env-sunnyvale/sunnyvale-paving-v1.webp, tools/art/import_pixel_sheet.py
-## paving): two long strips whose whole width is the repeating period, kept
-## between 1-pixel outline caps that only a lone block's ends show.
+## paving), now laid out by the hand-painted walkway sheet (C58, walkway-hd-v2,
+## tools/art/import_hd_env.py terrain): two long strips whose whole width is the
+## repeating period, kept between 1-pixel caps that only a lone block's ends show.
+## They share one period, so the deck's cyan seams stay over the wall's conduits.
 ##
 ## Rows and columns are in art pixels of the imported PNG. A missing PNG
 ## (an export without the art) makes `has_skin()` false and the caller
@@ -33,7 +35,7 @@ const DIR := ROOT + "terrain/"
 ## The plain shadow under a wall face (Block.DEEP).
 const DEEP := Color("#0A0F18")
 ## How far a `below` wall face runs before the shadow takes over (art px): the
-## wall piece once, three brick courses, so it ends on a mortar line.
+## wall piece once, so it ends on the dark line under its panels.
 const FACE_DEPTH := 54
 
 ## tex: piece name ("sheet/piece" when it is not from the terrain sheet);
@@ -48,37 +50,43 @@ const FACE_DEPTH := 54
 ## the piece's height, in place of repeating the body (optional); whole: draw
 ## the piece as it is, no slicing.
 const SKINS := {
-	# GROUND / PORCH: wet paving, a thin lit edge (its own top row, under the
-	# strip's outline row) over slab joints and orange and teal puddle streaks.
-	"walkway": {"tex": "paving/paving", "edge": 1, "from": 1, "cols": Vector2i(1, 345), "below": "wall_face"},
-	# The brick wall under the walkway (its top outline row left out, so the
-	# first row is the lit brick top), dimmed so it falls back into shadow
+	# GROUND / PORCH: the walkway deck's pale composite front face (C58), its cold-white lit top
+	# edge right under the floor line: the edge row (2) is the lip's first bright row, so rows 0-1
+	# (the deck's top bevel) stand above the block top behind the feet and the feet stand on the lit
+	# line (C57: with the lip under the floor line the feet floated over the band above it).
+	"walkway": {"tex": "paving/paving", "edge": 2, "from": 0, "cols": Vector2i(1, 498), "below": "wall_face"},
+	# The graphite wall panels under the deck (its row 0, a copy, left out, so the
+	# first row is the wall's lit top lip), dimmed so it falls back into shadow
 	# under the lit walking surface (C24 "a large near-black shadow mass") and
 	# never competes with the characters. It repeats downward as well.
-	"wall_face": {"tex": "paving/wall", "edge": 1, "from": 1, "to": 55, "cols": Vector2i(1, 336),
+	"wall_face": {"tex": "paving/wall", "edge": 1, "from": 1, "to": 55, "cols": Vector2i(1, 498),
 			"tint": Color(0.42, 0.45, 0.55)},
-	# PLATFORM: a concrete planter ledge with a clipped hedge behind the edge.
-	"planter_ledge": {"tex": "planter_ledge", "edge": 22, "cols": Vector2i(3, 191), "body": Vector2i(24, 40),
+	# PLATFORM: a composite ledge with a glass parapet behind the edge, its painted ends as caps.
+	# (The hand-painted layouts: tools/art/import_hd_env.py --batch2, the C58 sheet.)
+	"planter_ledge": {"tex": "planter_ledge", "edge": 34, "cols": Vector2i(28, 388), "body": Vector2i(37, 42),
 			"tall": "wall_face", "tint": Color(0.84, 0.86, 0.92)},
-	# ROOF: a green-roof slab with uplights.
-	"green_roof": {"tex": "green_roof", "edge": 13, "cols": Vector2i(2, 220), "body": Vector2i(25, 29)},
-	# BACKSTOP: a heavy stone planter block, left without its hedge so it
-	# never looks taller than the wall Dave has to clear.
-	"stone_planter": {"tex": "stone_planter", "edge": 29, "from": 27, "cols": Vector2i(4, 56),
-			"body": Vector2i(44, 75)},
+	# ROOF: a roof edge with vents, rooftop units and amber markers; its plain fascia repeats.
+	"green_roof": {"tex": "green_roof", "edge": 36, "cols": Vector2i(4, 263), "body": Vector2i(38, 39)},
+	# BACKSTOP: a composite block (one bolted panel repeating sideways and down,
+	# its cyan light and pipes the right end), no taller than the wall Dave has to clear.
+	"stone_planter": {"tex": "stone_planter", "edge": 3, "cols": Vector2i(5, 67),
+			"body": Vector2i(14, 46)},
 	# BACKSTOP on the roofs: the rooftop AC unit, drawn whole (its block is
 	# sized to it).
 	"ac_unit": {"tex": "ac_unit", "edge": 2, "whole": true},
-	# WALL: the garden wall, a planter box with hedge and hanging vines.
-	"retaining_wall": {"tex": "retaining_wall", "edge": 19, "cols": Vector2i(3, 217),
+	# The depot's floor (hand-painted, batch 2): a steel grating with a lit top edge.
+	"depot_floor": {"tex": "depot_floor", "edge": 1, "cols": Vector2i(1, 407)},
+	# WALL: a raised platform wall with a lit lid (vent, panels, a cyan-lit panel repeating; its
+	# pipes the right end).
+	"retaining_wall": {"tex": "retaining_wall", "edge": 2, "cols": Vector2i(6, 127),
 			"tint": Color(0.7, 0.73, 0.82)},
 }
 
 ## The roof support column (Scenery SUPPORT): cap rows, then a lattice
 ## period that repeats, then the foot.
 const COLUMN := "support_column"
-const COLUMN_BODY := Vector2i(22, 49)
-const COLUMN_FOOT := 121
+const COLUMN_BODY := Vector2i(14, 30)
+const COLUMN_FOOT := 62
 
 static var _textures := {}
 

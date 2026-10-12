@@ -19,6 +19,7 @@ extends RefCounted
 ## hologram sits above its projector, so it is drawn upside down (a flipped
 ## texture rect is still the same pixels), its lens at the cone's apex.
 
+const HdSkins := preload("res://scripts/world/hd_skins.gd")
 const ART := 1.5
 const DIR := "res://assets/environment/sunnyvale/buildings/"
 const PixelFont := preload("res://scripts/world/pixel_font.gd")
@@ -27,10 +28,11 @@ const PixelFont := preload("res://scripts/world/pixel_font.gd")
 ## [from, to)) that repeat. Every repeated column is identical across all rows
 ## (and the rows below the sheen differ little), so repeating them leaves no
 ## seam.
+## (The hand-painted panels, batch 2 2026-10-11: tools/art/import_hd_env.py --batch2.)
 const PANELS := {
-	"sign_s": {"size": Vector2i(50, 18), "cols": Vector2i(32, 34), "rows": Vector2i(6, 8)},
-	"sign_m": {"size": Vector2i(78, 22), "cols": Vector2i(40, 42), "rows": Vector2i(8, 10)},
-	"sign_l": {"size": Vector2i(112, 24), "cols": Vector2i(88, 90), "rows": Vector2i(8, 10)},
+	"sign_s": {"size": Vector2i(60, 18), "cols": Vector2i(30, 32), "rows": Vector2i(9, 11)},
+	"sign_m": {"size": Vector2i(101, 22), "cols": Vector2i(50, 52), "rows": Vector2i(11, 13)},
+	"sign_l": {"size": Vector2i(153, 24), "cols": Vector2i(76, 78), "rows": Vector2i(12, 14)},
 }
 ## The teal of the panel's frame: the hue a tint is shifted from.
 const FRAME_TEAL := Color("#16abb5")
@@ -48,8 +50,8 @@ const SNUG_MIN := 0.7
 ## The projector in the sheet: 96 x 36 art px, its lens centre 4 art rows (6
 ## world px) under the top of the housing once it is flipped upside down.
 const PROJECTOR := "projector"
-const PROJECTOR_SIZE := Vector2i(96, 36)
-const PROJECTOR_LENS_Y := 4.0
+const PROJECTOR_SIZE := Vector2i(115, 36)
+const PROJECTOR_LENS_Y := 31.8   # the hand-painted housing: mounts on top, lens underneath
 
 static var _textures := {}
 static var _tinted := {}
@@ -210,9 +212,37 @@ static func draw_panel(c: CanvasItem, piece: String, cols: int, rows: int, at: V
 	var tex := tinted(piece, tint)
 	if tex == null:
 		return
+	# The hand-painted panel (C56): the same slices from its HD texture, recoloured the same way.
+	var hd: Array = HdSkins.swap(texture(piece))
+	var k: float = hd[1]
+	if hd[0] != texture(piece):
+		tex = _tinted_hd(piece, tint, (hd[0] as CanvasTexture).diffuse_texture)
 	for sl in slices(piece, cols, rows):
 		var dst: Rect2 = sl[1]
-		c.draw_texture_rect_region(tex, Rect2(at + dst.position * ART, dst.size * ART), sl[0])
+		var src: Rect2 = sl[0]
+		c.draw_texture_rect_region(tex, Rect2(at + dst.position * ART, dst.size * ART), Rect2(src.position * k, src.size * k))
+
+
+static var _tinted_hd_cache := {}
+
+
+static func _tinted_hd(piece: String, tint: Color, hd: Texture2D) -> Texture2D:
+	if absf(tint.h - FRAME_TEAL.h) < 0.04:
+		return hd
+	var key := "%s|%s" % [piece, tint.to_html(false)]
+	if not _tinted_hd_cache.has(key):
+		var img: Image = hd.get_image().duplicate()
+		if img.is_compressed():
+			img.decompress()
+		var dh: float = tint.h - FRAME_TEAL.h
+		for y in img.get_height():
+			for x in img.get_width():
+				var col: Color = img.get_pixel(x, y)
+				# Only the frame's saturated teal takes the tint; the dark face stays.
+				if col.s > 0.35 and absf(col.h - FRAME_TEAL.h) < 0.12:
+					img.set_pixel(x, y, Color.from_hsv(fposmod(col.h + dh, 1.0), col.s, col.v, col.a))
+		_tinted_hd_cache[key] = ImageTexture.create_from_image(img)
+	return _tinted_hd_cache[key]
 
 
 ## The projector housing, upside down under a hologram, its lens centre at `lens`
@@ -224,5 +254,5 @@ static func draw_projector(c: CanvasItem, lens: Vector2) -> void:
 	var w: float = float(PROJECTOR_SIZE.x) * ART
 	var h: float = float(PROJECTOR_SIZE.y) * ART
 	var top := Vector2(roundf((lens.x - w * 0.5) / ART) * ART, roundf((lens.y - PROJECTOR_LENS_Y * ART) / ART) * ART)
-	c.draw_texture_rect_region(tex, Rect2(top + Vector2(0.0, h), Vector2(w, -h)),
+	HdSkins.blit(c, tex, Rect2(top + Vector2(0.0, h), Vector2(w, -h)),
 			Rect2(0.0, 0.0, float(PROJECTOR_SIZE.x), float(PROJECTOR_SIZE.y)))

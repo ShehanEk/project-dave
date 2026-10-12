@@ -63,8 +63,9 @@ const ALARM_PIECE := "core_alarm"
 const DIM_PAINT := Color(0.5, 0.55, 0.66)
 ## The maintenance port (where Dave's drive plugs in) and the copy bar's
 ## frame (above it, on the housing under the glass column), per piece.
-const PORT_ART := {"core_calm": Vector2(34.0, 74.5), "core_alarm": Vector2(35.0, 76.5)}
-const BAR_ART := {"core_calm": Vector2(24.0, 61.0), "core_alarm": Vector2(25.0, 63.0)}
+# (The hand-painted layout, batch 2 2026-10-11: tools/art/import_hd_env.py --batch2.)
+const PORT_ART := {"core_calm": Vector2(41.7, 48.7), "core_alarm": Vector2(41.7, 48.7)}
+const BAR_ART := {"core_calm": Vector2(7.3, 69.8), "core_alarm": Vector2(7.3, 69.8)}
 const BAR_SIZE := Vector2(30.0, 5.0)
 
 ## Total watch-through: 3.5 (copy) + 2.0 (lights dim) + 4.0/2.0/3.5 (the

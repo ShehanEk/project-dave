@@ -141,7 +141,7 @@ func _test_base_canvas_layout() -> void:
 	check_eq(logo.texture_filter, CanvasItem.TEXTURE_FILTER_NEAREST, "the logo is nearest filtered (crisp pixels)")
 	check(title.logo_scale >= 3, "on the base canvas the logo is shown big (scale %d)" % title.logo_scale)
 	check_eq(title.logo_scale, 5, "on the 1280x720 canvas the logo is 5x")
-	check_eq(logo.size, LOGO_NATIVE * 5.0, "the logo is exactly 5x its native size (750x165)")
+	check_eq(logo.size, logo.texture.get_size() * 5.0, "the logo is exactly 5x its native size (150 px wide)")
 	check_eq(logo.stretch_mode, TextureRect.STRETCH_SCALE, "the logo stretches to its whole-number size")
 	check(_rect_of(logo).position.x == floorf(_rect_of(logo).position.x) and _rect_of(logo).position.y == floorf(_rect_of(logo).position.y),
 			"the logo sits on a whole pixel")
@@ -281,7 +281,7 @@ func _test_window_shapes() -> void:
 		var logo: TextureRect = title.get_node("Logo")
 		check_eq(_rect_of(backdrop), view, "%s: the backdrop fills the window" % tag)
 		check(title.logo_scale >= 1 and title.logo_scale <= 5, "%s: logo scale %d is a whole number from 1 to 5" % [tag, title.logo_scale])
-		check_eq(logo.size, LOGO_NATIVE * float(title.logo_scale), "%s: the logo is an exact multiple of its native size" % tag)
+		check_eq(logo.size, logo.texture.get_size() * float(title.logo_scale), "%s: the logo is an exact multiple of its native size" % tag)
 		check(view.encloses(_rect_of(logo)), "%s: the logo is on screen" % tag)
 		var panel := _rect_of(title.get_node("Panel"))
 		check(view.encloses(panel), "%s: the menu is on screen" % tag)

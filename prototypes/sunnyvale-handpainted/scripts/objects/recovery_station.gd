@@ -28,7 +28,8 @@ const KenneyPuff := preload("res://scripts/effects/kenney/kenney_puff.gd")
 ## through ObjectSkins; the code-drawn look below stays as the fallback.
 const ObjectSkins := preload("res://scripts/world/object_skins.gd")
 ## The painted lamp's centre, art px from the piece's top-left corner.
-const LAMP_ART := Vector2(24.0, 7.5)
+# (The hand-painted layout, batch 2 2026-10-11: tools/art/import_hd_env.py --batch2.)
+const LAMP_ART := Vector2(46.5, 5.0)
 ## Where the code-drawn lamp sits (the checkpoint sparkle and glow).
 const LAMP_CODE := Vector2(0.0, -72.0)
 

@@ -1,11 +1,13 @@
 extends Node2D
 ## The near-camera foreground (Sheet 7, 2026-10-07): a sparse row of almost
 ## black silhouettes (clipped hedges with their grass tufts, railings, benches,
-## bollards, loose grass) along the BOTTOM EDGE OF THE SCREEN, in front of the
-## play plane and its actors. They are close to the camera, so they are drawn
-## larger than the play plane and slide past faster than the camera (PARALLAX),
-## which adds depth for almost nothing. Purely decorative: no collision, no
-## gameplay state, nothing in the world ever reads it. Each outdoor area scene
+## bollards, loose grass; since C58 utility boxes and barrier blocks in the
+## hedge slots, glass railings, and small floor objects in the grass slots,
+## tools/art/import_hd_env.py details2) along the BOTTOM EDGE OF THE SCREEN,
+## in front of the play plane and its actors. They are close to the camera, so
+## they are drawn larger than the play plane and slide past faster than the
+## camera (PARALLAX), which adds depth for almost nothing. Purely decorative:
+## no collision, no gameplay state, nothing in the world ever reads it. Each outdoor area scene
 ## (A01 gate, A02 gardens, A03 roofs, A04 plaza, A06 exit; not the depot, an
 ## interior) has one `Foreground` node with this script and its own `tile_width`
 ## (the area's width), like the backdrop layers. No `class_name` (M6 art-pass
@@ -50,6 +52,7 @@ extends Node2D
 ## no art at all nothing is drawn and nothing processes. Parallax is not a shake,
 ## so Reduced Motion leaves it alone.
 
+const HdSkins := preload("res://scripts/world/hd_skins.gd")
 const DIR := "res://assets/environment/sunnyvale/foreground/"
 ## Every piece the sheet gives, with what kind of thing it is.
 const PIECES := {
@@ -301,7 +304,7 @@ func _draw_strip() -> void:
 		var rect: Rect2 = r["rect"]
 		if r["flip"]:
 			_canvas.draw_set_transform(Vector2(rect.end.x, rect.position.y), 0.0, Vector2(-1.0, 1.0))
-			_canvas.draw_texture_rect(tex, Rect2(Vector2.ZERO, rect.size), false, tint)
+			_canvas.draw_texture_rect(HdSkins.swap(tex)[0], Rect2(Vector2.ZERO, rect.size), false, tint)
 			_canvas.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 		else:
-			_canvas.draw_texture_rect(tex, rect, false, tint)
+			_canvas.draw_texture_rect(HdSkins.swap(tex)[0], rect, false, tint)

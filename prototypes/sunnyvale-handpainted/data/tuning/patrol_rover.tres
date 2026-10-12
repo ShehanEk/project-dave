@@ -16,4 +16,5 @@ floor_band = 64.0
 missed_charge_recovery_time = 0.6
 gravity = 1800.0
 frontal_hint_threshold = 1
-rig_path = "res://assets/characters/lit/patrol_rover/rig.json"
+rig_path = "res://assets/characters/lit/patrol_rover_hd_a/rig.json"
+rig_variants = PackedStringArray("res://assets/characters/lit/patrol_rover_hd_a/rig.json", "res://assets/characters/lit/patrol_rover_hd_b/rig.json")

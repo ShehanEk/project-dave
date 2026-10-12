@@ -84,6 +84,9 @@ const PixelFx := preload("res://scripts/effects/pixel_fx.gd")
 ## pixels stay 1.5 world px; a scaled node's rig is scaled back to its
 ## imported size.
 const GRIP_LOCAL := Vector2(2.0, 3.0)
+## The painted gun drawn at this share of its imported size (C57, the user: "in pixel art gun size
+## is correct in here gun size is large"); hero_rig_visual.gd holds it close, the elbow bent.
+const ART_SCALE := 0.85
 ## How far the upper housing and the barrel (one sliding block, so no gap
 ## opens between them) snap back on a shot, world px. (The pixel-art gun
 ## moves in whole art pixels, 1.5 world px, so the slide and the arm's kick
@@ -179,7 +182,7 @@ func _build_rig() -> void:
 	# wraps the grip; the parts keep their own order inside the rig. Dave's
 	# pixel rig (hero_rig_visual.gd) re-layers it between his upper arm and fist.
 	rig.z_index = -8
-	var s := 1.0 / maxf(absf(scale.x), 0.001)
+	var s := ART_SCALE / maxf(absf(scale.x), 0.001)
 	rig.scale = Vector2(s, s)
 	for j in ["upper", "barrel"]:
 		if rig.joints.has(j):

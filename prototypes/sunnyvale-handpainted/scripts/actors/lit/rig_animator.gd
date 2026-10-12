@@ -8,7 +8,9 @@ extends RefCounted
 ## Rotations are local, clockwise-positive (Godot 2D), the rig facing right:
 ## a thigh swinging forward is negative, a knee bending is positive, a
 ## torso leaning forward is positive. "root" offsets the pelvis (world px);
-## the rig's ground lock keeps the lowest sole on the floor.
+## the rig's ground lock keeps the lowest sole on the floor. "lift" (world px,
+## up positive) raises the whole body after the ground lock: the flight
+## between two running steps, a hop in an idle bounce.
 
 const DEG := PI / 180.0
 
@@ -137,6 +139,8 @@ func _sample_keys(c: String, t: float) -> Dictionary:
 	for k in names:
 		if k == "root":
 			out[k] = _cr_v(p0.get(k, Vector2.ZERO), p1.get(k, Vector2.ZERO), p2.get(k, Vector2.ZERO), p3.get(k, Vector2.ZERO), u)
+		elif k == "lift":
+			out[k] = _cr(float(p0.get(k, 0.0)), float(p1.get(k, 0.0)), float(p2.get(k, 0.0)), float(p3.get(k, 0.0)), u)
 		else:
 			out[k] = _cr(float(p0.get(k, 0.0)), float(p1.get(k, 0.0)), float(p2.get(k, 0.0)), float(p3.get(k, 0.0)), u) * DEG
 	return out

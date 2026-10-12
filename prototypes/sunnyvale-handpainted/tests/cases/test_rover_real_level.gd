@@ -84,6 +84,10 @@ func run() -> void:
 
 func _test_rover(area_path: String, group_path: String, rover_path: String, entity_id: String,
 		route_names: PackedStringArray, label: String) -> void:
+	# Start each rover from rest: the previous run can end mid-jump (its hero's jump still
+	# buffered by the input state), which would launch this run's hero at spawn.
+	release_all()
+	await physics_frames(2)
 	Session.new_run()
 	var area: AreaRoot = load(area_path).instantiate()
 	add_child(area)
@@ -197,7 +201,7 @@ func _test_rover(area_path: String, group_path: String, rover_path: String, enti
 				press("jump")
 			else:
 				release("jump")
-			var next_x: float = points[idx + 1].global_position.x if idx + 1 < points.size() else points[idx].global_position.x
+			var next_x: float = points[idx + 1].global_position.x if idx + 1 < points.size() else points[mini(idx, points.size() - 1)].global_position.x
 			_steer(hero, next_x, 4.0)
 			jump_elapsed += 1
 			if not hero.is_on_floor():

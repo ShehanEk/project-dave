@@ -26,7 +26,10 @@ const PIECE := "chip_cache"
 const PLATE := Color("#212E42")
 const OPENED_PAINT := Color(0.55, 0.58, 0.66)
 const LOCK_GLOW := Color(1.0, 0.69, 0.18, 0.15)
-const LOCK_CENTER := Vector2(24.0, 19.0)
+# (The hand-painted layout, batch 2 2026-10-11: tools/art/import_hd_env.py --batch2.)
+const LOCK_CENTER := Vector2(28.2, 40.4)
+## The painted open cache (batch 2): drawn in place of the closed one once looted.
+const OPEN_PIECE := "chip_cache_open"
 const LOCK_BOX := Rect2(16.0, 11.0, 15.0, 16.0)
 const LID_BOX := Rect2(8.0, 0.0, 32.0, 12.0)
 const LID_LIFT := 5.0
@@ -100,6 +103,9 @@ func _draw_painted() -> void:
 		draw_circle(lock, 13.0, LOCK_GLOW)
 		return
 	var tint := OPENED_PAINT
+	if PickupSkins.has_piece(OPEN_PIECE):
+		PickupSkins.draw_standing(self, OPEN_PIECE, Vector2.ZERO, tint)
+		return
 	PickupSkins.draw_standing(self, PIECE, Vector2.ZERO, tint)
 	var a := PickupSkins.ART
 	# The padlock is gone: its plate patch, then the lid lifted off a dark gap.

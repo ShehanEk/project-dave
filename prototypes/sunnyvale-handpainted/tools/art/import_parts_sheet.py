@@ -64,7 +64,10 @@ build_prop_pixel (the Scrapjack's since 2026-10-07: the first part is the root a
 rig's origin, the grip; every other part's `place` is a sheet point on the root, rounded to whole
 art pixels; a part's own `reduce` fits one that is drawn too big; `inside_share` keeps thin parts,
 a part's `snap` makes the warm pixels of a box exactly one glow colour and its `glow_in` limits where
-a glow colour counts). tools/art/README.md, "Pixel rigs", is the recipe. `--out-dir DIR` writes the rig somewhere else (to
+a glow colour counts). A sheet's `erase` polygons (sheet px) are made transparent before
+the parts are found, and a machine's `joint_z` overrides a joint's draw order (both for the HD
+rover v2: its chassis paints the lightbar, dome and bumper on, and its arches dark).
+tools/art/README.md, "Pixel rigs", is the recipe. `--out-dir DIR` writes the rig somewhere else (to
 try an import without touching the game's assets). Run from the project root:
   python3 tools/art/import_parts_sheet.py night_guard|night_guard_smooth|staffer|dave|patrol_rover|patrol_rover_smooth|scrapjack|scrapjack_smooth [--preview DIR] [--out-dir DIR] [--measure]
 """
@@ -261,36 +264,40 @@ SHEETS = {
             "blood_thigh": {"joint": "near_thigh", "part": "thigh", "at": (178, 850)},
         },
     },
-    # Dave, hand-painted HD (2026-10-11, C56): the ChatGPT parts sheet in the detailed painterly
-    # style (1536 x 1024, transparent). Smooth: one scale for the whole sheet, drawn with linear
-    # filtering. The lanyard's loop is cut and its card scaled down (the sheet paints it about
-    # twice too big); the hood hangs off the back of the collar.
+    # Dave, hand-painted HD v3 (2026-10-12, C58): the corporate cyberpunk repaint of the v2 sheet
+    # (1536 x 1024, transparent), same twelve parts in the same places, the body painted 3 to 6%
+    # wider, the head the same size. Smooth: one scale for the whole sheet, drawn with linear
+    # filtering. The knee pad is painted on the thigh above the knee (as in v2). The lanyard's loop
+    # is cut and its card scaled down (the sheet paints it about twice too big); the hood hangs off
+    # the back of the collar.
     "dave_hd": {
         "out": "dave",
-        "sheet": "concept-art/h01-dave/h01-dave-parts-hd-v2.webp",
+        "sheet": "concept-art/h01-dave/h01-dave-parts-hd-v3.webp",
         "rig_name": "H01 Dave Harlan",
         "height": 96.0,          # the pixel Dave's: his shoulder (the aim pivot) stays where the gameplay was tuned
-        "widen": 1.2,            # the sheet paints him lean ("hero looks too skinny", 2026-10-11)
+        # The sheet paints him lean ("hero looks too skinny", 2026-10-11); v3 is ~5% wider than v2,
+        # so 1.15 keeps the build v2 had at 1.2.
+        "widen": 1.15,
         "texture_scale": 4,
         "atlas_width": 512,
         "neon": [],
         "joint_parts": {"baton": None},
         "parts": {
             # Not widened with the body (it read squished) and a little bigger, so it holds its own
-            # against the wider build (2026-10-11).
+            # against the wider build (2026-10-11; v3 paints the head at v2's size).
             "head": {"at": (170, 250), "pivot": (168, 392), "widen": 1.0, "scale": 1.1},
             "hood": {"at": (420, 330), "pivot": (520, 300)},
             "torso": {"at": (700, 300), "pivot": (705, 452), "neck": (706, 112), "shoulder": (648, 182)},
-            "pelvis": {"at": (1000, 380), "pivot": (998, 405), "waist": (1000, 250)},
-            "upper_arm": {"at": (1262, 300), "pivot": (1262, 165), "elbow": (1262, 452)},
-            "forearm": {"at": (1444, 340), "pivot": (1444, 228), "wrist": (1450, 462)},
+            "pelvis": {"at": (1000, 380), "pivot": (1001, 405), "waist": (1003, 250)},
+            "upper_arm": {"at": (1262, 300), "pivot": (1263, 165), "elbow": (1263, 452)},
+            "forearm": {"at": (1444, 340), "pivot": (1446, 228), "wrist": (1453, 462)},
             "hand_grip": {"at": (175, 830), "pivot": (142, 740), "grip": (170, 832)},
             "hand_open": {"at": (390, 840), "pivot": (368, 722)},
-            "thigh": {"at": (615, 726), "pivot": (600, 555), "knee": (618, 905)},
-            "shin": {"at": (836, 737), "pivot": (830, 568), "ankle": (838, 922)},
-            "foot": {"at": (1091, 899), "pivot": (1050, 792),
-                     "soles": [(1000, 962), (1140, 966), (1292, 948)]},
-            "lanyard": {"at": (1410, 860), "pivot": (1410, 748), "clip_top": 744, "scale": 0.45},
+            "thigh": {"at": (615, 726), "pivot": (604, 555), "knee": (616, 905)},
+            "shin": {"at": (836, 737), "pivot": (828, 568), "ankle": (836, 922)},
+            "foot": {"at": (1091, 899), "pivot": (1048, 792),
+                     "soles": [(1000, 966), (1160, 972), (1292, 953)]},
+            "lanyard": {"at": (1410, 860), "pivot": (1412, 748), "clip_top": 744, "scale": 0.45},
         },
         "joint_z": {"near_forearm": 10, "near_hand": 10},
         "extra_joints": [
@@ -302,7 +309,7 @@ SHEETS = {
         "sockets": {
             "grip": {"joint": "near_hand", "part": "hand_grip", "at": (170, 832)},
             "grip_far": {"joint": "far_hand", "part": "hand_open", "at": (380, 850)},
-            "wrist_light": {"joint": "near_forearm", "part": "forearm", "at": (1450, 430)},
+            "wrist_light": {"joint": "near_forearm", "part": "forearm", "at": (1455, 430)},
             "blood_head": {"joint": "head", "part": "head", "at": (215, 260)},
             "blood_chest": {"joint": "torso", "part": "torso", "at": (720, 200)},
             "blood_belly": {"joint": "torso", "part": "torso", "at": (720, 360)},
@@ -410,6 +417,229 @@ SHEETS = {
             "upper": {"place": (600, 560), "z": 3, "mass": 1.0, "order": 3, "box": (552, 455, 948, 652)},
             "battery": {"place": (880, 725), "z": 4, "mass": 1.0, "order": 1, "box": (800, 655, 958, 800),
                         "light": (900, 722)},
+        },
+    },
+    # The Staffer's v2 sheets (2026-10-12, C58): the torso is sleeveless with a dark armhole (the
+    # shoulder joint sits in its top, so the sleeved upper arm's rounded top covers it) and the blue
+    # stripe only on its shoulder; the upper arm ends in the elbow's skin. The near forearm is the
+    # bare one; the port and the lanyard are joints of their own. The loose port is painted larger
+    # than the one on the head, so its `scale` makes it cover the painted one; the lanyard's loop is
+    # cut and its card scaled down as Dave's. `neon` is each sheet's stripe colour as painted (the
+    # prompt's #4D8DFF came out deeper and more saturated).
+    # LK01 Staffer, hand-painted HD look A v2 (the office worker; C58, 2026-10-12). Regenerated on
+    # its own, so its layout differs from B and C.
+    "staffer_hd_a": {
+        "out": "staffer_hd_a",
+        "sheet": "concept-art/lk01-staffer/lk01-staffer-parts-hd-a-v2.webp",
+        "rig_name": "LK01 Staffer (the office worker)",
+        "height": 97.0,
+        "texture_scale": 4,
+        "atlas_width": 512,
+        "neon": (0x34, 0x76, 0xF5),
+        "joint_parts": {"near_forearm": "forearm_bare", "baton": None},
+        "parts": {
+            "head": {"at": (200, 250), "pivot": (175, 450)},
+            "port": {"at": (365, 376), "pivot": (403, 376), "scale": 0.48},
+            "torso": {"at": (690, 300), "pivot": (692, 505), "neck": (683, 70), "shoulder": (568, 182)},
+            "pelvis": {"at": (1015, 380), "pivot": (1002, 380), "waist": (1003, 250)},
+            "upper_arm": {"at": (1250, 300), "pivot": (1240, 180), "elbow": (1278, 415)},
+            "forearm": {"at": (1450, 330), "pivot": (1450, 222), "wrist": (1455, 482)},
+            "forearm_bare": {"at": (115, 730), "pivot": (99, 590), "wrist": (139, 898)},
+            "hand_grip": {"at": (290, 800), "pivot": (277, 680), "grip": (302, 830)},
+            "hand_open": {"at": (500, 800), "pivot": (484, 672)},
+            "thigh": {"at": (700, 760), "pivot": (700, 588), "knee": (702, 940)},
+            "shin": {"at": (888, 760), "pivot": (892, 590), "ankle": (895, 940)},
+            "foot": {"at": (1150, 900), "pivot": (1060, 815),
+                     "soles": [(1040, 965), (1200, 974), (1335, 950)]},
+            "lanyard": {"at": (1436, 900), "pivot": (1436, 778), "clip_top": 772, "scale": 0.45},
+        },
+        "joint_z": {"near_forearm": 6, "far_upper_arm": 2},
+        "joint_mass": {"pelvis": 11.0, "torso": 22.0, "head": 5.0, "far_upper_arm": 2.3, "near_upper_arm": 2.3,
+                       "far_forearm": 1.6, "near_forearm": 1.6, "far_hand": 0.6, "near_hand": 0.6,
+                       "far_thigh": 7.5, "near_thigh": 7.5, "far_shin": 3.6, "near_shin": 3.6,
+                       "far_foot": 1.2, "near_foot": 1.2},
+        "extra_joints": [
+            {"name": "lanyard", "part": "lanyard", "parent": "torso", "on": "torso", "at": (745, 140),
+             "z": 6, "mass": 0.4, "limit": [-130, 130], "before": "head"},
+            {"name": "port", "part": "port", "parent": "head", "on": "head", "at": (88, 273),
+             "z": 7, "mass": 0.3, "limit": [-10, 10], "collider": {"type": "circle", "c": [0.0, 0.0], "r": 1.5}},
+        ],
+        "sockets": {
+            "port_light": {"joint": "port", "pos": (0.0, 0.0)},
+            "spark_port": {"joint": "port", "pos": (0.0, 0.0)},
+            "grip_near": {"joint": "near_hand", "part": "hand_grip", "at": (302, 830)},
+            "grip_far": {"joint": "far_hand", "part": "hand_open", "at": (502, 850)},
+        },
+    },
+    # LK01 Staffer, hand-painted HD look B v2 (the young man; C58, 2026-10-12). B and C share one
+    # layout to within a few px; each is measured on its own sheet.
+    "staffer_hd_b": {
+        "out": "staffer_hd_b",
+        "sheet": "concept-art/lk01-staffer/lk01-staffer-parts-hd-b-v2.webp",
+        "rig_name": "LK01 Staffer (the young man)",
+        "height": 97.0,
+        "texture_scale": 4,
+        "atlas_width": 512,
+        "neon": (0x33, 0x77, 0xFA),
+        "joint_parts": {"near_forearm": "forearm_bare", "baton": None},
+        "parts": {
+            "head": {"at": (200, 250), "pivot": (173, 452)},
+            "port": {"at": (390, 372), "pivot": (410, 372), "scale": 0.65},
+            "torso": {"at": (700, 300), "pivot": (706, 505), "neck": (704, 72), "shoulder": (586, 188)},
+            "pelvis": {"at": (1015, 380), "pivot": (1017, 380), "waist": (1018, 250)},
+            "upper_arm": {"at": (1260, 300), "pivot": (1252, 185), "elbow": (1286, 412)},
+            "forearm": {"at": (1442, 330), "pivot": (1445, 215), "wrist": (1448, 490)},
+            "forearm_bare": {"at": (115, 730), "pivot": (106, 607), "wrist": (139, 904)},
+            "hand_grip": {"at": (290, 800), "pivot": (279, 671), "grip": (300, 830)},
+            "hand_open": {"at": (490, 800), "pivot": (486, 663)},
+            "thigh": {"at": (690, 760), "pivot": (686, 588), "knee": (703, 940)},
+            "shin": {"at": (888, 760), "pivot": (891, 590), "ankle": (897, 940)},
+            "foot": {"at": (1150, 900), "pivot": (1062, 815),
+                     "soles": [(1040, 967), (1200, 977), (1335, 948)]},
+            "lanyard": {"at": (1432, 900), "pivot": (1435, 778), "clip_top": 772, "scale": 0.45},
+        },
+        "joint_z": {"near_forearm": 6, "far_upper_arm": 2},
+        "joint_mass": {"pelvis": 11.0, "torso": 22.0, "head": 5.0, "far_upper_arm": 2.3, "near_upper_arm": 2.3,
+                       "far_forearm": 1.6, "near_forearm": 1.6, "far_hand": 0.6, "near_hand": 0.6,
+                       "far_thigh": 7.5, "near_thigh": 7.5, "far_shin": 3.6, "near_shin": 3.6,
+                       "far_foot": 1.2, "near_foot": 1.2},
+        "extra_joints": [
+            {"name": "lanyard", "part": "lanyard", "parent": "torso", "on": "torso", "at": (762, 150),
+             "z": 6, "mass": 0.4, "limit": [-130, 130], "before": "head"},
+            {"name": "port", "part": "port", "parent": "head", "on": "head", "at": (110, 280),
+             "z": 7, "mass": 0.3, "limit": [-10, 10], "collider": {"type": "circle", "c": [0.0, 0.0], "r": 1.5}},
+        ],
+        "sockets": {
+            "port_light": {"joint": "port", "pos": (0.0, 0.0)},
+            "spark_port": {"joint": "port", "pos": (0.0, 0.0)},
+            "grip_near": {"joint": "near_hand", "part": "hand_grip", "at": (300, 830)},
+            "grip_far": {"joint": "far_hand", "part": "hand_open", "at": (505, 840)},
+        },
+    },
+    # LK01 Staffer, hand-painted HD look C v2 (the older woman; C58, 2026-10-12). B and C share one
+    # layout to within a few px; each is measured on its own sheet.
+    "staffer_hd_c": {
+        "out": "staffer_hd_c",
+        "sheet": "concept-art/lk01-staffer/lk01-staffer-parts-hd-c-v2.webp",
+        "rig_name": "LK01 Staffer (the older woman)",
+        "height": 97.0,
+        "texture_scale": 4,
+        "atlas_width": 512,
+        "neon": (0x34, 0x7C, 0xFA),
+        "joint_parts": {"near_forearm": "forearm_bare", "baton": None},
+        "parts": {
+            "head": {"at": (200, 250), "pivot": (182, 462)},
+            "port": {"at": (390, 377), "pivot": (413, 377), "scale": 0.62},
+            "torso": {"at": (700, 300), "pivot": (706, 505), "neck": (708, 72), "shoulder": (586, 186)},
+            "pelvis": {"at": (1015, 380), "pivot": (1015, 380), "waist": (1017, 250)},
+            "upper_arm": {"at": (1260, 300), "pivot": (1250, 183), "elbow": (1284, 412)},
+            "forearm": {"at": (1442, 330), "pivot": (1443, 214), "wrist": (1446, 489)},
+            "forearm_bare": {"at": (115, 730), "pivot": (100, 607), "wrist": (137, 904)},
+            "hand_grip": {"at": (290, 800), "pivot": (280, 672), "grip": (300, 830)},
+            "hand_open": {"at": (490, 800), "pivot": (485, 663)},
+            "thigh": {"at": (690, 760), "pivot": (686, 588), "knee": (700, 940)},
+            "shin": {"at": (888, 760), "pivot": (890, 590), "ankle": (896, 940)},
+            "foot": {"at": (1150, 900), "pivot": (1062, 815),
+                     "soles": [(1040, 969), (1200, 977), (1335, 949)]},
+            "lanyard": {"at": (1432, 900), "pivot": (1436, 778), "clip_top": 772, "scale": 0.45},
+        },
+        "joint_z": {"near_forearm": 6, "far_upper_arm": 2},
+        "joint_mass": {"pelvis": 11.0, "torso": 22.0, "head": 5.0, "far_upper_arm": 2.3, "near_upper_arm": 2.3,
+                       "far_forearm": 1.6, "near_forearm": 1.6, "far_hand": 0.6, "near_hand": 0.6,
+                       "far_thigh": 7.5, "near_thigh": 7.5, "far_shin": 3.6, "near_shin": 3.6,
+                       "far_foot": 1.2, "near_foot": 1.2},
+        "extra_joints": [
+            {"name": "lanyard", "part": "lanyard", "parent": "torso", "on": "torso", "at": (765, 150),
+             "z": 6, "mass": 0.4, "limit": [-130, 130], "before": "head"},
+            {"name": "port", "part": "port", "parent": "head", "on": "head", "at": (111, 286),
+             "z": 7, "mass": 0.3, "limit": [-10, 10], "collider": {"type": "circle", "c": [0.0, 0.0], "r": 1.5}},
+        ],
+        "sockets": {
+            "port_light": {"joint": "port", "pos": (0.0, 0.0)},
+            "spark_port": {"joint": "port", "pos": (0.0, 0.0)},
+            "grip_near": {"joint": "near_hand", "part": "hand_grip", "at": (300, 830)},
+            "grip_far": {"joint": "far_hand", "part": "hand_open", "at": (505, 840)},
+        },
+    },
+    # M01 Patrol Rover, hand-painted HD livery A v2 (pearl white; C58, 2026-10-12): the squat
+    # armored van, 2.2 times as long as tall. Both liveries share one layout, so these anchors
+    # (checked on both); only the glow colours differ, as painted.
+    "patrol_rover_hd_a": {
+        "out": "patrol_rover_hd_a",
+        "sheet": "concept-art/m01-patrol-rover/m01-patrol-rover-parts-hd-a-v2.webp",
+        "rig_name": "M01 Patrol Rover (pearl white)",
+        "kind": "machine",
+        "length": 92.0,
+        "texture_scale": 4,
+        "atlas_width": 512,
+        "glow": [((0xEC, 0x3C, 0x99), 1.0),     # the magenta flank strip (as painted; asked #FF3DD5)
+                 ((0xBC, 0x6E, 0x1A), 1.0),     # the lightbar and the sensor lens
+                 ((0x37, 0xD2, 0xC6), 1.0)],    # the battery gauge
+        # The chassis paints the lightbar, the sensor dome and the bumper on: erased, and the
+        # separate parts put where the assembled view (bottom half; its body is the chassis moved
+        # by (243, 543)) and the chassis put them. It paints no hatch lid: the lid goes on the rear
+        # quarter panel under the lightbar, over a dark bay (`fill`) holding the battery.
+        "erase": [[(195, 25), (452, 25), (452, 59), (195, 59)],
+                  [(640, 25), (822, 25), (822, 119), (805, 117), (750, 106), (700, 95), (648, 63), (640, 63)],
+                  [(849, 211), (952, 211), (952, 352), (849, 352)]],
+        "fill": [{"poly": [(272, 72), (416, 72), (432, 153), (256, 153)], "color": (20, 24, 30)}],
+        # The arches are painted dark, not cut out, so the near wheels draw over the chassis; the
+        # bumper draws behind it, its rear end hidden by the nose.
+        "joint_z": {"wheel_near_rear": 4, "wheel_near_front": 4, "bumper": 2},
+        # The parts were not drawn to one scale: each is fitted by hand (the wheel to the
+        # assembled view's tyres, the rest to the chassis's roof, hood and nose).
+        "parts": {
+            "chassis": {"at": (600, 150), "pivot": (473, 331), "place": (473, 331), "bottom": 345},
+            "wheel": {"at": (1111, 238), "pivot": (1111.5, 238.5), "scale": (0.86, 0.86),
+                      "places": [(231, 331), (715, 331)]},
+            "bumper": {"at": (1380, 250), "pivot": (1300, 249), "place": (783, 278), "front": (1475, 249),
+                       "scale": (0.93, 0.93)},
+            "sensor": {"at": (200, 450), "pivot": (192, 526), "place": (744, 101), "lens": (275, 460),
+                       "rotate": 18.0, "scale": (0.66, 0.66), "glow_scale": 0.35},
+            "lightbar": {"at": (666, 440), "pivot": (666, 488), "place": (320, 64), "lens": (666, 441),
+                         "scale": (0.6, 0.6)},
+            "hatch": {"at": (1095, 470), "pivot": (1189, 411), "place": (420, 68), "scale": (0.8, 0.8)},
+            "battery": {"at": (1371, 470), "pivot": (1371, 464), "place": (344, 112), "scale": (0.55, 0.55)},
+        },
+    },
+    # M01 Patrol Rover, hand-painted HD livery B v2 (dark navy; C58, 2026-10-12): the same parts
+    # and layout as A, so A's anchors; only the glow colours differ, as painted.
+    "patrol_rover_hd_b": {
+        "out": "patrol_rover_hd_b",
+        "sheet": "concept-art/m01-patrol-rover/m01-patrol-rover-parts-hd-b-v2.webp",
+        "rig_name": "M01 Patrol Rover (dark navy)",
+        "kind": "machine",
+        "length": 92.0,
+        "texture_scale": 4,
+        "atlas_width": 512,
+        "glow": [((0xFA, 0x21, 0xBB), 1.0),     # the magenta flank strip (as painted; asked #FF3DD5)
+                 ((0xCE, 0x75, 0x16), 1.0),     # the lightbar and the sensor lens
+                 ((0x3E, 0xF5, 0xEC), 1.0)],    # the battery gauge
+        # The chassis paints the lightbar, the sensor dome and the bumper on: erased, and the
+        # separate parts put where the assembled view (bottom half; its body is the chassis moved
+        # by (243, 543)) and the chassis put them. It paints no hatch lid: the lid goes on the rear
+        # quarter panel under the lightbar, over a dark bay (`fill`) holding the battery.
+        "erase": [[(195, 25), (452, 25), (452, 59), (195, 59)],
+                  [(640, 25), (822, 25), (822, 119), (805, 117), (750, 106), (700, 95), (648, 63), (640, 63)],
+                  [(849, 211), (952, 211), (952, 352), (849, 352)]],
+        "fill": [{"poly": [(272, 72), (416, 72), (432, 153), (256, 153)], "color": (20, 24, 30)}],
+        # The arches are painted dark, not cut out, so the near wheels draw over the chassis; the
+        # bumper draws behind it, its rear end hidden by the nose.
+        "joint_z": {"wheel_near_rear": 4, "wheel_near_front": 4, "bumper": 2},
+        # The parts were not drawn to one scale: each is fitted by hand (the wheel to the
+        # assembled view's tyres, the rest to the chassis's roof, hood and nose).
+        "parts": {
+            "chassis": {"at": (600, 150), "pivot": (473, 331), "place": (473, 331), "bottom": 345},
+            "wheel": {"at": (1111, 238), "pivot": (1111.5, 238.5), "scale": (0.86, 0.86),
+                      "places": [(231, 331), (715, 331)]},
+            "bumper": {"at": (1380, 250), "pivot": (1300, 249), "place": (783, 278), "front": (1475, 249),
+                       "scale": (0.93, 0.93)},
+            "sensor": {"at": (200, 450), "pivot": (192, 526), "place": (744, 101), "lens": (275, 460),
+                       "rotate": 18.0, "scale": (0.66, 0.66), "glow_scale": 0.35},
+            "lightbar": {"at": (666, 440), "pivot": (666, 488), "place": (320, 64), "lens": (666, 441),
+                         "scale": (0.6, 0.6)},
+            "hatch": {"at": (1095, 470), "pivot": (1189, 411), "place": (420, 68), "scale": (0.8, 0.8)},
+            "battery": {"at": (1371, 470), "pivot": (1371, 464), "place": (344, 112), "scale": (0.55, 0.55)},
         },
     },
     # The Patrol Rover as pixel art (2026-10-06): anchors in the pixel sheet's pixels (1536 x 1024;
@@ -634,6 +864,12 @@ def load_sheet(cfg):
         a = np.asarray(img).copy()
         a[flooded | grey, 3] = 0
         img = Image.fromarray(a)
+    for poly in cfg.get("erase", []):
+        # Polygons (sheet px) made transparent: parts a sheet paints onto another one (the HD
+        # rover v2's chassis has its lightbar, sensor dome and bumper painted on; the separate
+        # parts are placed there instead, so the wreck does not leave copies on the chassis).
+        from PIL import ImageDraw
+        ImageDraw.Draw(img).polygon(poly, fill=(0, 0, 0, 0))
     for f in cfg.get("fill", []):
         from PIL import ImageDraw
         d = ImageDraw.Draw(img)
@@ -1679,6 +1915,10 @@ def build_machine(name, cfg):
         ("sensor", "sensor", "chassis", on_chassis(P["sensor"]["place"]), 6, False, 4.0, "dome"),
         ("bumper", "bumper", "chassis", on_chassis(P["bumper"]["place"]), 7, False, 7.0, "bumper"),
     ]
+    # A sheet's `joint_z` overrides a joint's draw order (the HD rover v2 paints its arches dark
+    # instead of cutting them out, so its near wheels draw over the chassis).
+    jz = cfg.get("joint_z", {})
+    joints = [j[:4] + (jz.get(j[0], j[4]),) + j[5:] for j in joints]
     bat = fitted["battery"]
     data = {
         "name": cfg["rig_name"], "kind": "machine", "texture_scale": T,

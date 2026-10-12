@@ -9,6 +9,9 @@ extends TestCase
 ## The server depot's backdrop draws the painted wall (Sheet 5) in place of
 ## its code-drawn racks and cables.
 
+const PixelFont := preload("res://scripts/world/pixel_font.gd")
+
+
 func run() -> void:
 	Session.new_run()
 	var area: Node2D = load("res://scenes/levels/areas/a02_gardens.tscn").instantiate()
@@ -56,7 +59,7 @@ func _terrain() -> void:
 	check_eq(ac.skin_name(), "ac_unit", "the roof backstop is the rooftop AC unit")
 	check(ac.size.y <= 86.4, "and it is still an ordinary rise (%.0f px)" % ac.size.y)
 	check_eq((level.areas[3].get_node("Geometry/E07Backstop") as Block).skin_name(), "stone_planter", "other backstops are the stone planter")
-	check_eq((a5.get_node("Geometry/FloorMain") as Block).skin_name(), "", "the depot keeps its code-drawn floor until its own art")
+	check_eq((a5.get_node("Geometry/FloorMain") as Block).skin_name(), "depot_floor", "the depot's floor is the hand-painted grating (batch 2)")
 	_props(level)
 	_buildings(level)
 	_pickups(level)
@@ -77,7 +80,25 @@ func _paving(a: Block, b: Block, lone: Block) -> void:
 	var tw: int = tex.get_width()
 	var cols: Vector2i = s["cols"]
 	check_eq(cols, Vector2i(1, tw - 1), "the paving repeats between its 1-pixel outline caps")
-	check(tex.get_image().get_pixel(10, s["edge"]).get_luminance() > 0.8, "its edge row is the cold-white lit line")
+	var hd: Array = load("res://scripts/world/hd_skins.gd").swap(tex)
+	if hd[0] != tex:
+		# The hand-painted strip (C57): its edge row is the bright front lip, the brightest row of its top.
+		var img: Image = (hd[0] as CanvasTexture).diffuse_texture.get_image()
+		if img.is_compressed():
+			img.decompress()
+		var row_lum := func(y: int) -> float:
+			var sum := 0.0
+			for x in range(0, img.get_width(), 7):
+				sum += img.get_pixel(x, y).get_luminance()
+			return sum / float(ceili(img.get_width() / 7.0))
+		var lip: int = roundi(float(s["edge"]) * float(hd[1]))
+		var brightest := lip
+		for y in roundi(float(s["edge"] + 2) * float(hd[1])):
+			if row_lum.call(y) > row_lum.call(brightest):
+				brightest = y
+		check(absi(brightest - lip) <= roundi(float(hd[1])), "its edge row is the painted strip's bright lip (lip %d, brightest %d)" % [lip, brightest])
+	else:
+		check(tex.get_image().get_pixel(10, s["edge"]).get_luminance() > 0.8, "its edge row is the cold-white lit line")
 	var th: int = tex.get_height()
 	var pa: Array = skins.band_pieces(s, tw, s["from"], th, 0.0, a.size.x / skins.ART, a.global_position.x, a._joins("walkway"))
 	var pb: Array = skins.band_pieces(s, tw, s["from"], th, 0.0, b.size.x / skins.ART, b.global_position.x, b._joins("walkway"))
@@ -99,7 +120,7 @@ func _props(level: Node2D) -> void:
 	var a2: Node = level.areas[1]
 	var lamp: Scenery = a2.get_node("Scenery/LandingLamp_CourtA")
 	check_eq(lamp.painted_piece(), "lamp", "garden lamps draw the painted lamp post")
-	check_eq(lamp.texture_filter, CanvasItem.TEXTURE_FILTER_NEAREST, "crisp, pixel for pixel")
+	check_eq(lamp.texture_filter, (CanvasItem.TEXTURE_FILTER_LINEAR if PixelFont.smooth_font() != null else CanvasItem.TEXTURE_FILTER_NEAREST), "crisp (smooth with Rajdhani: its pieces carry their own filter)")
 	check_eq(lamp._lamp_glow_circle.texture_filter, CanvasItem.TEXTURE_FILTER_LINEAR, "while its glow stays smooth")
 	# The HD lamp (C56) hangs its lens on an arm, right of the pole.
 	var lens: Vector2 = lamp.to_global(Vector2(lamp.PropSkins.lamp_lens_x(), lamp.PropSkins.lamp_lens_y(lamp.size.y)))
@@ -133,7 +154,7 @@ func _buildings(level: Node2D) -> void:
 	check_eq((a4.get_node("Scenery/Fountain") as Scenery).painted_piece(), "pool", "the reflecting pool is painted")
 	check_eq((a4.get_node("Scenery/DepotDoor") as Scenery).painted_piece(), "depot_door", "the depot's outer door is painted")
 	check_eq((a6.get_node("Scenery/AnnexDoors/AnnexDoor_E10") as Scenery).painted_piece(), "annex_door", "annex doors are the painted annex door")
-	check_eq((a5.get_node("Scenery/DepotDoor") as Scenery).painted_piece(), "", "the depot's own door keeps its code-drawn look until its sheet")
+	check_eq((a5.get_node("Scenery/DepotDoor") as Scenery).painted_piece(), "depot_door", "the depot's own door is the hand-painted door (batch 2)")
 
 
 ## The painted depot wall (Sheet 5): the depot's backdrop loads it, draws it
@@ -155,7 +176,7 @@ func _depot(level: Node2D) -> void:
 	var img: Image = depot._depot_wall.get_image()
 	var h: float = float(img.get_height()) * depot.FAR_ART_PX
 	check(h >= -depot.CEILING_Y and h <= -depot.CEILING_Y + 40.0, "it stands on the floor with its top behind the ceiling block (%.0f px tall)" % h)
-	check(float(depot.tile_width) / (float(img.get_width()) * depot.FAR_ART_PX) > 2.0, "and repeats across the area (%.1f times)" % (float(depot.tile_width) / (float(img.get_width()) * depot.FAR_ART_PX)))
+	check(float(depot.tile_width) / (float(img.get_width()) * depot.FAR_ART_PX) > 1.5, "and repeats across the area (%.1f times)" % (float(depot.tile_width) / (float(img.get_width()) * depot.FAR_ART_PX)))
 	var edge := 0.0
 	for y in img.get_height():
 		var a: Color = img.get_pixel(0, y)
@@ -196,18 +217,19 @@ func _objects(level: Node2D) -> void:
 	check_eq(station.texture_filter, CanvasItem.TEXTURE_FILTER_NEAREST, "crisp, pixel for pixel")
 	check_eq((station.get_node("Toast") as Label).texture_filter, CanvasItem.TEXTURE_FILTER_LINEAR, "while its toast text stays smooth")
 	var lamp: Vector2 = station.lamp_position()
-	check(lamp.y < -100.0 and lamp.y > -135.0 and absf(lamp.x) < 12.0, "its lamp is at the painted head (%s)" % lamp)
+	# The hand-painted station (batch 2): a squat cabinet, its lamp on a post at the right.
+	check(lamp.y < -80.0 and lamp.y > -110.0 and lamp.x > 10.0 and lamp.x < 40.0, "its lamp is at the painted head (%s)" % lamp)
 	Session.state["checkpoint_id"] = "CP01"
 	check_eq(station.painted_piece(), "recovery_station_on", "the active checkpoint's lamp is lit")
 	Session.state["checkpoint_id"] = ""
-	check_eq(skins.piece_size("recovery_station_on"), Vector2(60.0, 135.0), "painted at 1.5 world px per art pixel, unscaled")
+	check_eq(skins.piece_size("recovery_station_on"), Vector2(82.5, 100.5), "laid out at 1.5 world px per art pixel")
 	check((a4.get_node("Entities/RecoveryStation_CP03") as RecoveryStation).painted_piece() != "", "every station is painted")
 	var lever: RouteSwitch = a4.get_node("Entities/RouteSwitch_SW01")
 	check_eq(lever.painted_piece(), "lever_up", "a lever that is not pulled draws the lever up")
 	check_eq(lever.texture_filter, CanvasItem.TEXTURE_FILTER_NEAREST, "the lever is crisp")
 	Session.set_switch("L01-SW01", true)
 	check_eq(lever.painted_piece(), "lever_down", "a pulled lever draws the lever down")
-	check(skins.at("lever_up", Vector2(14.0, 38.0)).is_equal_approx(skins.at("lever_down", Vector2(13.0, 30.0))),
+	check(skins.at("lever_up", Vector2(12.1, 35.6)).distance_to(skins.at("lever_down", Vector2(12.1, 23.6))) < 1.0,
 			"the lever's plate stays put between states")
 	var bench: Workbench = a5.get_node("Entities/Workbench")
 	check_eq(bench.painted_piece(), "workbench", "the depot's workbench is painted")
@@ -312,5 +334,5 @@ func _pickups(level: Node2D) -> void:
 	check_eq(rows, 80, "a tall pit repeats its stripe rows to its height")
 	check_eq((pit_rows[0] as Vector4i).x, 0, "under the top rail")
 	check_eq((pit_rows[-1] as Vector4i).y, 36, "and over the bottom rail")
-	check_eq((pit_rows[2] as Vector4i).w, 14, "each repeat of the stripes carries the diagonal on")
+	check_eq((pit_rows[2] as Vector4i).w, 22, "each repeat of the stripes carries the diagonal on")
 

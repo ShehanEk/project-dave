@@ -6,11 +6,11 @@ extends RefCounted
 ## every move is posed here for the side view.
 
 const IDLE_A := {"pelvis": 0, "torso": 2, "head": -2, "near_upper_arm": 6, "near_forearm": -28, "near_hand": 8,
-		"baton": -48, "far_upper_arm": -4, "far_forearm": -14, "near_thigh": -3, "near_shin": 4,
-		"far_thigh": 4, "far_shin": 3}
+		"baton": -48, "far_upper_arm": -4, "far_forearm": -14, "near_thigh": -3, "near_shin": 4, "near_foot": -1,
+		"far_thigh": 4, "far_shin": 3, "far_foot": -7}
 const IDLE_B := {"pelvis": 0, "torso": 3.4, "head": -3.6, "near_upper_arm": 7.5, "near_forearm": -30,
 		"near_hand": 8, "baton": -46, "far_upper_arm": -5.5, "far_forearm": -16, "near_thigh": -3,
-		"near_shin": 4, "far_thigh": 4, "far_shin": 3, "root": Vector2(0, 0.3)}
+		"near_shin": 4, "near_foot": -1, "far_thigh": 4, "far_shin": 3, "far_foot": -7, "root": Vector2(0, 0.3)}
 
 const RECOVER_A := {"pelvis": 5, "torso": 11, "head": -6, "near_upper_arm": -8, "near_forearm": -14,
 		"near_hand": 6, "baton": -72, "far_upper_arm": -22, "far_forearm": 8, "far_hand": -16,

@@ -2,8 +2,10 @@ extends Node2D
 ## A painted ground detail (Sheet 8, 2026-10-06): one piece of the user's
 ## generated details sheet (concept-art/env-sunnyvale/sunnyvale-details-v1.webp,
 ## cut into pieces by tools/art/import_pixel_sheet.py details): a puddle, a
-## crack, a drain grate, fallen leaves, a cable, a floor vent, a hose or a box,
-## laid over the paving to break up its repeat. Purely visual: no collision,
+## crack, a drain grate, fallen leaves, a cable, a floor vent, a hose or a box
+## (since C58 scuffed floor plates in the crack slots and a paper flyer in the
+## leaves slot, tools/art/import_hd_env.py details2), laid over the paving to
+## break up its repeat. Purely visual: no collision,
 ## no group, no gameplay. The area scenes place them under a `Decals` node
 ## that follows `Geometry` (so they draw over the walkway blocks) and comes
 ## before `Entities` and `Encounters` (so pickups, enemies and Dave draw over
@@ -16,6 +18,7 @@ extends Node2D
 ## `has_piece()` false and the node draws nothing. No `class_name` (M6 art-pass
 ## import-cache rule): scenes reference this script by path, tests preload it.
 
+const HdSkins := preload("res://scripts/world/hd_skins.gd")
 const ART := 1.5
 const DIR := "res://assets/environment/sunnyvale/details/"
 
@@ -91,6 +94,6 @@ func _draw() -> void:
 	var rect := Rect2(x0 * ART, -th * ART, tw * ART, th * ART)
 	if flip:
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2(-1.0, 1.0))
-	draw_texture_rect(tex, rect, false, tint)
+	draw_texture_rect(HdSkins.swap(tex)[0], rect, false, tint)
 	if flip:
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)

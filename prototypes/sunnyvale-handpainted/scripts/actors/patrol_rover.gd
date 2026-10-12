@@ -32,7 +32,13 @@ const H := 96.0
 ## The imported machine (2026-10-03) is a long, low patrol car: the body
 ## box spans the chassis, and the bumper reaches its front edge.
 const WIDTH := 92.0
-const HEIGHT := 48.0
+## 42: the C58 painted rover is a squat armoured van, 43 px from the wheel bottoms to the sensor
+## dome (roof at 39); its body and hit zones fit it (C57 had 32 for the low v1 car).
+const HEIGHT := 42.0
+## The sight line's height above the wheels. Fixed (not a share of HEIGHT): the level's
+## backstops and approaches were tuned with the eye 24 px up, and a higher eye sees the
+## hero over a backstop sooner and starts the charge early (C58 kept the gameplay as tuned).
+const EYE_HEIGHT := 24.0
 const HALF_WIDTH := WIDTH * 0.5
 const HIT_FLASH_TIME := 0.15
 const HINT_DISPLAY_TIME := 4.0
@@ -160,12 +166,26 @@ func _find_ancestor(type) -> Node:
 	return null
 
 
+## The rig this rover draws: one of the tuning's look variants, picked by its entity id (the
+## same rover keeps its paint across reloads), else the tuning's rig_path.
+func rig_path_for_look() -> String:
+	var paths: Array = []
+	for pth in tuning.rig_variants:
+		if ResourceLoader.exists(pth):
+			paths.append(pth)
+	if paths.is_empty():
+		return tuning.rig_path
+	var key: String = entity_id if entity_id != "" else String(name)
+	return paths[posmod(hash(key), paths.size())]
+
+
 func _build_visual() -> void:
-	if tuning.rig_path == "" or not ResourceLoader.exists(tuning.rig_path):
+	var path := rig_path_for_look()
+	if path == "" or not ResourceLoader.exists(path):
 		return
 	rig = Rig.new()
 	rig.name = "Rig"
-	rig.rig_path = tuning.rig_path
+	rig.rig_path = path
 	add_child(rig)
 	rig.facing = facing
 	# Its pale shell went pure white on top under a street lamp (2026-10-10): its light levels
@@ -264,7 +284,7 @@ func _get_hero() -> Node2D:
 func _has_line_of_sight(hero: Node2D) -> bool:
 	# Aim both ends at mid-body height, not the feet: a ray ending exactly on
 	# the floor's top surface can register the floor itself as in the way.
-	var eye: Vector2 = global_position + Vector2(0.0, -HEIGHT * 0.75)
+	var eye: Vector2 = global_position + Vector2(0.0, -EYE_HEIGHT)
 	var target: Vector2 = hero.global_position + Vector2(0.0, -Hero.H * 0.5)
 	var params := PhysicsRayQueryParameters2D.create(eye, target)
 	params.collision_mask = 1  # world only

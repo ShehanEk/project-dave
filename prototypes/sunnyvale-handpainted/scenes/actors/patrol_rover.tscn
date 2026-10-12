@@ -7,19 +7,19 @@
 [ext_resource type="Script" path="res://scripts/combat/attack_box.gd" id="5_attackbox"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
-size = Vector2(92, 48)
+size = Vector2(92, 42)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_front"]
-size = Vector2(36, 40)
+size = Vector2(36, 36)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rear"]
-size = Vector2(30, 32)
+size = Vector2(30, 28)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_shell"]
-size = Vector2(46, 40)
+size = Vector2(46, 36)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_attack"]
-size = Vector2(16, 40)
+size = Vector2(16, 36)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hint"]
 bg_color = Color(0.055, 0.09, 0.149, 0.92)
@@ -43,7 +43,7 @@ script = ExtResource("1_rover")
 tuning = ExtResource("2_tuning")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -24)
+position = Vector2(0, -21)
 shape = SubResource("RectangleShape2D_body")
 
 [node name="FrontHitZone" type="Area2D" parent="."]

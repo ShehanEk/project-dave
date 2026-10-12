@@ -20,6 +20,10 @@ extends RefCounted
 ## the fallback.
 ##
 ## Sizes below are in font pixels unless a function says world px.
+##
+## Hand-painted (batch 3, C56): with the Rajdhani Bold font present, `draw_line()` sets each line
+## in it instead, smooth, its capitals as tall as the pixel font's and never wider than the pixel
+## line, so every layout measured here (fit, width, block_size) is unchanged.
 
 const ART := 1.5
 const DIR := "res://assets/environment/sunnyvale/font/"
@@ -33,6 +37,24 @@ static var _glyphs := {}
 static var _cap := 7
 static var _gap := 1
 static var _space := 3
+
+const SMOOTH_FONT := "res://assets/fonts/Rajdhani-Bold.ttf"
+## Rajdhani's capitals are about this fraction of its font size (measured on "H").
+const SMOOTH_CAP := 0.62
+static var smooth_enabled := true
+static var _smooth: Font = null
+static var _smooth_loaded := false
+
+
+## The font the text is drawn in when it is not the pixel font: Rajdhani Bold, null when off or
+## missing (or the pixel font itself is missing, which keeps the callers' own fallback).
+static func smooth_font() -> Font:
+	if not smooth_enabled or not has_font():
+		return null
+	if not _smooth_loaded:
+		_smooth_loaded = true
+		_smooth = load(SMOOTH_FONT) if ResourceLoader.exists(SMOOTH_FONT) else null
+	return _smooth
 
 
 ## Points the font at another folder (tests simulate a missing export with a
@@ -86,7 +108,7 @@ static func glyphs() -> Dictionary:
 
 ## The nearest filter every canvas item that draws this font needs.
 static func make_crisp(c: CanvasItem) -> void:
-	c.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	c.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR if smooth_font() != null else CanvasItem.TEXTURE_FILTER_NEAREST
 
 
 ## Height of a capital letter, in font pixels.
@@ -241,6 +263,17 @@ static func draw_line(c: CanvasItem, text: String, pos: Vector2, art_per_px: int
 		x -= w
 	x = roundf(x / ART) * ART
 	var y: float = roundf(pos.y / ART) * ART
+	var sf := smooth_font()
+	if sf != null:
+		var up := text.to_upper()
+		var cap_w: float = float(_cap) * s
+		var fs: int = maxi(6, roundi(cap_w / SMOOTH_CAP))
+		var tw: float = sf.get_string_size(up, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+		if tw > w and tw > 0.0:
+			fs = maxi(6, int(floorf(float(fs) * w / tw)))
+			tw = sf.get_string_size(up, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+		c.draw_string(sf, Vector2(x + (w - tw) * 0.5, y + cap_w), up, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, color)
+		return w
 	for i in text.length():
 		var u: String = text[i].to_upper()
 		if _glyphs.has(u):

@@ -24,11 +24,12 @@ const FLASH_TIME := 0.18
 ## the pole and [74, 82) the base.
 const PickupSkins := preload("res://scripts/world/pickup_skins.gd")
 const PIECE := "practice_target"
-const ORIGIN_ART := Vector2(15.0, 37.0)
-const HEAD_BOX := Rect2(6.0, 0.0, 18.0, 16.0)
-const BOARD_BOX := Rect2(0.0, 16.0, 30.0, 44.0)
-const POLE_FROM := 60
-const BASE_FROM := 74
+# (The hand-painted layout, batch 2 2026-10-11: tools/art/import_hd_env.py --batch2.)
+const ORIGIN_ART := Vector2(19.8, 19.8)
+const HEAD_BOX := Rect2(0.0, 0.0, 0.0, 0.0)
+const BOARD_BOX := Rect2(4.0, 2.0, 32.0, 36.0)
+const POLE_FROM := 42
+const BASE_FROM := 70
 
 @onready var hit_zone: HitZone = $HitZone
 

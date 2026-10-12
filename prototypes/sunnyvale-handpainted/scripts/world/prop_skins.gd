@@ -35,8 +35,9 @@ const PIECES := {
 	"fence": {"tex": "railing", "units": Vector2i(37, 77), "tint": Color(0.62, 0.66, 0.76)},
 	# One chevron per bay; the right end carries the last one.
 	"rail": {"tex": "guide_rail", "units": Vector2i(14, 39), "right": 57},
-	# Hedges and planters dimmed like the planter ledges, so a lamp over them
-	# doesn't light them brighter than the campus behind.
+	# The hedge and planter slots (C58: a utility cabinet and a low barrier
+	# block) dimmed like the ledges, so a lamp over them doesn't light them
+	# brighter than the campus behind.
 	"shrub": {"tex": "hedge", "tint": Color(0.66, 0.7, 0.8)},
 	"flower": {"tex": "glow_plant"},
 	"planter": {"tex": "planter", "tint": Color(0.84, 0.86, 0.92)},
@@ -47,7 +48,9 @@ const PIECES := {
 	"booth": {"tex": "booth", "dir": BUILDINGS},
 	"gate": {"tex": "gate", "dir": BUILDINGS},
 	"pool": {"tex": "pool", "dir": BUILDINGS},
-	"depot_door": {"tex": "depot_door", "dir": BUILDINGS},
+	# Fills its prop's height (C57): the level gives the depot entrance 190 px (3.45 m), the
+	# landmark standing on top of it.
+	"depot_door": {"tex": "depot_door", "dir": BUILDINGS, "fit_height": true},
 	"annex_door": {"tex": "annex_door", "dir": BUILDINGS},
 	"landmark": {"tex": "landmark", "dir": BUILDINGS},
 	# The story sheet: drawn as they are, whatever the prop's `size`.
@@ -129,7 +132,9 @@ static func _draw_hd(c: CanvasItem, key: String, size: Vector2, tint: Color) -> 
 	var tw: float = tex.get_width()
 	var th: float = tex.get_height()
 	if not p.has("units"):
-		HdSkins.prop_rows(c, name, 0.0, th, -th * sc, tint)
+		if PIECES[key].get("fit_height", false) and size.y > 0.0:
+			sc = size.y / th
+		HdSkins.prop_rows(c, name, 0.0, th, -th * sc, tint, sc)
 		return
 	var u0: float = p["units"][0]
 	var u1: float = p["units"][1]

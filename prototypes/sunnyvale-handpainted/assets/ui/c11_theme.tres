@@ -1,70 +1,71 @@
 [gd_resource type="Theme" format=3]
 
-[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/panel.png" id="1_panel"]
-[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/button_normal.png" id="2_btn_normal"]
-[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/button_hover.png" id="3_btn_hover"]
-[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/button_pressed.png" id="4_btn_pressed"]
-[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/button_disabled.png" id="5_btn_disabled"]
-[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/focus.png" id="6_focus"]
-[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/slider_track.png" id="7_track"]
-[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/slider_fill.png" id="8_fill"]
-[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/slider_knob.png" id="9_knob"]
-[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/check_off.png" id="10_check_off"]
-[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/check_on.png" id="11_check_on"]
-[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/divider.png" id="12_divider"]
-[ext_resource type="Texture2D" path="res://assets/ui/pixel/x3/arrow_down.png" id="13_arrow_down"]
+[ext_resource type="Texture2D" path="res://assets/ui/hd/x3/panel.png" id="1_panel"]
+[ext_resource type="Texture2D" path="res://assets/ui/hd/x3/button_normal.png" id="2_btn_normal"]
+[ext_resource type="Texture2D" path="res://assets/ui/hd/x3/button_hover.png" id="3_btn_hover"]
+[ext_resource type="Texture2D" path="res://assets/ui/hd/x3/button_pressed.png" id="4_btn_pressed"]
+[ext_resource type="Texture2D" path="res://assets/ui/hd/x3/button_disabled.png" id="5_btn_disabled"]
+[ext_resource type="Texture2D" path="res://assets/ui/hd/x3/focus.png" id="6_focus"]
+[ext_resource type="Texture2D" path="res://assets/ui/hd/x3/slider_track.png" id="7_track"]
+[ext_resource type="Texture2D" path="res://assets/ui/hd/x3/slider_fill.png" id="8_fill"]
+[ext_resource type="Texture2D" path="res://assets/ui/hd/x3/slider_knob.png" id="9_knob"]
+[ext_resource type="Texture2D" path="res://assets/ui/hd/x3/check_off.png" id="10_check_off"]
+[ext_resource type="Texture2D" path="res://assets/ui/hd/x3/check_on.png" id="11_check_on"]
+[ext_resource type="Texture2D" path="res://assets/ui/hd/x3/divider.png" id="12_divider"]
+[ext_resource type="Texture2D" path="res://assets/ui/hd/x3/arrow_down.png" id="13_arrow_down"]
+[ext_resource type="FontFile" path="res://assets/fonts/Rajdhani-SemiBold.ttf" id="14_font"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_panel"]
 diffuse_texture = ExtResource("1_panel")
-texture_filter = 1
+texture_filter = 2
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_btn_normal"]
 diffuse_texture = ExtResource("2_btn_normal")
-texture_filter = 1
+texture_filter = 2
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_btn_hover"]
 diffuse_texture = ExtResource("3_btn_hover")
-texture_filter = 1
+texture_filter = 2
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_btn_pressed"]
 diffuse_texture = ExtResource("4_btn_pressed")
-texture_filter = 1
+texture_filter = 2
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_btn_disabled"]
 diffuse_texture = ExtResource("5_btn_disabled")
-texture_filter = 1
+texture_filter = 2
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_focus"]
 diffuse_texture = ExtResource("6_focus")
-texture_filter = 1
+texture_filter = 2
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_track"]
 diffuse_texture = ExtResource("7_track")
-texture_filter = 1
+texture_filter = 2
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_fill"]
 diffuse_texture = ExtResource("8_fill")
-texture_filter = 1
+texture_filter = 2
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_knob"]
 diffuse_texture = ExtResource("9_knob")
-texture_filter = 1
+texture_filter = 2
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_check_off"]
 diffuse_texture = ExtResource("10_check_off")
-texture_filter = 1
+texture_filter = 2
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_check_on"]
 diffuse_texture = ExtResource("11_check_on")
-texture_filter = 1
+texture_filter = 2
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_divider"]
 diffuse_texture = ExtResource("12_divider")
-texture_filter = 1
+texture_filter = 2
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_arrow_down"]
 diffuse_texture = ExtResource("13_arrow_down")
-texture_filter = 1
+texture_filter = 2
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_panel"]
 texture = SubResource("CanvasTexture_panel")
@@ -192,6 +193,7 @@ content_margin_bottom = 4.0
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_none"]
 
 [resource]
+default_font = ExtResource("14_font")
 default_font_size = 22
 Label/colors/font_color = Color(0.847, 0.886, 0.925, 1)
 Label/font_sizes/font_size = 20

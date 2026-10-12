@@ -105,9 +105,11 @@ const FAR_TEXTURE := "res://assets/environment/sunnyvale/far.png"
 const FAR_ART_PX := 1.5
 const FAR_DEPTH := 0.9
 const FAR_BASE := 20.0
-## Dimmed a little so the far city sits behind the play plane.
-const FAR_TINT := Color(0.82, 0.84, 0.9)
-const FAR_LOCKDOWN_TINT := Color(0.85, 0.52, 0.56)
+## Dimmed so the far city sits behind the play plane: the C58 skyline (far-hd-v3) is lit with
+## bright teal holograms and towers that otherwise compete with the play, so it is held lower
+## than the old skyline's 0.82.
+const FAR_TINT := Color(0.6, 0.64, 0.74)
+const FAR_LOCKDOWN_TINT := Color(0.66, 0.4, 0.44)
 var _far: Texture2D
 var _far_top: Color
 
@@ -1179,7 +1181,7 @@ func _draw_depot_wall() -> void:
 	var tex_w: float = float(_depot_wall.get_width())
 	var tex_h: float = float(_depot_wall.get_height())
 	var u0: float = fposmod(_gx0 / FAR_ART_PX, tex_w)
-	_wall.draw_texture_rect_region(_depot_wall,
+	HdSkins.blit(_wall, _depot_wall,
 			Rect2(Vector2(0.0, horizon_y - tex_h * FAR_ART_PX), Vector2(tile_width, tex_h * FAR_ART_PX)),
 			Rect2(Vector2(u0, 0.0), Vector2(tile_width / FAR_ART_PX, tex_h)),
 			_wall_tint())

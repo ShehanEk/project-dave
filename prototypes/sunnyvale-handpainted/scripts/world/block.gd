@@ -138,6 +138,9 @@ func skin_name() -> String:
 		return ""
 	var area_id := _owner_area_id()
 	if area_id == DEPOT_AREA_ID:
+		# The hand-painted depot floor (C56, batch 2); the ceiling stays code-drawn.
+		if kind == Kind.GROUND and Skins.has_skin("depot_floor"):
+			return "depot_floor"
 		return ""
 	var skin := ""
 	match kind:
