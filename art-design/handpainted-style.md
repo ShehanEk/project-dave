@@ -367,3 +367,8 @@ After Batch 5 the only plants left in Level 1 were in `props2-hd-v1`: the reflec
 > 1. A long, low reflecting pool, about 6 times as long as it is tall: a sleek dark graphite composite basin with a crisp cold-white lit top edge and a thin cyan light strip along its front face; still dark water inside reflecting teal and amber light, a soft teal underlight glowing from inside; at each end a slim chrome water-jet nozzle instead of plants.
 >
 > 2. A small light sculpture, about 1.4 times as wide as it is tall and about a third of a person's height: a squat sleek composite pedestal with a thin cyan light line, holding three slim chrome stems of different heights, each ending in a small glowing teal light pod, with a faint teal glow pooling at its base.
+
+Stored 2026-10-12 (not processed): `concept-art/style-handpainted/props2-hd-v2.webp` (1774 x 887, transparent, exact lossless). The pool is about 8.3 times as long as it is tall (asked 6): fitted to the old pool's width it comes out about 29 world px tall instead of 40, so on "process" keep its width (the scene layout) and accept the lower basin, or keep its height and let it run wider. The light sculpture is 1.45 times as wide as tall, as asked. No plants on either.
+
+Processed 2026-10-12 on "process": `props2()` takes `pool` (box 35,574-1370,738; 240 x 29.5 world px, the old width) and `glow_plant` (box 1413,515-1735,739; 51.7 x 36 world px, the old height) from `props2-hd-v2`; the other props2 pieces are unchanged. A02's `Flower1` moved from x 4700 to 4520: it stood behind `Planter2`, which used to be the planter it grew out of and is now a barrier block that hid it. Level 1 has no plants left.
+

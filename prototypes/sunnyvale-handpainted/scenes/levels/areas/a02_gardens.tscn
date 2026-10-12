@@ -312,7 +312,7 @@ kind = 2
 size = Vector2(64, 64)
 
 [node name="Flower1" parent="Scenery" instance=ExtResource("12_scenery")]
-position = Vector2(4700, 0)
+position = Vector2(4520, 0)
 kind = 3
 size = Vector2(40, 40)
 

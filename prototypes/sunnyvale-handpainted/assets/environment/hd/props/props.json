@@ -64,8 +64,8 @@
   ]
  },
  "pool": {
-  "scale": 0.28169,
-  "anchor_x": 426.0
+  "scale": 0.17978,
+  "anchor_x": 667.5
  },
  "depot_door": {
   "scale": 0.30769,
@@ -76,8 +76,8 @@
   "anchor_x": 102.0
  },
  "glow_plant": {
-  "scale": 0.31858,
-  "anchor_x": 79.0
+  "scale": 0.16071,
+  "anchor_x": 161.0
  },
  "guide_rail": {
   "scale": 0.24771,

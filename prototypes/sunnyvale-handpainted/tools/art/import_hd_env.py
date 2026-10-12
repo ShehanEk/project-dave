@@ -435,10 +435,13 @@ def props2():
     path = os.path.join(OUT, "props", "props.json")
     manifest = json.load(open(path)) if os.path.exists(path) else {}
     jobs = [
-        ("props2-hd-v1.webp", "pool", (253, 250, 1105, 391), 240.0 / 852, {}),
+        # Batch 6 (C58): the pool and the FLOWER scenery's prop come from props2-hd-v2 with no plants:
+        # a basin with chrome nozzles (kept at the old pool's 240 world px width, so it is lower,
+        # about 29 px) and a light sculpture with three teal pods (kept at the old plant's 36 px).
+        ("props2-hd-v2.webp", "pool", (35, 574, 1370, 738), 240.0 / 1335, {}),
         ("props2-hd-v1.webp", "depot_door", (1130, 38, 1742, 389), 108.0 / 351, {}),
         ("props2-hd-v1.webp", "annex_door", (31, 432, 235, 735), 126.0 / 303, {}),
-        ("props2-hd-v1.webp", "glow_plant", (50, 278, 208, 391), 36.0 / 113, {}),
+        ("props2-hd-v2.webp", "glow_plant", (1413, 515, 1735, 739), 36.0 / 224, {}),
         ("props2-hd-v1.webp", "guide_rail", (502, 605, 957, 714), 27.0 / 109, {"units": [56, 400]}),
         # C57 size audit (55 px a metre): the side table with its cup about 0.85 m, the desk with
         # its lamp about 1.2 m (they were 1.36 m and 1.64 m).
