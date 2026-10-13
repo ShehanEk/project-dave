@@ -705,8 +705,8 @@ SHEETS = {
     # px from the grip (33 in game at ART_SCALE 0.9), so the gun is ~43 px long, not the stocked
     # placeholder's ~57. The sheet has no upgrade parts: `keep` carries the placeholder's
     # ext_tube, heat_collar and twin_pod over (painted at 3 texels per world px) onto the tube's
-    # front bracket, the bare barrel and the receiver's top. The HUD icon still comes from the
-    # placeholder (paint_boom_broom.py write_icons()).
+    # front bracket, the bare barrel and the receiver's top. The HUD icon is the
+    # painted one (import_hd_ui.py, from the l2-hud sheet).
     "boom_broom_hd": {
         "out": "boom_broom",
         "builder": "assembly",
@@ -727,6 +727,10 @@ SHEETS = {
             "pump": {"at": (1000, 640), "box": (886, 546, 1252, 722), "pivot": (888, 632)},
             "shell": {"at": (1200, 190), "pivot": (1197, 189)},
         },
+        # The receiver's maintenance orange sat on Dave's orange jacket and the gun vanished
+        # into him: its orange becomes graphite blue (the barrel stays steel, the upgrade parts
+        # keep their orange as accents). 2026-10-13.
+        "recolor": {"body": {"hue": (6, 48), "min_sat": 0.45, "to_hue": 212, "sat": 0.30, "val": 0.60}},
         "joints": [
             {"name": "body", "part": "body", "parent": "", "place": (222, 685), "z": 1, "mass": 3.0, "role": "frame"},
             {"name": "shell", "part": "shell", "parent": "body", "place": (700, 512), "z": 0, "mass": 0.05, "role": "shell"},
@@ -2589,6 +2593,41 @@ def assembly_part(sheet, src, lab, pc):
     return fitted, piv, fwd, fmasks
 
 
+def recolor(rgb, alpha, rc):
+    """`rgb` (floats 0..1, H x W x 3) with the pixels whose hue lies in `rc["hue"]` (degrees,
+    (lo, hi)) and whose saturation is at least `rc["min_sat"]` moved to hue `rc["to_hue"]`, their
+    saturation and value scaled by `rc["sat"]` and `rc["val"]`. The shading, the scratches and
+    the edges stay (only the colour moves). Used where a painted colour has to change after
+    the fact (an `assembly` entry's `recolor`: {part: rc}), so a re-import keeps the change."""
+    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+    mx = rgb.max(-1)
+    mn = rgb.min(-1)
+    d = mx - mn
+    sat = np.where(mx > 1e-5, d / np.maximum(mx, 1e-5), 0.0)
+    h = np.zeros_like(mx)
+    dd = np.maximum(d, 1e-5)
+    h = np.where(mx == r, ((g - b) / dd) % 6.0, h)
+    h = np.where(mx == g, (b - r) / dd + 2.0, h)
+    h = np.where(mx == b, (r - g) / dd + 4.0, h)
+    h = np.where(d > 1e-5, h * 60.0, 0.0)
+    lo, hi = rc["hue"]
+    m = (h >= lo) & (h <= hi) & (sat >= rc.get("min_sat", 0.4)) & (alpha > 0.0)
+    nh = np.where(m, rc["to_hue"], h) / 60.0
+    ns = np.where(m, np.clip(sat * rc.get("sat", 1.0), 0.0, 1.0), sat)
+    nv = np.where(m, np.clip(mx * rc.get("val", 1.0), 0.0, 1.0), mx)
+    # HSV -> RGB
+    c = nv * ns
+    x = c * (1.0 - np.abs(nh % 2.0 - 1.0))
+    mm = nv - c
+    i = np.floor(nh).astype(int) % 6
+    zero = np.zeros_like(c)
+    rr = np.choose(i, [c, x, zero, zero, x, c])
+    gg = np.choose(i, [x, c, c, x, zero, zero])
+    bb = np.choose(i, [zero, zero, x, c, c, x])
+    out = np.stack([rr + mm, gg + mm, bb + mm], -1)
+    return np.where(m[..., None], out, rgb)
+
+
 def build_assembly(name, cfg):
     """A jointed assembly from a smooth (hand-painted HD) sheet: the Level 2 rigs (C61), a
     machine (the M02 drone), a prop (the EG01 pistol, the W02 Boom Broom) or a quadruped (the
@@ -2634,6 +2673,9 @@ def build_assembly(name, cfg):
         if "emit" in masks:
             em = resize(np.repeat(masks["emit"][..., None], 3, -1), res["alpha"].shape[::-1])[..., 0] > 0.5
             res["spec"][em & (res["alpha"] > 0.5), 2] = float(pc.get("emit_strength", 1.0))
+        rc = cfg.get("recolor", {}).get(pname)
+        if rc:
+            res["rgb"] = recolor(res["rgb"], res["alpha"], rc)
         results[pname] = res
     keep = cfg.get("keep")
     kept_joints = []
