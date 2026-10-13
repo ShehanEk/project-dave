@@ -91,6 +91,17 @@ const PA_CALM_HOLD := 6.0
 ## The beat a PA caption is held past the end of its voice clip.
 const PA_VOICE_BEAT := 0.35
 enum LockdownPa { IDLE, WAIT_CONTROL, DELAY, SPEAKING }
+## M5 (Level 2), story lines over play: the LevelDef's `beat_lines` (the first entry
+## of a pacing beat) and `keycard_lines` (the moment the level's card is taken), each
+## once per run. They never hold Dave. Each line waits for the one before it and stays
+## up STORY_LINE_BASE + STORY_LINE_PER_CHAR a character (at least STORY_LINE_MIN), or
+## its voice clip plus PA_VOICE_BEAT when that is longer. A new set cuts short what is
+## left of the one before (Dave has moved on: a line never plays an area late). Ticked from
+## `_physics_process`, so they freeze with the pause menu; the level's end drops
+## whatever is left so the exit line is never talked over.
+const STORY_LINE_MIN := 2.2
+const STORY_LINE_BASE := 1.2
+const STORY_LINE_PER_CHAR := 0.055
 
 ## Session `checkpoint_id` -> [index into `areas`, marker name under that
 ## area's Markers node] is the LevelDef's `checkpoint_markers` (see
@@ -146,6 +157,14 @@ var _in_core_room: bool = false
 var _lockdown_pa: int = LockdownPa.IDLE
 var _lockdown_pa_t: float = 0.0
 var _pa_lethal_active: bool = false
+## M5 story lines: those still to play, the caption on screen now ("" between lines),
+## its seconds left, whether its voice clip is playing, and which beats (and whether the
+## keycard) have spoken this run.
+var _story_queue: Array = []
+var _story_line: String = ""
+var _story_t: float = 0.0
+var _story_voice: bool = false
+var _story_said := {}
 
 
 func _ready() -> void:
@@ -153,6 +172,7 @@ func _ready() -> void:
 	if Session:
 		Session.story_state_changed.connect(_on_story_state_changed)
 		Session.run_reset.connect(_on_run_reset_route_pa)
+		Session.keycard_taken.connect(_on_keycard_taken_story)
 	BeatHub.get_instance().beat_entered.connect(_on_beat_entered_route_pa)
 	_build_areas()
 
@@ -253,6 +273,7 @@ func _process(delta: float) -> void:
 ## `hero.input_enabled`) — see Session.tick_active_time()'s doc comment.
 func _physics_process(delta: float) -> void:
 	_tick_lockdown_pa(delta)
+	_tick_story_lines(delta)
 	if hero and hero.input_enabled and not level_ended_flag:
 		Session.tick_active_time(delta)
 
@@ -262,12 +283,14 @@ func _exit_tree() -> void:
 		Session.story_state_changed.disconnect(_on_story_state_changed)
 	if Session and Session.run_reset.is_connected(_on_run_reset_route_pa):
 		Session.run_reset.disconnect(_on_run_reset_route_pa)
+	if Session and Session.keycard_taken.is_connected(_on_keycard_taken_story):
+		Session.keycard_taken.disconnect(_on_keycard_taken_story)
 	var hub := BeatHub.get_instance()
 	if hub.beat_entered.is_connected(_on_beat_entered_route_pa):
 		hub.beat_entered.disconnect(_on_beat_entered_route_pa)
 	# Leaving the level mid-announcement (Quit to title) must not leave a PA voice
 	# talking over the title screen.
-	if (_lockdown_pa == LockdownPa.SPEAKING or _pa_lethal_active) and is_instance_valid(Audio):
+	if (_lockdown_pa == LockdownPa.SPEAKING or _pa_lethal_active or _story_voice) and is_instance_valid(Audio):
 		Audio.stop_voice()
 	# the 12 s level-complete sting must not run on into the title screen
 	if is_instance_valid(Audio):
@@ -480,9 +503,11 @@ func _on_hero_died() -> void:
 
 func _on_run_reset_route_pa() -> void:
 	_route_pa_said.clear()
+	_story_said.clear()
 
 
 func _on_beat_entered_route_pa(beat_id: String, _area_id: String) -> void:
+	_queue_story_lines("beat:" + beat_id, level_def.beat_lines.get(beat_id, []))
 	if not level_def.route_pa_lines.has(beat_id) or _route_pa_said.has(beat_id):
 		return
 	if Session and Session.get_story("awakening_done") == true:
@@ -496,6 +521,91 @@ func _on_beat_entered_route_pa(beat_id: String, _area_id: String) -> void:
 	await get_tree().create_timer(ROUTE_PA_HOLD, false).timeout
 	if is_instance_valid(subtitles) and subtitles.current_line() == line:
 		subtitles.clear_line()
+
+
+# --- M5: story lines over play --------------------------------------------------------
+
+## The level's card taken live (never on a load or a death rollback, which do not emit
+## it): the keycard objective, and the keycard lines once per run.
+func _on_keycard_taken_story(keycard_id: String) -> void:
+	if keycard_id != level_def.keycard_id or level_ended_flag:
+		return
+	if level_def.keycard_objective != "":
+		Session.set_objective(level_def.keycard_objective)
+	_queue_story_lines("keycard", level_def.keycard_lines)
+
+
+## Queues `lines` under `key` unless that key has already spoken this run; whatever is
+## left of an earlier set is dropped, its line on screen ended now.
+func _queue_story_lines(key: String, lines: Array) -> void:
+	if lines.is_empty() or _story_said.has(key) or level_ended_flag:
+		return
+	_story_said[key] = true
+	if story_lines_active():
+		if _story_voice and is_instance_valid(Audio):
+			Audio.stop_voice()
+		_end_story_line()
+		_story_queue.clear()
+	for line in lines:
+		if line is Array and line.size() >= 2:
+			_story_queue.append(line)
+
+
+## How long a story line with this text stays up when it has no voice clip.
+static func story_line_seconds(text: String) -> float:
+	return maxf(STORY_LINE_MIN, STORY_LINE_BASE + STORY_LINE_PER_CHAR * text.length())
+
+
+## True while a story line is up or waiting.
+func story_lines_active() -> bool:
+	return _story_t > 0.0 or not _story_queue.is_empty()
+
+
+func _tick_story_lines(delta: float) -> void:
+	if _story_t > 0.0:
+		_story_t -= delta
+		if _story_t > 0.0:
+			return
+		_end_story_line()
+	if _story_queue.is_empty() or level_ended_flag:
+		return
+	_start_story_line(_story_queue.pop_front())
+
+
+func _start_story_line(line: Array) -> void:
+	var text := String(line[1])
+	var subtitles := get_tree().get_first_node_in_group("subtitle_panel") if is_inside_tree() else null
+	if subtitles:
+		subtitles.say(String(line[0]), text)
+	_story_line = text
+	_story_t = story_line_seconds(text)
+	_story_voice = false
+	var voice := StringName(String(line[2])) if line.size() > 2 else &""
+	if voice != &"" and is_instance_valid(Audio):
+		var clip_seconds: float = Audio.play_voice(voice)
+		if clip_seconds > 0.0:
+			_story_voice = true
+			_story_t = maxf(_story_t, clip_seconds + PA_VOICE_BEAT)
+
+
+func _end_story_line() -> void:
+	var subtitles := get_tree().get_first_node_in_group("subtitle_panel") if is_inside_tree() else null
+	if subtitles and _story_line != "" and subtitles.current_line() == _story_line:
+		subtitles.clear_line()
+	_story_line = ""
+	_story_t = 0.0
+	_story_voice = false
+
+
+## Drops every story line (the level's end): the voice stops, the caption is left for
+## the exit line to replace.
+func _cancel_story_lines() -> void:
+	if _story_voice and is_instance_valid(Audio):
+		Audio.stop_voice()
+	_story_queue.clear()
+	_story_line = ""
+	_story_t = 0.0
+	_story_voice = false
 
 
 ## The black over the level while a death resets it (made on first use).
@@ -633,6 +743,7 @@ func _on_wicket_reached() -> void:
 	# The wicket's line takes over the PA from any lockdown announcement still
 	# running (its caption and voice are cut; nothing overlaps).
 	_cancel_lockdown_pa()
+	_cancel_story_lines()
 	var subtitles := get_tree().get_first_node_in_group("subtitle_panel")
 	if subtitles and level_def.exit_pa_line != "":
 		subtitles.say(level_def.exit_pa_speaker, level_def.exit_pa_line)

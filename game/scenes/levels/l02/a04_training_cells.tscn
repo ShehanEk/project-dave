@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/area_root.gd" id="1_area_root"]
 [ext_resource type="Script" path="res://scripts/world/visuals/area_backdrop.gd" id="2_area_backdrop"]
@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" path="res://scenes/actors/staffer.tscn" id="13_staffer"]
 [ext_resource type="PackedScene" path="res://scenes/objects/beat_zone.tscn" id="14_beat_zone"]
 [ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="15_route_point"]
+[ext_resource type="Script" path="res://scripts/objects/training_lockdown.gd" id="16_training_lockdown"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(80, 120)
@@ -156,7 +157,8 @@ width = 200.0
 thickness = 24.0
 switch_id = "L02-SW01"
 warn_time = 1.0
-caption = "Lane 1 rack moving. Please stand clear of the rail."
+caption = "Lane one is moving. Please stand clear of the rail."
+caption_speaker = "Adam"
 
 [node name="Partition_1" type="StaticBody2D" parent="Geometry"]
 position = Vector2(1300, -184)
@@ -175,7 +177,8 @@ width = 200.0
 thickness = 24.0
 switch_id = "L02-SW02"
 warn_time = 1.0
-caption = "Lane 2 rack moving. Please stand clear of the rail."
+caption = "Lane two is moving. Your old desk is just as you left it."
+caption_speaker = "Adam"
 
 [node name="Partition_2" type="StaticBody2D" parent="Geometry"]
 position = Vector2(2700, -184)
@@ -194,7 +197,8 @@ width = 200.0
 thickness = 24.0
 switch_id = "L02-SW03"
 warn_time = 1.0
-caption = "Lane 3 rack moving. Please stand clear of the rail."
+caption = "Lane three is moving. The Lattice is expecting you."
+caption_speaker = "Adam"
 
 [node name="Partition_3" type="StaticBody2D" parent="Geometry"]
 position = Vector2(4100, -184)
@@ -336,6 +340,11 @@ lab_piece = "office_pod"
 flip = true
 
 [node name="Entities" type="Node2D" parent="."]
+
+[node name="Lockdown" type="Node2D" parent="Entities"]
+script = ExtResource("16_training_lockdown")
+screens = PackedVector2Array(760, -330, 1500, -330, 2000, -372, 2950, -330, 4000, -330, 4700, -330)
+desk_screen = 2
 
 [node name="ControlPad_SW01" parent="Entities" instance=ExtResource("8_route_switch")]
 position = Vector2(900, 0)

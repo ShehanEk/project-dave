@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/area_root.gd" id="1_area_root"]
 [ext_resource type="Script" path="res://scripts/world/visuals/area_backdrop.gd" id="2_area_backdrop"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" path="res://scenes/objects/beat_zone.tscn" id="8_beat_zone"]
 [ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="9_route_point"]
 [ext_resource type="PackedScene" path="res://scenes/objects/weapon_pad.tscn" id="10_weapon_pad"]
+[ext_resource type="Script" path="res://scripts/objects/bridge_door.gd" id="11_bridge_door"]
 
 [node name="A01SkyBridge" type="Node2D"]
 script = ExtResource("1_area_root")
@@ -175,11 +176,6 @@ kind = 22
 size = Vector2(150, 90)
 lab_piece = "lab_bench"
 
-[node name="BridgeDoor" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(925, 0)
-kind = 22
-lab_piece = "glass_door_open"
-
 [node name="CoolantTank1" parent="Scenery" instance=ExtResource("5_scenery")]
 position = Vector2(1660, 0)
 kind = 22
@@ -236,10 +232,9 @@ position = Vector2(2300, -210)
 position = Vector2(1300, 0)
 pad_id = "L02-A01-PAD01"
 
-[node name="Slot_BridgeDoor" type="Marker2D" parent="Entities"]
-position = Vector2(900, 0)
-metadata/milestone = "M5"
-metadata/notes = "One-way gate: closes behind Dave once he passes x 1000 (subtitle: Adam's entry line, SC02)."
+[node name="BridgeDoor" type="StaticBody2D" parent="Entities"]
+position = Vector2(920, 0)
+script = ExtResource("11_bridge_door")
 
 [node name="Encounters" type="Node2D" parent="."]
 

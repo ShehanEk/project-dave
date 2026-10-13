@@ -30,7 +30,7 @@ const EFFECTS := {
 }
 ## Area index -> {scenery node: lab piece}.
 const PROPS := {
-	0: {"BridgeDoor": "glass_door_open", "ExitBench": "lab_bench", "CoolantTank1": "coolant_tank"},
+	0: {"ExitBench": "lab_bench", "CoolantTank1": "coolant_tank"},
 	1: {"KennelPod1": "kennel_pod", "KennelPod2": "kennel_pod", "KennelPod3": "kennel_pod",
 		"LaneDivider1": "lane_divider", "ControlBench": "lab_bench"},
 	2: {"Workstation": "lab_bench", "OpenDoor": "security_door_open", "GroundRack1": "server_rack"},
@@ -146,6 +146,8 @@ func _test_props_and_doors(lvl: LevelDirector) -> void:
 	check_eq(lvl.areas[1].get_node("Geometry/FloorRange").lab_skin(), "", "a floor keeps its terrain skin")
 	for p in ["ControlPad_SW01", "ControlPad_SW02", "ControlPad_SW03"]:
 		check_eq(lvl.areas[3].get_node("Entities/" + p).lab_piece(), "control_pad", "A04's %s is the lane control pad" % p)
+	# M5: the sky bridge's door is the working glass door (bridge_door.gd), painted.
+	check(lvl.areas[0].get_node("Entities/BridgeDoor").painted(), "A01's bridge door is the painted glass door")
 	for t in ["PracticeTarget_1", "PracticeTarget_2", "PracticeTarget_3"]:
 		check_eq(lvl.areas[0].get_node("Entities/" + t).lab_piece(), "test_dummy", "A01's %s is the test dummy" % t)
 	# The A04 lanes: the painted partition and the rail lamps along the trench.

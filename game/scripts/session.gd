@@ -412,6 +412,14 @@ func _normalize_snapshot(raw: Dictionary) -> Dictionary:
 		if WeaponTypes.uses_ammo(t) and not ammo.has(instance_id):
 			ammo[instance_id] = WeaponTypes.full_ammo(t, int(upgrades_now.get(t, 0)))
 	out["weapon_ammo"] = ammo
+	# M5: a story flag the level gained after this save was made takes its default.
+	var def := LevelDefs.get_def(String(out.get("level", "")))
+	var story: Dictionary = out.get("story", {})
+	if def:
+		for flag in def.story_defaults:
+			if not story.has(flag):
+				story[flag] = def.story_defaults[flag]
+	out["story"] = story
 	return out
 
 

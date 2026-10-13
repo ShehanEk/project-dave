@@ -58,7 +58,8 @@ const ALLOWED_TOP_KEYS: Array[String] = ["schema_version", "build", "level",
 ## `LevelDef.weapon_instance_sets(LevelDefs.WEAPON_TYPES)` (the hand instance of
 ## a carried-in type plus the world weapons), each exactly once, held or on one
 ## of its pads, never both, never neither, never a third id; the story flags are
-## exactly its `story_defaults` keys; and the wallet can never exceed
+## its `story_defaults` keys (M5: a flag added since the save was made may be missing,
+## and loads as its default; an unknown flag never); and the wallet can never exceed
 ## `LevelDefs.wallet_cap(level)` (every chip of this level and the ones before it).
 ## Only stage 1 of a weapon (the Quickcycle, the Extended Tube) is purchasable so
 ## far (stage 2 waits for the Peacekeeper in Level 3, WeaponTypes.STAGE_GATES) —
@@ -443,10 +444,12 @@ func validate_snapshot(data: Variant) -> Dictionary:
 	if typeof(data.get("story")) != TYPE_DICTIONARY:
 		return {"ok": false, "error": "story: wrong type"}
 	var story: Dictionary = data["story"]
-	if story.size() != def.story_defaults.size():
-		return {"ok": false, "error": "story: unexpected flag set"}
-	for flag in def.story_defaults.keys():
-		if not story.has(flag) or typeof(story[flag]) != TYPE_BOOL:
+	# M5: a save made before the level gained a flag simply lacks it (Session's load
+	# gives it the level's default); a flag the level does not know is never accepted.
+	for flag in story.keys():
+		if typeof(flag) != TYPE_STRING or not def.story_defaults.has(flag):
+			return {"ok": false, "error": "story: unexpected flag set"}
+		if typeof(story[flag]) != TYPE_BOOL:
 			return {"ok": false, "error": "story: missing/invalid flag %s" % flag}
 
 	if not _check_string(data, "objective"):

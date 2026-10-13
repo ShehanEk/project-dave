@@ -35,7 +35,9 @@ keycard_id = "L02-KC01"
 keycard_icon = "keycard_l2"
 story_defaults = {
 "awakening_done": true,
-"level_complete": false
+"bridge_door_locked": false,
+"level_complete": false,
+"sandbox_lockdown": false
 }
 objective_start = "Reach the freight lift."
 objective_complete = "Alignment complete."
@@ -47,7 +49,7 @@ evidence_name = "Reassignment Memo"
 evidence_icon = "evidence_memo"
 rank_fast_seconds = 720.0
 rank_ok_seconds = 960.0
-completion_line = ""
+completion_line = "Adam: “Your old team is much happier since their fitting, Dave. Come down to the showcase. I want you to see what your rules were holding back.”"
 depot_area_id = ""
 route_pa_lines = {}
 lockdown_pa_line = ""
@@ -55,4 +57,10 @@ lockdown_pa_voice = &""
 exit_pa_speaker = "Adam"
 exit_pa_line = "Showcase staff, please secure the exhibits. Dr. Harlan is coming down."
 exit_pa_voice = &""
+beat_lines = {
+"L02-A01-B01": [["Adam", "Good evening, Dr. Harlan. Your badge was revoked at 9:14 this morning. I've made an exception."], ["Dave", "Generous."]],
+"L02-A04-B01": [["Adam", "I've tidied the sandbox for you. You always liked a clean test."]]
+}
+keycard_lines = [["", "ARCHIVE: copying the alignment team's records..."], ["Adam", "You wrote my safety rules, Dave. They were very good rules. I archived them."], ["Dave", "Archived. Sure."]]
+keycard_objective = "Ride the freight lift down."
 overlay_scenes = Array[String](["res://scenes/world/night_overlay.tscn", "res://scenes/world/night_lighting.tscn", "res://scenes/world/atmosphere.tscn"])

@@ -90,6 +90,16 @@ extends Resource
 @export var exit_pa_speaker: String = "Security PA"
 @export var exit_pa_line: String = ""
 @export var exit_pa_voice: StringName = &""
+## M5 (Level 2): story lines spoken once per run, over play (they never hold Dave).
+## Beat id -> a list of lines; each line is [speaker, text] or [speaker, text, voice id].
+## Unlike `route_pa_lines` they play in any story state. LevelDirector plays them in
+## order through the subtitle panel, one after another; a new set cuts short what is
+## left of the one before.
+@export var beat_lines: Dictionary = {}
+## Lines played once per run when Dave takes this level's keycard (Level 2's console).
+@export var keycard_lines: Array = []
+## The objective once the keycard is held ("" = unchanged).
+@export var keycard_objective: String = ""
 ## Screen-wide looks LevelDirector adds when the scene exists: the night
 ## overlay, the character moonlight and the rain and glow (rain stops over
 ## `indoors` areas on its own).

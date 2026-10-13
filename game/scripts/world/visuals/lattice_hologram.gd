@@ -11,6 +11,11 @@ extends Node2D
 ## motion it is static (no processing, a steady glow). A teal PointLight2D near its middle lights
 ## the landing and whoever stands by it (normal-mapped characters take its direction). Purely
 ## visual: no collision, no gameplay state. No class_name (scenes reference it by path).
+##
+## M5, the console scene: Adam speaks through it. When the level's card is taken at the
+## alignment console (Session `keycard_taken`, live only) it brightens for SPEAK_SECONDS,
+## easing in over SURGE_IN and out over SURGE_OUT (`speak()`); under Reduced motion too, as
+## a smooth change of brightness, never a flash.
 
 const LabSkins := preload("res://scripts/world/lab_skins.gd")
 const TEAL := Color("#3FE0D0")
@@ -19,6 +24,13 @@ const TURN_HZ := 0.06
 const SCAN_PERIOD := 7.0
 ## The scan band's height, as a share of the lattice's.
 const SCAN_BAND := 0.16
+## Adam speaking: the extra brightness and light at full surge, and its timing.
+const SURGE_GAIN := 0.9
+const SURGE_LIGHT := 1.2
+const SURGE_IN := 0.6
+const SURGE_OUT := 1.6
+## About the console scene's three lines.
+const SPEAK_SECONDS := 10.0
 
 ## Lit height in world px (the base ring's floor to the halo's top).
 @export var height: float = 440.0
@@ -33,6 +45,9 @@ var _lit := Rect2(0.0, 0.0, 768.0, 768.0)
 var _t: float = 0.0
 var _reduced := false
 var _light: PointLight2D
+## 0..1: how far Adam's speaking has brightened it; and the seconds of speaking left.
+var surge: float = 0.0
+var _speak_left: float = 0.0
 
 
 func _ready() -> void:
@@ -60,7 +75,24 @@ func _ready() -> void:
 	_light.blend_mode = Light2D.BLEND_MODE_ADD
 	add_child(_light)  # generated, never saved
 	set_process(not _reduced)
+	if Session:
+		Session.keycard_taken.connect(_on_keycard_taken)
 	queue_redraw()
+
+
+func _exit_tree() -> void:
+	if Session and Session.keycard_taken.is_connected(_on_keycard_taken):
+		Session.keycard_taken.disconnect(_on_keycard_taken)
+
+
+func _on_keycard_taken(_keycard_id: String) -> void:
+	speak(SPEAK_SECONDS)
+
+
+## Brightens it for `seconds` (Adam speaking through it).
+func speak(seconds: float) -> void:
+	_speak_left = maxf(_speak_left, seconds)
+	set_process(true)
 
 
 ## True while it animates (false under Reduced motion: it is drawn once, steady).
@@ -73,9 +105,20 @@ func has_art() -> bool:
 
 
 func _process(delta: float) -> void:
-	_t += delta
-	_light.energy = light_energy * (0.92 + 0.08 * sin(TAU * PULSE_HZ * _t))
+	if _speak_left > 0.0:
+		_speak_left -= delta
+		surge = move_toward(surge, 1.0, delta / SURGE_IN)
+	else:
+		surge = move_toward(surge, 0.0, delta / SURGE_OUT)
+	var breath := 1.0
+	if not _reduced:
+		_t += delta
+		breath = 0.92 + 0.08 * sin(TAU * PULSE_HZ * _t)
+	_light.energy = light_energy * breath * (1.0 + SURGE_LIGHT * surge)
 	queue_redraw()
+	# Under Reduced motion it only processes while a surge eases in and out.
+	if _reduced and surge <= 0.0 and _speak_left <= 0.0:
+		set_process(false)
 
 
 ## World px per texel.
@@ -96,7 +139,7 @@ func _draw() -> void:
 	# The texture's lit centre column on x 0, its lowest lit row on the floor (y 0).
 	var cx: float = (_lit.position.x + _lit.size.x * 0.5) * sc
 	var top: float = -_lit.end.y * sc
-	var a: float = brightness * pulse
+	var a: float = brightness * pulse * (1.0 + SURGE_GAIN * surge)
 	var main := Rect2(Vector2(-cx * squeeze, top), Vector2(w * squeeze, h))
 	draw_texture_rect(_tex, main, false, Color(1.0, 1.0, 1.0, a * (1.0 - 0.45 * turn)))
 	if turn > 0.0:
@@ -117,7 +160,7 @@ func _draw() -> void:
 
 ## Without the painting: a faint drawn arch of light points.
 func _draw_fallback() -> void:
-	var c := Color(TEAL, 0.35 * brightness)
+	var c := Color(TEAL, 0.35 * brightness * (1.0 + SURGE_GAIN * surge))
 	for i in 3:
 		var r: float = height * (0.32 + 0.1 * i)
 		draw_arc(Vector2(0.0, -height * 0.12), r, PI, TAU, 32, c, 2.0)

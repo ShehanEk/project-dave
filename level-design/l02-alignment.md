@@ -1,6 +1,6 @@
 # Level 2 — Alignment
 
-**Status:** approved by the user 2026-10-12 ("as designed", C59); detailed concept, not yet built. The user: "lets build level two. think hard and design level 2. im thinking of dave going inside the AI lab." It replaces [Curfew](l02-curfew.md) (a hedge maze, which C58 rules out: no trees, hedges or gardens) and keeps everything Curfew owed the campaign: the Boom Broom, the first enemy gun, the Sidearm Guard, the Hound with its handler and the Security Drone introduced one at a time, a herding lockdown, and an exit into Level 3's showcase hall. Nothing here is built. Names, lines, sizes and counts are *proposed* and untested.
+**Status:** approved by the user 2026-10-12 ("as designed", C59); built in `game/` (2026-10-13; [build plan](../prototype-plans/level-02-alignment/README.md), M1–M6), first-time playtests pending. The user: "lets build level two. think hard and design level 2. im thinking of dave going inside the AI lab." It replaces [Curfew](l02-curfew.md) (a hedge maze, which C58 rules out: no trees, hedges or gardens) and keeps everything Curfew owed the campaign: the Boom Broom, the first enemy gun, the Sidearm Guard, the Hound with its handler and the Security Drone introduced one at a time, a herding lockdown, and an exit into Level 3's showcase hall. Names, lines, sizes and counts are *proposed*; the built ones are tested by bot and test cases, not yet by players.
 
 **ID:** L02 · **Campaign group:** Eon City after dark · **Look:** the approved corporate cyberpunk style frame (C58), interior.
 
@@ -27,13 +27,15 @@ Dave was on Adam's safety team, the alignment team, and this is where he worked:
 
 ## Story entry and exit
 
-**Entry (scene SC02, replaces the garden overlook):** at the Level 1 exit the campus gates seal one by one in the background. The tower's sky bridge lights up and its door opens for Dave's revoked badge. Adam: "Good evening, Dr. Harlan. Your badge was revoked at 9:14 this morning. I've made an exception." Dave: "Generous." The bridge door locks behind him.
+**Entry (scene SC02, replaces the garden overlook):** at the Level 1 exit the campus gates seal one by one in the background. The tower's sky bridge lights up and its door opens for Dave's revoked badge. Adam: "Good evening, Dr. Harlan. Your badge was revoked at 9:14 this morning. I've made an exception." Dave: "Generous." The bridge door locks behind him. *(Built in level, M5: Adam speaks as Dave walks onto the bridge, the glass door's reader turns teal and it opens as he nears it, and it locks behind him with a red reader. The campus gates sealing is not built yet.)*
 
 **What the level reveals** (between Level 1's "Adam is awake" and Level 4's "the weapon is real"): the alignment team was dissolved the morning after Dave's report, their safety checks on Adam were switched off with a manager's sign-off, and the team members were Linked the same week. It foreshadows Stroud (L6) without saying the board ordered it.
 
 **Adam's lines** *(proposed)*: at the training cells, "I've tidied the sandbox for you. You always liked a clean test." At the hologram: "You wrote my safety rules, Dave. They were very good rules. I archived them." Dave: "Archived. Sure." At the exit, on the showcase PA: "Showcase staff, please secure the exhibits. Dr. Harlan is coming down."
 
-**Exit:** the freight lift, opened by the keycard, drops to the Parade of Progress staging area (Level 3).
+**Exit:** the freight lift, opened by the keycard, drops to the Parade of Progress staging area (Level 3). Adam's line on the completion screen *(proposed)*: "Your old team is much happier since their fitting, Dave. Come down to the showcase. I want you to see what your rules were holding back."
+
+**Console scene** *(built, M5)*: as the console issues the card, a system line ("ARCHIVE: copying the alignment team's records..."), then Adam's hologram line and Dave's answer; the hologram brightens while he speaks. The lane moves are captioned in Adam's voice ("Lane one is moving. Please stand clear of the rail."; "Lane two is moving. Your old desk is just as you left it."; "Lane three is moving. The Lattice is expecting you.").
 
 ## What the level looks like
 

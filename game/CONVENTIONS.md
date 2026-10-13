@@ -356,14 +356,49 @@ kit as placeholder art. Tests: `tests/cases/test_l02_areas.gd`.
   branch `LEDGE`, run alone by the test) crosses A04 with no lane used.
 - **Keycard.** `scenes/objects/keycard_console.tscn` (`keycard_console.gd`,
   Interactable): interact = `Session.take_keycard(keycard_id, entity_id)`
-  (`L02-KC01`, pickup id `L02-KC01-P`) and `keycard_granted(id)` for M5's console
-  scene. The A06 freight lift is an ExitWicket (`required_keycard = "L02-KC01"`).
+  (`L02-KC01`, pickup id `L02-KC01-P`) and `keycard_granted(id)`; M5's console scene
+  keys off Session `keycard_taken` (next section). The A06 freight lift is an ExitWicket (`required_keycard = "L02-KC01"`).
 - **Slots.** M2's enemy slots (`Marker2D` `Slot_<Type>` with `enemy`, `entity_id`,
   `facing`, `milestone`, `notes` metadata) are gone: M4b put the real enemies there under
   the same ids and kept the notes as metadata (placements: "Level 2's enemies (M4)");
   M3 replaced A01's `Entities/Slot_SwapPad` with the real `Entities/WeaponPad` at x 1300
   (`pad_id` `L02-A01-PAD01`, resting `L02-W02-P01`; next section). Staffer looks are picked by
   entity id (`L02-E04-LK01-B01` = look B, `L02-E08-LK01-A`/`-C`).
+
+### Level 2's story beats (M5)
+
+Tests: `tests/cases/test_l02_story.gd`.
+
+- **Lines over play.** `LevelDef.beat_lines` (beat id -> a list of `[speaker, text]` or
+  `[speaker, text, voice id]`) and `keycard_lines` (the level's card taken, live) are played
+  by LevelDirector through the subtitle panel, once per run each, in order, never holding
+  Dave: each stays up `story_line_seconds(text)` (or its clip plus `PA_VOICE_BEAT`). A new
+  set cuts short what is left of the one before; the level's end drops them all
+  (`_cancel_story_lines()`), so the exit line is never talked over. `keycard_objective`
+  replaces the objective as the card is taken. Level 2: the sky-bridge greeting and Dave's
+  reply (`L02-A01-B01`), Adam's tidy sandbox (`L02-A04-B01`), the console scene (the archive
+  line, Adam, Dave). No voice clips yet (the third element is left out).
+- **Bridge door.** `scripts/objects/bridge_door.gd` (StaticBody2D, A01 `Entities/BridgeDoor`
+  at x 920, in the doorway under `PlantLintel`): waits shut (amber reader), opens when Dave is
+  `open_range` (360 px) short of it (teal), and locks once he is `lock_after` (100 px) past it
+  (red), setting the story flag `bridge_door_locked`. Solid only while shut; it never shuts on
+  Dave, and opens again should he ever stand behind it. The painted glass door: the open piece
+  drawn whole, the closed piece's two panels (`PANEL_LEFT`/`PANEL_RIGHT`, texels) sliding over it.
+- **A04 lockdown.** `scripts/objects/training_lockdown.gd` (Node2D at A04's origin,
+  `Entities/Lockdown`): on its `beat_id` (`L02-A04-B01`) it sets `sandbox_lockdown`, plays
+  `lockdown`, and fades in over `FADE_TIME`: the emergency strips under the ceiling, the
+  area's `Background` modulated to `emergency_tint`, and its six `screens` (area px; the
+  `desk_screen` over Dave's desk is larger) switching from teal readouts to his file
+  stamped TERMINATED (Rajdhani). It never moves a lane. The racks' `move_warned` captions
+  are Adam's (`caption_speaker = "Adam"`).
+- **Hologram.** `lattice_hologram.gd` `speak(seconds)` brightens it (`surge`, eased); it calls
+  it itself on Session `keycard_taken` (the console scene, SPEAK_SECONDS).
+- **Flags and saves.** Level 2's `story_defaults` gained `bridge_door_locked` and
+  `sandbox_lockdown`; both roll back with a death like every flag. A save may now lack a flag
+  its level has gained since (CheckpointService accepts it, `Session._normalize_snapshot()`
+  gives it the default); an unknown flag is still rejected.
+- **Capture.** `scenes/debug/l02_story_demo.tscn` (tools/capture.sh): the bridge, the door,
+  the lockdown, the console. Throwaway save.
 
 ### Boom Broom and the held-weapon swap (M3)
 

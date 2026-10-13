@@ -11,7 +11,7 @@ Placeholder art until the lab sheets: Level 1's walkway, wall, terrain and props
 | x | What |
 | --- | --- |
 | 0–900 | The glass sky bridge, outdoors (rain on). `Spawn_CP00` at x 150. |
-| 900 | The bridge door, open; a one-way gate that closes behind Dave once he passes x 1,000 (subtitle: Adam's entry line). |
+| 900 | The bridge door (built at x 920, M5): waits shut, opens when Dave is 360 px short of it, and locks once he is 100 px past it (Adam's entry line is subtitled on the bridge). |
 | 900–2,800 | The coolant plant, indoors. |
 | 1,300 | Swap pad `L02-A01-PAD01` with the Boom Broom, at least 3 H from any other interaction. |
 | 1,600–2,600 | Practice yard: three practice targets (Level 1's PracticeTarget) at x 1,800, 2,050, 2,300; a 60 px step at x 1,950 (jump-shot practice). |
@@ -49,6 +49,7 @@ Placeholder art until the lab sheets: Level 1's walkway, wall, terrain and props
 | 2,000 | Dave's old desk pod in an alcove off the lanes: the evidence file `L02-EF02` (Reassignment Memo). |
 | 3,500 | A side pod on the upper ledge with two dormant Staffers (looks A and C; optional, never in the way). |
 | 4,300 | From the upper ledge the freight lift's amber card reader is visible across the lab (a background sign). |
+| on entry | Adam's lockdown (M5): emergency strips under the ceiling, the lab behind dimmed, six wall screens (x 760, 1,500, 2,000 over the desk, 2,950, 4,000, 4,700, at y −330) switching to Dave's file stamped TERMINATED. |
 | 5,100 | `Respawn_CP03` and a recovery station. |
 | racks | 9 microchips inside open server racks along the route. |
 

@@ -156,7 +156,8 @@ func _test_handover_state() -> void:
 	check_eq(next["keycards"], [], "handover: Level 1's keycard does not carry over")
 	check_eq(next["switches"], l02.switches, "handover: Level 2's switches start at their defaults")
 	check_eq(next["world_weapons"], l02.world_weapons, "handover: Level 2's world weapons start where its LevelDef puts them")
-	check_eq(next["story"], {"awakening_done": true, "level_complete": false}, "handover: Level 2's own story flags, level_complete off")
+	check_eq(next["story"], {"awakening_done": true, "bridge_door_locked": false, "level_complete": false, "sandbox_lockdown": false},
+			"handover: Level 2's own story flags, level_complete off")
 	check_eq(next["objective"], l02.objective_start, "handover: Level 2's first objective")
 	check_eq(next["active_seconds"], 0.0, "handover: Level 2's play time starts at 0")
 	check(_valid(next), "handover: the Level 2 start state validates")
