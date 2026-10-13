@@ -52,9 +52,9 @@ const MENU_PADDING := 40.0  # the VBox's own top + bottom inset inside the Panel
 ## The menu panel lets the backdrop show through; the dense Controls table
 ## sits on a solid panel so its text stays readable.
 const PANEL_ALPHA := 0.9
-## The Controls table needs the shared 640x500 host Panel (ControlsPanel's
+## The Controls table needs the shared 640x588 host Panel (ControlsPanel's
 ## HOST_BUDGET_HEIGHT); it replaces the logo while open, right of the tower.
-const CONTROLS_RECT := Rect2(560, 110, 640, 500)
+const CONTROLS_RECT := Rect2(560, 66, 640, 588)
 
 ## The tower emblem's centre in the 1280x720 backdrop, and the size of the
 ## soft teal glow laid over it (scaled with the backdrop). The glow breathes
@@ -194,7 +194,7 @@ func _layout() -> void:
 
 ## The menu is a column centred under the logo, as tall as its content (so the
 ## backdrop shows under it); the Controls view instead takes its fixed
-## 640x500 rect. Never past the window's own edges.
+## 640x588 rect. Never past the window's own edges.
 func _fit_panel() -> void:
 	if not is_node_ready():
 		return

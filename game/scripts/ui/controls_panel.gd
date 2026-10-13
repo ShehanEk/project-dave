@@ -37,6 +37,8 @@ const ROWS: Array[Dictionary] = [
 	{"name": "Jump — hold for a higher jump", "actions": ["jump"], "static_text": ""},
 	{"name": "Aim", "actions": [], "static_text": "Mouse pointer", "static_icon": "mouse_aim"},
 	{"name": "Fire — hold to keep firing", "actions": ["fire"], "static_text": ""},
+	{"name": "Reload (Boom Broom)", "actions": ["reload"], "static_text": ""},
+	{"name": "Alternate fire (once fitted)", "actions": ["fire_alt"], "static_text": ""},
 	{"name": "Interact / use", "actions": ["interact"], "static_text": ""},
 	{"name": "Pause menu", "actions": ["pause"], "static_text": ""},
 	{"name": "Journal", "actions": ["journal"], "static_text": ""},
@@ -53,6 +55,7 @@ const TIPS: Array[String] = [
 	"Patrol Rovers stall against stone: shoot the battery on their back.",
 	"Recovery stations heal you and save progress.",
 	"You carry one weapon; the pistol never needs reloading.",
+	"Blue feed cartridges refill the Boom Broom's reserve.",
 ]
 
 ## Light text on the dark pixel panel (#0E1726): pale (about 14:1), teal
@@ -102,7 +105,7 @@ const MIN_SCROLL_HEIGHT := 120.0
 ## edges — Tips, and at Large text a few table rows too, stay reachable by
 ## scrolling instead of spilling past the Panel into the background (a real
 ## bug an earlier, uncapped version of this function had).
-const HOST_BUDGET_HEIGHT := 460.0
+const HOST_BUDGET_HEIGHT := 548.0
 
 ## action name (String) -> its row's binding Label, built once in _ready().
 ## The one "Move" row maps BOTH move_left and move_right to the SAME Label.

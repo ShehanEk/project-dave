@@ -22,7 +22,7 @@ extends TestCase
 
 const CONTROLS_PANEL_SCENE := "res://scenes/ui/controls_panel.tscn"
 const HOST_WIDTH := 592.0
-const HOST_HEIGHT := 460.0
+const HOST_HEIGHT := 548.0
 
 
 func _check_no_overflow(settings: Node, text_size: String) -> void:

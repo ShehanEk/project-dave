@@ -16,6 +16,8 @@ const H := 96.0
 
 ## Overridable aim for tests/demos in place of the live mouse cursor.
 @export var use_aim_override: bool = false
+## The ground aim limit (limit_ground_aim()); tests that sweep every aim step switch it off.
+var ground_aim_limit_enabled: bool = true
 @export var aim_override: Vector2 = Vector2.ZERO
 
 var facing: int = 1  # +1 right, -1 left
@@ -68,6 +70,8 @@ const FIRE_FACING_HOLD := 0.4
 ## at most half a step off the barrel. The step is counted from level, negative up:
 ## -4 straight up .. 4 straight down.
 const AIM_STEP := PI / 8.0
+## On the floor the aim goes no further below level than this (see limit_ground_aim()).
+const GROUND_AIM_DOWN_MAX := deg_to_rad(45.0)
 const AIM_STEP_MIN := -4
 const AIM_STEP_MAX := 4
 ## The step the gun rests at while he runs away from the aim (pointing ahead, a little down).
@@ -444,6 +448,7 @@ func _update_aim_pivot() -> void:
 	if visual and visual.has_method("shoulder_offset"):
 		aim_pivot.position = visual.shoulder_offset()
 	var to_aim := get_current_aim() - aim_pivot.global_position
+	to_aim = limit_ground_aim(to_aim)
 	if to_aim.x * facing < -FACING_DEADZONE:
 		# Aim behind him while he runs the other way: the gun rests ahead.
 		aim_step = AIM_REST_STEP
@@ -463,6 +468,29 @@ func _update_aim_pivot() -> void:
 		var gun := held_weapon()
 		if gun:
 			gun.position = visual.gun_hold(aim_step)
+
+
+## The run-and-gun rule (Metal Slug, where you only aim down in the air): on the floor the aim
+## never goes below GROUND_AIM_DOWN_MAX, so the gun does not point at his own feet; in the air
+## it goes where the cursor does. Not all the way to level, because he cannot crouch and low
+## enemies (the Patrol Rover is 42 px tall, a Hound lower than his shoulder) are shot from
+## above: at 45 degrees a target 40 px below the shoulder is hit from 40 px away, so only
+## standing right against one needs a step back or a jump. `to_aim` is from the shoulder;
+## the result keeps its length.
+func limit_ground_aim(to_aim: Vector2) -> Vector2:
+	if to_aim.y <= 0.0 or not ground_aim_limit_enabled or not is_on_floor():
+		return to_aim
+	var side := float(facing)
+	var dx := to_aim.x * side
+	# Behind him (the gun rests ahead) and straight down are left to the caller's own rules, but
+	# straight down on the ground becomes the limit angle on his facing side.
+	if dx < -FACING_DEADZONE:
+		return to_aim
+	var angle := atan2(to_aim.y, maxf(dx, 0.001))
+	if angle <= GROUND_AIM_DOWN_MAX:
+		return to_aim
+	var len := to_aim.length()
+	return Vector2(cos(GROUND_AIM_DOWN_MAX) * len * side, sin(GROUND_AIM_DOWN_MAX) * len)
 
 
 ## The direction a shot leaves in (C50): exactly toward the aim, which may be up to half

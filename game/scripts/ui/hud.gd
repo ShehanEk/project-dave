@@ -398,6 +398,12 @@ func _on_save_failed(_reason: String, _checkpoint_id: String) -> void:
 		_toast.show_message("Save failed — progress since the last checkpoint is kept in memory only", 1.6, 0.8, "warning")
 
 
+## A short line from the world (a cartridge's "+8 shells"): the shared toast.
+func toast_message(text: String, icon: String = "") -> void:
+	if _toast:
+		_toast.show_message(text, 1.6, ToastLabel.FADE_TIME, icon)
+
+
 func _on_evidence_recorded(_evidence_id: String) -> void:
 	if _toast:
 		var icon := "evidence"

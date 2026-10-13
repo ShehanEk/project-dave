@@ -25,7 +25,9 @@ extends "res://scripts/actors/visuals/hero_visual.gd"
 ## the line, so it hangs down for a level aim, forward for an aim up and back
 ## for an aim down). Each joint is set in the rig's rotation steps, the forearm
 ## and the hand re-solved after the joint above them is stepped, so the fist
-## stays within about one art pixel of the grip. The far arm follows the clips.
+## stays within about one art pixel of the grip. The far arm follows the clips, except
+## that a two-handed gun (the Boom Broom's `support` socket on its pump) has the far hand
+## on it, posed the same way.
 ## No class_name (hero.tscn attaches this by path).
 
 const RigScript := preload("res://scripts/actors/lit/cutout_rig.gd")
@@ -64,14 +66,30 @@ const BLOOD_SOCKETS := ["blood_head", "blood_chest", "blood_belly", "blood_arm",
 ## full reach, so the elbow bends; straight up holds the gun forward of his face, straight
 ## down forward of his legs. Set for every other step; the steps between take the middle.
 const GUN_HOLD := {
-	# C57: held close (the elbow bent, the gun in front of his chest like the pixel art's), the
-	# painted gun drawn at 0.85 of its imported size (scrapjack.gd ART_SCALE).
-	-4: Vector2(15.0, 16.0),
-	-2: Vector2(20.0, 5.0),
-	0: Vector2(21.0, 3.0),
-	2: Vector2(20.0, 0.0),
-	4: Vector2(16.0, -17.0),
+	# The run-and-gun hold (Metal Slug, Contra): the arm nearly straight from the shoulder, the
+	# gun out in front of him at every angle (C57 had it held close, the elbow bent: 15/16, 20/5,
+	# 21/3, 20/0, 16/-17). The painted gun is drawn at 0.85 of its imported size
+	# (scrapjack.gd ART_SCALE).
+	-4: Vector2(31.0, 5.0),
+	-2: Vector2(32.0, 3.0),
+	0: Vector2(33.0, 2.0),
+	2: Vector2(32.0, 0.0),
+	4: Vector2(28.0, -18.0),
 }
+## The two-handed hold: the rear hand near the chest so the far hand can reach the pump a
+## forearm further on (C57's close hold, which suits a shouldered gun).
+const GUN_HOLD_TWO_HANDED := {
+	-4: Vector2(14.0, 8.0),
+	-2: Vector2(17.0, 4.0),
+	0: Vector2(18.0, 2.5),
+	2: Vector2(17.0, 0.0),
+	4: Vector2(14.0, -9.0),
+}
+## Aim lean: the torso and head pitch with the aim (radians per radian of aim pitch; up is
+## negative), so aiming up leans him back with his chin up and aiming down leans him over the
+## gun, not just the arm moving. Whole rig steps on the pixel rig (snap_rotation).
+const AIM_LEAN_TORSO := 0.12
+const AIM_LEAN_HEAD := 0.22
 
 @export_file("*.json") var rig_path: String = RIG_PATH
 
@@ -237,28 +255,56 @@ func _physics_process(_delta: float) -> void:
 		aim_arm()
 
 
-## Poses the near arm so the fist holds the gun's grip (see the header). Runs
-## after hero.gd has placed and turned AimPivot this tick; does nothing while
-## defeated (the clip's arm) or without an aim pivot and gun.
+## Poses the near arm so the fist holds the gun's grip (see the header), and for a gun with a
+## support socket (the Boom Broom's pump) the far arm too, so the far hand wraps it. Runs
+## after hero.gd has placed and turned AimPivot this tick; does nothing while defeated (the
+## clip's arm) or without an aim pivot and gun.
 func aim_arm() -> void:
 	if rig == null or defeated or aim_pivot == null or _gun == null or not rig.joints.has("near_hand"):
 		return
 	var to_rig: Transform2D = rig.global_transform.affine_inverse()
 	var grip: Vector2 = to_rig * _gun_grip_global()
 	var fwd: Vector2 = to_rig.basis_xform((_gun as Node2D).global_transform.x).normalized()
-	var ua: Node2D = rig.joints["near_upper_arm"]
-	var fa: Node2D = rig.joints["near_forearm"]
-	var hand: Node2D = rig.joints["near_hand"]
+	# The hand lines up with the gun: its length (+y, the fingers) along the barrel, so the
+	# fist's grip runs down the gun's grip.
+	var hand_rot := fwd.angle() - PI * 0.5
+	_lean_with_aim(fwd.angle())
+	# The lean moved the shoulders: re-read where the arms hang from (the solve reads the joints).
+	_solve_arm("near", "grip", grip, hand_rot)
+	var support := _support_point(to_rig)
+	if support != Vector2.INF and rig.joints.has("far_hand"):
+		_solve_arm("far", "grip_far", support, hand_rot)
+	_place_wrist_light()
+
+
+## Pitches the torso and head with the aim (`pitch`: the barrel's angle in the rig's own
+## right-facing frame, up negative), on top of the clip's pose, before the arms are solved.
+## Not while defeated (the aim arm does not run then either).
+func _lean_with_aim(pitch: float) -> void:
+	var p := clampf(wrapf(pitch, -PI, PI), -PI * 0.5, PI * 0.5)
+	if rig.joints.has("torso"):
+		var torso: Node2D = rig.joints["torso"]
+		torso.rotation = rig.snap_rotation("torso", torso.rotation + p * AIM_LEAN_TORSO)
+	if rig.joints.has("head"):
+		var head: Node2D = rig.joints["head"]
+		head.rotation = rig.snap_rotation("head", head.rotation + p * AIM_LEAN_HEAD)
+
+
+## One arm as a two-bone chain (`side` "near" or "far"): the upper arm and forearm are turned,
+## in the rig's rotation steps, so the hand (turned to `hand_rot`, rig space) puts its
+## `grip_socket` on `target` (rig space). The elbow bends below the shoulder-wrist line; an
+## out-of-reach target leaves the arm straight toward it.
+func _solve_arm(side: String, grip_socket: String, target: Vector2, hand_rot: float) -> void:
+	var ua: Node2D = rig.joints[side + "_upper_arm"]
+	var fa: Node2D = rig.joints[side + "_forearm"]
+	var hand: Node2D = rig.joints[side + "_hand"]
 	var parent_xf: Transform2D = rig._to_rig(ua.get_parent())
 	var shoulder: Vector2 = parent_xf * ua.position
 	var parent_rot: float = parent_xf.get_rotation()
 	var v1: Vector2 = fa.position          # the elbow, in the upper arm's frame
 	var v2: Vector2 = hand.position        # the wrist, in the forearm's frame
-	var g: Vector2 = (rig.sockets["grip"]["pos"] as Vector2) if rig.sockets.has("grip") else Vector2(0.0, 3.0)
-	# The hand lines up with the gun: its length (+y, the fingers) along the barrel, so the
-	# fist's grip runs down the gun's grip.
-	var hand_rot := fwd.angle() - PI * 0.5
-	var wrist := grip - g.rotated(hand_rot)
+	var g: Vector2 = (rig.sockets[grip_socket]["pos"] as Vector2) if rig.sockets.has(grip_socket) else Vector2(0.0, 3.0)
+	var wrist := target - g.rotated(hand_rot)
 	var l1 := v1.length()
 	var l2 := v2.length()
 	var d := wrist - shoulder
@@ -266,16 +312,47 @@ func aim_arm() -> void:
 	var cos_e := clampf((l1 * l1 + dist * dist - l2 * l2) / (2.0 * l1 * dist), -1.0, 1.0)
 	# Elbow on the clockwise side of the shoulder-wrist line (below it for a level aim).
 	var a1 := d.angle() + acos(cos_e)
-	var r_ua: float = rig.snap_rotation("near_upper_arm", wrapf(a1 - v1.angle() - parent_rot, -PI, PI))
+	var r_ua: float = rig.snap_rotation(side + "_upper_arm", wrapf(a1 - v1.angle() - parent_rot, -PI, PI))
 	var ua_rot := parent_rot + r_ua
 	var elbow := shoulder + v1.rotated(ua_rot)
-	var r_fa: float = rig.snap_rotation("near_forearm", wrapf((wrist - elbow).angle() - v2.angle() - ua_rot, -PI, PI))
+	var r_fa: float = rig.snap_rotation(side + "_forearm", wrapf((wrist - elbow).angle() - v2.angle() - ua_rot, -PI, PI))
 	var fa_rot := ua_rot + r_fa
-	var r_h: float = rig.snap_rotation("near_hand", wrapf(hand_rot - fa_rot, -PI, PI))
+	var r_h: float = rig.snap_rotation(side + "_hand", wrapf(hand_rot - fa_rot, -PI, PI))
 	ua.rotation = r_ua
 	fa.rotation = r_fa
 	hand.rotation = r_h
-	_place_wrist_light()
+
+
+## True while the held gun is two-handed: its rig has a `support` socket (the Boom Broom's pump).
+func two_handed() -> bool:
+	if _gun == null or rig == null:
+		return false
+	var gun_rig: Node2D = _gun.get("rig")
+	if gun_rig == null or not gun_rig.sockets.has("support"):
+		return false
+	return gun_rig.joints.has(gun_rig.sockets["support"]["joint"])
+
+
+## Where the far hand holds the gun (its rig's `support` socket: the Boom Broom's pump, which
+## slides back and forward as it pumps), in rig space; INF for a one-handed gun.
+func _support_point(to_rig: Transform2D) -> Vector2:
+	if not two_handed():
+		return Vector2.INF
+	var gun_rig: Node2D = _gun.get("rig")
+	var sock: Dictionary = gun_rig.sockets["support"]
+	return to_rig * gun_rig.joint_point(sock["joint"], sock["pos"])
+
+
+## How far (world px) the far hand is from the gun's support point (tests); INF with none.
+func support_error() -> float:
+	if rig == null or _gun == null or not rig.sockets.has("grip_far"):
+		return INF
+	var p := _support_point(rig.global_transform.affine_inverse())
+	if p == Vector2.INF:
+		return INF
+	var sock: Dictionary = rig.sockets["grip_far"]
+	var hand_p: Vector2 = rig.joint_point(sock["joint"], sock["pos"])
+	return hand_p.distance_to(rig.global_transform * p)
 
 
 ## Where hero.gd puts the held gun (the Scrapjack or the Boom Broom: both have their grip
@@ -285,9 +362,9 @@ func gun_hold(step: int) -> Vector2:
 	if rig == null:
 		return FALLBACK_GUN_POSITION
 	var k := clampi(step, -4, 4)
-	if GUN_HOLD.has(k):
-		return GUN_HOLD[k]
-	return (GUN_HOLD[k - 1] + GUN_HOLD[k + 1]) * 0.5
+	var table: Dictionary = GUN_HOLD_TWO_HANDED if two_handed() else GUN_HOLD
+	# A two-handed gun is held closer, stock to his chest, so the far hand can reach its pump.
+	return table[k] if table.has(k) else (table[k - 1] + table[k + 1]) * 0.5
 
 
 ## The gun's grip (where the fist goes), global: the gun rig's origin, which

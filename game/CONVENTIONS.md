@@ -421,7 +421,7 @@ Tests: `tests/cases/test_w02_boom_broom.gd`, `test_l02_swap_pad.gd`; capture dem
   enemy; far: 1); pump 0.62 s (pump back 0.1-0.22 s, shell out at 0.22, forward by
   0.4); knockback 420 px/s decaying 1600 px/s^2 (about 55 px) times the share of the
   blast that hit, Rover x0.25 (stagger), Drone x1.25; reload starts at once when the
-  tube is empty or after 0.45 s idle (no reload key yet); burn 2 ticks of 1 every 0.8 s;
+  tube is empty, on the R key, or after 0.45 s idle; burn 2 ticks of 1 every 0.8 s;
   Twin Shell 2 shells, 10 pellets over 26 degrees, push x1.6, 1.1 s recovery; recoil
   7 px and a 9-degree muzzle lift over 0.2 s; flash x1.9, light 3.4 / 220 px.
   Placeholder sounds in the tuning: `rover_destroyed` (blast), `latch` (pump, and the
@@ -441,9 +441,45 @@ Tests: `tests/cases/test_w02_boom_broom.gd`, `test_l02_swap_pad.gd`; capture dem
   the enemy body that `move_and_collide()`s it sideways and frees itself; no enemy script
   changed) and `scripts/combat/burn.gd` (Incendiary: ticks through the zone's own
   `take_hit()`). Stage parts `ext_tube` (1), `heat_collar` (2), `twin_pod` (3) show by
-  `Session.weapon_stage("W02")`. `try_twin_blast()` (stage 3, >= 2 shells) reads an
-  optional `fire_alt` action, which the project does not define yet. Test hooks:
-  `last_blast`, `try_blast()`, `rng`, `shells_ejected`, `pump_stroke()`.
+  `Session.weapon_stage("W02")`. Input: `reload` (R) calls `request_reload()` (queued
+  behind a pump, nothing on a full tube, the empty click with no reserve; firing with a
+  shell in cuts it short) and `fire_alt` (right mouse button or Q) fires `try_twin_blast()`
+  (stage 3, >= 2 shells; stages 2 and 3 open later in the campaign, so it is idle in a
+  normal run). Both have rows in the Controls panel (it is 548 px tall for them). Test
+  hooks: `last_blast`, `try_blast()`, `rng`, `shells_ejected`, `pump_stroke()`.
+- **Two hands.** A gun whose rig has a `support` socket is two-handed
+  (`hero_rig_visual.gd two_handed()`): it uses its own `GUN_HOLD_TWO_HANDED` table (the
+  grip 14-18 px from the shoulder, so the far arm can reach the pump a forearm on) and
+  `aim_arm()` poses the far arm too
+  (`_solve_arm("far", "grip_far", ...)`, the same two-bone solve as the near arm) so the
+  far hand's `grip_far` sits on the pump's socket, following its stroke;
+  `support_error()` is how far it is off (tests; the arm is straight, about 5 px short at
+  a level aim). The Scrapjack has no such socket: the far arm stays the clip's.
+- **The run-and-gun hold (Metal Slug, Contra).** One-handed guns use `GUN_HOLD`: the arm
+  nearly straight, the gun out in front of him at every aim step (grip 30-33 px from the
+  shoulder; the C57 table held it close with the elbow bent). `_lean_with_aim()` pitches the
+  torso (`AIM_LEAN_TORSO` 0.12) and head (`AIM_LEAN_HEAD` 0.22) with the barrel's angle, on
+  top of the clip, before the arms are solved: aiming up leans him back with his chin up,
+  aiming down leans him over the gun. Capture: `scenes/debug/hold_demo.tscn` (every aim
+  step, both guns; `-- --weapon=W01|W02`).
+- **Broom colour.** The painted receiver's orange is recoloured to graphite at import (`boom_broom_hd`'s `recolor` in `import_parts_sheet.py`, hue 212; `recolor()` is generic: `{part: {hue: (lo, hi), min_sat, to_hue, sat, val}}`), because it blended into Dave's orange jacket. Re-importing keeps it.
+- **Ground aim limit.** `Hero.limit_ground_aim()` (used by `_update_aim_pivot()`): on the
+  floor the aim, and so the shot, goes no lower than `GROUND_AIM_DOWN_MAX` (45 degrees below
+  level, on his facing side); in the air it follows the pointer; upward is never limited.
+  Steeper would not let him hit the Patrol Rover's battery or a Hound at point blank (no
+  crouch). `ground_aim_limit_enabled` switches it off for tests that sweep the aim steps on
+  the floor (`test_c50_aim_steps.gd` section 5 tests the limit).
+- **Feed cartridges.** `scenes/objects/ammo_cartridge.tscn` (`scripts/objects/ammo_cartridge.gd`,
+  group `ammo_cartridge`, no class_name): an Area2D on the pickup layer, code-drawn (a
+  blue cell with two sockets, a window and a label band, bobbing; no painted piece yet).
+  Touching one while the held weapon takes ammunition adds `shells` (8, S02) to the RESERVE,
+  capped at the reserve capacity (the excess is discarded); it is consumed once with
+  `Session.collect(id, 0)` (no chips; a rollback puts it back with the shells). While the
+  held weapon takes none (the Scrapjack, or a full reserve) it stays and the HUD says why
+  (`Hud.toast_message`, rate-limited); standing on it when that changes takes it. Level 2
+  places four: `L02-A02-AM01` (x 1,000), `L02-A02-AM02` (x 3,300), `L02-A03-AM01` (x 400),
+  `L02-A05-AM01` (x 640), all on floors ahead of the shooter fights. Tests:
+  `test_l02_cartridges.gd`; capture `scenes/debug/l02_ammo_demo.tscn`.
 - **Shells in Session.** `state["weapon_ammo"]`: `{instance: {"loaded", "reserve"}}` for
   finite instances only. `has_ammo`, `weapon_ammo`, `held_ammo`, `set_weapon_ammo`
   (clamped; signal `weapon_ammo_changed`), `refill_held_weapon()` (recovery stations and

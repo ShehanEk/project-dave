@@ -41,6 +41,8 @@ Pistol and tether do not consume ammunition pickups. The Arc Welder uses cooling
 
 Recovery stations fill the carried shotgun's loaded and reserve capacity, or Seedlobber's ready and reserve capacity, and cool the Arc Welder. They do not refill guns lying nearby. The player can deliberately bring a dropped gun to a station by carrying it; this is an ordinary preparation trip.
 
+*Built (Level 2, 2026-10-13):* the cartridge is a pickup that adds up to 8 shells to the Boom Broom's reserve (the excess is discarded), is consumed once and stays put while the held weapon takes none; Level 2 places four before its shooter fights. The shotgun's reload has a key (R) next to its automatic top-up.
+
 New authored weapon pickups start with useful ammunition specified by the level designer. A previously dropped gun retains its actual count. Do not mark every pickup as "new" to manufacture a refill loop.
 
 ## Mandatory encounter safety net

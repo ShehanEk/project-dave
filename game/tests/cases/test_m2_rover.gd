@@ -193,6 +193,10 @@ func _test_defeated_once_and_not_reinstanced() -> void:
 	await physics_frames(1)
 
 
+## How far behind the stalled Rover's battery the bot stands to shoot it (see the bot's loop).
+const STAND_OFF := 75.0
+
+
 func _test_bot_dodges_charge_and_defeats_via_battery() -> void:
 	Session.new_run()
 	var floor_b := _make_floor(0, 560, 900)
@@ -230,9 +234,14 @@ func _test_bot_dodges_charge_and_defeats_via_battery() -> void:
 		if is_instance_valid(rover) and rover.state == PatrolRover.State.STALL:
 			var rear_pos: Vector2 = rover.rear_hit_zone.global_position
 			hero.aim_override = rear_pos
-			var to_target: float = rear_pos.x - hero.global_position.x
-			if absf(to_target) > 36.0:
-				if to_target > 0.0:
+			# On the ground the aim goes no lower than GROUND_AIM_DOWN_MAX (45 degrees), so a shot
+			# at the low battery (about 40 px below his shoulder) from right against the rover
+			# would pass over it: stand BEHIND it, STAND_OFF px out, and fire from there.
+			var behind: float = signf(rear_pos.x - rover.global_position.x)
+			var stand_x: float = rear_pos.x + behind * STAND_OFF
+			var off: float = stand_x - hero.global_position.x
+			if absf(off) > 12.0:
+				if off > 0.0:
 					press("move_right"); release("move_left")
 				else:
 					press("move_left"); release("move_right")

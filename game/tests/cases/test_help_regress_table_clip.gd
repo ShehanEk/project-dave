@@ -26,7 +26,7 @@ const CONTROLS_PANEL_SCENE := "res://scenes/ui/controls_panel.tscn"
 ## controls_panel.gd's own HOST_BUDGET_HEIGHT doc comment) — reproduced here
 ## so this is testing the same layout budget the real UI actually gives it.
 const HOST_WIDTH := 592.0
-const HOST_HEIGHT := 460.0
+const HOST_HEIGHT := 548.0
 
 
 func run() -> void:
@@ -47,7 +47,7 @@ func run() -> void:
 	var scroll: ScrollContainer = panel.get_node("Scroll")
 	var scroll_bottom: float = scroll.global_position.y + scroll.size.y
 
-	check(panel._row_labels.size() == 9, "setup: the table has all 9 documented rows")
+	check(panel._row_labels.size() == 11, "setup: the table has all 11 documented rows")
 	for i in panel._row_labels.size():
 		var label: Label = panel._row_labels[i]
 		var label_bottom: float = label.global_position.y + label.size.y

@@ -253,7 +253,7 @@ func _test_controls_view_swaps_logo() -> void:
 	check(not title.get_node("Tagline").visible, "the tagline does too")
 	check(not title.get_node("Panel/VBox/TitleLabel").visible, "the text title stays hidden in Controls")
 	var panel := _rect_of(title.get_node("Panel"))
-	check_eq(panel.size, Vector2(640, 500), "Controls gets the shared 640x500 host panel")
+	check_eq(panel.size, Vector2(640, 588), "Controls gets the shared 640x588 host panel")
 	check(Rect2(Vector2.ZERO, Vector2(1280, 720)).encloses(panel), "the Controls panel is on screen")
 	check(not panel.intersects(TOWER_RECT), "the Controls panel does not cover the tower")
 	check(not panel.intersects(DAVE_RECT), "the Controls panel does not cover Dave")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/area_root.gd" id="1_area_root"]
 [ext_resource type="Script" path="res://scripts/world/visuals/area_backdrop.gd" id="2_area_backdrop"]
@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" path="res://scenes/objects/beat_zone.tscn" id="11_beat_zone"]
 [ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="12_route_point"]
 [ext_resource type="PackedScene" path="res://scenes/actors/security_drone.tscn" id="13_security_drone"]
+[ext_resource type="PackedScene" path="res://scenes/objects/ammo_cartridge.tscn" id="ammo_cartridge"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(80, 900)
@@ -272,6 +273,10 @@ entity_id = "L02-UPG01"
 [node name="RecoveryStation_CP02" parent="Entities" instance=ExtResource("8_recovery_station")]
 position = Vector2(4130, -360)
 checkpoint_id = "CP02"
+
+[node name="AmmoCartridge_AM01" parent="Entities" instance=ExtResource("ammo_cartridge")]
+position = Vector2(400, 0)
+entity_id = "L02-A03-AM01"
 
 [node name="Encounters" type="Node2D" parent="."]
 

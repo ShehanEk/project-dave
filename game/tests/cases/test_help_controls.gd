@@ -79,6 +79,8 @@ func _test_rows_show_exact_current_bindings() -> void:
 			"Move row combines move_left/move_right into the documented format")
 	check_eq(_row_text_for(panel, "jump"), "Space / W / ↑", "Jump row shows its exact current bindings")
 	check_eq(_row_text_for(panel, "fire"), "Left mouse button", "Fire row names the mouse button, not a raw index")
+	check_eq(_row_text_for(panel, "reload"), "R", "Reload row shows its exact current binding")
+	check_eq(_row_text_for(panel, "fire_alt"), "Right mouse button / Q", "Alternate fire row shows both its bindings")
 	check_eq(_row_text_for(panel, "interact"), "E", "Interact row shows its exact current binding")
 	check_eq(_row_text_for(panel, "pause"), "Esc", "Pause row shows its exact current binding")
 	check_eq(_row_text_for(panel, "journal"), "Tab", "Journal row shows its exact current binding")

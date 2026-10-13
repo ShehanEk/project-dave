@@ -401,6 +401,7 @@ CROUCH = {"pelvis": 8, "torso": 26, "head": -18, "near_upper_arm": -66, "near_fo
 
 
 def main():
+    lr.refuse_to_overwrite_art(OUT_DIR)
     lr.seed(SEED)
     parts, results = lr.paint_parts(PAINTERS)
     parts_json, size = lr.write_atlas(OUT_DIR, parts, results)

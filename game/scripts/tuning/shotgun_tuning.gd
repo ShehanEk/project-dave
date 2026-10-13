@@ -56,8 +56,8 @@ extends WeaponTuning
 @export var extended_tube_capacity: int = 6
 @export var reserve_capacity: int = 24
 ## One shell fed into the tube (S02: about 0.7 s). The reload starts on its own once the
-## tube is empty, or after reload_delay s without firing while a shell is missing
-## (proposed: there is no reload key yet); firing stops it, keeping the shells already in.
+## tube is empty, or after reload_delay s without firing while a shell is missing, or at
+## once on the reload key (R); firing stops it, keeping the shells already in.
 @export var shell_insert_time: float = 0.7
 @export var reload_delay: float = 0.45
 

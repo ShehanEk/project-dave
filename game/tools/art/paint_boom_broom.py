@@ -290,6 +290,7 @@ def write_icons(parts, results):
 
 
 def main():
+    lr.refuse_to_overwrite_art(OUT_DIR)
     lr.seed(SEED)
     parts, results = lr.paint_parts(PAINTERS)
     parts_json, size = lr.write_atlas(OUT_DIR, parts, results, width=256)

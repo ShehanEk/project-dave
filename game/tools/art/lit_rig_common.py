@@ -555,6 +555,26 @@ def write_rig_json(out_dir, name, kind, parts_json, joints, ground_lock, sole_po
     return path
 
 
+def refuse_to_overwrite_art(out_dir, argv=None):
+    """The painter scripts make PLACEHOLDER rigs. When `out_dir` already holds a rig imported
+    from a generated parts sheet (its rig.json `source` is a concept-art file; written by
+    import_parts_sheet.py), writing a placeholder over it would silently replace the real art
+    (and the HUD icons that go with it), so stop unless `--force` was given."""
+    argv = sys.argv if argv is None else argv
+    path = os.path.join(out_dir, "rig.json")
+    if "--force" in argv or not os.path.exists(path):
+        return
+    try:
+        with open(path) as f:
+            source = str(json.load(f).get("source", ""))
+    except (OSError, ValueError):
+        return
+    if "concept-art" in source:
+        print("%s already holds the rig imported from %s.\nThis script writes a placeholder; "
+              "re-run with --force to overwrite it." % (os.path.relpath(out_dir, PROJECT), source))
+        sys.exit(0)
+
+
 def preview_arg(argv=None):
     """The DIR of `--preview DIR`, or None."""
     argv = sys.argv if argv is None else argv

@@ -21,6 +21,11 @@ extends TestCase
 ##   8. Upgrades by type: W02's own stage (Extended Tube 4 -> 6 without new shells,
 ##      Incendiary Shells burn, Twin Shell spends two), never the Scrapjack's; the
 ##      workbench offers the held type's upgrade; the HUD shows the Broom and its shells.
+##   9. The reload key (R) feeds shells at once, queues behind a pump, does nothing on a full
+##      tube or an empty reserve (a click) and is cut short by firing; the alternate fire
+##      action (right mouse, Q) fires the Twin Shell at stage 3 and does nothing below it.
+##  10. Dave's far hand holds the pump at every aim step (checked in 2) and follows its
+##      stroke; with the Scrapjack his far arm is the clip's.
 
 const HERO_SCENE := "res://scenes/actors/hero.tscn"
 const NIGHT_GUARD_SCENE := "res://scenes/actors/night_guard.tscn"
@@ -31,6 +36,9 @@ const PAD := "L02-A01-PAD01"
 const BROOM := "L02-W02-P01"
 const BlockScript := preload("res://scripts/world/block.gd")
 const FLOOR_Y := 560.0
+## The far hand stays within this of the pump's socket: the arm is straight at the hold's reach
+## (about 5 px short at a level aim), the glove still on the pump.
+const SUPPORT_REACH := 6.0
 
 var tuning: ShotgunTuning
 
@@ -50,6 +58,8 @@ func run() -> void:
 	await _test_pump()
 	await _test_shells()
 	await _test_upgrades()
+	await _test_reload_key_and_alt_fire()
+	await _test_support_hand_follows_pump()
 	release_all()
 	Session.new_run()
 
@@ -70,6 +80,7 @@ func _hero(pos: Vector2 = Vector2(0, FLOOR_Y - 1.0)) -> Hero:
 	hero.debug_invulnerable = true
 	hero.global_position = pos
 	hero.use_aim_override = true
+	hero.ground_aim_limit_enabled = false   # these tests sweep every aim step on the floor
 	hero.aim_override = pos + Vector2(400.0, -48.0)
 	return hero
 
@@ -191,6 +202,7 @@ func _test_hold_at_every_step() -> void:
 			steps_seen[step] = true
 			check(gun.position.is_equal_approx(visual.gun_hold(step)), "%s: the Broom sits at step %d's hold" % [tag, step])
 			check(visual.grip_error() < 3.0, "%s: the fist holds the Broom's grip (%.2f px off)" % [tag, visual.grip_error()])
+			check(visual.support_error() < SUPPORT_REACH, "%s: the far hand holds the pump (%.2f px off)" % [tag, visual.support_error()])
 			var grip: Vector2 = gun.rig.global_position
 			var muzzle := gun.get_muzzle_global_position()
 			var sock: Dictionary = gun.rig.sockets["muzzle"]
@@ -541,3 +553,128 @@ func _test_upgrades() -> void:
 	floor_b.queue_free()
 	await physics_frames(2)
 	CheckpointService.clear()
+
+
+# --- 9. the reload key and the alternate fire ------------------------------------------------------
+
+func _has_key(action: StringName, keycode: int) -> bool:
+	for e in InputMap.action_get_events(action):
+		if e is InputEventKey and (e as InputEventKey).physical_keycode == keycode:
+			return true
+	return false
+
+
+func _has_mouse(action: StringName, button: int) -> bool:
+	for e in InputMap.action_get_events(action):
+		if e is InputEventMouseButton and (e as InputEventMouseButton).button_index == button:
+			return true
+	return false
+
+
+func _test_reload_key_and_alt_fire() -> void:
+	check(InputMap.has_action("reload") and _has_key(&"reload", KEY_R), "the project binds `reload` to R")
+	check(InputMap.has_action("fire_alt") and _has_mouse(&"fire_alt", MOUSE_BUTTON_RIGHT) and _has_key(&"fire_alt", KEY_Q),
+			"...and `fire_alt` to the right mouse button and Q")
+	_broom_run()
+	var floor_b := _floor()
+	var hero := _hero()
+	await physics_frames(4)
+	var gun := _gun(hero)
+	release_all()
+
+	# R feeds shells at once, long before the idle reload would start.
+	gun._set_ammo(2, 10)
+	await physics_frames(2)
+	check(not gun.is_reloading(), "setup: a short tube waits out reload_delay on its own")
+	press(&"reload")
+	await physics_frames(2)
+	release(&"reload")
+	check(gun.is_reloading(), "R starts feeding shells at once")
+	await seconds(2.0 * tuning.shell_insert_time + 0.1)
+	check_eq(Session.held_ammo(), {"loaded": 4, "reserve": 8}, "...two shells fed, one at a time (4 + 8)")
+	check(not gun.is_reloading(), "...and it stops at a full tube")
+
+	# Nothing to do on a full tube; the empty click with no reserve.
+	check(not gun.request_reload() and not gun.is_reloading(), "R on a full tube does nothing")
+	gun._set_ammo(2, 0)
+	check(not gun.request_reload() and not gun.is_reloading(), "R with an empty reserve starts nothing (it clicks)")
+
+	# A pump in progress finishes first; the reload then starts by itself.
+	gun._set_ammo(3, 10)
+	gun.action = BoomBroom.Action.READY
+	check(gun.try_blast(), "setup: a blast goes off")
+	check(gun.request_reload() and gun.is_pumping() and not gun.is_reloading(), "R during the pump is queued")
+	await seconds(tuning.pump_time + 0.05)
+	check(gun.is_reloading(), "...and starts when the pump is done")
+	await seconds(2.0 * tuning.shell_insert_time + 0.1)
+	check_eq(gun.loaded(), 4, "...feeding the tube back to 4")
+
+	# Firing with a shell in cuts a manual reload short and keeps what is in.
+	gun._set_ammo(2, 10)
+	await physics_frames(2)
+	check(gun.request_reload(), "setup: R asks for a reload")
+	await physics_frames(2)
+	check(gun.is_reloading(), "setup: reloading")
+	press(&"fire")
+	await physics_frames(3)
+	release(&"fire")
+	check(not gun.is_reloading() and gun.loaded() == 1, "firing stops the reload and fires a shell (loaded %d)" % gun.loaded())
+	await seconds(tuning.pump_time + 0.05)
+
+	# Alternate fire: nothing below stage 3, the Twin Shell at stage 3.
+	Session.state["upgrades"]["W02"] = 1
+	gun._set_ammo(4, 10)
+	gun.action = BoomBroom.Action.READY
+	await physics_frames(2)
+	press(&"fire_alt")
+	await physics_frames(3)
+	release(&"fire_alt")
+	check_eq(gun.loaded(), 4, "alternate fire does nothing below stage 3")
+	Session.state["upgrades"]["W02"] = 3
+	gun._set_ammo(4, 10)
+	gun.action = BoomBroom.Action.READY
+	await physics_frames(2)
+	press(&"fire_alt")
+	await physics_frames(3)
+	release(&"fire_alt")
+	check(bool(gun.last_blast.get("twin", false)) and gun.loaded() == 2, "alternate fire at stage 3 is the Twin Shell (two shells spent)")
+	await seconds(tuning.twin_recovery_time + 0.05)
+	press(&"fire_alt")   # the same press held does not fire a second one
+	await physics_frames(2)
+	release(&"fire_alt")
+	Session.state["upgrades"]["W02"] = 0
+	release_all()
+	hero.queue_free()
+	floor_b.queue_free()
+	await physics_frames(2)
+
+
+# --- 10. the far hand follows the pump -----------------------------------------------------------
+
+func _test_support_hand_follows_pump() -> void:
+	_broom_run()
+	var floor_b := _floor()
+	var hero := _hero()
+	await physics_frames(4)
+	var gun := _gun(hero)
+	var visual = hero.get_node("Visual")
+	check(visual.two_handed(), "the Boom Broom is two-handed (its rig has a support socket)")
+	check(visual.support_error() < SUPPORT_REACH, "the far hand holds the pump at rest (%.2f px off)" % visual.support_error())
+	var seen_back := false
+	gun.action = BoomBroom.Action.READY
+	check(gun.try_blast(), "setup: a blast goes off")
+	var worst := 0.0
+	for i in int(ceil(tuning.pump_time * 60.0)):
+		await physics_frames(1)
+		worst = maxf(worst, visual.support_error())
+		if gun.pump_stroke() > 0.5:
+			seen_back = true
+	check(seen_back, "the pump slides back during the blast")
+	check(worst < SUPPORT_REACH, "the far hand stays on the pump through its stroke (worst %.2f px)" % worst)
+	# The Scrapjack is one-handed: his far arm is the clip's again.
+	Session.swap_weapon(PAD)
+	await physics_frames(3)
+	check(not visual.two_handed() and visual.support_error() == INF, "with the Scrapjack the far arm is free")
+	hero.queue_free()
+	floor_b.queue_free()
+	await physics_frames(2)

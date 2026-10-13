@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/area_root.gd" id="1_area_root"]
 [ext_resource type="Script" path="res://scripts/world/visuals/area_backdrop.gd" id="2_area_backdrop"]
@@ -13,6 +13,7 @@
 [ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="11_route_point"]
 [ext_resource type="PackedScene" path="res://scenes/actors/sidearm_guard.tscn" id="12_sidearm_guard"]
 [ext_resource type="PackedScene" path="res://scenes/actors/hound.tscn" id="13_hound"]
+[ext_resource type="PackedScene" path="res://scenes/objects/ammo_cartridge.tscn" id="ammo_cartridge"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(80, 900)
@@ -259,6 +260,14 @@ value = 1
 [node name="RecoveryStation_CP01" parent="Entities" instance=ExtResource("7_recovery_station")]
 position = Vector2(2960, 0)
 checkpoint_id = "CP01"
+
+[node name="AmmoCartridge_AM01" parent="Entities" instance=ExtResource("ammo_cartridge")]
+position = Vector2(1000, 0)
+entity_id = "L02-A02-AM01"
+
+[node name="AmmoCartridge_AM02" parent="Entities" instance=ExtResource("ammo_cartridge")]
+position = Vector2(3300, 0)
+entity_id = "L02-A02-AM02"
 
 [node name="Encounters" type="Node2D" parent="."]
 

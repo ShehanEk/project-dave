@@ -296,6 +296,7 @@ LUNGE = {"torso": -6, "neck": -8, "head": 4, "jaw": 24, "near_front_upper_leg": 
 
 
 def main():
+    lr.refuse_to_overwrite_art(OUT_DIR)
     lr.seed(SEED)
     parts, results = lr.paint_parts(PAINTERS)
     parts_json, size = lr.write_atlas(OUT_DIR, parts, results)

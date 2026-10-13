@@ -23,15 +23,18 @@ extends Node2D
 ## the pump runs forward and the gun is ready again. Shells: the held instance's own count
 ## in Session (`loaded` in the tube, `reserve`), so a swap, a checkpoint and a death all
 ## keep them honest; a gun with no Session entry (a demo) keeps its own. The reload feeds
-## one shell every `shell_insert_time`: on its own when the tube is empty, or after
-## `reload_delay` s without firing while a shell is missing; firing stops it (the shells
-## already in stay in). An empty gun with an empty reserve clicks.
+## one shell every `shell_insert_time`: on its own when the tube is empty, after
+## `reload_delay` s without firing while a shell is missing, or at once on the `reload`
+## key (R: `request_reload()`, queued behind a pump in progress); firing with a shell in
+## stops it (the shells already in stay in). An empty gun with an empty reserve clicks, and
+## so does the reload key with nothing left to feed.
 ##
 ## Upgrades (Session.weapon_stage("W02"), cumulative, fitted parts shown on the rig):
 ## 1 Extended Tube (the tube holds 6), 2 Incendiary Shells (a hit target burns:
 ## scripts/combat/burn.gd; ember pellets), 3 Twin Shell (`try_twin_blast()`: two shells,
-## more pellets and push, a longer recovery; bound to an optional `fire_alt` action when
-## the project has one; there is none yet).
+## more pellets and push, a longer recovery; the `fire_alt` action: the right mouse
+## button or Q). Stages 2 and 3 open later in the campaign (WeaponTypes.STAGE_GATES), so
+## the key does nothing yet in a normal run.
 ##
 ## `held = false` draws the same gun resting on a pad (no input, a contact shadow; the pad
 ## draws the copy's workshop tag), like the Scrapjack.
@@ -94,6 +97,10 @@ var _instance_id: String = ""
 var _local_ammo: Dictionary = {}
 var _fire_was_pressed := false
 var _alt_was_pressed := false
+var _reload_was_pressed := false
+## A reload asked for (the key) and not started yet: it starts as soon as the gun is not
+## pumping.
+var _reload_wanted := false
 var _muzzle_light: PointLight2D = null
 var _heat: float = 0.0
 var _twin_flash: float = 0.0
@@ -146,6 +153,7 @@ func _cancel_actions() -> void:
 	action = Action.READY
 	_action_t = 0.0
 	_idle_t = 0.0
+	_reload_wanted = false
 
 
 ## The rack a beat after the gun comes into Dave's hands at a pad (hero.gd calls this
@@ -232,6 +240,10 @@ func _physics_process(delta: float) -> void:
 	var input_ok: bool = _hero == null or not ("input_enabled" in _hero) or _hero.input_enabled
 	var firing: bool = input_ok and Input.is_action_pressed("fire")
 	var alt: bool = input_ok and InputMap.has_action("fire_alt") and Input.is_action_pressed("fire_alt")
+	var reload_key: bool = input_ok and InputMap.has_action("reload") and Input.is_action_pressed("reload")
+	if reload_key and not _reload_was_pressed:
+		request_reload()
+	_reload_was_pressed = reload_key
 	_tick_action(delta, firing or alt)
 	if alt and not _alt_was_pressed and _current_stage() >= 3:
 		try_twin_blast()
@@ -289,9 +301,30 @@ func _tick_action(delta: float, wants_fire: bool) -> void:
 				_idle_t += delta
 			var a := ammo()
 			var l := int(a["loaded"])
-			if int(a["reserve"]) > 0 and l < capacity() and (l == 0 or (not wants_fire and _idle_t >= tuning.reload_delay)):
+			if int(a["reserve"]) > 0 and l < capacity() and (l == 0 or _reload_wanted
+					or (not wants_fire and _idle_t >= tuning.reload_delay)):
 				action = Action.RELOAD
 				_action_t = 0.0
+				_reload_wanted = false
+			elif _reload_wanted:
+				_reload_wanted = false   # nothing left to feed (the tube filled meanwhile)
+
+
+## The reload key (G02 "reload where applicable"): feed shells now instead of waiting out
+## `reload_delay`. False, with the empty click when the reserve has none, and nothing when
+## the tube is already full or this is a gun resting on a pad. A pump in progress finishes
+## first; firing with a shell in cancels the reload as always.
+func request_reload() -> bool:
+	if not held:
+		return false
+	var a := ammo()
+	if int(a["loaded"]) >= capacity():
+		return false
+	if int(a["reserve"]) <= 0:
+		_play(tuning.sfx_empty)
+		return false
+	_reload_wanted = true
+	return true
 
 
 # --- the blast --------------------------------------------------------------------------
