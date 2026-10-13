@@ -207,7 +207,8 @@ func _debrief() -> void:
 	await physics_frames(1)
 	check(screen.rank != "", "the screen shows a rank (%s)" % screen.rank)
 	check(screen.get_node("Panel/VBox/StatsView/AdamLabel").text.begins_with("Adam:"), "Adam has the last word")
-	check(screen.get_node("Panel/VBox/StatsView/NextLabel").text.contains("Level 2"), "it points on to Level 2")
+	check(screen.get_node("Panel/VBox/StatsView/NextLabel").text.contains("Level 2, Alignment"),
+			"it points on to Level 2 by its LevelDef name (%s)" % screen.get_node("Panel/VBox/StatsView/NextLabel").text)
 	check(not cs.load_records().is_empty(), "the first clear is kept as the best")
 	screen.queue_free()
 	await physics_frames(1)

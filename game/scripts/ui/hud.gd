@@ -21,12 +21,24 @@ extends CanvasLayer
 ## font too. Every piece falls back to its code-drawn look and every label to
 ## the outlined UI font when the art is missing.
 ##
+## M3 (the Boom Broom): the slot shows the held weapon's icon (WeaponTypes.icon_piece,
+## `weapon_scrapjack` or `weapon_boom_broom`), the upgrade pip lights for the held type's
+## stage 1, and a finite weapon adds its shells beside the slot ("4/24": the tube, then the
+## reserve; AmmoLabel, the tag's pixel font), refreshed on Session.weapon_ammo_changed.
+## The readiness light follows whichever gun is held (Hero.held_weapon()).
+## Batch 7: with the painted shell icons the tube shows as a row of shells beside the slot
+## (`ShellRow`, scripts/ui/shell_row.gd: lit for each loaded shell, dark for each spent one, as
+## many as the tube holds) and AmmoLabel shows only the reserve; `ammo_text()` is still
+## "loaded/reserve". The keycard and evidence icons are the level's own (LevelDef `keycard_icon`,
+## `evidence_icon`: Level 2's teal-striped card and the memo).
+##
 ## Accessibility: the readiness light is a bright green when ready and a dark
 ## steel when not (a large luminance step, not only a hue change — interface-
 ## and-accessibility.md "do not rely on hue alone"); a full health segment is
 ## a bright orange and an empty one a dark slate, likewise.
 
 const PixelUi := preload("res://scripts/ui/pixel_ui.gd")
+const ShellRow := preload("res://scripts/ui/shell_row.gd")
 
 const HEALTH_FULL := Color("#e07a3f")     # Dave's burnt orange
 const HEALTH_EMPTY := Color("#2e3b4e")    # slate — "lost" segment
@@ -38,7 +50,6 @@ const READY_COLOR := Color("#4de38a")     # signal green — ready to fire
 ## interface-and-accessibility.md "do not rely on hue alone".
 const COOLDOWN_COLOR := Color("#1c2a3a")  # steel — cooling down
 const QUICKCYCLE_COLOR := Color("#ffb02e")
-const LEVEL_KEYCARD := "L01-KC01"
 ## Pixel pieces (assets/ui/pixel/).
 const PIECE_HEALTH_FULL := "health_full"
 const PIECE_HEALTH_EMPTY := "health_empty"
@@ -78,6 +89,10 @@ var _flash_left := 0.0
 ## An upgrade was just bought ("W01" Quickcycle or "A01" Scrap Plating, "" none); the next
 ## checkpoint toast says so instead of "Progress saved".
 var _upgrade_pending := ""
+## M3: the held finite weapon's shells ("4/24"), made in _ready() beside the slot.
+var _ammo_label: Label = null
+var _shell_row: Control = null
+var _ammo_text: String = ""
 
 
 func _ready() -> void:
@@ -95,6 +110,7 @@ func _ready() -> void:
 		extra.fallback_outline = HEALTH_OUTLINE
 		_health_segments.append(extra)
 	_weapon_pip.set_piece("pip_lit", QUICKCYCLE_COLOR)
+	_make_ammo_label()
 	_objective_label.resized.connect(_layout_objective_banner)
 	if Session:
 		Session.health_changed.connect(_on_health_changed)
@@ -108,6 +124,7 @@ func _ready() -> void:
 		Session.keycard_taken.connect(_on_keycard_taken)
 		Session.snapshot_restored.connect(_on_snapshot_restored)
 		Session.run_reset.connect(_on_run_reset)
+		Session.weapon_ammo_changed.connect(_on_weapon_ammo_changed)
 		_on_health_changed(Session.get_health(), Session.max_health())
 		_on_wallet_changed(Session.get_wallet())
 		_on_objective_changed(Session.get_objective())
@@ -134,6 +151,8 @@ func _apply_text_size() -> void:
 	_objective_label.add_theme_font_size_override("font_size", scale_fn.call(BASE_OBJECTIVE_SIZE))
 	_wallet_label.add_theme_font_size_override("font_size", scale_fn.call(BASE_WALLET_SIZE))
 	_weapon_tag_label.add_theme_font_size_override("font_size", scale_fn.call(BASE_TAG_SIZE))
+	if _ammo_label:
+		_ammo_label.add_theme_font_size_override("font_size", scale_fn.call(BASE_TAG_SIZE))
 	_layout_objective_banner.call_deferred()
 
 
@@ -155,6 +174,7 @@ func _exit_tree() -> void:
 		[Session.keycard_taken, _on_keycard_taken],
 		[Session.snapshot_restored, _on_snapshot_restored],
 		[Session.run_reset, _on_run_reset],
+		[Session.weapon_ammo_changed, _on_weapon_ammo_changed],
 	]:
 		if pair[0].is_connected(pair[1]):
 			pair[0].disconnect(pair[1])
@@ -176,11 +196,22 @@ func set_weapon_tag_shown(on: bool) -> void:
 
 func setup(hero: Node) -> void:
 	_hero = hero
-	_weapon = hero.get_node_or_null("AimPivot/Scrapjack") if hero else null
+	_weapon = _held_gun()
 	_refresh_weapon()
 
 
+## The hero's gun now (M3: the Scrapjack or the Boom Broom; hero.gd swaps it on the pivot).
+func _held_gun() -> Node:
+	if _hero == null or not is_instance_valid(_hero):
+		return null
+	if _hero.has_method("held_weapon"):
+		return _hero.held_weapon()
+	return _hero.get_node_or_null("AimPivot/Scrapjack")
+
+
 func _process(delta: float) -> void:
+	if _hero != null:
+		_weapon = _held_gun()
 	if _weapon and is_instance_valid(_weapon) and _weapon.has_method("is_ready"):
 		set_fire_ready(_weapon.is_ready())
 	if _flash_left > 0.0:
@@ -287,9 +318,25 @@ func _on_weapon_changed(_old_id: String, _new_id: String) -> void:
 func _on_upgrade_changed(weapon_type: String, stage: int) -> void:
 	_refresh_weapon()
 	# C52: the generic "Progress saved" that follows the purchase (UPG01) gives way to this.
-	if stage >= 1 and (weapon_type == "W01" or weapon_type == "A01"):
+	if stage >= 1 and (weapon_type == "W01" or weapon_type == "A01" or weapon_type == "W02"):
 		_upgrade_pending = weapon_type
 		_refresh_health_row()
+
+
+## The toast for an upgrade just fitted: the Quickcycle, Scrap Plating or (M3) the Boom
+## Broom's Extended Tube.
+func announce_upgrade(weapon_type: String) -> void:
+	match weapon_type:
+		"A01":
+			announce_plating()
+		"W02":
+			if _toast == null:
+				return
+			var shells := WeaponTypes.capacity("W02", Session.weapon_stage("W02")) if Session else 6
+			_toast.show_message("Extended Tube fitted: %d shells" % shells, 2.4, ToastLabel.FADE_TIME, "pip_lit")
+			_play_sfx(&"ready_click")
+		_:
+			announce_quickcycle()
 
 
 ## "Quickcycle online": raised when the bench is bought from and again when its panel closes.
@@ -327,10 +374,7 @@ func _on_checkpoint_committed(checkpoint_id: String) -> void:
 	if _upgrade_pending != "":
 		var which := _upgrade_pending
 		_upgrade_pending = ""
-		if which == "A01":
-			announce_plating()
-		else:
-			announce_quickcycle()
+		announce_upgrade(which)
 		return
 	if _toast:
 		_toast.show_message("Progress saved", ToastLabel.HOLD_TIME, ToastLabel.FADE_TIME, "save")
@@ -356,7 +400,11 @@ func _on_save_failed(_reason: String, _checkpoint_id: String) -> void:
 
 func _on_evidence_recorded(_evidence_id: String) -> void:
 	if _toast:
-		_toast.show_message("Evidence file saved", ToastLabel.HOLD_TIME, ToastLabel.FADE_TIME, "evidence")
+		var icon := "evidence"
+		var def = Session.current_level_def() if Session != null else null
+		if def != null and def.evidence_icon != "" and PixelUi.has_piece(def.evidence_icon):
+			icon = def.evidence_icon
+		_toast.show_message("Evidence file saved", ToastLabel.HOLD_TIME, ToastLabel.FADE_TIME, icon)
 
 
 func _on_keycard_taken(_keycard_id: String) -> void:
@@ -379,7 +427,11 @@ func _on_run_reset() -> void:
 
 func _refresh_keycard() -> void:
 	if _keycard_icon:
-		_keycard_icon.visible = Session != null and Session.has_keycard(LEVEL_KEYCARD)
+		# The current level's clearance card (its LevelDef's `keycard_id`, M1).
+		var keycard_id: String = Session.current_level_def().keycard_id if Session != null else ""
+		_keycard_icon.visible = keycard_id != "" and Session.has_keycard(keycard_id)
+		if Session != null and _keycard_icon.has_method("set_piece"):
+			_keycard_icon.set_piece(Session.current_level_def().keycard_icon)
 
 
 func _refresh_weapon() -> void:
@@ -389,7 +441,65 @@ func _refresh_weapon() -> void:
 	_weapon_tag_label.text = parts[-1] if parts.size() > 0 else ""
 	_weapon_tag_label.visible = show_weapon_tag
 	PixelUi.use_font(_weapon_tag_label)
-	var owns_quickcycle := Session.weapon_stage("W01") >= 1
-	_weapon_pip.visible = owns_quickcycle
+	# The held type's icon and its stage-1 pip (the Quickcycle, or the Broom's Extended Tube).
+	var held_type := Session.held_weapon_type()
+	var owns_stage_1 := Session.weapon_stage(held_type) >= 1
+	_weapon_pip.visible = owns_stage_1
+	if _weapon_icon and _weapon_icon.has_method("set_weapon_type"):
+		_weapon_icon.set_weapon_type(held_type)
 	if _weapon_icon and _weapon_icon.has_method("set_quickcycle_owned"):
-		_weapon_icon.set_quickcycle_owned(owns_quickcycle)
+		_weapon_icon.set_quickcycle_owned(owns_stage_1)
+	_refresh_ammo()
+
+
+func _make_ammo_label() -> void:
+	var box := _weapon_icon.get_parent() if _weapon_icon else null
+	if box == null:
+		return
+	_ammo_label = Label.new()
+	_ammo_label.name = "AmmoLabel"
+	_ammo_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_ammo_label.add_theme_color_override("font_color", _weapon_tag_label.get_theme_color("font_color"))
+	_ammo_label.add_theme_color_override("font_outline_color", _weapon_tag_label.get_theme_color("font_outline_color"))
+	_ammo_label.add_theme_constant_override("outline_size", _weapon_tag_label.get_theme_constant("outline_size"))
+	_ammo_label.add_theme_font_size_override("font_size", BASE_TAG_SIZE)
+	_ammo_label.visible = false
+	box.add_child(_ammo_label)
+	box.move_child(_ammo_label, _weapon_icon.get_index() + 1)
+	_shell_row = ShellRow.new()
+	_shell_row.name = "ShellRow"
+	_shell_row.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_shell_row.visible = false
+	box.add_child(_shell_row)
+	box.move_child(_shell_row, _weapon_icon.get_index() + 1)
+
+
+func _on_weapon_ammo_changed(_instance_id: String, _loaded: int, _reserve: int) -> void:
+	_refresh_ammo()
+
+
+## The held weapon's shells, tube then reserve ("4/24"); hidden for an unlimited weapon.
+func _refresh_ammo() -> void:
+	if _ammo_label == null or Session == null:
+		return
+	var ammo := Session.held_ammo()
+	_ammo_label.visible = not ammo.is_empty()
+	_ammo_text = "" if ammo.is_empty() else "%d/%d" % [int(ammo["loaded"]), int(ammo["reserve"])]
+	var row: bool = _shell_row != null and _shell_row.has_art() and not ammo.is_empty()
+	if _shell_row:
+		_shell_row.visible = row
+	if ammo.is_empty():
+		return
+	if row:
+		var held := Session.held_weapon_type()
+		var cap: int = WeaponTypes.capacity(held, Session.weapon_stage(held)) if WeaponTypes.has_type(held) else int(ammo["loaded"])
+		_shell_row.set_shells(int(ammo["loaded"]), maxi(cap, int(ammo["loaded"])))
+		_ammo_label.text = "+%d" % int(ammo["reserve"])
+	else:
+		_ammo_label.text = _ammo_text
+	PixelUi.use_font(_ammo_label)
+
+
+## The shells shown, tube then reserve ("4/24"; "" while hidden; tests).
+func ammo_text() -> String:
+	return _ammo_text if _ammo_label and _ammo_label.visible else ""

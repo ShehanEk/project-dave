@@ -1,0 +1,115 @@
+{
+ "name": "EG01 AS-9 Civic pistol",
+ "kind": "prop",
+ "texture_scale": 8,
+ "albedo": "albedo.png",
+ "normal": "normal.png",
+ "spec": "spec.png",
+ "ground_lock": false,
+ "parts": {
+  "frame": {
+   "rect": [
+    4,
+    4,
+    138,
+    108
+   ],
+   "pivot": [
+    24.2,
+    52.9
+   ]
+  },
+  "slide": {
+   "rect": [
+    4,
+    116,
+    136,
+    40
+   ],
+   "pivot": [
+    22.2,
+    37.8
+   ]
+  }
+ },
+ "joints": [
+  {
+   "name": "frame",
+   "part": "frame",
+   "parent": "",
+   "pos": [
+    0.0,
+    0.0
+   ],
+   "z": 0,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     2.17,
+     0.83
+    ],
+    "b": [
+     8.41,
+     0.83
+    ],
+    "r": 4.94
+   },
+   "mass": 0.8,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "frame"
+  },
+  {
+   "name": "slide",
+   "part": "slide",
+   "parent": "frame",
+   "pos": [
+    0.0,
+    -1.89
+   ],
+   "z": 1,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -0.61,
+     -2.22
+    ],
+    "b": [
+     12.06,
+     -2.22
+    ],
+    "r": 1.91
+   },
+   "mass": 0.4,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "slide"
+  }
+ ],
+ "sockets": {
+  "muzzle": {
+   "joint": "slide",
+   "pos": [
+    13.93,
+    -1.89
+   ]
+  },
+  "lamp": {
+   "joint": "slide",
+   "pos": [
+    13.42,
+    -1.89
+   ]
+  },
+  "support": {
+   "joint": "frame",
+   "pos": [
+    0.19,
+    1.89
+   ]
+  }
+ },
+ "source": "concept-art/se02-sidearm-guard/se02-sidearm-guard-parts-hd-a-v1.webp"
+}

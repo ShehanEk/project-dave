@@ -67,9 +67,16 @@ a part's `snap` makes the warm pixels of a box exactly one glow colour and its `
 a glow colour counts). A sheet's `erase` polygons (sheet px) are made transparent before
 the parts are found, and a machine's `joint_z` overrides a joint's draw order (both for the HD
 rover v2: its chassis paints the lightbar, dome and bumper on, and its arches dark).
+An entry with `"builder": "assembly"` (C61: the Level 2 HD rigs, pistol_eg01_hd, hound_hd_a,
+security_drone_hd_a, boom_broom_hd) lists its own joints and sockets and is built by build_assembly
+(see its docstring): any joint tree (the four-legged Hound, the drone's pods and fans, a gun's slide or
+pump), parts mirrored / turned / scaled / cut (`minus`, `box`) / repainted (`patch`, `back_fill`),
+joints placed in one assembly frame or on another part's sheet point, `emit` and `glow_boxes` glow,
+`feet` with each foot part's `sole` points, and `keep` (parts carried over from the rig already in the
+folder). The SE02 Sidearm Guard looks (sidearm_guard_hd_a/b/c) are human entries with a `gun` socket.
 tools/art/README.md, "Pixel rigs", is the recipe. `--out-dir DIR` writes the rig somewhere else (to
 try an import without touching the game's assets). Run from the project root:
-  python3 tools/art/import_parts_sheet.py night_guard|night_guard_smooth|staffer|dave|patrol_rover|patrol_rover_smooth|scrapjack|scrapjack_smooth [--preview DIR] [--out-dir DIR] [--measure]
+  python3 tools/art/import_parts_sheet.py night_guard|night_guard_smooth|staffer|dave|patrol_rover|patrol_rover_smooth|scrapjack|scrapjack_smooth|...|sidearm_guard_hd_a|pistol_eg01_hd|hound_hd_a|security_drone_hd_a|boom_broom_hd [--preview DIR] [--out-dir DIR] [--measure]
 """
 import json
 import os
@@ -82,7 +89,7 @@ from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lit_rig_common import LIT_DIR, PROJECT, edt_inside, gblur, normal_to_rgb  # noqa: E402
 
-REPO = os.path.normpath(os.path.join(PROJECT, "..", ".."))
+REPO = os.path.normpath(os.path.join(PROJECT, ".."))  # the game lives at <repo>/game (C61)
 
 # One entry per imported character. Anchors are sheet pixels. Each part is
 # found by the component under `at`; `pivot` is its joint, and the named
@@ -395,6 +402,275 @@ SHEETS = {
                       "emit": [(1425, 548, 1470, 600)]},
         },
     },
+    # SE02 Sidearm Guard, hand-painted HD looks A, B and C (C61, 2026-10-13): the Night Guard HD
+    # layout (head, sleeveless vest torso, pelvis with the holster, upper arm, forearm, fist, open
+    # hand, thigh, shin, boot) bareheaded, no baton, and each sheet's own EG01 pistol (the gun rig
+    # is `pistol_eg01_hd`, cut from sheet A). The vest is sleeveless with a dark armhole: the
+    # shoulder sits in the armhole so the sleeve's rounded cap covers it (as the Staffer v2). The
+    # `gun` socket is the middle of the fist, where the pistol's grip goes (gunner.gd hangs the
+    # gun there, turned `gun_rotation_deg`). Each look measured on its own sheet; `neon` is each
+    # sheet's lime piping as painted.
+    "sidearm_guard_hd_a": {
+        "out": "sidearm_guard_hd_a",
+        "sheet": "concept-art/se02-sidearm-guard/se02-sidearm-guard-parts-hd-a-v1.webp",
+        "rig_name": "SE02 Sidearm Guard (look A)",
+        "height": 96.0,          # the Night Guard HD's (the rigs it replaces)
+        "texture_scale": 4,
+        "atlas_width": 512,
+        "neon": (195, 210, 59),
+        "joint_parts": {"baton": None},
+        "parts": {
+            "head": {"at": (250, 300), "pivot": (175, 440)},
+            "torso": {"at": (590, 300), "pivot": (605, 495), "neck": (590, 55), "shoulder": (482, 151)},
+            "pelvis": {"at": (940, 350), "pivot": (955, 380), "waist": (945, 190)},
+            "upper_arm": {"at": (1240, 300), "pivot": (1230, 175), "elbow": (1260, 495)},
+            "forearm": {"at": (1450, 350), "pivot": (1447, 210), "wrist": (1460, 500)},
+            "hand_grip": {"at": (140, 800), "pivot": (112, 700), "grip": (150, 790)},
+            "hand_open": {"at": (380, 800), "pivot": (354, 698)},
+            "thigh": {"at": (600, 700), "pivot": (615, 585), "knee": (660, 930)},
+            "shin": {"at": (880, 700), "pivot": (885, 595), "ankle": (880, 935)},
+            "foot": {"at": (1150, 880), "pivot": (1095, 770),
+                     "soles": [(1045, 978), (1220, 980), (1345, 957)]},
+        },
+        "sockets": {"gun": {"joint": "near_hand", "part": "hand_grip", "at": (150, 790)}},
+    },
+    "sidearm_guard_hd_b": {
+        "out": "sidearm_guard_hd_b",
+        "sheet": "concept-art/se02-sidearm-guard/se02-sidearm-guard-parts-hd-b-v1.webp",
+        "rig_name": "SE02 Sidearm Guard (look B)",
+        "height": 96.0,
+        "texture_scale": 4,
+        "atlas_width": 512,
+        "neon": (208, 237, 63),
+        "joint_parts": {"baton": None},
+        "parts": {
+            # the head piece has the shirt collar painted on: it lies over the vest's collar
+            "head": {"at": (200, 300), "pivot": (125, 440)},
+            "torso": {"at": (560, 300), "pivot": (590, 495), "neck": (535, 70), "shoulder": (472, 181)},
+            "pelvis": {"at": (940, 350), "pivot": (925, 385), "waist": (928, 195)},
+            "upper_arm": {"at": (1230, 300), "pivot": (1218, 145), "elbow": (1250, 485)},
+            "forearm": {"at": (1440, 350), "pivot": (1437, 185), "wrist": (1458, 490)},
+            "hand_grip": {"at": (140, 800), "pivot": (122, 697), "grip": (160, 790)},
+            "hand_open": {"at": (380, 800), "pivot": (351, 697)},
+            "thigh": {"at": (600, 750), "pivot": (595, 585), "knee": (640, 925)},
+            "shin": {"at": (870, 750), "pivot": (865, 590), "ankle": (861, 928)},
+            "foot": {"at": (1150, 880), "pivot": (1080, 765),
+                     "soles": [(1040, 966), (1215, 971), (1322, 948)]},
+        },
+        "sockets": {"gun": {"joint": "near_hand", "part": "hand_grip", "at": (160, 790)}},
+    },
+    "sidearm_guard_hd_c": {
+        "out": "sidearm_guard_hd_c",
+        "sheet": "concept-art/se02-sidearm-guard/se02-sidearm-guard-parts-hd-c-v1.webp",
+        "rig_name": "SE02 Sidearm Guard (look C)",
+        "height": 96.0,
+        "texture_scale": 4,
+        "atlas_width": 512,
+        "neon": (201, 214, 74),
+        "joint_parts": {"baton": None},
+        "parts": {
+            "head": {"at": (200, 300), "pivot": (190, 445)},
+            "torso": {"at": (560, 300), "pivot": (610, 500), "neck": (598, 75), "shoulder": (482, 192)},
+            "pelvis": {"at": (940, 350), "pivot": (957, 385), "waist": (956, 185)},
+            "upper_arm": {"at": (1230, 300), "pivot": (1225, 155), "elbow": (1258, 475)},
+            "forearm": {"at": (1440, 350), "pivot": (1450, 185), "wrist": (1455, 480)},
+            "hand_grip": {"at": (140, 800), "pivot": (121, 712), "grip": (160, 805)},
+            "hand_open": {"at": (380, 800), "pivot": (361, 707)},
+            "thigh": {"at": (600, 750), "pivot": (598, 590), "knee": (655, 930)},
+            "shin": {"at": (870, 750), "pivot": (872, 595), "ankle": (869, 932)},
+            "foot": {"at": (1150, 880), "pivot": (1085, 770),
+                     "soles": [(1055, 974), (1215, 981), (1345, 957)]},
+        },
+        "sockets": {"gun": {"joint": "near_hand", "part": "hand_grip", "at": (160, 805)}},
+    },
+    # EG01 AS-9 "Civic" pistol, hand-painted HD (C61), cut from the SE02 sheet A's pistol: the white
+    # slide (cut off along its lower edge) racks back over a graphite barrel painted behind it
+    # (`back_fill`); the frame (grip, guard, under-barrel light) is the root, its origin where the
+    # palm holds the grip. The placeholder's 16.7 world px from the rear of the slide to the front
+    # face, so the stance and the flash stay where they were. The muzzle lamp is the orange ring on
+    # the front face (`emit`: gunner.gd tints it amber, then red). The painted gun has no teal
+    # status strip, so the frame has no glow.
+    "pistol_eg01_hd": {
+        "out": "pistol_eg01",
+        "builder": "assembly",
+        "sheet": "concept-art/se02-sidearm-guard/se02-sidearm-guard-parts-hd-a-v1.webp",
+        "rig_name": "EG01 AS-9 Civic pistol",
+        "kind": "prop",
+        "texture_scale": 8,
+        "atlas_width": 256,
+        "span": (1259, 1524),
+        "length": 16.7,
+        "origin": (1303, 705),
+        "parts": {
+            "frame": {"at": (1300, 750), "pivot": (1303, 705), "minus": [(1250, 595, 1530, 675)],
+                      "back_fill": [{"poly": [(1440, 626), (1512, 626), (1512, 680), (1440, 680)], "color": (42, 49, 60)}]},
+            "slide": {"at": (1400, 640), "box": (1250, 595, 1530, 676), "pivot": (1303, 675),
+                      "emit": [(1511, 616, 1526, 672)]},
+        },
+        "joints": [
+            {"name": "frame", "part": "frame", "parent": "", "place": (1303, 705), "z": 0, "mass": 0.8, "role": "frame"},
+            {"name": "slide", "part": "slide", "parent": "frame", "place": (1303, 675), "z": 1, "mass": 0.4, "role": "slide"},
+        ],
+        "sockets": {
+            "muzzle": {"joint": "slide", "at": (1524, 645)},
+            "lamp": {"joint": "slide", "at": (1516, 645)},
+            "support": {"joint": "frame", "at": (1306, 735)},
+        },
+    },
+    # K01 Hound, hand-painted HD (C61): the paint_hound.py rig's 17 joints from the painted parts.
+    # The assembly frame is the loose torso's sheet px; the other parts are placed by the
+    # assembled dog (bottom of the sheet, drawn ~0.86 times the loose parts' size). The neck joint
+    # is the collar (turned along the neck, drawn over it), the head carries the whole neck, the
+    # jaw is the steel jaw guard (hinged at its disc). The sheet paints each lower leg with a paw
+    # and each paw with its cuff: the lower legs' paws are cut off (`minus`) so the paw parts
+    # (cuff, pastern and toes) hang at the wrist and the hock. The lower legs are turned so the
+    # dog stands as the assembled one; near legs in front, the near front upper leg behind the
+    # torso (its shoulder plate is the torso's). 72 world px from the rump to the nose, the
+    # placeholder's. Glow: the lime spine strips (hound.gd tints them lime or magenta), the
+    # collar module's lens (teal / amber), the visor's sensor dot (amber) and the jaw guard's
+    # slot (the tell).
+    "hound_hd_a": {
+        "out": "hound",
+        "builder": "assembly",
+        "sheet": "concept-art/k01-hound/k01-hound-parts-hd-a-v1.webp",
+        "rig_name": "K01 Hound",
+        "kind": "quadruped",
+        "texture_scale": 4,
+        "atlas_width": 512,
+        "span": (440, 1225),
+        "length": 72.0,
+        "origin": (712, None),
+        "feet": ["near_front_paw", "far_front_paw", "near_hind_paw", "far_hind_paw"],
+        "parts": {
+            "torso": {"at": (700, 330), "pivot": (712, 345),
+                      "glow": [((180, 201, 22), 1.0), ((130, 148, 20), 1.0)], "glow_boxes": [(590, 222, 850, 256)]},
+            "neck": {"at": (300, 330), "pivot": (322, 355), "rotate": 28.0, "scale": 0.92,
+                     "emit": [(308, 345, 328, 365)]},
+            "head": {"at": (200, 150), "pivot": (125, 262), "scale": 1.05, "emit": [(122, 144, 134, 156)]},
+            "jaw": {"at": (120, 330), "pivot": (62, 318), "scale": 0.85, "emit": [(125, 337, 182, 351)]},
+            "tail": {"at": (1475, 330), "pivot": (1460, 258), "rotate": 48.0, "scale": 1.6},
+            "front_upper_leg": {"at": (990, 150), "pivot": (993, 100)},
+            "front_lower_leg": {"at": (1130, 130), "pivot": (1122, 95), "rotate": 25.0,
+                                "minus": [(1130, 200, 1265, 245)]},
+            "front_paw": {"at": (1220, 220), "box": (1140, 188, 1265, 245), "pivot": (1168, 196),
+                          "sole": [(1195, 235), (1240, 234)]},
+            "hind_upper_leg": {"at": (1080, 300), "pivot": (1090, 290), "rotate": -10.0, "scale": 1.3,
+                               "minus": [(1000, 372, 1235, 480)]},
+            "hind_lower_leg": {"at": (1220, 300), "pivot": (1222, 285), "rotate": 40.0,
+                               "minus": [(1180, 440, 1350, 480)]},
+            "hind_paw": {"at": (1310, 460), "box": (1235, 428, 1350, 480), "pivot": (1270, 434),
+                         "sole": [(1300, 473), (1330, 472)]},
+        },
+        "joints": [
+            {"name": "torso", "part": "torso", "parent": "", "place": (712, 345), "z": 4, "mass": 20.0},
+            {"name": "far_front_upper_leg", "part": "front_upper_leg", "parent": "torso", "place": (838, 340),
+             "z": 1, "far": True, "mass": 2.2, "limit": [-80, 60], "rest_dir": 90},
+            {"name": "far_front_lower_leg", "part": "front_lower_leg", "parent": "far_front_upper_leg",
+             "place": {"joint": "far_front_upper_leg", "pt": (1008, 220)}, "z": 1, "far": True, "mass": 1.0,
+             "limit": [-15, 120], "rest_dir": 90},
+            {"name": "far_front_paw", "part": "front_paw", "parent": "far_front_lower_leg",
+             "place": {"joint": "far_front_lower_leg", "pt": (1168, 196)}, "z": 1, "far": True, "mass": 0.4,
+             "limit": [-40, 40], "lock": True},
+            {"name": "far_hind_upper_leg", "part": "hind_upper_leg", "parent": "torso", "place": (445, 340),
+             "z": 1, "far": True, "mass": 2.2, "limit": [-70, 70], "rest_dir": 90},
+            {"name": "far_hind_lower_leg", "part": "hind_lower_leg", "parent": "far_hind_upper_leg",
+             "place": {"joint": "far_hind_upper_leg", "pt": (1135, 362)}, "z": 1, "far": True, "mass": 1.0,
+             "limit": [-110, 20], "rest_dir": 90},
+            {"name": "far_hind_paw", "part": "hind_paw", "parent": "far_hind_lower_leg",
+             "place": {"joint": "far_hind_lower_leg", "pt": (1270, 434)}, "z": 1, "far": True, "mass": 0.4,
+             "limit": [-40, 40], "lock": True},
+            {"name": "tail", "part": "tail", "parent": "torso", "place": (462, 318), "z": 2, "mass": 0.8,
+             "limit": [-60, 60], "rest_dir": 150},
+            {"name": "neck", "part": "neck", "parent": "torso", "place": (968, 262), "z": 7, "mass": 3.0,
+             "limit": [-50, 40], "rest_dir": -70},
+            {"name": "head", "part": "head", "parent": "neck", "place": (1029, 281), "z": 5, "mass": 3.0,
+             "limit": [-40, 40]},
+            {"name": "jaw", "part": "jaw", "parent": "head", "place": {"joint": "head", "pt": (182, 220)},
+             "z": 6, "mass": 0.6, "limit": [0, 30], "lock": True},
+            {"name": "near_hind_upper_leg", "part": "hind_upper_leg", "parent": "torso", "place": (485, 349),
+             "z": 8, "mass": 2.2, "limit": [-70, 70], "rest_dir": 90},
+            {"name": "near_hind_lower_leg", "part": "hind_lower_leg", "parent": "near_hind_upper_leg",
+             "place": {"joint": "near_hind_upper_leg", "pt": (1135, 362)}, "z": 8, "mass": 1.0,
+             "limit": [-110, 20], "rest_dir": 90},
+            {"name": "near_hind_paw", "part": "hind_paw", "parent": "near_hind_lower_leg",
+             "place": {"joint": "near_hind_lower_leg", "pt": (1270, 434)}, "z": 8, "mass": 0.4,
+             "limit": [-40, 40], "lock": True},
+            {"name": "near_front_upper_leg", "part": "front_upper_leg", "parent": "torso", "place": (868, 345),
+             "z": 3, "mass": 2.2, "limit": [-80, 60], "rest_dir": 90},
+            {"name": "near_front_lower_leg", "part": "front_lower_leg", "parent": "near_front_upper_leg",
+             "place": {"joint": "near_front_upper_leg", "pt": (1008, 220)}, "z": 9, "mass": 1.0,
+             "limit": [-15, 120], "rest_dir": 90},
+            {"name": "near_front_paw", "part": "front_paw", "parent": "near_front_lower_leg",
+             "place": {"joint": "near_front_lower_leg", "pt": (1168, 196)}, "z": 9, "mass": 0.4,
+             "limit": [-40, 40], "lock": True},
+        ],
+        "sockets": {
+            "tell": {"joint": "jaw", "pt": (153, 344)},             # the jaw guard's slot light
+            "visor_light": {"joint": "head", "pt": (128, 150)},     # the visor's sensor dot
+            "collar_light": {"joint": "neck", "pt": (318, 355)},    # the collar module's lens
+            "spark_shoulder": {"joint": "torso", "at": (915, 330)},
+            "spark_spine": {"joint": "torso", "at": (720, 236)},
+        },
+    },
+    # M02 Security Drone, hand-painted HD (C61): the paint_security_drone.py joints and roles from
+    # the painted parts. The assembly frame is the loose hull's sheet px (canopy, lens, fin, skids
+    # and the magenta strip painted on); the assembled drone below it (0.98 times the hull) places
+    # the rest: a fan pod on its pylon at each end of the hull at the strip's height, the aft one
+    # mirrored (its pylon in front of the tail block, the fore one behind the nose, as drawn), the
+    # lightbar standing on the roof, the shock fork under the nose. The fork is mirrored so its
+    # prongs point back along the belly at rest (drone.gd swings it -150 degrees, down and forward,
+    # for the dive); it hinges at its disc. The fan blur frames (face-on discs) are squashed edge-on
+    # into each pod's intake (fore and aft use the two frames; drone.gd flips their x scale to spin
+    # them). 54 world px from pod end to pod end, about the placeholder's 52 (the hit zone's width):
+    # the hull alone is ~34 px long and the drone ~13 px tall. Glow: the magenta strip, the five
+    # lightbar lenses (drone.gd tints them for the tell).
+    "security_drone_hd_a": {
+        "out": "security_drone",
+        "builder": "assembly",
+        "sheet": "concept-art/m02-security-drone/m02-security-drone-parts-hd-a-v1.webp",
+        "rig_name": "M02 Security Drone",
+        "kind": "machine",
+        "texture_scale": 4,
+        "atlas_width": 512,
+        "span": (-246, 1263),
+        "length": 86.0,           # C60 pass: 54 read as a speck against the lab backdrop; 1.6x (hull ~86 x 20 px)
+       
+        "origin": (500, 220),
+        "parts": {
+            "hull": {"at": (500, 200), "pivot": (500, 220),
+                     "glow": [((240, 33, 151), 1.0)], "glow_boxes": [(80, 205, 660, 268)]},
+            "nacelle": {"at": (1250, 140), "pivot": (1030, 140), "scale": 0.95},
+            "nacelle_aft": {"at": (1250, 140), "pivot": (1030, 140), "scale": 0.95, "mirror": True},
+            "fan": {"at": (1113, 354), "pivot": (1113, 354), "scale": (0.17, 0.5)},
+            "fan_b": {"at": (1373, 354), "pivot": (1373, 354), "scale": (0.17, 0.5)},
+            "lightbar": {"at": (740, 505), "pivot": (739, 560), "scale": 0.69,
+                         "glow": [((100, 58, 18), 1.0), ((157, 102, 35), 1.0), ((205, 155, 75), 1.0)],
+                         "glow_boxes": [(536, 487, 940, 524)]},
+            "fork": {"at": (1300, 520), "pivot": (1250, 530), "scale": 0.82, "mirror": True},
+        },
+        "joints": [
+            {"name": "hull", "part": "hull", "parent": "", "place": (500, 220), "z": 3, "mass": 9.0},
+            {"name": "fork", "part": "fork", "parent": "hull", "place": (812, 322), "z": 2, "mass": 1.0},
+            {"name": "nacelle_aft", "part": "nacelle_aft", "parent": "hull", "place": (143, 209), "z": 4,
+             "mass": 2.5, "rest_dir": -90},
+            {"name": "nacelle_fore", "part": "nacelle", "parent": "hull", "place": (875, 211), "z": 2,
+             "mass": 2.5, "rest_dir": -90},
+            {"name": "fan_aft", "part": "fan_b", "parent": "nacelle_aft",
+             "place": {"joint": "nacelle_aft", "pt": (1398, 140)}, "z": 5, "mass": 0.3},
+            {"name": "fan_fore", "part": "fan", "parent": "nacelle_fore",
+             "place": {"joint": "nacelle_fore", "pt": (1398, 140)}, "z": 3, "mass": 0.3},
+            {"name": "lightbar", "part": "lightbar", "parent": "hull", "place": (452, 104), "z": 5, "mass": 0.8},
+        ],
+        "sockets": {
+            "tell": {"joint": "lightbar", "pt": (739, 506)},          # the lens row's middle
+            "lens_light": {"joint": "hull", "at": (833, 134)},        # the canopy lens
+            "fork_tip": {"joint": "fork", "pt": (1395, 532)},         # between the prong tips
+            "spark_fore": {"joint": "nacelle_fore", "pt": (1250, 140)},
+            "spark_aft": {"joint": "nacelle_aft", "pt": (1250, 140)},
+            "oil_drip": {"joint": "hull", "at": (500, 345)},
+            "underglow": {"joint": "hull", "at": (450, 255)},
+        },
+    },
     # The Scrapjack, hand-painted HD (C56, 2026-10-11): cut out of the sheet's assembled pistol
     # (`split`, see build_prop), 36 world px from the back of the grip to the muzzle like the pixel
     # gun, so the muzzle stays 30 px from the grip. The copper coils glow (only inside their box) and
@@ -417,6 +693,52 @@ SHEETS = {
             "upper": {"place": (600, 560), "z": 3, "mass": 1.0, "order": 3, "box": (552, 455, 948, 652)},
             "battery": {"place": (880, 725), "z": 4, "mass": 1.0, "order": 1, "box": (800, 655, 958, 800),
                         "light": (900, 722)},
+        },
+    },
+    # W02 Boom Broom, hand-painted HD (C61): the whole gun painted assembled (no stock), its pump
+    # (the green ribbed grip) cut out of it and slid on a bare tube painted in under it (`minus`
+    # then `patch`: copies of the tube's visible stretch behind the receiver), and one loose shell
+    # (hidden on the gun; boom_broom.gd copies it for each ejected casing). The joint and socket
+    # names are paint_boom_broom.py's: `body` (the root, its origin the grip where Dave's fist
+    # wraps the tape, under the receiver), `pump`, `shell`, sockets `grip`, `muzzle`, `eject` (the
+    # ejection port), `support` (the pump's middle). The muzzle keeps the placeholder's 36.8 world
+    # px from the grip (33 in game at ART_SCALE 0.9), so the gun is ~43 px long, not the stocked
+    # placeholder's ~57. The sheet has no upgrade parts: `keep` carries the placeholder's
+    # ext_tube, heat_collar and twin_pod over (painted at 3 texels per world px) onto the tube's
+    # front bracket, the bare barrel and the receiver's top. The HUD icon still comes from the
+    # placeholder (paint_boom_broom.py write_icons()).
+    "boom_broom_hd": {
+        "out": "boom_broom",
+        "builder": "assembly",
+        "sheet": "concept-art/w02-boom-broom/w02-boom-broom-parts-hd-v1.webp",
+        "rig_name": "W02 Boom Broom",
+        "kind": "prop",
+        "texture_scale": 8,
+        "atlas_width": 512,
+        "span": (222, 1500),       # the grip to the muzzle face
+        "length": 36.8,
+        "origin": (222, 685),
+        "parts": {
+            "body": {"at": (600, 600), "pivot": (222, 685), "minus": [(888, 548, 1250, 722)],
+                     "patch": [{"box": (888, 595, 980, 695), "from": (758, 595)},
+                               {"box": (980, 595, 1072, 695), "from": (758, 595)},
+                               {"box": (1072, 595, 1164, 695), "from": (758, 595)},
+                               {"box": (1164, 595, 1250, 695), "from": (758, 595)}]},
+            "pump": {"at": (1000, 640), "box": (886, 546, 1252, 722), "pivot": (888, 632)},
+            "shell": {"at": (1200, 190), "pivot": (1197, 189)},
+        },
+        "joints": [
+            {"name": "body", "part": "body", "parent": "", "place": (222, 685), "z": 1, "mass": 3.0, "role": "frame"},
+            {"name": "shell", "part": "shell", "parent": "body", "place": (700, 512), "z": 0, "mass": 0.05, "role": "shell"},
+            {"name": "pump", "part": "pump", "parent": "body", "place": (888, 632), "z": 3, "mass": 0.4, "role": "pump"},
+        ],
+        "keep": {"joints": {"ext_tube": {"place": (1345, 632)}, "heat_collar": {"place": (912, 497)},
+                            "twin_pod": {"place": (300, 424)}}},
+        "sockets": {
+            "grip": {"joint": "body", "pos": (0.0, 0.0)},
+            "muzzle": {"joint": "body", "at": (1500, 520)},
+            "eject": {"joint": "body", "at": (700, 512)},
+            "support": {"joint": "pump", "at": (1070, 632)},
         },
     },
     # The Staffer's v2 sheets (2026-10-12, C58): the torso is sleeveless with a dark armhole (the
@@ -1439,7 +1761,9 @@ def main():
     if "--out-dir" in args:
         OUT_DIR = os.path.abspath(args[args.index("--out-dir") + 1])
     out_name = cfg.get("out", name)
-    if cfg.get("kind") == "machine":
+    if cfg.get("builder") == "assembly":
+        data, out_dir = build_assembly(out_name, cfg)
+    elif cfg.get("kind") == "machine":
         data, out_dir = build_machine(out_name, cfg)
     elif cfg.get("kind") == "prop":
         data, out_dir = build_prop(out_name, cfg)
@@ -2171,6 +2495,259 @@ def build_prop(name, cfg):
         },
         "source": cfg["sheet"],
     }
+    return data, out_dir
+
+
+def _box_or_poly_mask(shape, x0, y0, shapes):
+    """A boolean mask over a crop (its top left at sheet (x0, y0)) that is True inside any of
+    `shapes`: a box (x0, y0, x1, y1) or a polygon [(x, y), ...], in sheet px."""
+    from PIL import ImageDraw
+    img = Image.new("L", (shape[1], shape[0]), 0)
+    d = ImageDraw.Draw(img)
+    for sh in shapes:
+        if len(sh) == 4 and not isinstance(sh[0], (tuple, list)):
+            bx0, by0, bx1, by1 = sh
+            d.rectangle([bx0 - x0, by0 - y0, bx1 - x0, by1 - y0], fill=255)
+        else:
+            d.polygon([(px_ - x0, py_ - y0) for px_, py_ in sh], fill=255)
+    return np.asarray(img) > 127
+
+
+def assembly_part(sheet, src, lab, pc):
+    """One part of an assembly (build_assembly), cut and fitted. Returns (crop, pivot, fwd, masks):
+    the RGBA crop (float, straight alpha) fitted by the part's `mirror`, `rotate` and `scale`,
+    its pivot in the crop, fwd (a sheet point of the part -> the crop) and the part's `emit` and
+    `glow_boxes` masks in the crop (None when not given)."""
+    from PIL import ImageDraw
+    if "at" in pc:
+        cid = lab[pc["at"][1], pc["at"][0]]
+        assert cid, "no part under %s" % (pc["at"],)
+        m = lab == cid
+    else:
+        m = sheet[..., 3] > 8
+    if "box" in pc:
+        # only what lies inside the box (a part cut out of a bigger painted piece: the pistol's slide)
+        bx0, by0, bx1, by1 = pc["box"]
+        keep = np.zeros_like(m)
+        keep[by0:by1, bx0:bx1] = True
+        m &= keep
+    ys, xs = np.nonzero(m)
+    y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
+    m = m[y0:y1, x0:x1].copy()
+    crop = sheet[y0:y1, x0:x1].copy()
+    if pc.get("minus"):
+        # `minus`: boxes / polygons (sheet px) cut away (the frame under the slide; a paw painted
+        # at the end of a leg part that has its own paw part)
+        m &= ~_box_or_poly_mask(m.shape, x0, y0, pc["minus"])
+    for p in pc.get("patch", []):
+        # `patch`: {"box": dst, "from": src} (sheet px, the same size): the original sheet's src
+        # pixels painted over dst, after `minus` (the Boom Broom's bare tube where its pump is cut out)
+        dx0, dy0, dx1, dy1 = p["box"]
+        sx0, sy0 = p["from"][:2]
+        w_, h_ = dx1 - dx0, dy1 - dy0
+        crop[dy0 - y0:dy1 - y0, dx0 - x0:dx1 - x0] = src[sy0:sy0 + h_, sx0:sx0 + w_]
+        m[dy0 - y0:dy1 - y0, dx0 - x0:dx1 - x0] = src[sy0:sy0 + h_, sx0:sx0 + w_, 3] > 8
+    crop[..., 3] = np.where(m, np.maximum(crop[..., 3], 0.0), 0.0)
+    if pc.get("back_fill"):
+        # `back_fill`: [{"poly", "color"}]: filled polygons drawn BEHIND the part (what a moving
+        # part uncovers: the barrel under the pistol's slide)
+        under = Image.new("RGBA", (crop.shape[1], crop.shape[0]), (0, 0, 0, 0))
+        d = ImageDraw.Draw(under)
+        for f in pc["back_fill"]:
+            poly = [(px_ - x0, py_ - y0) for px_, py_ in f["poly"]]
+            d.polygon(poly, fill=tuple(f["color"]) + (255,))
+            d.line(poly + [poly[0]], fill=OUTLINE + (255,), width=int(f.get("outline", 4)), joint="curve")
+        u = np.asarray(under, np.float32)
+        a = crop[..., 3:4] / 255.0
+        ua = u[..., 3:4] / 255.0
+        out_a = a + ua * (1.0 - a)
+        crop[..., :3] = np.where(out_a > 1e-4, (crop[..., :3] * a + u[..., :3] * ua * (1.0 - a)) / np.maximum(out_a, 1e-4), 0.0)
+        crop[..., 3] = out_a[..., 0] * 255.0
+    pivot = np.array([pc["pivot"][0] - x0, pc["pivot"][1] - y0], float)
+    w = crop.shape[1]
+    mirror = bool(pc.get("mirror"))
+    masks = {}
+    for key in ("emit", "glow_boxes"):
+        if pc.get(key):
+            mk = _box_or_poly_mask(crop.shape[:2], x0, y0, pc[key]).astype(np.float32) * 255.0
+            masks[key] = np.stack([mk, mk, mk, np.full_like(mk, 255.0)], -1)
+    if mirror:
+        crop = crop[:, ::-1].copy()
+        pivot[0] = w - pivot[0]
+        masks = {k: v[:, ::-1].copy() for k, v in masks.items()}
+    sc = pc.get("scale", (1.0, 1.0))
+    sc = (sc, sc) if isinstance(sc, (int, float)) else tuple(sc)
+    rot = float(pc.get("rotate", 0.0))
+    fitted, piv, f = fit_part(crop, pivot, rot, sc)
+    fmasks = {k: fit_part(v, pivot, rot, sc)[0][..., 0] / 255.0 for k, v in masks.items()}
+
+    def fwd(pt):
+        q = np.array([pt[0] - x0, pt[1] - y0], float)
+        if mirror:
+            q[0] = w - q[0]
+        return f(q)
+    return fitted, piv, fwd, fmasks
+
+
+def build_assembly(name, cfg):
+    """A jointed assembly from a smooth (hand-painted HD) sheet: the Level 2 rigs (C61), a
+    machine (the M02 drone), a prop (the EG01 pistol, the W02 Boom Broom) or a quadruped (the
+    K01 Hound), each keeping its placeholder's joint, role and socket names.
+
+    Every part is cut from the sheet (`at`: the opaque piece under it; `box` keeps only what
+    lies in a box, `minus` cuts boxes or polygons away, `patch` paints sheet pixels over it,
+    `back_fill` paints polygons behind it), then mirrored (`mirror`), turned (`rotate`, degrees
+    clockwise) and scaled (`scale`) about its `pivot` (sheet px). The rest pose is laid out in
+    one ASSEMBLY frame (sheet px at the scale of the unscaled parts): each joint's `place` is
+    where its part's pivot sits, so a joint's offset is (place - its parent's place) times the
+    world scale, and the root's is (place - `origin`). The world scale: `length` world px across
+    the assembly x span `span` (x0, x1). A joint's collider is fitted to its part's art unless
+    given; a joint's `place` may instead be {"joint", "pt"}: a sheet point of another joint's part
+    as placed (the next joint down a chain of turned parts). Sockets are assembly points on a joint
+    (`at`), sheet points of its part (`pt`) or joint-local world px (`pos`). A quadruped's `feet`
+    pass through to rig.json with the sole points from each foot part's `sole` (sheet px), and the
+    floor (`origin` y None) is the lowest of them at rest; a joint's `lock` passes through. Glow: a part's `glow` colours
+    [(rgb, strength)] (only inside its `glow_boxes` when given) and `emit` (boxes / polygons
+    whose pixels glow: a lamp painted dark). `keep` carries parts of the rig already in the
+    output folder over (scaled to this texture_scale) with new places: the Boom Broom's
+    upgrade parts, which its painted sheet does not have."""
+    sheet, lab = load_sheet(cfg)
+    src = np.asarray(Image.open(os.path.join(REPO, cfg["sheet"])).convert("RGBA"), np.float32)
+    P = cfg["parts"]
+    T = cfg["texture_scale"]
+    fitted = {pname: assembly_part(sheet, src, lab, pc) for pname, pc in P.items()}
+    J = {j["name"]: j for j in cfg["joints"]}
+    xa, xb = cfg["span"]
+    s = cfg["length"] / float(xb - xa)              # world px per assembly px
+    k = s * T                                       # atlas texels per assembly px
+    print("scale %.4f world px per sheet px (%.0f px across `span`)" % (s, xb - xa))
+    results = {}
+    for pname, (crop, pivot, _f, masks) in fitted.items():
+        pc = P[pname]
+        glows = [tuple(g) for g in pc.get("glow", [])]
+        res = cut(crop, pivot, k, glows)
+        if glows and "glow_boxes" in masks:
+            plain = cut(crop, pivot, k, [])
+            inside = resize(np.repeat(masks["glow_boxes"][..., None], 3, -1), res["alpha"].shape[::-1])[..., 0] > 0.5
+            plain["spec"][inside] = res["spec"][inside]
+            res = plain
+        if "emit" in masks:
+            em = resize(np.repeat(masks["emit"][..., None], 3, -1), res["alpha"].shape[::-1])[..., 0] > 0.5
+            res["spec"][em & (res["alpha"] > 0.5), 2] = float(pc.get("emit_strength", 1.0))
+        results[pname] = res
+    keep = cfg.get("keep")
+    kept_joints = []
+    if keep:
+        # Parts carried over from the rig already in the output folder (read before it is
+        # overwritten), resampled from its texture_scale to this one.
+        kdir = os.path.join(OUT_DIR or LIT_DIR, keep.get("rig", name))
+        with open(os.path.join(kdir, "rig.json")) as f:
+            old = json.load(f)
+        f_ = T / float(old["texture_scale"])
+        imgs = {n: Image.open(os.path.join(kdir, old[n])).convert("RGBA") for n in ("albedo", "normal", "spec")}
+        oldj = {j["name"]: j for j in old["joints"]}
+        for jname, kj in keep["joints"].items():
+            oj = oldj[jname]
+            part = old["parts"][oj["part"]]
+            rx, ry, rw, rh = part["rect"]
+            size = (max(1, int(round(rw * f_))), max(1, int(round(rh * f_))))
+            tiles = {n: np.asarray(im.crop((rx, ry, rx + rw, ry + rh)).resize(size, Image.LANCZOS), np.float32) / 255.0
+                     for n, im in imgs.items()}
+            alpha = np.clip(tiles["albedo"][..., 3], 0, 1)
+            nrm = tiles["normal"][..., :3]
+            if f_ != 1.0:
+                # resampled: renormalised (a re-import at the same scale copies the texels as they are)
+                nrm = nrm * 2.0 - 1.0
+                nrm /= np.maximum(np.linalg.norm(nrm, axis=-1, keepdims=True), 1e-4)
+                nrm = nrm * 0.5 + 0.5
+                nrm[alpha < 0.5] = [0.5, 0.5, 1.0]
+            results[oj["part"]] = {"rgb": tiles["albedo"][..., :3], "alpha": alpha, "normal": nrm,
+                                   "spec": tiles["spec"][..., :3],
+                                   "pivot": [round(part["pivot"][0] * f_, 1), round(part["pivot"][1] * f_, 1)]}
+            kept_joints.append(dict(oj, place=tuple(kj["place"]), parent=kj.get("parent", oj["parent"]),
+                                    z=kj.get("z", oj["z"])))
+    rects, out_dir = write_atlas(results, name, cfg.get("atlas_width", 256))
+
+    def collider(pname):
+        a = results[pname]["alpha"] > 0.5
+        ys, xs = np.nonzero(a)
+        px_, py_ = results[pname]["pivot"]
+        x0, x1 = (xs.min() - px_) / T, (xs.max() + 1 - px_) / T
+        y0, y1 = (ys.min() - py_) / T, (ys.max() + 1 - py_) / T
+        cx, cy, hw, hh = (x0 + x1) / 2, (y0 + y1) / 2, (x1 - x0) / 2, (y1 - y0) / 2
+        r = 0.85 * min(hw, hh)
+        if hw >= hh:
+            return {"type": "capsule", "a": [round(cx - hw + r, 2), round(cy, 2)],
+                    "b": [round(cx + hw - r, 2), round(cy, 2)], "r": round(r, 2)}
+        return {"type": "capsule", "a": [round(cx, 2), round(cy - hh + r, 2)],
+                "b": [round(cx, 2), round(cy + hh - r, 2)], "r": round(r, 2)}
+
+    def place(jname):
+        """A joint's pivot in the assembly frame: its `place`, an assembly point, or {"joint",
+        "pt", "shift"}: the sheet point `pt` of another joint's part as that part is placed
+        (plus `shift`): the next joint down a chain of turned parts (the Hound's legs)."""
+        j = J[jname] if jname in J else next(j for j in kept_joints if j["name"] == jname)
+        pl = j["place"]
+        if isinstance(pl, dict):
+            q = on_part(pl["joint"], pl["pt"])
+            return (q[0] + pl.get("shift", (0, 0))[0], q[1] + pl.get("shift", (0, 0))[1])
+        return tuple(pl)
+
+    def on_part(jname, pt):
+        """A sheet point of a joint's part, in the assembly frame."""
+        _c, piv, f, _m = fitted[J[jname]["part"]]
+        q = f(pt)
+        base = place(jname)
+        return (base[0] + q[0] - piv[0], base[1] + q[1] - piv[1])
+
+    def offset(pt, ref):
+        return [round((pt[0] - ref[0]) * s, 2), round((pt[1] - ref[1]) * s, 2)]
+
+    origin = list(cfg["origin"])
+    if cfg.get("feet") and origin[1] is None:
+        # the floor: the lowest sole point of the feet at rest (a part's `sole`: sheet points)
+        origin[1] = max(on_part(f, p)[1] for f in cfg["feet"] for p in P[J[f]["part"]]["sole"])
+        print("floor at assembly y %.1f" % origin[1])
+    joints = []
+    for j in list(cfg["joints"]) + kept_joints:
+        ref = origin if not j["parent"] else place(j["parent"])
+        row = {"name": j["name"], "part": j["part"], "parent": j["parent"], "pos": offset(place(j["name"]), ref),
+               "z": j["z"], "far": bool(j.get("far", False)),
+               "collider": j.get("collider") or collider(j["part"]), "mass": j["mass"],
+               "limit": j.get("limit"), "rest_dir": j.get("rest_dir", 0), "role": j.get("role", j["name"])}
+        if j.get("lock"):
+            row["lock"] = True
+        joints.append(row)
+    sockets = {}
+    for sname, sc in cfg.get("sockets", {}).items():
+        if "pos" in sc:
+            pos = list(sc["pos"])
+        else:
+            pos = offset(sc["at"] if "at" in sc else on_part(sc["joint"], sc["pt"]), place(sc["joint"]))
+        sockets[sname] = {"joint": sc["joint"], "pos": pos}
+    data = {
+        "name": cfg["rig_name"], "kind": cfg["kind"], "texture_scale": T,
+        "albedo": "albedo.png", "normal": "normal.png", "spec": "spec.png",
+        "ground_lock": bool(cfg.get("ground_lock", cfg["kind"] == "quadruped")),
+        "parts": {n: {"rect": rects[n], "pivot": results[n]["pivot"]} for n in results},
+        "joints": joints,
+        "sockets": sockets,
+        "source": cfg["sheet"],
+    }
+    if cfg.get("feet"):
+        # The sole points (foot-local, one list for every foot): each foot part's `sole` points,
+        # from the first foot of each part; the parts' sole lines should agree (printed).
+        data["feet"] = list(cfg["feet"])
+        soles, seen = [], set()
+        for f in cfg["feet"]:
+            part = J[f]["part"]
+            if part in seen:
+                continue
+            seen.add(part)
+            pts = [offset(on_part(f, p), place(f)) for p in P[part]["sole"]]
+            print("%s sole points %s" % (part, pts))
+            soles += pts
+        data["sole_points"] = soles
     return data, out_dir
 
 

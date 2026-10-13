@@ -961,7 +961,7 @@ func _on_pickup_collected(entity_id: String) -> void:
 func _cue_for_pickup(entity_id: String) -> StringName:
 	if entity_id.findn("CACHE") != -1:
 		return &"cache_open"
-	if entity_id.begins_with("L01-HS"):
+	if entity_id.length() > 3 and entity_id.substr(3).begins_with("-HS"):  # "L01-HS01", any level
 		return &"med_patch"
 	if _re_cluster.search(entity_id):
 		return &"chip_cluster"

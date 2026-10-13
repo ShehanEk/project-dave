@@ -1,0 +1,338 @@
+{
+ "name": "M02 Security Drone",
+ "kind": "machine",
+ "texture_scale": 4,
+ "albedo": "albedo.png",
+ "normal": "normal.png",
+ "spec": "spec.png",
+ "ground_lock": false,
+ "parts": {
+  "hull": {
+   "rect": [
+    4,
+    4,
+    215,
+    83
+   ],
+   "pivot": [
+    103.3,
+    42.2
+   ]
+  },
+  "nacelle": {
+   "rect": [
+    223,
+    4,
+    91,
+    38
+   ],
+   "pivot": [
+    2.7,
+    18.9
+   ]
+  },
+  "nacelle_aft": {
+   "rect": [
+    318,
+    4,
+    91,
+    38
+   ],
+   "pivot": [
+    88.0,
+    18.9
+   ]
+  },
+  "fan": {
+   "rect": [
+    413,
+    4,
+    10,
+    26
+   ],
+   "pivot": [
+    5.2,
+    13.0
+   ]
+  },
+  "fan_b": {
+   "rect": [
+    427,
+    4,
+    10,
+    26
+   ],
+   "pivot": [
+    5.2,
+    13.0
+   ]
+  },
+  "lightbar": {
+   "rect": [
+    4,
+    91,
+    80,
+    15
+   ],
+   "pivot": [
+    39.9,
+    13.2
+   ]
+  },
+  "fork": {
+   "rect": [
+    441,
+    4,
+    60,
+    17
+   ],
+   "pivot": [
+    29.9,
+    8.0
+   ]
+  }
+ },
+ "joints": [
+  {
+   "name": "hull",
+   "part": "hull",
+   "parent": "",
+   "pos": [
+    0.0,
+    0.0
+   ],
+   "z": 3,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -16.97,
+     -0.18
+    ],
+    "b": [
+     19.07,
+     -0.18
+    ],
+    "r": 8.61
+   },
+   "mass": 9.0,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "hull"
+  },
+  {
+   "name": "fork",
+   "part": "fork",
+   "parent": "hull",
+   "pos": [
+    17.78,
+    5.81
+   ],
+   "z": 2,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -5.63,
+     0.12
+    ],
+    "b": [
+     5.68,
+     0.12
+    ],
+    "r": 1.59
+   },
+   "mass": 1.0,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "fork"
+  },
+  {
+   "name": "nacelle_aft",
+   "part": "nacelle_aft",
+   "parent": "hull",
+   "pos": [
+    -20.35,
+    -0.63
+   ],
+   "z": 4,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -17.92,
+     0.03
+    ],
+    "b": [
+     -3.32,
+     0.03
+    ],
+    "r": 3.82
+   },
+   "mass": 2.5,
+   "limit": null,
+   "rest_dir": -90,
+   "role": "nacelle_aft"
+  },
+  {
+   "name": "nacelle_fore",
+   "part": "nacelle",
+   "parent": "hull",
+   "pos": [
+    21.37,
+    -0.51
+   ],
+   "z": 2,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     3.4,
+     0.03
+    ],
+    "b": [
+     18.0,
+     0.03
+    ],
+    "r": 3.82
+   },
+   "mass": 2.5,
+   "limit": null,
+   "rest_dir": -90,
+   "role": "nacelle_fore"
+  },
+  {
+   "name": "fan_aft",
+   "part": "fan_b",
+   "parent": "nacelle_aft",
+   "pos": [
+    -19.92,
+    0.0
+   ],
+   "z": 5,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -0.05,
+     -2.15
+    ],
+    "b": [
+     -0.05,
+     2.15
+    ],
+    "r": 0.85
+   },
+   "mass": 0.3,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "fan_aft"
+  },
+  {
+   "name": "fan_fore",
+   "part": "fan",
+   "parent": "nacelle_fore",
+   "pos": [
+    19.92,
+    0.0
+   ],
+   "z": 3,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -0.05,
+     -2.15
+    ],
+    "b": [
+     -0.05,
+     2.15
+    ],
+    "r": 0.85
+   },
+   "mass": 0.3,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "fan_fore"
+  },
+  {
+   "name": "lightbar",
+   "part": "lightbar",
+   "parent": "hull",
+   "pos": [
+    -2.74,
+    -6.61
+   ],
+   "z": 5,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -8.34,
+     -1.42
+    ],
+    "b": [
+     8.39,
+     -1.42
+    ],
+    "r": 1.38
+   },
+   "mass": 0.8,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "lightbar"
+  }
+ ],
+ "sockets": {
+  "tell": {
+   "joint": "lightbar",
+   "pos": [
+    0.0,
+    -2.12
+   ]
+  },
+  "lens_light": {
+   "joint": "hull",
+   "pos": [
+    18.98,
+    -4.9
+   ]
+  },
+  "fork_tip": {
+   "joint": "fork",
+   "pos": [
+    -6.78,
+    0.09
+   ]
+  },
+  "spark_fore": {
+   "joint": "nacelle_fore",
+   "pos": [
+    11.91,
+    0.0
+   ]
+  },
+  "spark_aft": {
+   "joint": "nacelle_aft",
+   "pos": [
+    -11.91,
+    0.0
+   ]
+  },
+  "oil_drip": {
+   "joint": "hull",
+   "pos": [
+    0.0,
+    7.12
+   ]
+  },
+  "underglow": {
+   "joint": "hull",
+   "pos": [
+    -2.85,
+    1.99
+   ]
+  }
+ },
+ "source": "concept-art/m02-security-drone/m02-security-drone-parts-hd-a-v1.webp"
+}

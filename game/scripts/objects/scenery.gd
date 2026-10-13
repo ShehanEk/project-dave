@@ -39,6 +39,13 @@ extends Node2D
 ##   SUPPORT         steel column
 ##   BENCH           modern outdoor bench
 ##   BOLLARD         short bollard path light
+##   LAB_PROP        one of Level 2's painted lab pieces (batch 7), named by `lab_piece`:
+##                   lab_bench, office_pod, server_rack, partition, rail_lamps, control_pad,
+##                   test_dummy, range_bench, lane_divider, kennel_pod, alignment_console,
+##                   proto_crate, coolant_tank, and the doors freight_door_/glass_door_/
+##                   security_door_ + closed|open (scripts/world/lab_skins.gd). Drawn at its
+##                   own real-world size standing on the origin, whatever `size` is; `flip`
+##                   mirrors it. Without the art it keeps the workbench drawing.
 ##
 ## `kind`'s enum VALUES are never reordered — only appended to — because
 ## area scene files store `kind` as a plain integer; changing an existing
@@ -85,7 +92,7 @@ extends Node2D
 enum Kind {
 	HOUSE, FENCE, SHRUB, FLOWER, CLOCK, FOUNTAIN, LAMP, PLANTER, MAILBOX,
 	PORTRAIT, BREAKFAST, SIGN, CLOUD_PROJECTOR, DEPOT_DOOR, WORKBENCH, RAIL, PANEL,
-	GATE, BEACON, SUPPORT, BENCH, BOLLARD,
+	GATE, BEACON, SUPPORT, BENCH, BOLLARD, LAB_PROP,
 }
 
 const OUTLINE := SceneryDraw.OUTLINE
@@ -93,7 +100,10 @@ const TerrainSkins := preload("res://scripts/world/terrain_skins.gd")
 const PropSkins := preload("res://scripts/world/prop_skins.gd")
 const PixelFont := preload("res://scripts/world/pixel_font.gd")
 const SignSkins := preload("res://scripts/world/sign_skins.gd")
-## Props in the depot keep the code-drawn look (Block.DEPOT_AREA_ID).
+const LabSkins := preload("res://scripts/world/lab_skins.gd")
+## Props in the depot keep the code-drawn look (Block.DEPOT_AREA_ID). M2: like
+## Block, that look now follows the owning area's roof (AreaRoot.indoors from
+## its `wet_until_x`), so Level 2's roofed lab areas share it.
 const DEPOT_AREA_ID := "L01-A05"
 ## Each kind's painted piece (PropSkins.PIECES key).
 const PAINTED := {
@@ -182,6 +192,9 @@ const BEACON_HZ := 0.8
 @export var size: Vector2 = Vector2(64.0, 64.0)
 ## SIGN and CLOUD_PROJECTOR only.
 @export var text: String = ""
+## LAB_PROP only: the lab piece drawn (LabSkins) and whether it is mirrored.
+@export var lab_piece: String = ""
+@export var flip: bool = false
 
 var _lamp_pivot: Node2D
 var _lamp_glow_circle: Sprite2D
@@ -233,6 +246,12 @@ func _ready() -> void:
 
 
 func _draw() -> void:
+	if kind == Kind.LAB_PROP:
+		if LabSkins.has(lab_piece):
+			LabSkins.draw(self, lab_piece, 0.0, LabSkins.DIM, flip)
+		else:
+			_draw_workbench()
+		return
 	if _painted != "":
 		if kind == Kind.LAMP:
 			PropSkins.draw_lamp(self, size.y, _tilt, _lockdown_tint if _lockdown else Color.WHITE)
@@ -277,7 +296,7 @@ func painted_piece() -> String:
 	if not PAINTED.has(kind):
 		return ""
 	# The depot keeps its code-drawn props, but for the hand-painted doors and guide rail (C56).
-	if _area_id() == DEPOT_AREA_ID and not (kind in [Kind.DEPOT_DOOR, Kind.RAIL] and not PropSkins.hd(PAINTED[kind]).is_empty()):
+	if _in_interior() and not (kind in [Kind.DEPOT_DOOR, Kind.RAIL] and not PropSkins.hd(PAINTED[kind]).is_empty()):
 		return ""
 	var key: String = PAINTED[kind]
 	if kind == Kind.DEPOT_DOOR and name.begins_with("AnnexDoor"):
@@ -309,6 +328,21 @@ func sign_tint() -> Color:
 ## True when this prop's text draws in the pixel font.
 func _pixel_text() -> bool:
 	return kind in [Kind.SIGN, Kind.CLOUD_PROJECTOR] and text != "" and PixelFont.covers(text)
+
+
+## True when this prop stands under the owning AreaRoot's roof (its `indoors`
+## flag, from its `wet_until_x` on): it then keeps the interior (depot) look.
+func _in_interior() -> bool:
+	var n: Node = get_parent()
+	while n:
+		if "indoors" in n and "area_id" in n:
+			if not bool(n.get("indoors")):
+				return false
+			var wet = n.get("wet_until_x")
+			var local_x: float = global_position.x - (n as Node2D).global_position.x
+			return local_x >= (float(wet) if wet != null else 0.0) - 0.5
+		n = n.get_parent()
+	return false
 
 
 func _area_id() -> String:

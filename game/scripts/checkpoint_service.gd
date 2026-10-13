@@ -1,6 +1,9 @@
 extends Node
-## CheckpointService (autoload) — versioned JSON persistence for one L01 save
-## slot under user:// (see 04-godot-architecture.md "Save design").
+## CheckpointService (autoload) — versioned JSON persistence for the one
+## campaign save slot under user:// (see 04-godot-architecture.md "Save
+## design"). Since M1 (C61) a save may be in any level the `LevelDefs`
+## registry lists; its ids, checkpoints, weapons, pads and story flags are
+## checked against THAT level's LevelDef (data/levels/*.tres).
 ##
 ## Layout under `_save_dir` (default "user://sunnyvale"):
 ##   checkpoint.json      — last known-good primary save
@@ -35,58 +38,81 @@ const SETTINGS_FILE := "settings.json"
 const RECORDS_FILE := "records.json"
 
 ## Kept in sync with Session's own constants (session.gd). Not read directly
-## from Session so this file's validation never depends on autoload order.
-const SCHEMA_VERSION := 3
-const LEVEL := "L01"
+## from Session so this file's validation never depends on autoload order
+## (the level data comes from the static LevelDefs registry for the same reason).
+## 4 since M1 (C61); older saves are rejected (Continue stays off until a new run).
+const SCHEMA_VERSION := 4
 const MAX_HEALTH := 6
 const MAX_OBJECTIVE_LEN := 300
 
-const STORY_FLAGS: Array[String] = ["awakening_done", "core_installed", "hatch_open", "level_complete"]
 ## Every top-level key `Session.default_state()` produces, and no others — an
 ## extra key (e.g. a stray res:// scene path stashed by a tampered file) is
 ## rejected outright (ADV-07).
 const ALLOWED_TOP_KEYS: Array[String] = ["schema_version", "build", "level",
 		"checkpoint_id", "health", "wallet", "collected", "evidence", "keycards",
 		"upgrades", "equipped_weapon", "world_weapons", "defeated",
-		"switches", "story", "objective", "active_seconds"]
-## The only two weapon instances this prototype ever creates (CONVENTIONS.md
-## "never a third instance"). Every committed snapshot must account for
-## exactly these, each exactly once, either equipped or resting on a pad —
-## never both, never neither, never a third id (ADV-07).
-const WEAPON_INSTANCES: Array[String] = ["L01-W01-P01", "L01-W01-P02"]
-## The only real weapon pad this prototype places (a05_depot.tscn).
-const WEAPON_PADS: Array[String] = ["L01-A05-PAD01"]
-## Total collectible chip value across the whole level (completion screen's
-## "chips found / 65") — a wallet can never exceed this (ADV-07).
-const MAX_WALLET := 65
-## Only Quickcycle stage 1 is purchasable in this prototype (CONVENTIONS.md
-## "only Quickcycle stage 1 purchasable") — no upgrade field may ever record
-## more than that (ADV-07).
+		"switches", "story", "objective", "completed_levels", "active_seconds",
+		"weapon_ammo"]
+## Per level (from its LevelDef, ADV-07): the checkpoint ids are its
+## `checkpoint_markers` keys; the weapon instances are exactly one of
+## `LevelDef.weapon_instance_sets(LevelDefs.WEAPON_TYPES)` (the hand instance of
+## a carried-in type plus the world weapons), each exactly once, held or on one
+## of its pads, never both, never neither, never a third id; the story flags are
+## exactly its `story_defaults` keys; and the wallet can never exceed
+## `LevelDefs.wallet_cap(level)` (every chip of this level and the ones before it).
+## Only stage 1 of a weapon (the Quickcycle, the Extended Tube) is purchasable so
+## far (stage 2 waits for the Peacekeeper in Level 3, WeaponTypes.STAGE_GATES) —
+## no upgrade field may ever record more than that (ADV-07).
 const MAX_WEAPON_STAGE := 1
+## M3: `weapon_ammo` ({instance id: {"loaded", "reserve"}}) may be missing (a save made
+## before the Boom Broom; Session fills its finite weapons full on load). When present
+## it may only name the level's finite-ammunition instances (WeaponTypes.uses_ammo), with
+## whole counts from 0 to the tube's largest size and the reserve's size.
+const AMMO_KEYS: Array[String] = ["loaded", "reserve"]
 
 var _save_dir: String = DEFAULT_SAVE_DIR
 var _force_next_write_failure: bool = false
 
-var _re_checkpoint: RegEx
 var _re_weapon_type: RegEx
-var _re_weapon_instance: RegEx
-var _re_switch: RegEx
 var _re_evidence: RegEx
-var _re_keycard: RegEx
-var _re_generic_id: RegEx
+var _re_level_id: RegEx
+## Level id -> {"switch", "keycard", "generic"} RegExes for that level's prefix.
+var _level_res: Dictionary = {}
 
 
 func _ready() -> void:
-	_re_checkpoint = _compile("^(CP0[0-7]|UPG01)$")
+	_ensure_regexes()
+
+
+func _ensure_regexes() -> void:
+	if _re_weapon_type != null:
+		return
 	_re_weapon_type = _compile("^(W[0-9]{2}|A01)$")  # weapons, and A01 Scrap Plating (C53)
-	_re_weapon_instance = _compile("^L01-W[0-9]{2}-P[0-9]{2}$")
-	_re_switch = _compile("^L01-SW[0-9]{2}$")
 	_re_evidence = _compile("^EF[0-9]{2}$")
-	_re_keycard = _compile("^L01-KC[0-9]{2}$")
-	# Every other whitelisted id (chips, clusters, caches, capsules, enemies,
-	# pads, consoles, ...): "L01" then one or more "-UPPERCASE0-9" segments.
-	# Never matches a scene path (lowercase/"res://"/"/") or a bare node name.
-	_re_generic_id = _compile("^L01(-[A-Z0-9]+)+$")
+	_re_level_id = _compile("^L[0-9]{2}$")
+
+
+## The id patterns of one registered level, compiled once. Only the level's own
+## prefix is accepted: a save in L02 never names an L01 pickup or enemy (every
+## per-level field starts fresh in each level), and an unknown prefix never
+## validates. {} for an unregistered or malformed level id.
+func _level_regexes(level_id: String) -> Dictionary:
+	if _level_res.has(level_id):
+		return _level_res[level_id]
+	_ensure_regexes()
+	if not LevelDefs.has_level(level_id) or not _re_level_id.search(level_id):
+		return {}
+	var res := {
+		"switch": _compile("^%s-SW[0-9]{2}$" % level_id),
+		"keycard": _compile("^%s-KC[0-9]{2}$" % level_id),
+		# Every other whitelisted id (chips, clusters, caches, capsules, enemies,
+		# pads, consoles, ...): the level id then one or more "-UPPERCASE0-9"
+		# segments. Never matches a scene path (lowercase/"res://"/"/") or a
+		# bare node name.
+		"generic": _compile("^%s(-[A-Z0-9]+)+$" % level_id),
+	}
+	_level_res[level_id] = res
+	return res
 
 
 func _compile(pattern: String) -> RegEx:
@@ -266,6 +292,7 @@ func _try_load(path: String) -> Dictionary:
 ## (this is what stops a scene path or a stray node-ref-shaped string from a
 ## tampered file), or a missing/extra field.
 func validate_snapshot(data: Variant) -> Dictionary:
+	_ensure_regexes()
 	if typeof(data) != TYPE_DICTIONARY:
 		return {"ok": false, "error": "not a dictionary"}
 
@@ -283,12 +310,16 @@ func validate_snapshot(data: Variant) -> Dictionary:
 
 	if not _check_string(data, "level"):
 		return {"ok": false, "error": "level: wrong type"}
-	if String(data["level"]) != LEVEL:
+	var level := String(data["level"])
+	var def := LevelDefs.get_def(level)
+	var level_res := _level_regexes(level)
+	if def == null or level_res.is_empty():
 		return {"ok": false, "error": "wrong level"}
+	var re_generic: RegEx = level_res["generic"]
 
 	if not _check_string(data, "checkpoint_id"):
 		return {"ok": false, "error": "checkpoint_id: wrong type"}
-	if not _re_checkpoint.search(String(data["checkpoint_id"])):
+	if not def.checkpoint_markers.has(String(data["checkpoint_id"])):
 		return {"ok": false, "error": "checkpoint_id: not whitelisted"}
 
 	if not _check_int(data, "health"):
@@ -310,10 +341,10 @@ func validate_snapshot(data: Variant) -> Dictionary:
 	# 1e300) is well outside int64 range and must be rejected on its own
 	# terms, never narrowed/clamped by the cast first (ADV-07).
 	var wallet_f := float(data["wallet"])
-	if wallet_f < 0.0 or wallet_f > float(MAX_WALLET):
+	if wallet_f < 0.0 or wallet_f > float(LevelDefs.wallet_cap(level)):
 		return {"ok": false, "error": "wallet: out of range"}
 
-	var collected_check := _check_id_value_dict(data.get("collected"), _re_generic_id, TYPE_INT)
+	var collected_check := _check_id_value_dict(data.get("collected"), re_generic, TYPE_INT)
 	if not collected_check.ok:
 		return {"ok": false, "error": "collected: %s" % collected_check.error}
 	for v in data["collected"].values():
@@ -329,7 +360,7 @@ func validate_snapshot(data: Variant) -> Dictionary:
 	if typeof(data.get("keycards")) != TYPE_ARRAY:
 		return {"ok": false, "error": "keycards: wrong type"}
 	for entry in data["keycards"]:
-		if typeof(entry) != TYPE_STRING or not _re_keycard.search(String(entry)):
+		if typeof(entry) != TYPE_STRING or not (level_res["keycard"] as RegEx).search(String(entry)):
 			return {"ok": false, "error": "keycards: non-whitelisted id"}
 
 	var upgrades_check := _check_id_value_dict(data.get("upgrades"), _re_weapon_type, TYPE_INT)
@@ -342,35 +373,61 @@ func validate_snapshot(data: Variant) -> Dictionary:
 	if not _check_string(data, "equipped_weapon"):
 		return {"ok": false, "error": "equipped_weapon: wrong type"}
 	var equipped := String(data["equipped_weapon"])
-	if not WEAPON_INSTANCES.has(equipped):
+	var instance_sets: Array = def.weapon_instance_sets(LevelDefs.WEAPON_TYPES)
+	var known_instances: Array = []
+	for instance_set in instance_sets:
+		for instance_id in instance_set:
+			if not known_instances.has(instance_id):
+				known_instances.append(instance_id)
+	if not known_instances.has(equipped):
 		return {"ok": false, "error": "equipped_weapon: not whitelisted"}
 
 	if typeof(data.get("world_weapons")) != TYPE_DICTIONARY:
 		return {"ok": false, "error": "world_weapons: wrong type"}
+	var pads := def.weapon_pads()
 	var world_instances: Array = []
 	for k in data["world_weapons"].keys():
-		if typeof(k) != TYPE_STRING or not WEAPON_INSTANCES.has(String(k)):
+		if typeof(k) != TYPE_STRING or not known_instances.has(String(k)):
 			return {"ok": false, "error": "world_weapons: non-whitelisted instance id"}
 		world_instances.append(String(k))
 		var v = data["world_weapons"][k]
-		if typeof(v) != TYPE_STRING or not WEAPON_PADS.has(String(v)):
+		if typeof(v) != TYPE_STRING or not pads.has(String(v)):
 			return {"ok": false, "error": "world_weapons: non-whitelisted pad id"}
 	# Exactly one held instance plus world_weapons must together account for
-	# every known instance exactly once — never a duplicate (the same
-	# instance both held and resting on a pad), never one missing (deleted
-	# from the world), never a third instance smuggled in (ADV-07).
+	# every instance of ONE of the level's instance sets exactly once — never a
+	# duplicate (the same instance both held and resting on a pad), never one
+	# missing (deleted from the world), never a third instance smuggled in
+	# (ADV-07).
 	var accounted: Array = [equipped]
 	accounted.append_array(world_instances)
-	if accounted.size() != WEAPON_INSTANCES.size():
+	var matched := false
+	var size_matched := false
+	for instance_set in instance_sets:
+		if accounted.size() != instance_set.size():
+			continue
+		size_matched = true
+		var all_once := true
+		for instance_id in instance_set:
+			if accounted.count(instance_id) != 1:
+				all_once = false
+				break
+		if all_once:
+			matched = true
+			break
+	if not size_matched:
 		return {"ok": false, "error": "world_weapons: instance count mismatch"}
-	for instance_id in WEAPON_INSTANCES:
-		if accounted.count(instance_id) != 1:
-			return {"ok": false, "error": "world_weapons: instance %s not accounted for exactly once" % instance_id}
+	if not matched:
+		return {"ok": false, "error": "world_weapons: the level's instances are not each accounted for exactly once"}
+
+	if data.has("weapon_ammo"):
+		var ammo_check := _check_weapon_ammo(data["weapon_ammo"], accounted)
+		if not ammo_check.ok:
+			return {"ok": false, "error": "weapon_ammo: %s" % ammo_check.error}
 
 	if typeof(data.get("defeated")) != TYPE_DICTIONARY:
 		return {"ok": false, "error": "defeated: wrong type"}
 	for k in data["defeated"].keys():
-		if typeof(k) != TYPE_STRING or not _re_generic_id.search(String(k)):
+		if typeof(k) != TYPE_STRING or not re_generic.search(String(k)):
 			return {"ok": false, "error": "defeated: non-whitelisted id"}
 		if typeof(data["defeated"][k]) != TYPE_BOOL:
 			return {"ok": false, "error": "defeated: wrong value type"}
@@ -378,7 +435,7 @@ func validate_snapshot(data: Variant) -> Dictionary:
 	if typeof(data.get("switches")) != TYPE_DICTIONARY:
 		return {"ok": false, "error": "switches: wrong type"}
 	for k in data["switches"].keys():
-		if typeof(k) != TYPE_STRING or not _re_switch.search(String(k)):
+		if typeof(k) != TYPE_STRING or not (level_res["switch"] as RegEx).search(String(k)):
 			return {"ok": false, "error": "switches: non-whitelisted id"}
 		if typeof(data["switches"][k]) != TYPE_BOOL:
 			return {"ok": false, "error": "switches: wrong value type"}
@@ -386,9 +443,9 @@ func validate_snapshot(data: Variant) -> Dictionary:
 	if typeof(data.get("story")) != TYPE_DICTIONARY:
 		return {"ok": false, "error": "story: wrong type"}
 	var story: Dictionary = data["story"]
-	if story.size() != STORY_FLAGS.size():
+	if story.size() != def.story_defaults.size():
 		return {"ok": false, "error": "story: unexpected flag set"}
-	for flag in STORY_FLAGS:
+	for flag in def.story_defaults.keys():
 		if not story.has(flag) or typeof(story[flag]) != TYPE_BOOL:
 			return {"ok": false, "error": "story: missing/invalid flag %s" % flag}
 
@@ -397,6 +454,19 @@ func validate_snapshot(data: Variant) -> Dictionary:
 	if String(data["objective"]).length() > MAX_OBJECTIVE_LEN:
 		return {"ok": false, "error": "objective: too long"}
 
+	# M1: the levels finished before this one, each a registered level that
+	# comes earlier in the campaign, at most once.
+	if typeof(data.get("completed_levels")) != TYPE_ARRAY:
+		return {"ok": false, "error": "completed_levels: wrong type"}
+	var level_index := LevelDefs.index_of(level)
+	var seen_levels: Array = []
+	for entry in data["completed_levels"]:
+		if typeof(entry) != TYPE_STRING or not LevelDefs.has_level(String(entry)):
+			return {"ok": false, "error": "completed_levels: non-whitelisted level id"}
+		if LevelDefs.index_of(String(entry)) >= level_index or seen_levels.has(String(entry)):
+			return {"ok": false, "error": "completed_levels: not a distinct earlier level"}
+		seen_levels.append(String(entry))
+
 	# ADV-09: the point-in-time mirror of run_meta["active_seconds"] Session
 	# writes in on each commit.
 	if not _check_int(data, "active_seconds"):
@@ -404,6 +474,31 @@ func validate_snapshot(data: Variant) -> Dictionary:
 	if float(data["active_seconds"]) < 0.0:
 		return {"ok": false, "error": "active_seconds: negative"}
 
+	return {"ok": true, "error": ""}
+
+
+## M3: every key one of `instances` (this save's held and resting weapons) of a finite-
+## ammunition type, every value exactly {"loaded", "reserve"} with whole counts in range.
+func _check_weapon_ammo(value: Variant, instances: Array) -> Dictionary:
+	if typeof(value) != TYPE_DICTIONARY:
+		return {"ok": false, "error": "wrong type"}
+	for k in value.keys():
+		if typeof(k) != TYPE_STRING or not instances.has(String(k)):
+			return {"ok": false, "error": "non-whitelisted instance id '%s'" % str(k)}
+		var t := String(k).split("-")[1] if String(k).split("-").size() >= 3 else ""
+		if not WeaponTypes.uses_ammo(t):
+			return {"ok": false, "error": "'%s' carries no ammunition" % str(k)}
+		var e = value[k]
+		if typeof(e) != TYPE_DICTIONARY or e.size() != AMMO_KEYS.size():
+			return {"ok": false, "error": "wrong entry for '%s'" % str(k)}
+		for field in AMMO_KEYS:
+			if not _check_int(e, field):
+				return {"ok": false, "error": "%s.%s: wrong type" % [str(k), field]}
+			var f := float(e[field])
+			if f != floorf(f) or f < 0.0:
+				return {"ok": false, "error": "%s.%s: not a whole count" % [str(k), field]}
+		if float(e["loaded"]) > float(WeaponTypes.max_capacity(t)) or float(e["reserve"]) > float(WeaponTypes.reserve_capacity(t)):
+			return {"ok": false, "error": "%s: out of range" % str(k)}
 	return {"ok": true, "error": ""}
 
 
@@ -468,8 +563,10 @@ func load_settings() -> Dictionary:
 
 
 ## C53: the best-run record ({"points": int, "seconds": float, "rank": String}), or {}.
-func load_records() -> Dictionary:
-	var path := _save_dir.path_join(RECORDS_FILE)
+## One per level (M1): the first level keeps RECORDS_FILE, every later level has
+## its own `records_<id>.json` beside it.
+func load_records(level_id: String = "") -> Dictionary:
+	var path := _records_path(level_id)
 	if not FileAccess.file_exists(path):
 		return {}
 	var f := FileAccess.open(path, FileAccess.READ)
@@ -480,15 +577,21 @@ func load_records() -> Dictionary:
 	return parsed if typeof(parsed) == TYPE_DICTIONARY else {}
 
 
-func save_records(data: Dictionary) -> bool:
+func save_records(data: Dictionary, level_id: String = "") -> bool:
 	if not _ensure_dir():
 		return false
-	var writer := FileAccess.open(_save_dir.path_join(RECORDS_FILE), FileAccess.WRITE)
+	var writer := FileAccess.open(_records_path(level_id), FileAccess.WRITE)
 	if writer == null:
 		return false
 	writer.store_string(JSON.stringify(data, "\t"))
 	writer.close()
 	return true
+
+
+func _records_path(level_id: String) -> String:
+	if level_id == "" or level_id == LevelDefs.FIRST_LEVEL:
+		return _save_dir.path_join(RECORDS_FILE)
+	return _save_dir.path_join("records_%s.json" % level_id.to_lower().validate_filename())
 
 
 ## Recursively deletes everything under `path`, including `path` itself.

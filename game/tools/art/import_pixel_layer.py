@@ -21,7 +21,7 @@ from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PROJECT = os.path.normpath(os.path.join(HERE, "..", ".."))
-REPO = os.path.normpath(os.path.join(PROJECT, "..", ".."))
+REPO = os.path.normpath(os.path.join(PROJECT, ".."))  # the game lives at <repo>/game (C61)
 OUT_DIR = os.path.join(PROJECT, "assets", "environment", "sunnyvale")
 
 # One entry per layer: the source image, its block size and grid offset

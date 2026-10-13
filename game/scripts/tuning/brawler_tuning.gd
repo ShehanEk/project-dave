@@ -40,12 +40,29 @@ enum Strike { SWING, LUNGE }
 @export var swing_active_to: float = 0.2
 @export var swing_step_speed: float = 60.0
 @export var recovery_time: float = 0.80
+## A lunge chain (the K01 Hound's double lunge, M4): after each lunge but the last it
+## crouches again for `relunge_time`, its own amber-then-red blip (red for the last
+## red_time), turning to face Dave through the amber part, then lunges again. 1 = the
+## single strike every Level 1 brawler has.
+@export var lunge_count: int = 1
+@export var relunge_time: float = 0.5
+## A K9 and its handler (M4, the fairness rules' "a handler starts 1.5 seconds after the
+## chain"): the handler's windup waits until `handler_delay` after this brawler's lunge
+## chain ends, and this brawler waits `handled_rest_time` after its chain (its recovery
+## included) before another, so the handler gets his turn. Read from the K9's tuning.
+@export var handler_delay: float = 1.5
+@export var handled_rest_time: float = 3.2
 ## Attack box (px): size, and the centre's offset (x toward facing, y up).
 @export var attack_box_size: Vector2 = Vector2(56.0, 60.0)
 @export var attack_box_offset: Vector2 = Vector2(38.0, -46.0)
 ## Starts dormant (a still, bowed pose, a dim standby light) until its
 ## encounter activates — the Staffers in their doorways.
 @export var dormant_until_active: bool = false
+
+## The body's half width and height (px), for the floor and wall probes and the warning
+## cue (a person: 11 x 94; the Hound is long and low).
+@export var body_half_width: float = 11.0
+@export var body_height: float = 94.0
 
 @export_group("Presentation")
 @export_file("*.json") var rig_path: String = ""
@@ -71,6 +88,10 @@ enum Strike { SWING, LUNGE }
 ## the one its entity id picks (rig_path when the list is empty). Looks only: stats, clips and
 ## timings are the tuning's.
 @export var rig_variants: PackedStringArray = []
+## The tell light's size (its texture_scale) and its peak energy at the end of the windup.
+## Small for a body close to the light (the Hound's jaw would wash its whole head red).
+@export var tell_light_scale: float = 1.1
+@export var tell_light_energy: float = 1.6
 ## True if the tell joint's own painted emissive spot (the baton tip) glows
 ## with the tell colour too.
 @export var tell_emissive: bool = true
@@ -80,6 +101,11 @@ enum Strike { SWING, LUNGE }
 ## joint, joint-local point and the light's energy.
 @export var link_joint: String = ""
 @export var link_offset: Vector2 = Vector2.ZERO
+## The hit jolt: joint -> radians, signed away from the shot (empty = a person's).
+@export var hit_jolt: Dictionary = {}
+## Parts that twitch after death (the Hound's legs), and for how long.
+@export var death_twitch_joints: PackedStringArray = []
+@export var death_twitch_time: float = 1.0
 @export var voice_notice: PackedStringArray = []
 @export var voice_windup: PackedStringArray = []
 @export var voice_hurt: PackedStringArray = []

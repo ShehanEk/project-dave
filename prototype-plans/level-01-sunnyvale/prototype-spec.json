@@ -48,7 +48,7 @@
     "exact_version": "4.7.2.stable.official.ed1daf0bf",
     "pin_version_at": "M0"
   },
-  "build_path_from_repo_root": "prototypes/sunnyvale-godot",
+  "build_path_from_repo_root": "game",
   "target_platform_proposal": "Windows desktop; keyboard and mouse",
   "duration": {
     "main_route_target_seconds": 750,

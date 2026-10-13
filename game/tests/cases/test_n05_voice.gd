@@ -11,7 +11,7 @@ extends TestCase
 ##      holds each caption at least as long as its clip plus CoreNode.VOICE_BEAT
 ##      without shortening the authored hold. Control still returns after the
 ##      scene's own timeline (19.0 s authored, 19.8 to 20.4 s with the clips).
-##   2. The lockdown announcement (pa_remain_calm, "Security PA", PA_CALM_LINE)
+##   2. The lockdown announcement (pa_remain_calm, "Security PA", l01.tres lockdown_pa_line)
 ##      starts PA_CALM_DELAY after control is back, after the last Adam caption is
 ##      gone (no overlap), never takes control away, holds its caption at least as
 ##      long as the clip, and plays once: not again after a death rebuild.
@@ -203,8 +203,11 @@ func _test_constants_match_the_authored_timeline() -> void:
 	check(LevelDirector.PA_BEAT >= Audio.voice_length(PA_LETHAL) + LevelDirector.PA_VOICE_BEAT,
 			"the PA caption's base hold (%.1fs) already covers the pa_lethal clip (%.2fs) plus a beat"
 			% [LevelDirector.PA_BEAT, Audio.voice_length(PA_LETHAL)])
-	check(LevelDirector.PA_CALM_LINE == "Attention, staff. For your comfort, all exits are now closed. Please remain calm.",
+	check(LevelDefs.get_def("L01").lockdown_pa_line == "Attention, staff. For your comfort, all exits are now closed. Please remain calm.",
 			"the lockdown announcement's caption is the spoken line")
+	check_eq(LevelDefs.get_def("L01").lockdown_pa_voice, PA_CALM, "Level 1's lockdown announcement speaks pa_remain_calm")
+	check_eq(LevelDefs.get_def("L01").exit_pa_voice, PA_LETHAL, "Level 1's exit PA speaks pa_lethal")
+	check_eq(LevelDefs.get_def("L01").exit_pa_speaker, LevelDirector.PA_SPEAKER, "Level 1's exit line is the Security PA's")
 	check(LevelDirector.PA_SPEAKER in SubtitlePanel.SPEAKER_COLORS,
 			"the PA speaker has its caption colour, so both PA lines share it")
 
@@ -267,7 +270,7 @@ func _test_full_watch_speaks_dialogue_then_announcement() -> void:
 	if calm >= 0:
 		var c: Dictionary = snaps[calm]
 		check(c.playing, "the announcement's voice is playing when its caption appears")
-		check(c.vis and c.spk == LevelDirector.PA_SPEAKER and c.txt == LevelDirector.PA_CALM_LINE,
+		check(c.vis and c.spk == LevelDirector.PA_SPEAKER and c.txt == LevelDefs.get_def("L01").lockdown_pa_line,
 				"the announcement is captioned as the Security PA (%s: %s)" % [c.spk, c.txt])
 		check(c.ctl, "the player has control while the announcement speaks")
 		check(calm > control_back, "the announcement comes after control is back")
@@ -345,7 +348,7 @@ func _test_pa_lethal_plays_with_the_caption() -> void:
 	if start >= 0:
 		var d: Dictionary = snaps[start]
 		check(d.playing, "the pa_lethal voice is playing")
-		check(d.vis and d.spk == LevelDirector.PA_SPEAKER and d.txt == LevelDirector.PA_LINE,
+		check(d.vis and d.spk == LevelDirector.PA_SPEAKER and d.txt == LevelDefs.get_def("L01").exit_pa_line,
 				"the existing PA caption comes up with it (%s: %s)" % [d.spk, d.txt])
 		var clip: float = d.clip
 		var held := _caption_hold(snaps, PA_LETHAL)
@@ -369,7 +372,7 @@ func _test_wicket_takes_over_a_running_announcement() -> void:
 	check_eq(Audio._voice_current, PA_LETHAL, "the wicket's line takes the voice over from the announcement")
 	check_eq(_sequence(snaps), [PA_LETHAL], "only the wicket's line speaks after the wicket")
 	var held := _caption_hold(snaps, PA_LETHAL)
-	check(snaps[0].vis and snaps[0].txt == LevelDirector.PA_LINE, "the wicket's caption replaces the announcement's")
+	check(snaps[0].vis and snaps[0].txt == LevelDefs.get_def("L01").exit_pa_line, "the wicket's caption replaces the announcement's")
 	check(held >= Audio.voice_length(PA_LETHAL) + LevelDirector.PA_VOICE_BEAT - SLACK,
 			"the announcement's caption timer does not clear the wicket's line early (held %.2fs)" % held)
 	await _finish(level)

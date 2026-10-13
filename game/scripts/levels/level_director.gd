@@ -1,6 +1,9 @@
 class_name LevelDirector
 extends Node2D
-## Boots L01: instances the six area scenes in x-order under an "Areas"
+## Boots one level of the campaign from its LevelDef (M1, C61:
+## `level_def`, data/levels/*.tres via the LevelDefs registry; `level_id`
+## picks it, or Session's current level when empty): instances the level's
+## area scenes in x-order under an "Areas"
 ## container, each offset by the cumulative `width` of the areas placed
 ## before it (so an area author editing their own `width` never breaks the
 ## seam with a neighbour — per CONVENTIONS.md's AreaRoot seam contract),
@@ -24,21 +27,29 @@ extends Node2D
 ## and `scenes/ui/completion.tscn` — replacing M3's temporary end overlay.
 ## `level_ended`/`level_ended_flag` stay public so existing tests can assert
 ## full-route completion without scraping the completion screen's UI.
+## Everything level-specific (areas, checkpoint markers, the depot area, the
+## PA lines and voices, the screen-wide looks, the exit checkpoint) is read
+## from `level_def`; Level 1's values live in data/levels/l01.tres.
 
 signal level_ended
 ## M5 part 2: PauseMenu's "Quit to title" (confirmed) bubbles up to whoever
 ## instanced this LevelDirector (Main), which frees it and shows the title
 ## screen again. LevelDirector never manages the title screen itself.
 signal quit_to_title_requested
+## M1: the completion screen's Continue. Main saves the next level's first
+## checkpoint (Session.advance_to_level()) and swaps this level for it.
+signal next_level_requested(level_id: String)
+## M1: "Play again" from a level other than the first. A new run starts at the
+## first level, which this director (built for another level) cannot rebuild
+## in place, so Main swaps the level (the first level's director keeps its
+## in-place rebuild).
+signal new_run_requested
 
-const AREA_SCENE_PATHS: Array[String] = [
-	"res://scenes/levels/areas/a01_gate.tscn",
-	"res://scenes/levels/areas/a02_gardens.tscn",
-	"res://scenes/levels/areas/a03_roofs.tscn",
-	"res://scenes/levels/areas/a04_square.tscn",
-	"res://scenes/levels/areas/a05_depot.tscn",
-	"res://scenes/levels/areas/a06_exit.tscn",
-]
+## Which LevelDefs level to build; "" = the level Session's run is in.
+## level_01.tscn sets "L01"; Main's level.tscn leaves it empty.
+@export var level_id: String = ""
+## The level being built. Set before add_child() to override `level_id`.
+var level_def: LevelDef = null
 
 const HERO_SCENE := "res://scenes/actors/hero.tscn"
 const CAMERA_SCENE := "res://scenes/actors/game_camera.tscn"
@@ -47,21 +58,16 @@ const HUD_SCENE := "res://scenes/ui/hud.tscn"
 const SUBTITLE_SCENE := "res://scenes/ui/subtitle_panel.tscn"
 const COMPLETION_SCENE := "res://scenes/ui/completion.tscn"
 const PAUSE_MENU_SCENE := "res://scenes/ui/pause.tscn"
-const DEPOT_AREA_ID := "L01-A05"
-## Revamp (C24): the night-look screen overlay (vignette, grain, lockdown
-## wash). Optional: instanced only if the scene exists, owned by the world-
-## visuals pass (scenes/world/night_overlay.tscn).
-const NIGHT_OVERLAY_SCENE := "res://scenes/world/night_overlay.tscn"
-## C35: the character-only moonlight that rims Dave and the lit enemies.
-## Optional in the same way as the overlay (scripts/world/night_lighting.gd).
-const NIGHT_LIGHTING_SCENE := "res://scenes/world/night_lighting.tscn"
-## Optional in the same way: rain and the neon glow (scripts/world/atmosphere.gd, C58).
-const ATMOSPHERE_SCENE := "res://scenes/world/atmosphere.tscn"
+## The screen-wide looks (the night overlay with its vignette, grain and lockdown
+## wash, C24; the character-only moonlight, C35; rain and the neon glow, C58)
+## are the LevelDef's `overlay_scenes`, each instanced only if the scene exists.
 ## C28, the turn to lethal force: as Dave badges out, security command's
-## flat PA voice (not Adam's) gives its one line; the completion screen
-## opens after it. The run is already committed and input is off.
+## flat PA voice (not Adam's) gives its one line (the LevelDef's `exit_pa_line`
+## and `exit_pa_voice`, Level 1's `pa_lethal`); the completion screen opens
+## after it. The run is already committed and input is off. PA_SPEAKER is the
+## Security PA's caption name (the route lines and the lockdown announcement
+## use it too).
 const PA_SPEAKER := "Security PA"
-const PA_LINE := "All teams: lethal force is authorized. Harlan is armed."
 ## How long that caption is held before the completion screen opens. N05: it
 ## speaks the `pa_lethal` clip (3.55s), so this grew from 3.2s to cover the clip
 ## plus a beat; a longer clip would extend the hold further (see
@@ -69,22 +75,17 @@ const PA_LINE := "All teams: lethal force is authorized. Harlan is armed."
 const PA_BEAT := 4.0
 ## C53: between the intro comic and SC01 nobody spoke. The campus Security PA now marks the
 ## route, text only, once per run, before the depot event (Adam's first words stay for SC01,
-## story-scenes.md). Keyed by pacing beat; each line stays up ROUTE_PA_HOLD seconds.
-const ROUTE_PA_LINES := {
-	"L01-A02-B01": "Night shift, be advised: a flagged former employee is on campus. Dave Harlan. Detain on sight.",
-	"L01-A03-B01": "Rooftop cameras have Harlan heading for the server depot. All units, cut him off.",
-	"L01-A04-B01": "Reminder to staff: your Link keeps you calm and safe. Please stay at your workstations.",
-}
+## story-scenes.md). Keyed by pacing beat (the LevelDef's `route_pa_lines`); each line
+## stays up ROUTE_PA_HOLD seconds.
 const ROUTE_PA_HOLD := 5.5
 ## N05, the lockdown announcement: once Adam's scene is over and the player has
-## control back, the same Security PA reads this caption with the
-## `pa_remain_calm` clip, once per lockdown (never on Continue: it keys off the
-## live `awakening_done` signal, which a load does not re-emit). It starts
-## PA_CALM_DELAY seconds after control returns (never delaying that hand-back),
-## and the caption stays up PA_CALM_HOLD seconds, or the clip plus
+## control back, the same Security PA reads the LevelDef's `lockdown_pa_line` with
+## its `lockdown_pa_voice` clip (Level 1: `pa_remain_calm`), once per lockdown (never
+## on Continue: it keys off the live `awakening_done` signal, which a load does not
+## re-emit). It starts PA_CALM_DELAY seconds after control returns (never delaying
+## that hand-back), and the caption stays up PA_CALM_HOLD seconds, or the clip plus
 ## PA_VOICE_BEAT when that is longer. It is ticked from `_physics_process`, so
 ## it ends with the level and freezes with the pause menu.
-const PA_CALM_LINE := "Attention, staff. For your comfort, all exits are now closed. Please remain calm."
 const PA_CALM_DELAY := 0.8
 const PA_CALM_HOLD := 6.0
 ## The beat a PA caption is held past the end of its voice clip.
@@ -92,24 +93,13 @@ const PA_VOICE_BEAT := 0.35
 enum LockdownPa { IDLE, WAIT_CONTROL, DELAY, SPEAKING }
 
 ## Session `checkpoint_id` -> [index into `areas`, marker name under that
-## area's Markers node]. CP00 is the initial spawn; CP01-CP03 are the
-## recovery stations; CP04 is the core node's own safe spot; UPG01 is the
-## workbench purchase/service checkpoint (its own "Respawn" marker mirrored here
-## per CONVENTIONS.md IDs "checkpoints `CP00`...`CP05`" / "workbench `L01-UPG01`");
-## CP05 is the exit wicket's safe landing (M5 wires the actual commit).
-## CP06 (mid-plaza, A04) and CP07 (mid-exit, A06) are the fun pass's extra
-## recovery stations (C41), numbered after the original six.
-const CHECKPOINT_MARKERS := {
-	"CP00": [0, "Spawn_CP00"],
-	"CP01": [1, "Respawn_CP01"],
-	"CP02": [2, "Respawn_CP02"],
-	"CP06": [3, "Respawn_CP06"],
-	"CP03": [3, "Respawn_CP03"],
-	"CP04": [4, "Respawn_CP04"],
-	"UPG01": [4, "Respawn_UPG01"],
-	"CP07": [5, "Respawn_CP07"],
-	"CP05": [5, "Respawn_CP05"],
-}
+## area's Markers node] is the LevelDef's `checkpoint_markers` (see
+## `checkpoint_markers()`). Level 1: CP00 is the initial spawn; CP01-CP03 are
+## the recovery stations; CP04 is the core node's own safe spot; UPG01 is the
+## workbench purchase/service checkpoint (its own "Respawn" marker); CP05 is the
+## exit wicket's safe landing (the LevelDef's `exit_checkpoint`); CP06
+## (mid-plaza, A04) and CP07 (mid-exit, A06) are the fun pass's extra recovery
+## stations (C41), numbered after the original six.
 
 ## N05: which ambience bed plays where the hero is (the decision table).
 const AmbienceMap := preload("res://scripts/audio/ambience_map.gd")
@@ -159,6 +149,7 @@ var _pa_lethal_active: bool = false
 
 
 func _ready() -> void:
+	_resolve_level_def()
 	if Session:
 		Session.story_state_changed.connect(_on_story_state_changed)
 		Session.run_reset.connect(_on_run_reset_route_pa)
@@ -187,14 +178,11 @@ func _ready() -> void:
 	if get_tree().get_first_node_in_group("subtitle_panel") == null:
 		add_child(load(SUBTITLE_SCENE).instantiate())
 
-	if ResourceLoader.exists(NIGHT_OVERLAY_SCENE):
-		add_child(load(NIGHT_OVERLAY_SCENE).instantiate())
-	if ResourceLoader.exists(NIGHT_LIGHTING_SCENE):
-		add_child(load(NIGHT_LIGHTING_SCENE).instantiate())
-	if ResourceLoader.exists(ATMOSPHERE_SCENE):
-		add_child(load(ATMOSPHERE_SCENE).instantiate())
+	for overlay_path in level_def.overlay_scenes:
+		if ResourceLoader.exists(overlay_path):
+			add_child(load(overlay_path).instantiate())
 
-	_place_hero_at_checkpoint(String(Session.state.get("checkpoint_id", "CP00")))
+	_place_hero_at_checkpoint(String(Session.state.get("checkpoint_id", level_def.first_checkpoint)))
 	var start_rect := _camera_target_rect_for_area(_area_for_x(hero.global_position.x))
 	_camera_top = start_rect.position.y
 	_camera_bottom = start_rect.position.y + start_rect.size.y
@@ -222,6 +210,25 @@ func _ready() -> void:
 		if hero:
 			hero.input_enabled = false
 		_show_completion_screen()
+
+
+## `level_def` from `level_id`, else from the level Session's run is in, else
+## the first level (a director must always have a level to build).
+func _resolve_level_def() -> void:
+	if level_def != null:
+		return
+	var wanted := level_id
+	if wanted == "" and Session:
+		wanted = Session.current_level_id()
+	level_def = LevelDefs.get_def(wanted)
+	if level_def == null:
+		push_error("LevelDirector: unknown level '%s', building %s" % [wanted, LevelDefs.FIRST_LEVEL])
+		level_def = LevelDefs.get_def(LevelDefs.FIRST_LEVEL)
+
+
+## Session checkpoint id -> [area index, marker name] for this level.
+func checkpoint_markers() -> Dictionary:
+	return level_def.checkpoint_markers
 
 
 func _process(delta: float) -> void:
@@ -268,19 +275,20 @@ func _exit_tree() -> void:
 
 
 ## Objectives (05-content-and-assets.md): "Reach the server depot." (the
-## new-run default) becomes "Plug into Adam's core node." the moment the
-## hero first steps into the depot (A05), before SC01. Guarded on the
-## objective's own current value, so this only ever fires once per run (and
-## never overwrites a later objective on a subsequent visit/death).
+## level's `objective_start`) becomes "Plug into Adam's core node." the moment
+## the hero first steps into the depot (the LevelDef's `depot_area_id`, Level 1's
+## A05), before SC01. Guarded on the objective's own current value, so this only
+## ever fires once per run (and never overwrites a later objective on a
+## subsequent visit/death). A level without a depot area never does this.
 func _maybe_update_depot_objective() -> void:
-	if hero == null or Session == null:
+	if hero == null or Session == null or level_def.depot_area_id == "":
 		return
-	if Session.get_objective() != Session.OBJECTIVE_START:
+	if Session.get_objective() != level_def.objective_start:
 		return
 	if Session.get_story("awakening_done"):
 		return
 	var area := _area_for_x(hero.global_position.x)
-	if area and area.area_id == DEPOT_AREA_ID:
+	if area and area.area_id == level_def.depot_area_id:
 		Session.set_objective(Session.OBJECTIVE_DEPOT)
 
 
@@ -370,7 +378,7 @@ func _build_areas() -> void:
 
 	areas = []
 	var x := 0.0
-	for path in AREA_SCENE_PATHS:
+	for path in level_def.area_scenes:
 		var area: AreaRoot = (load(path) as PackedScene).instantiate()
 		area.position.x = x
 		_areas_root.add_child(area)
@@ -444,7 +452,8 @@ func _find_exit_wickets(node: Node) -> Array:
 # --- checkpoints / respawn ----------------------------------------------------
 
 func _place_hero_at_checkpoint(checkpoint_id: String) -> void:
-	var entry: Array = CHECKPOINT_MARKERS.get(checkpoint_id, CHECKPOINT_MARKERS["CP00"])
+	var markers := checkpoint_markers()
+	var entry: Array = markers.get(checkpoint_id, markers[level_def.first_checkpoint])
 	var area: AreaRoot = areas[entry[0]]
 	var marker := area.get_marker(entry[1])
 	var pos: Vector2 = marker.global_position if marker else area.global_position
@@ -474,7 +483,7 @@ func _on_run_reset_route_pa() -> void:
 
 
 func _on_beat_entered_route_pa(beat_id: String, _area_id: String) -> void:
-	if not ROUTE_PA_LINES.has(beat_id) or _route_pa_said.has(beat_id):
+	if not level_def.route_pa_lines.has(beat_id) or _route_pa_said.has(beat_id):
 		return
 	if Session and Session.get_story("awakening_done") == true:
 		return
@@ -482,7 +491,7 @@ func _on_beat_entered_route_pa(beat_id: String, _area_id: String) -> void:
 	if subtitles == null:
 		return
 	_route_pa_said[beat_id] = true
-	var line: String = ROUTE_PA_LINES[beat_id]
+	var line: String = level_def.route_pa_lines[beat_id]
 	subtitles.say(PA_SPEAKER, line)
 	await get_tree().create_timer(ROUTE_PA_HOLD, false).timeout
 	if is_instance_valid(subtitles) and subtitles.current_line() == line:
@@ -593,7 +602,8 @@ func _nearest_safe_marker(area: AreaRoot) -> Marker2D:
 
 
 ## Real ending (replaces M3's temporary "wicket reached" overlay): commit
-## CP05, set the final objective and `level_complete` story flag, emit
+## the level's `exit_checkpoint` (Level 1: CP05), set its final objective
+## (`objective_complete`) and the `level_complete` story flag, emit
 ## `Session.level_completed`, disable hero input, and show the completion
 ## screen with this run's totals. Exactly like `commit()`'s own contract, a
 ## persistence failure here still shows the completion screen (with the same
@@ -605,11 +615,11 @@ func _on_wicket_reached() -> void:
 		return
 	level_ended_flag = true
 	Session.set_story("level_complete", true)
-	Session.set_objective(Session.OBJECTIVE_COMPLETE)
+	Session.set_objective(level_def.objective_complete)
 	# On a persistence failure `commit()` itself emits `save_failed`, which the
 	# HUD is already listening to (its own toast fires the usual honest
 	# message) — nothing extra to do here beyond still showing the screen.
-	Session.commit("CP05")
+	Session.commit(level_def.exit_checkpoint)
 	Session.level_completed.emit()
 	if hero:
 		hero.input_enabled = false
@@ -618,17 +628,19 @@ func _on_wicket_reached() -> void:
 		telemetry.completion(
 				float(Session.run_meta.get("active_seconds", 0.0)),
 				Session.chips_found(),
-				Session.has_evidence("EF01"),
-				Session.weapon_stage("W01"))
+				level_def.evidence_id != "" and Session.has_evidence(level_def.evidence_id),
+				Session.weapon_stage(Session.weapon_type_of(Session.equipped_weapon())))
 	# The wicket's line takes over the PA from any lockdown announcement still
 	# running (its caption and voice are cut; nothing overlaps).
 	_cancel_lockdown_pa()
 	var subtitles := get_tree().get_first_node_in_group("subtitle_panel")
-	if subtitles:
-		subtitles.say(PA_SPEAKER, PA_LINE)
+	if subtitles and level_def.exit_pa_line != "":
+		subtitles.say(level_def.exit_pa_speaker, level_def.exit_pa_line)
 	# N05: the line is spoken, and its caption is held past the clip.
 	var pa_hold := PA_BEAT
-	var clip_seconds: float = Audio.play_voice(&"pa_lethal")
+	var clip_seconds := 0.0
+	if level_def.exit_pa_voice != &"":
+		clip_seconds = Audio.play_voice(level_def.exit_pa_voice)
 	if clip_seconds > 0.0:
 		_pa_lethal_active = true
 		pa_hold = maxf(PA_BEAT, clip_seconds + PA_VOICE_BEAT)
@@ -680,10 +692,12 @@ func _start_lockdown_pa() -> void:
 	_lockdown_pa = LockdownPa.IDLE
 	# No subtitle panel (an isolated test that removed it): nothing to announce.
 	var subtitles := get_tree().get_first_node_in_group("subtitle_panel")
-	if subtitles == null:
+	if subtitles == null or level_def.lockdown_pa_line == "":
 		return
-	subtitles.say(PA_SPEAKER, PA_CALM_LINE)
-	var clip_seconds: float = Audio.play_voice(&"pa_remain_calm")
+	subtitles.say(PA_SPEAKER, level_def.lockdown_pa_line)
+	var clip_seconds := 0.0
+	if level_def.lockdown_pa_voice != &"":
+		clip_seconds = Audio.play_voice(level_def.lockdown_pa_voice)
 	_lockdown_pa_t = PA_CALM_HOLD
 	if clip_seconds > 0.0:
 		_lockdown_pa_t = maxf(PA_CALM_HOLD, clip_seconds + PA_VOICE_BEAT)
@@ -702,8 +716,10 @@ func _show_completion_screen() -> void:
 	if _completion_screen != null:
 		return
 	_completion_screen = load(COMPLETION_SCENE).instantiate()
+	_completion_screen.level_def = level_def
 	add_child(_completion_screen)
 	_completion_screen.play_again_confirmed.connect(_on_play_again_confirmed)
+	_completion_screen.next_level_confirmed.connect(_on_next_level_confirmed)
 	_completion_screen.quit_requested.connect(_on_quit_requested)
 	# N05: the level music fades out and the completion sting (a low pulse resolving
 	# into a quiet unresolved chime, flat) takes its place. The poll in update_music()
@@ -719,6 +735,10 @@ func _show_completion_screen() -> void:
 ## the level exactly like a death-rebuild does so every object re-reads
 ## Session fresh.
 func _on_play_again_confirmed() -> void:
+	if level_def.id != LevelDefs.FIRST_LEVEL:
+		# A new run starts at the first level: Main swaps this level for it.
+		new_run_requested.emit()
+		return
 	if _completion_screen:
 		_completion_screen.queue_free()
 		_completion_screen = null
@@ -741,6 +761,14 @@ func _on_play_again_confirmed() -> void:
 		telemetry.run_start()
 		if _telemetry_area:
 			telemetry.area_enter(_telemetry_area.area_id)
+
+
+## M1: the completion screen's Continue, shown only when the LevelDef has a
+## registered next level. Main does the handover (it owns swapping levels).
+func _on_next_level_confirmed() -> void:
+	var next_id := LevelDefs.next_of(level_def.id)
+	if next_id != "":
+		next_level_requested.emit(next_id)
 
 
 func _on_quit_requested() -> void:

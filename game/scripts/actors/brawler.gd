@@ -8,6 +8,11 @@ extends CharacterBody2D
 ## interrupt it; people bleed (C29). At zero health the body becomes a
 ## ragdoll that stays where it falls (C28) until the area is rebuilt.
 ##
+## M4 adds the K01 Hound (hound.gd extends this): a lunge chain (`lunge_count`
+## lunges, each after its own crouch blip, then the recovery) and a handler gate (a
+## Night Guard named by the K9's `handler_path` never winds up during the K9's chain or
+## until `handler_delay` after it; the K9 rests `handled_rest_time` after a chain).
+##
 ## Everything that tells a guard from a Staffer is BrawlerTuning data. The
 ## whole body is the HitZone; the hero is only ever hurt through AttackBox,
 ## active solely during the strike, never from body overlap (layer 3 masks
@@ -47,6 +52,8 @@ const DEATH_PUSH := 300.0
 @export var patrol_min_x: float = -INF
 @export var patrol_max_x: float = INF
 @export var start_facing: int = -1
+## A K9's handler (M4): the Night Guard whose attacks wait for this K9's lunge chain.
+@export var handler_path: NodePath
 
 var state: State = State.PATROL
 var facing: int = -1
@@ -74,6 +81,18 @@ var _stagger_t: float = 0.0
 var _stagger_cd: float = 0.0
 var _hit_anim: bool = false
 var _rng := RandomNumberGenerator.new()
+## The current windup's length: the first crouch, or a re-crouch in a lunge chain.
+var _windup_len: float = 0.65
+## Lunges made in the current chain, and whether this windup is a re-crouch.
+var _lunges: int = 0
+var _recrouch: bool = false
+## Seconds since this brawler's last lunge chain ended (the handler gate).
+var _since_chain: float = INF
+## This K9's handler, and (on the handler) the K9 whose chain he waits for.
+var _handler: Brawler = null
+var _k9: Brawler = null
+
+const DEFAULT_JOLT := {"torso": 0.16, "head": 0.26, "near_upper_arm": -0.12, "far_upper_arm": -0.2, "pelvis": 0.05}
 
 @onready var hit_zone: HitZone = $HitZone
 @onready var attack_box: AttackBox = $AttackBox
@@ -101,6 +120,8 @@ func _ready() -> void:
 	_group = _find_ancestor(EncounterGroup) as EncounterGroup
 	_area_root = _find_ancestor(AreaRoot) as Node2D
 	_build_visual()
+	_windup_len = tuning.windup_time
+	_link_handler()
 	state = State.DORMANT if tuning.dormant_until_active else State.PATROL
 	_play_state_clip(0.0)
 	_update_attack_box_position()
@@ -144,7 +165,7 @@ func _build_visual() -> void:
 	_tell_light = PointLight2D.new()
 	_tell_light.name = "TellLight"
 	_tell_light.texture = Lights.soft_disc()
-	_tell_light.texture_scale = 1.1
+	_tell_light.texture_scale = tuning.tell_light_scale
 	_tell_light.height = 14.0
 	_tell_light.energy = 0.0
 	_tell_light.color = AMBER
@@ -181,10 +202,48 @@ func _get_hero() -> Node2D:
 	return get_tree().get_first_node_in_group("hero") as Node2D
 
 
+## Pairs a K9 with its handler (handler_path), both ways.
+func _link_handler() -> void:
+	if handler_path.is_empty() or _handler != null:
+		return
+	_handler = get_node_or_null(handler_path) as Brawler
+	if _handler != null:
+		_handler._k9 = self
+
+
+static func _alive(b: Brawler) -> bool:
+	return b != null and is_instance_valid(b) and not b.is_queued_for_deletion() and b.state != State.DEFEATED
+
+
+func has_handler() -> bool:
+	return _alive(_handler)
+
+
+## Mid-chain: winding up, re-crouching or lunging.
+func is_in_chain() -> bool:
+	return state == State.WINDUP or state == State.STRIKE
+
+
+## May this brawler start a windup now (the handler gate, M4)? A handler waits through
+## his K9's lunge chain and for handler_delay after it; a handled K9 never starts while
+## its handler attacks, and rests handled_rest_time after its own chain.
+func attack_allowed() -> bool:
+	if _alive(_k9):
+		if _k9.is_in_chain() or _k9._since_chain < _k9.tuning.handler_delay:
+			return false
+	if _alive(_handler):
+		if _handler.is_in_chain() or _since_chain < tuning.handled_rest_time:
+			return false
+	return true
+
+
 func _physics_process(delta: float) -> void:
 	if state == State.DEFEATED:
 		return
 	_state_timer += delta
+	_since_chain += delta
+	if _handler == null and not handler_path.is_empty():
+		_link_handler()
 	_stagger_t = maxf(0.0, _stagger_t - delta)
 	_stagger_cd = maxf(0.0, _stagger_cd - delta)
 	_apply_gravity(delta)
@@ -206,7 +265,10 @@ func _physics_process(delta: float) -> void:
 				_tick_approach()
 		State.WINDUP:
 			velocity.x = 0.0
-			if _state_timer >= tuning.windup_time:
+			# A re-crouch turns to face Dave through its amber part; red locks it.
+			if _recrouch and _state_timer < _windup_len - tuning.red_time:
+				_face_hero()
+			if _state_timer >= _windup_len:
 				_enter(State.STRIKE)
 		State.STRIKE:
 			_tick_strike(delta)
@@ -275,6 +337,10 @@ func _tick_approach() -> void:
 	var same_floor: bool = absf(hero.global_position.y - global_position.y) <= tuning.floor_band
 	if same_floor and absf(dx) <= tuning.engage_range:
 		facing = 1 if dx >= 0.0 else -1
+		if not attack_allowed():
+			# A handler waiting out his K9's chain, or a K9 letting its handler go.
+			_set_holding(true)
+			return
 		var can_attack: bool = _group == null or _group.request_attack_token(self)
 		if can_attack:
 			_strike_dir = facing
@@ -319,18 +385,37 @@ func _tick_strike(delta: float) -> void:
 		var next_pos := global_position + Vector2(_strike_dir * tuning.lunge_speed() * delta, 0.0)
 		var leaves_lane: bool = _group != null and _group.is_in_lane(global_position) and not _group.is_in_lane(next_pos)
 		if not _floor_ahead(_strike_dir) or _wall_ahead(_strike_dir) or leaves_lane:
-			_enter(State.RECOVERY)
+			_end_lunge()
 			return
 		velocity.x = _strike_dir * tuning.lunge_speed()
 		_lunge_traveled += tuning.lunge_speed() * delta
 		if _state_timer >= tuning.lunge_time or _lunge_traveled >= tuning.lunge_distance():
-			_enter(State.RECOVERY)
+			_end_lunge()
 	else:
 		var stepping: bool = _state_timer < 0.12 and _can_step(_strike_dir)
 		velocity.x = _strike_dir * tuning.swing_step_speed if stepping else 0.0
 		attack_box.active = _state_timer >= tuning.swing_active_from and _state_timer <= tuning.swing_active_to
 		if _state_timer >= tuning.swing_time:
 			_enter(State.RECOVERY)
+
+
+## After a lunge: the next one's crouch while the chain lasts, else the recovery.
+func _end_lunge() -> void:
+	if _lunges < tuning.lunge_count:
+		_recrouch = true
+		attack_box.active = false
+		_enter(State.WINDUP)
+	else:
+		_enter(State.RECOVERY)
+
+
+func _face_hero() -> void:
+	var hero := _get_hero()
+	if hero == null:
+		return
+	var dx: float = hero.global_position.x - global_position.x
+	if absf(dx) > 4.0:
+		facing = 1 if dx > 0.0 else -1
 
 
 func _enter(s: State) -> void:
@@ -345,11 +430,18 @@ func _enter(s: State) -> void:
 	match s:
 		State.WINDUP:
 			velocity.x = 0.0
-			_windups += 1
-			if _windups % 2 == 0:
-				_bark(tuning.voice_windup)
+			if _recrouch:
+				_windup_len = tuning.relunge_time
+			else:
+				_windup_len = tuning.windup_time
+				_lunges = 0
+				_windups += 1
+				if _windups % 2 == 0:
+					_bark(tuning.voice_windup)
 			_play_sfx(tuning.sfx_windup)
 		State.STRIKE:
+			_strike_dir = facing
+			_lunges += 1
 			_lunge_traveled = 0.0
 			if tuning.strike == BrawlerTuning.Strike.LUNGE:
 				attack_box.active = true
@@ -357,22 +449,25 @@ func _enter(s: State) -> void:
 		State.RECOVERY:
 			attack_box.active = false
 			velocity.x = 0.0
+			_recrouch = false
+			_since_chain = 0.0
 			if _group != null and was == State.STRIKE:
 				_group.release_attack_token(self)
 	_play_state_clip(0.04 if s == State.STRIKE else 0.18)
 
 
 func _floor_ahead(dir: int) -> bool:
-	var probe_x: float = global_position.x + dir * (HALF_WIDTH + 8.0)
+	var probe_x: float = global_position.x + dir * (tuning.body_half_width + 8.0)
 	var q := PhysicsRayQueryParameters2D.create(Vector2(probe_x, global_position.y - 4.0), Vector2(probe_x, global_position.y + 40.0))
 	q.collision_mask = 1
 	return not get_world_2d().direct_space_state.intersect_ray(q).is_empty()
 
 
 func _wall_ahead(dir: int) -> bool:
-	var y: float = global_position.y - HEIGHT * 0.5
-	var q := PhysicsRayQueryParameters2D.create(Vector2(global_position.x + dir * (HALF_WIDTH - 2.0), y),
-			Vector2(global_position.x + dir * (HALF_WIDTH + 10.0), y))
+	var y: float = global_position.y - tuning.body_height * 0.5
+	var hw: float = tuning.body_half_width
+	var q := PhysicsRayQueryParameters2D.create(Vector2(global_position.x + dir * (hw - 2.0), y),
+			Vector2(global_position.x + dir * (hw + 10.0), y))
 	q.collision_mask = 1
 	return not get_world_2d().direct_space_state.intersect_ray(q).is_empty()
 
@@ -400,7 +495,11 @@ func _on_hit(damage: int, hit_position: Vector2, direction: Vector2) -> void:
 		Blood.wound(rig.sprites[j], hit_position, rig.defs[j]["collider"], rig.joints[j])
 		# A jolt away from the shot; it never interrupts what the brawler does.
 		var s := -1.0 if signf(direction.x) != float(facing) else 1.0
-		anim.jolt({"torso": 0.16 * s, "head": 0.26 * s, "near_upper_arm": -0.12 * s, "far_upper_arm": -0.2 * s, "pelvis": 0.05 * s})
+		var jolt: Dictionary = tuning.hit_jolt if not tuning.hit_jolt.is_empty() else DEFAULT_JOLT
+		var scaled := {}
+		for k in jolt:
+			scaled[k] = float(jolt[k]) * s
+		anim.jolt(scaled)
 	if not _noticed:
 		facing = -1 if direction.x > 0.0 else 1
 		_notice()
@@ -450,9 +549,7 @@ func _defeat(hit_position: Vector2, direction: Vector2) -> void:
 	if rig != null:
 		# Dead: the neon trim (C36), a Staffer's Link light and any tell glow
 		# go dark on the body.
-		rig.body_material.set_shader_parameter("emissive_energy", 0.0)
-		if tuning.tell_emissive:
-			rig.set_emissive(tuning.tell_joint, Color.BLACK, 0.0)
+		rig.darken_emissive()
 		var rd := Ragdoll.new()
 		rd.name = "Body_" + (entity_id if entity_id != "" else name)
 		rd.z_index = z_index
@@ -460,6 +557,8 @@ func _defeat(hit_position: Vector2, direction: Vector2) -> void:
 		var push := direction.normalized() * DEATH_PUSH + Vector2(0.0, -90.0)
 		rd.build(rig, push, hit_position, Vector2.ZERO)
 		rig = null
+		if not tuning.death_twitch_joints.is_empty():
+			rd.twitch(Array(tuning.death_twitch_joints), tuning.death_twitch_time)
 		rd.settled.connect(_on_body_settled.bind(host))
 	# A defeat cue of its own (the Staffer's) already ends in the landing.
 	if tuning.sfx_defeat == &"":
@@ -544,14 +643,16 @@ func _update_lights(delta: float) -> void:
 	var energy := 0.0
 	var color := AMBER
 	if state == State.WINDUP:
-		var k := clampf(_state_timer / tuning.windup_time, 0.0, 1.0)
-		color = ALARM if _state_timer >= tuning.windup_time - tuning.red_time else AMBER
+		var k := clampf(_state_timer / _windup_len, 0.0, 1.0)
+		color = ALARM if _state_timer >= _windup_len - tuning.red_time else AMBER
 		energy = lerpf(0.5, 1.6, k)
 	elif state == State.STRIKE:
 		color = ALARM
 		energy = 1.4
+	# The light on the body scales with the tuning's peak (the emissive spot keeps the full value).
+	var light_energy := energy * tuning.tell_light_energy / 1.6
 	_tell_light.color = color
-	_tell_light.energy = energy
+	_tell_light.energy = light_energy
 	if tuning.tell_emissive:
 		rig.set_emissive(tuning.tell_joint, color, energy * 2.2)
 	for g in _hand_glows:
@@ -649,10 +750,10 @@ func _draw() -> void:
 		return
 	var settings := get_node_or_null("/root/Settings")
 	var reduced_motion: bool = settings != null and settings.get_reduced_motion()
-	var red: bool = _state_timer >= tuning.windup_time - tuning.red_time
+	var red: bool = _state_timer >= _windup_len - tuning.red_time
 	var c: Color = ALARM if red else AMBER
 	c.a = 0.95 if reduced_motion else 0.9 + 0.1 * sin(_state_timer * TAU * 3.0)
-	var top := Vector2(0.0, -HEIGHT - 26.0)
+	var top := Vector2(0.0, -tuning.body_height - 26.0)
 	var pts := PackedVector2Array([top + Vector2(-8.0, 14.0), top + Vector2(8.0, 14.0), top + Vector2(0.0, -6.0)])
 	draw_colored_polygon(pts, c)
 	draw_polyline(PackedVector2Array([pts[0], pts[1], pts[2], pts[0]]), OUTLINE, 2.0, true)

@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/weapons/boom_broom.gd" id="1_broom"]
+[ext_resource type="Resource" path="res://data/tuning/w02_boom_broom.tres" id="2_tuning"]
+
+[node name="BoomBroom" type="Node2D"]
+script = ExtResource("1_broom")
+tuning = ExtResource("2_tuning")
+
+[node name="Muzzle" type="Marker2D" parent="."]
+position = Vector2(35, -2)

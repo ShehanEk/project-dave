@@ -38,7 +38,7 @@ title_logo.png and title_backdrop.png, which this tool never touches):
                   outline closed) nine-slices to any text, the pointer is drawn
                   centred under it
 
-Run from the project root (prototypes/sunnyvale-godot), then re-import:
+Run from the project root (game/), then re-import:
   python3 tools/art/import_pixel_ui.py
   /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --import
 """

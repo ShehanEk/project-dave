@@ -115,15 +115,91 @@ func _ready() -> void:
 	platform_on_leave = CharacterBody2D.PLATFORM_ON_LEAVE_DO_NOTHING
 	if Session:
 		Session.health_changed.connect(_on_health_changed)
+		# M3: the gun on AimPivot follows the held weapon's type.
+		Session.weapon_swapped.connect(_on_weapon_swapped)
+		Session.snapshot_restored.connect(_on_held_weapon_reset)
+		Session.run_reset.connect(_on_held_weapon_reset.bind(""))
 	PixelUi.dress_prompt_label(prompt_label)
 	prompt_label.visible = false
 	if visual:
 		visual.setup(aim_pivot)
+	sync_held_weapon()
 
 
 func _exit_tree() -> void:
 	if Session and Session.health_changed.is_connected(_on_health_changed):
 		Session.health_changed.disconnect(_on_health_changed)
+	if Session and Session.weapon_swapped.is_connected(_on_weapon_swapped):
+		Session.weapon_swapped.disconnect(_on_weapon_swapped)
+	if Session and Session.snapshot_restored.is_connected(_on_held_weapon_reset):
+		Session.snapshot_restored.disconnect(_on_held_weapon_reset)
+	if Session:
+		for c in Session.run_reset.get_connections():
+			if c["callable"].get_object() == self:
+				Session.run_reset.disconnect(c["callable"])
+
+
+# --- the held weapon (M3) -----------------------------------------------------------
+
+## The weapon type whose gun is on AimPivot now ("W01", "W02").
+var held_weapon_type: String = "W01"
+
+
+## The gun on AimPivot (the Scrapjack, or since M3 the Boom Broom): the one node there
+## named after a WeaponTypes type.
+func held_weapon() -> Node2D:
+	if aim_pivot == null:
+		return null
+	for node_name in WeaponTypes.node_names():
+		var gun := aim_pivot.get_node_or_null(node_name) as Node2D
+		if gun != null and not gun.is_queued_for_deletion():
+			return gun
+	return null
+
+
+## Puts the held weapon type's gun on AimPivot (Session.equipped_weapon()'s type), keeping
+## the gun that is there when the type already matches (a swap between two copies of one
+## type keeps the node). The new gun takes the old one's place and hold; Dave's arm takes
+## its grip (visual.set_gun()). `from_swap`: the gun came from a pad, so it racks ready.
+func sync_held_weapon(from_swap: bool = false) -> void:
+	if aim_pivot == null or Session == null:
+		return
+	var want := Session.held_weapon_type()
+	if not WeaponTypes.has_type(want):
+		return
+	var gun := held_weapon()
+	if gun != null and WeaponTypes.type_of_node(String(gun.name)) == want:
+		held_weapon_type = want
+		return
+	var scene := load(WeaponTypes.scene_path(want)) as PackedScene
+	if scene == null:
+		return
+	var new_gun := scene.instantiate() as Node2D
+	new_gun.name = WeaponTypes.node_name(want)
+	var at := -1
+	if gun != null:
+		at = gun.get_index()
+		new_gun.position = gun.position
+		aim_pivot.remove_child(gun)
+		gun.queue_free()
+	aim_pivot.add_child(new_gun)
+	if at >= 0:
+		aim_pivot.move_child(new_gun, at)
+	held_weapon_type = want
+	if visual and visual.has_method("set_gun"):
+		visual.set_gun(new_gun)
+	if visual and visual.has_method("gun_hold"):
+		new_gun.position = visual.gun_hold(aim_step)
+	if from_swap and new_gun.has_method("announce_ready"):
+		new_gun.announce_ready()
+
+
+func _on_weapon_swapped(_old_id: String, _new_id: String) -> void:
+	sync_held_weapon(true)
+
+
+func _on_held_weapon_reset(_checkpoint_id: String) -> void:
+	sync_held_weapon(false)
 
 
 func _physics_process(delta: float) -> void:
@@ -382,7 +458,9 @@ func _update_aim_pivot() -> void:
 	aim_pivot.rotation = angle if facing > 0 else PI - angle
 	aim_pivot.scale.y = float(facing)
 	if visual and visual.has_method("gun_hold"):
-		var gun := aim_pivot.get_node_or_null("Scrapjack") as Node2D
+		# Whichever gun is held (M3): each gun's grip is at the same spot in its own node, so
+		# one hold per step serves both.
+		var gun := held_weapon()
 		if gun:
 			gun.position = visual.gun_hold(aim_step)
 
@@ -397,7 +475,9 @@ func shot_direction() -> Vector2:
 
 # --- damage / health ---------------------------------------------------------
 
-func take_damage(amount: int, source_position: Vector2) -> bool:
+## `knockback_scale` (M4): an enemy round's hit pushes Dave half as far as a melee hit
+## (encounter-and-boss-fairness.md, "Half knockback and pits").
+func take_damage(amount: int, source_position: Vector2, knockback_scale: float = 1.0) -> bool:
 	if debug_invulnerable:
 		return false
 	# Gated on `_died_emitted` (THIS hero instance already died and hasn't
@@ -414,15 +494,18 @@ func take_damage(amount: int, source_position: Vector2) -> bool:
 	# "take_damage while already dead is refused" contract.
 	if _immune_timer > 0.0 or _died_emitted:
 		return false
-	Session.apply_damage(amount)
 	_immune_timer = tuning.damage_immunity_time
 	_hit_pose_timer = HIT_POSE_TIME
 	Audio.play_sfx(&"hero_hurt", global_position)
 	var away := (global_position - source_position)
 	away.y = 0.0
 	away = away.normalized() if away.length() > 0.001 else Vector2(-facing, 0.0)
-	_knockback = away * tuning.knockback_speed
-	velocity.y = -tuning.knockback_up_speed
+	# The knockback goes on BEFORE the damage (M2 fix): a lethal hit's `died` can move
+	# Dave to his respawn point inside apply_damage() (LevelDirector without the death
+	# beat), and respawn_at() clears it; set afterwards it pushed him ~16 px off the marker.
+	_knockback = away * tuning.knockback_speed * knockback_scale
+	velocity.y = -tuning.knockback_up_speed * knockback_scale
+	Session.apply_damage(amount)
 	# C53: a hit lands hard (shake and pause); the death beat (LevelDirector) takes over on a death.
 	if Session.get_health() > 0:
 		GameFeel.hurt(self)

@@ -1,0 +1,53 @@
+[gd_resource type="Resource" script_class="ShotgunTuning" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/tuning/shotgun_tuning.gd" id="1_w02"]
+
+[resource]
+script = ExtResource("1_w02")
+weapon_type = "W02"
+damage = 1
+base_interval = 0.62
+quickcycle_interval = 0.62
+bolt_speed = 0.0
+max_range = 420.0
+muzzle_flash_time = 0.08
+recoil_distance = 7.0
+recoil_recovery_time = 0.2
+pellet_count = 6
+spread_degrees = 22.0
+pellet_jitter_degrees = 1.5
+pellet_damage = 0.75
+falloff_start = 120.0
+falloff_end = 360.0
+falloff_min = 0.25
+knockback_speed = 420.0
+knockback_decay = 1600.0
+heavy_knockback_scale = 0.25
+light_knockback_scale = 1.25
+pump_time = 0.62
+pump_back_at = 0.1
+eject_at = 0.22
+pump_forward_at = 0.4
+pump_travel = 5.0
+tube_capacity = 4
+extended_tube_capacity = 6
+reserve_capacity = 24
+shell_insert_time = 0.7
+reload_delay = 0.45
+burn_damage = 1
+burn_ticks = 2
+burn_interval = 0.8
+twin_pellet_count = 10
+twin_spread_degrees = 26.0
+twin_knockback_scale = 1.6
+twin_recovery_time = 1.1
+muzzle_lift_degrees = 9.0
+muzzle_flash_scale = 1.9
+flash_energy = 3.4
+flash_radius = 220.0
+pellet_trail_time = 0.09
+sfx_fire = &"rover_destroyed"
+sfx_pump = &"latch"
+sfx_shell_in = &"ready_click"
+sfx_shell_drop = &"debris_clatter"
+sfx_empty = &"keycard_denied"

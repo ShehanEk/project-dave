@@ -11,6 +11,10 @@ extends Control
 ## canvas px per UI pixel; an owned Quickcycle lights the amber pip in the
 ## slot's lower right corner. Without those PNGs it keeps its code-drawn
 ## silhouette in scrapjack.gd's C11 palette.
+##
+## M3: `set_weapon_type()` picks the held type's piece (WeaponTypes.icon_piece:
+## `weapon_scrapjack`, or `weapon_boom_broom` from tools/art/paint_boom_broom.py, the
+## same 24 x 14 UI px so the slot keeps its size); the pip is that type's stage 1.
 
 const PixelUi := preload("res://scripts/ui/pixel_ui.gd")
 const SLOT := "weapon_slot"
@@ -32,6 +36,9 @@ const GRIP_FILL := Color("#438f88")
 const QUICKCYCLE_FILL := Color("#a9714a")
 
 var _quickcycle_owned: bool = false
+## The piece drawn in the slot (the held weapon type's icon).
+var gun_piece: String = GUN
+var _weapon_type: String = "W01"
 
 
 func _ready() -> void:
@@ -51,13 +58,29 @@ func is_quickcycle_shown() -> bool:
 	return _quickcycle_owned
 
 
+## Shows the held weapon type's icon (M3). An unknown type keeps the Scrapjack.
+func set_weapon_type(weapon_type: String) -> void:
+	var piece := WeaponTypes.icon_piece(weapon_type) if WeaponTypes.has_type(weapon_type) else GUN
+	if piece == gun_piece and weapon_type == _weapon_type:
+		return
+	gun_piece = piece
+	_weapon_type = weapon_type
+	if has_art():
+		custom_minimum_size = slot_size() * float(PixelUi.SCALE)
+	queue_redraw()
+
+
+func weapon_type() -> String:
+	return _weapon_type
+
+
 func has_art() -> bool:
-	return PixelUi.has_piece(SLOT) and PixelUi.has_piece(GUN)
+	return PixelUi.has_piece(SLOT) and PixelUi.has_piece(gun_piece)
 
 
 ## The slot's size in UI px: the gun, its padding and the frame's border.
 func slot_size() -> Vector2:
-	var gun := PixelUi.texture(GUN)
+	var gun := PixelUi.texture(gun_piece)
 	if gun == null:
 		return Vector2.ZERO
 	return gun.get_size() + Vector2.ONE * float(2 * (SLOT_BORDER + PAD))
@@ -76,7 +99,7 @@ func _draw_pixel() -> void:
 	var r := Rect2(((size - slot_px) * 0.5).floor(), slot_px)
 	draw_rect(r.grow(-s), SLOT_FILL)
 	PixelUi.draw_frame(self, SLOT, r, SLOT_MARGIN, s)
-	var gun := PixelUi.texture(GUN)
+	var gun := PixelUi.texture(gun_piece)
 	draw_texture_rect(gun, Rect2(r.position + Vector2.ONE * float(SLOT_BORDER + PAD) * s, gun.get_size() * s), false)
 	if _quickcycle_owned:
 		var pip := PixelUi.texture(PIP)
@@ -87,6 +110,14 @@ func _draw_pixel() -> void:
 
 func _draw_fallback() -> void:
 	var o := Vector2(8.0, size.y * 0.5)
+	if _weapon_type == "W02":
+		# The Boom Broom: stock, orange receiver, pale barrel, green pump.
+		draw_rect(Rect2(o + Vector2(-8, -3), Vector2(6, 6)), Color("#2F3438"))
+		draw_rect(Rect2(o + Vector2(-2, -5), Vector2(8, 6)), Color("#E0702A"))
+		draw_rect(Rect2(o + Vector2(6, -4), Vector2(16, 3)), Color("#AEB9BF"))
+		draw_rect(Rect2(o + Vector2(9, -1), Vector2(7, 3)), Color("#3E9E7E"))
+		draw_rect(Rect2(o + Vector2(-2, -5), Vector2(8, 6)), OUTLINE, false, 1.2)
+		return
 	draw_rect(Rect2(o + Vector2(-6, 0), Vector2(24, 7)), LOWER_FILL)
 	draw_rect(Rect2(o + Vector2(-6, -7), Vector2(24, 7)), UPPER_FILL)
 	draw_rect(Rect2(o + Vector2(-9, -1), Vector2(5, 6)), GRIP_FILL)

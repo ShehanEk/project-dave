@@ -31,7 +31,16 @@ const BOARD_BOX := Rect2(4.0, 2.0, 32.0, 36.0)
 const POLE_FROM := 42
 const BASE_FROM := 70
 
+## Batch 7: in Level 2's lab (LabSkins.in_lab) the target is the painted robotics test dummy,
+## its chest ring on the origin (the hit zone's centre), its stand's pole rows repeated down to
+## the floor found under it (a ray, after the first physics frame); a hit washes the chest
+## cold white.
+const LabSkins := preload("res://scripts/world/lab_skins.gd")
+const DUMMY := "test_dummy"
+
 @onready var hit_zone: HitZone = $HitZone
+## The dummy's floor, px below the origin (-1 until found).
+var _dummy_ground: float = -1.0
 
 var _flash_timer: float = 0.0
 
@@ -40,6 +49,25 @@ func _ready() -> void:
 	hit_zone.hit.connect(_on_hit)
 	if painted_piece() != "":
 		PickupSkins.make_crisp(self)
+	if lab_piece() != "":
+		_find_dummy_ground.call_deferred()
+
+
+## The lab piece this target draws ("test_dummy"), or "".
+func lab_piece() -> String:
+	return DUMMY if LabSkins.in_lab(self) and LabSkins.has(DUMMY) else ""
+
+
+func _find_dummy_ground() -> void:
+	if not is_inside_tree():
+		return
+	await get_tree().physics_frame
+	if not is_inside_tree():
+		return
+	var q := PhysicsRayQueryParameters2D.create(global_position, global_position + Vector2(0.0, 600.0), 1)
+	var hit := get_world_2d().direct_space_state.intersect_ray(q)
+	_dummy_ground = (hit["position"] as Vector2).y - global_position.y if not hit.is_empty() else maxf(-position.y, 0.0)
+	queue_redraw()
 
 
 ## The PickupSkins piece this target draws, or "" for the code-drawn look.
@@ -64,6 +92,9 @@ func _draw() -> void:
 	# the stand runs down to the area's floor line (this node sits in its
 	# area's Entities, so -position.y is the height above that floor).
 	var ground: float = maxf(-position.y, 0.0)
+	if lab_piece() != "":
+		_draw_dummy(_flash_timer / FLASH_TIME, _dummy_ground if _dummy_ground >= 0.0 else ground)
+		return
 	if painted_piece() != "":
 		_draw_painted(_flash_timer / FLASH_TIME, ground)
 		return
@@ -116,3 +147,30 @@ func _draw_painted(flash: float, ground: float) -> void:
 		var wash := Color(HIT_FLASH, 0.5 + 0.3 * flash)
 		draw_rect(board, wash)
 		draw_rect(Rect2(tl + HEAD_BOX.position * a, HEAD_BOX.size * a), wash)
+
+
+## The test dummy: head and torso with the ring on the origin, the pole repeated down to
+## `ground` px below it, the base standing there.
+func _draw_dummy(flash: float, ground: float) -> void:
+	var e := LabSkins.entry(DUMMY)
+	var sc: float = float(e["scale"])
+	var th: float = float(e["size"][1])
+	var ring: Array = e["points"]["ring"]
+	var pole: Array = e["points"]["pole"]
+	var p0: float = float(pole[0])
+	var p1: float = float(pole[1])
+	var ry: float = float(ring[1])
+	var x: float = (float(e["anchor_x"]) - float(ring[0])) * sc
+	var base_h: float = (th - p1) * sc
+	var base_top: float = ground - base_h
+	# The pole from under the torso down to the base, in whole repeats of its rows.
+	var y: float = (p0 - ry) * sc
+	while y < base_top - 0.01:
+		var rows: float = minf(p1 - p0, (base_top - y) / sc)
+		LabSkins.draw_rows(self, DUMMY, p0, p0 + rows, y, sc, LabSkins.DIM, false, x)
+		y += rows * sc
+	LabSkins.draw_rows(self, DUMMY, p1, th, base_top, sc, LabSkins.DIM, false, x)
+	LabSkins.draw_rows(self, DUMMY, 0.0, p0, -ry * sc, sc, LabSkins.DIM, false, x)
+	if flash > 0.0:
+		draw_circle(Vector2.ZERO, 16.0 + 6.0 * flash, Color(HIT_FLASH, 0.2 + 0.35 * flash))
+		draw_circle(Vector2.ZERO, 9.0, Color(HIT_FLASH, 0.5 * flash))

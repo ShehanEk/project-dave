@@ -14,6 +14,8 @@ extends RefCounted
 ##   L01-A04 square   paving  (wet plaza paving)
 ##   L01-A05 depot    metal   (steel grating floor)
 ##   L01-A06 exit     paving  (the exit yard)
+##   L02-A01..A06     metal   (Level 2's lab floors, the sky bridge included,
+##                             until the lab sheets bring their own surfaces)
 ## A moving platform is a steel plate: metal, wherever it runs. Anything
 ## unknown, and any isolated test scene with no AreaRoot, is paving.
 
@@ -34,6 +36,13 @@ const AREA_SURFACE := {
 	"L01-A04": PAVING,
 	"L01-A05": METAL,
 	"L01-A06": PAVING,
+	# Level 2, Alignment (M2 greybox): the Cognition Lab's composite and steel floors.
+	"L02-A01": METAL,
+	"L02-A02": METAL,
+	"L02-A03": METAL,
+	"L02-A04": METAL,
+	"L02-A05": METAL,
+	"L02-A06": METAL,
 }
 
 

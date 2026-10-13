@@ -21,6 +21,12 @@ const ObjectSkins := preload("res://scripts/world/object_skins.gd")
 const UP_PIECE := "lever_up"
 const DOWN_PIECE := "lever_down"
 
+## Batch 7: in Level 2's lab (LabSkins.in_lab) the switch is the painted lane control pad
+## (a pedestal with a hand-scan screen and a card slot): the slot and screen glow amber while
+## off and teal once used, the matching symbol above it.
+const LabSkins := preload("res://scripts/world/lab_skins.gd")
+const PAD_PIECE := "control_pad"
+
 @export var switch_id: String = "L01-SW01"
 
 
@@ -61,8 +67,16 @@ func _is_on() -> bool:
 	return Session != null and Session.get_switch(switch_id)
 
 
+## The lab piece this switch draws ("control_pad"), or "".
+func lab_piece() -> String:
+	return PAD_PIECE if LabSkins.in_lab(self) and LabSkins.has(PAD_PIECE) else ""
+
+
 func _draw() -> void:
 	var on := _is_on()
+	if lab_piece() != "":
+		_draw_pad(on)
+		return
 	var painted := painted_piece()
 	if painted != "":
 		ObjectSkins.draw(self, painted)
@@ -86,3 +100,18 @@ func _draw() -> void:
 	draw_circle(lever_end, 5.0, OUTLINE, false, 2.0)
 	# Matching symbol (a small triangle), shared with service_walkway.
 	SceneryDraw.draw_switch_symbol(self, Vector2(0.0, -84.0), on)
+
+
+## The painted control pad, its slot and screen lit in the switch's state colour.
+func _draw_pad(on: bool) -> void:
+	var c: Color = LEVER_ON if on else LEVER_OFF
+	LabSkins.draw(self, PAD_PIECE)
+	var slot := LabSkins.point(PAD_PIECE, "slot")
+	var screen := LabSkins.point(PAD_PIECE, "screen")
+	draw_circle(screen, 9.0, Color(c, 0.16))
+	draw_rect(Rect2(screen - Vector2(5.0, 2.0), Vector2(10.0, 1.5)), Color(c, 0.7))
+	draw_rect(Rect2(screen + Vector2(-5.0, 1.5), Vector2(7.0, 1.5)), Color(c, 0.55))
+	draw_circle(slot, 6.0, Color(c, 0.25))
+	draw_rect(Rect2(slot - Vector2(3.5, 1.0), Vector2(7.0, 2.0)), c)
+	var top: float = -LabSkins.world_size(PAD_PIECE).y
+	SceneryDraw.draw_switch_symbol(self, Vector2(0.0, top - 22.0), on)

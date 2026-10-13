@@ -52,6 +52,12 @@ const LENS_ART := {
 }
 const SHUT_LENS := Rect2(73.4, 25.8, 3.0, 3.0)
 
+## Batch 7: in Level 2's lab (LabSkins.in_lab) the wicket is a painted door, `lab_door`
+## ("freight_door": the A06 freight lift), closed with an amber reader while locked (or shut by
+## the lockdown) and open with a teal reader once the card is held.
+const LabSkins := preload("res://scripts/world/lab_skins.gd")
+@export var lab_door: String = "freight_door"
+
 @export var required_keycard: String = "L01-KC01"
 @export var denied_text: String = "Clearance card required"
 ## Seconds the reader takes to override the lockdown; 0 opens at once.
@@ -252,7 +258,24 @@ func _draw_painted(piece: String) -> void:
 	_draw_override_bar()
 
 
+## The lab door piece drawn now ("<lab_door>_closed" / "_open"), or "" outside the lab.
+func lab_piece() -> String:
+	if not LabSkins.in_lab(self):
+		return ""
+	var piece := lab_door + ("_open" if _open and (is_unlocked() or _reached) else "_closed")
+	return piece if LabSkins.has(piece) else ""
+
+
 func _draw() -> void:
+	var lab := lab_piece()
+	if lab != "":
+		LabSkins.draw(self, lab)
+		var light := UNLOCKED if lab.ends_with("_open") or (not _open and _override_t >= 0.0) else LOCKED
+		var reader := LabSkins.point(lab, "reader")
+		draw_circle(reader, 8.0, Color(light, 0.25))
+		draw_rect(Rect2(reader - Vector2(3.0, 1.5), Vector2(6.0, 3.0)), light)
+		_draw_override_bar()
+		return
 	var painted := painted_piece()
 	if painted != "":
 		_draw_painted(painted)

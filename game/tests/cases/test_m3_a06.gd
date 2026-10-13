@@ -12,7 +12,7 @@ extends TestCase
 ## `max_attackers` (1 by default, 2 for E13/E10/E11/E15) is their attacker
 ## cap. The wicket stays shut without the clearance keycard, so the route
 ## test hands the hero the card first (as the A04 pickup would have).
-## Run: cd prototypes/sunnyvale-godot && NOIMPORT=1 tools/test.sh m3_a06
+## Run: cd game && NOIMPORT=1 tools/test.sh m3_a06
 
 const AREA_SCENE := "res://scenes/levels/areas/a06_exit.tscn"
 

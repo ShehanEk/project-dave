@@ -236,14 +236,28 @@ func _exit_tree() -> void:
 
 
 ## Re-reads the indoors areas (call after the level builds or rebuilds its areas).
+## Each indoors area is dry over its `dry_span()` (an area can start outdoors,
+## AreaRoot.wet_until_x); spans that touch are merged into one, so a run of
+## indoors areas (all of Level 2 after its sky bridge) fits the shaders' two.
 func refresh_dry_spans() -> void:
 	_dry.clear()
 	var lvl := get_parent()
+	var raw: Array[Vector2] = []
 	if lvl != null and "areas" in lvl:
 		for a in lvl.get("areas"):
 			if is_instance_valid(a) and a is AreaRoot and (a as AreaRoot).indoors:
-				var x0: float = (a as AreaRoot).global_position.x
-				_dry.append(Vector2(x0, x0 + (a as AreaRoot).width))
+				var ar := a as AreaRoot
+				var local := ar.dry_span()
+				if local.y > local.x:
+					raw.append(Vector2(ar.global_position.x + local.x, ar.global_position.x + local.y))
+	raw.sort_custom(func(p: Vector2, q: Vector2) -> bool: return p.x < q.x)
+	for s in raw:
+		if not _dry.is_empty() and s.x <= _dry[-1].y + 0.5:
+			var last: Vector2 = _dry[-1]
+			last.y = maxf(last.y, s.y)
+			_dry[-1] = last
+		else:
+			_dry.append(s)
 	var spans: Array[Vector4] = [Vector4(1e9, -1e9, 0, 0), Vector4(1e9, -1e9, 0, 0)]
 	for i in mini(_dry.size(), MAX_DRY):
 		spans[i] = Vector4(_dry[i].x, _dry[i].y, 0, 0)

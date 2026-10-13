@@ -313,11 +313,18 @@ func _test_checkpoint_service_validation_t19() -> void:
 	check(not schema_result.ok, "a save with the wrong schema_version is rejected")
 	CheckpointService.clear()
 
-	# Wrong level.
+	# Wrong level (M1: any registered level is fine, but only with its own
+	# data): an unregistered level id, and a Level 1 save relabelled as
+	# Level 2 (its ids, weapons and story flags are Level 1's), are rejected.
 	var wrong_level: Dictionary = Session.default_state()
-	wrong_level["level"] = "L02"
+	wrong_level["level"] = "L09"
 	_write_raw(test_dir, wrong_level)
-	check(not CheckpointService.load_latest().ok, "a save for the wrong level is rejected")
+	check(not CheckpointService.load_latest().ok, "a save for an unregistered level is rejected")
+	CheckpointService.clear()
+	var relabelled: Dictionary = Session.default_state()
+	relabelled["level"] = "L02"
+	_write_raw(test_dir, relabelled)
+	check(not CheckpointService.load_latest().ok, "a Level 1 save relabelled as Level 2 is rejected")
 	CheckpointService.clear()
 
 	# Tampered id (a scene path where a whitelisted id belongs).

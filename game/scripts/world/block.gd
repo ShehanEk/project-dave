@@ -53,13 +53,24 @@ const SEDUM := Color("#12261F")
 ## look for L01-A05's own GROUND-kind blocks (and its ROOF-kind ceiling).
 ## Block never gains a per-instance "surface" export (that would touch
 ## Geometry, out of art ownership) — instead it looks up its owning
-## AreaRoot's `area_id`, a read-only lookup that changes no collision/size/
-## position/kind anywhere.
+## AreaRoot, a read-only lookup that changes no collision/size/position/kind
+## anywhere. M2 (Level 2): the interior look follows the owning area's roof
+## (`AreaRoot.indoors`, from its `wet_until_x`), not one area id, so the
+## depot (Level 1's only indoors area) and every roofed Level 2 lab area share
+## it; a backstop there is the steel machine housing ("ac_unit"), never the
+## stone planter (C57).
 const DEPOT_AREA_ID := "L01-A05"
 const DEPOT_METAL := Color("#1B2735")
 const DEPOT_EDGE := Color("#3FE0D0")
 const DEPOT_BEVEL := Color("#2A5A62")
 const Skins := preload("res://scripts/world/terrain_skins.gd")
+## Batch 7 (Level 2): in an area whose `interior_look` is "lab", the solid cover block
+## (SCENERY_SOLID) is the painted firing-range bench, fitted to the block (its deck on the
+## block's top, the end caps a little above it, at most LAB_OVERHANG wider each side), and a
+## BACKSTOP is a stack of prototype crates filling the block ("backstop crates"); both keep a
+## faint lit edge on the top. Collision is untouched.
+const LabSkins := preload("res://scripts/world/lab_skins.gd")
+const LAB_OVERHANG := 8.0
 ## The roofs' backstop is the rooftop AC unit; every other backstop is the
 ## stone planter.
 const ROOF_AREA_ID := "L01-A03"
@@ -132,15 +143,33 @@ func _owner_area_id() -> String:
 	return ""
 
 
+## True when this block stands under the owning AreaRoot's roof (its
+## `indoors` flag, from its `wet_until_x` on): it then takes the interior
+## (depot) look. A block with no AreaRoot above it is outdoors.
+func _in_interior() -> bool:
+	var n: Node = get_parent()
+	while n:
+		if "indoors" in n and "area_id" in n:
+			if not bool(n.get("indoors")):
+				return false
+			var wet = n.get("wet_until_x")
+			var local_x: float = global_position.x - (n as Node2D).global_position.x
+			return local_x >= (float(wet) if wet != null else 0.0) - 0.5
+		n = n.get_parent()
+	return false
+
+
 ## The painted terrain skin for this block, or "" for the code-drawn look.
 func skin_name() -> String:
 	if fill_override.a > 0.0:
 		return ""
 	var area_id := _owner_area_id()
-	if area_id == DEPOT_AREA_ID:
+	if _in_interior():
 		# The hand-painted depot floor (C56, batch 2); the ceiling stays code-drawn.
 		if kind == Kind.GROUND and Skins.has_skin("depot_floor"):
 			return "depot_floor"
+		if kind == Kind.BACKSTOP and Skins.has_skin("ac_unit"):
+			return "ac_unit"
 		return ""
 	var skin := ""
 	match kind:
@@ -176,7 +205,24 @@ func _joins(skin: String) -> Vector2i:
 	return _join
 
 
+## The lab piece this block wears (batch 7), or "" for its terrain or code-drawn look.
+func lab_skin() -> String:
+	if fill_override.a > 0.0 or not LabSkins.in_lab(self):
+		return ""
+	var piece := ""
+	match kind:
+		Kind.SCENERY_SOLID:
+			piece = "range_bench"
+		Kind.BACKSTOP:
+			piece = "proto_crate"
+	return piece if piece != "" and LabSkins.has(piece) else ""
+
+
 func _draw() -> void:
+	var lab := lab_skin()
+	if lab != "":
+		_draw_lab(lab)
+		return
 	var skin := skin_name()
 	if skin != "":
 		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
@@ -185,7 +231,7 @@ func _draw() -> void:
 			_draw_stone_crack()
 		return
 	var fill: Color = fill_override if fill_override.a > 0.0 else FILL[kind]
-	var in_depot := fill_override.a <= 0.0 and _owner_area_id() == DEPOT_AREA_ID
+	var in_depot := fill_override.a <= 0.0 and _in_interior()
 	var edge := TOP_EDGE
 	var bevel := TOP_BEVEL
 	match kind:
@@ -411,3 +457,28 @@ func _draw_depot_ceiling() -> void:
 		draw_circle(Vector2(x, size.y - 4.0), 1.8, DEPOT_METAL.lightened(0.2))
 		x += 120.0
 	draw_line(Vector2(0.0, size.y - 1.0), Vector2(size.x, size.y - 1.0), Color(TEAL, 0.35), 2.0)
+
+
+## The painted range bench or crate stack over the block's rectangle (batch 7).
+func _draw_lab(piece: String) -> void:
+	var e := LabSkins.entry(piece)
+	var tw: float = float(e["size"][0])
+	var th: float = float(e["size"][1])
+	var deck: float = float(LabSkins.value(piece, "deck", 0))
+	var cx: float = size.x * 0.5
+	if piece == "proto_crate":
+		# Crates stacked to the block's height, each as wide as its height lets it be.
+		var aspect: float = tw / th
+		var n: int = maxi(1, roundi(size.y / (minf(size.x + 2.0 * LAB_OVERHANG, size.x * 1.25) / aspect)))
+		var ch: float = size.y / float(n)
+		var sc: float = ch / th
+		for i in n:
+			LabSkins.draw_rows(self, piece, 0.0, th, size.y - ch * float(i + 1), sc, LabSkins.DIM, i % 2 == 1, cx)
+	else:
+		# The deck on the block's top, the base on its bottom; squeezed to at most LAB_OVERHANG
+		# wider than the block each side.
+		var sc: float = size.y / maxf(th - deck, 1.0)
+		var sx: float = minf(1.0, (size.x + 2.0 * LAB_OVERHANG) / (tw * sc))
+		LabSkins.draw_rows(self, piece, 0.0, th, -deck * sc, sc, LabSkins.DIM, false, cx, sx)
+	# A faint lit edge on the walkable top (the readability contract), in from the ends.
+	draw_line(Vector2(3.0, 1.0), Vector2(size.x - 3.0, 1.0), Color(TOP_EDGE, 0.55), 2.0)

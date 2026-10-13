@@ -33,6 +33,15 @@ extends Node2D
 ##   sitting AT each fixture with a `height`, lighting the wall, floor and
 ##   anyone standing under them, characters through their normal maps; C35).
 ##
+## - LAB (batch 7, Level 2's Cognition Lab, replacing the depot look there): the atrium's far
+##   layer (glass curtain wall, rainy city, catwalks, ring light; opaque, tall enough to fill a
+##   storey stack) behind, the lab backdrop strip (two-storey glass labs on the floor line,
+##   transparent above) in front, each scrolling at its own depth by global x like the campus
+##   layers, both dimmed (ATRIUM_TINT, LAB_TINT) so the play reads in front. A storey layer
+##   (`lab_far` false, on a raised floor's own node) draws only the strip on its floor line. The
+##   depot's ceiling utility lights stay (real PointLight2Ds, no drawn housings or haze), and so
+##   does the lockdown: red-leaning tints and alarm-red lights.
+##
 ## Seamless across areas: SKY and HOMES features are laid out on GLOBAL x
 ## cells (the owning area's world x plus local x), and every layer clips
 ## what it draws to its own [0, tile_width] span, so a tower straddling a
@@ -79,9 +88,10 @@ extends Node2D
 ## on-screen (the screen is 1280 px wide), reappearing on walking back.
 ## tests/cases/test_m7_regress_backdrop_seams.gd guards this.
 
-enum Mode { SKY, HOMES, DEPOT }
+enum Mode { SKY, HOMES, DEPOT, LAB }
 
 const HdSkins := preload("res://scripts/world/hd_skins.gd")
+const LabSkins := preload("res://scripts/world/lab_skins.gd")
 const OUTLINE := Color("#05070B")
 const TEAL := Color("#3FE0D0")
 const AMBER := Color("#FFB02E")
@@ -149,6 +159,34 @@ const DEPOT_TINT := Color(0.94, 1.0, 1.08)
 const DEPOT_LOCKDOWN_TINT := Color(1.0, 0.68, 0.72)
 var _depot_wall: Texture2D
 var _wall: Node2D
+
+# --- LAB: the atrium far layer and the lab backdrop strip (batch 7) -------------------------
+## The atrium (opaque, 724 texels tall): ATRIUM_SCALE world px a texel (about 905 px, a storey
+## stack; its catwalk railings about a person's size at the distance), its bottom ATRIUM_BASE
+## under the floor line, scrolling at 1 - ATRIUM_DEPTH of the camera's speed. Above and below it,
+## its own top and bottom colours.
+const ATRIUM_SCALE := 1.25
+const ATRIUM_BASE := 140.0
+const ATRIUM_DEPTH := 0.88
+const ATRIUM_TINT := Color(0.36, 0.4, 0.5)
+## Level 2 starts in Level 1's lockdown (awakening_done carries over), so the lockdown wash is the
+## lab's normal look: kept dim and only slightly warm, so the lab never reads pink and play stays in front.
+const ATRIUM_LOCKDOWN_TINT := Color(0.38, 0.36, 0.45)
+## The lab strip (483 texels tall, its bottom row the ground line): LAB_SCALE world px a texel
+## (its two storeys about 400 px under the lab's ceilings, its staff a little smaller than Dave:
+## they are further away), standing LAB_BASE into the floor line, at LAB_DEPTH.
+const LAB_SCALE := 0.86
+const LAB_BASE := 2.0
+const LAB_DEPTH := 0.5
+const LAB_TINT := Color(0.36, 0.4, 0.5)
+const LAB_LOCKDOWN_TINT := Color(0.4, 0.37, 0.46)
+## LAB only: the main layer of an area draws the atrium too; a storey layer (false, on a raised
+## floor's node) draws only the lab strip on its own floor line.
+@export var lab_far: bool = true
+var _atrium: Texture2D
+var _lab_strip: Texture2D
+var _atrium_top := Color("#12293F")
+var _atrium_bottom := Color("#3F5E85")
 
 const SKY_TOP := -2400.0
 const SKY_BOTTOM := 700.0
@@ -270,6 +308,8 @@ var _fixture_lights: Array = []
 
 func _ready() -> void:
 	z_index = -80 if mode == Mode.SKY else -60
+	if mode == Mode.LAB and not lab_far:
+		z_index = -59   # a storey's strip stands in front of its area's main lab layer
 	z_as_relative = true
 	var settings := get_node_or_null("/root/Settings")
 	_reduced_motion = settings != null and settings.get_reduced_motion()
@@ -279,7 +319,9 @@ func _ready() -> void:
 	# as volumetric light on far buildings); the depot's own back wall is
 	# close enough to catch its utility lights.
 	light_mask = 1 if mode == Mode.DEPOT else 0
-	if mode != Mode.DEPOT and ResourceLoader.exists(FAR_TEXTURE):
+	if mode == Mode.LAB:
+		_setup_lab()
+	if (mode == Mode.SKY or mode == Mode.HOMES) and ResourceLoader.exists(FAR_TEXTURE):
 		_far = load(FAR_TEXTURE)
 		if mode == Mode.SKY:
 			var img := _far.get_image()
@@ -296,7 +338,7 @@ func _ready() -> void:
 		_wall.light_mask = light_mask
 		add_child(_wall)  # generated, never saved
 		_wall.draw.connect(_draw_depot_wall)
-	if _scrolling():
+	if _scrolling() and mode != Mode.LAB:
 		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 	match mode:
@@ -304,9 +346,9 @@ func _ready() -> void:
 			_build_sky()
 		Mode.HOMES:
 			_build_homes()
-		Mode.DEPOT:
+		Mode.DEPOT, Mode.LAB:
 			_build_depot()
-	if mode != Mode.SKY and not _painted_depot():   # the painted wall has nothing blinking
+	if mode != Mode.SKY and mode != Mode.LAB and not _painted_depot():   # the painted wall has nothing blinking
 		_anim = Node2D.new()
 		_anim.name = "Animated"
 		_anim.light_mask = light_mask
@@ -323,6 +365,9 @@ func _process(delta: float) -> void:
 			queue_redraw()
 			if _anim:
 				_anim.queue_redraw()
+		if _transition_active():
+			_lockdown_elapsed += delta
+			_apply_depot_lights()
 		return
 	if _transition_active():
 		_lockdown_elapsed += delta
@@ -347,6 +392,8 @@ func _draw() -> void:
 			_draw_homes()
 		Mode.DEPOT:
 			_draw_depot()
+		Mode.LAB:
+			_draw_lab()
 
 
 func _on_anim_draw() -> void:
@@ -382,7 +429,7 @@ func is_lockdown_mode() -> bool:
 
 
 func _transition_active() -> bool:
-	return _lockdown and mode == Mode.DEPOT \
+	return _lockdown and (mode == Mode.DEPOT or mode == Mode.LAB) \
 			and _lockdown_elapsed < float(_fixtures.size()) * BANK_STEP + BANK_DARK
 
 
@@ -395,14 +442,15 @@ func _painted_depot() -> bool:
 ## True when this layer draws a painted strip (C39) with its own parallax,
 ## which redraws as the camera moves.
 func _scrolling() -> bool:
-	return (mode == Mode.SKY and _far != null) or (mode == Mode.HOMES and _campus != null)
+	return (mode == Mode.SKY and _far != null) or (mode == Mode.HOMES and _campus != null) \
+			or (mode == Mode.LAB and _lab_strip != null)
 
 
 func _update_processing() -> void:
 	if _scrolling():
 		set_process(true)
 		return
-	var animated := mode != Mode.SKY and not _painted_depot() and not _reduced_motion
+	var animated := mode != Mode.SKY and mode != Mode.LAB and not _painted_depot() and not _reduced_motion
 	set_process(animated or _transition_active())
 
 
@@ -999,8 +1047,8 @@ func _in_clear_zone(x0: float, x1: float) -> bool:
 func _build_depot() -> void:
 	_racks.clear()
 	_cables.clear()
-	if not _painted_depot():
-		_build_racks_and_cables()   # the painted wall has its own
+	if not _painted_depot() and not is_lab_painted():
+		_build_racks_and_cables()   # the painted wall (and the lab) has its own
 	_fixtures.clear()
 	var fx: float = FIXTURE_SPACING * 0.5
 	while fx < tile_width - 60.0:
@@ -1242,3 +1290,62 @@ func _draw_depot_anim(c: CanvasItem) -> void:
 			var p: Vector2 = led["pos"]
 			c.draw_rect(Rect2(p - Vector2(1.0, 1.0), Vector2(6.0, 4.0)), Color(col, 0.18))
 			c.draw_rect(Rect2(p, Vector2(4.0, 2.0)), col)
+
+
+# --- LAB: the Cognition Lab (batch 7) ---------------------------------------------------
+
+func _setup_lab() -> void:
+	if not LabSkins.has("lab_backdrop"):
+		return
+	_lab_strip = LabSkins.texture("lab_backdrop", true)
+	if lab_far and LabSkins.has("atrium_far"):
+		_atrium = LabSkins.texture("atrium_far", true)
+		var e := LabSkins.entry("atrium_far")
+		if e.has("top"):
+			_atrium_top = Color(float(e["top"][0]) / 255.0, float(e["top"][1]) / 255.0, float(e["top"][2]) / 255.0)
+			_atrium_bottom = Color(float(e["bottom"][0]) / 255.0, float(e["bottom"][1]) / 255.0, float(e["bottom"][2]) / 255.0)
+	texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
+
+
+## True when this layer draws the painted lab (else the code-drawn depot is its fallback).
+func is_lab_painted() -> bool:
+	return mode == Mode.LAB and _lab_strip != null
+
+
+func _lab_tints() -> Array:
+	var k: float = 0.0
+	if _lockdown:
+		var total: float = float(_fixtures.size()) * BANK_STEP + BANK_DARK
+		k = clampf(_lockdown_elapsed / maxf(total, 0.001), 0.0, 1.0)
+	return [ATRIUM_TINT.lerp(ATRIUM_LOCKDOWN_TINT, k), LAB_TINT.lerp(LAB_LOCKDOWN_TINT, k)]
+
+
+func _draw_lab() -> void:
+	if _lab_strip == null:
+		_draw_depot()   # no art: the code-drawn depot interior
+		return
+	_update_view()
+	var x0: float = maxf(0.0, _view_x0)
+	var x1: float = minf(tile_width, _view_x1)
+	if x1 <= x0:
+		return
+	var tints := _lab_tints()
+	if _atrium != null:
+		var h: float = float(_atrium.get_height()) * ATRIUM_SCALE
+		var base: float = horizon_y + ATRIUM_BASE
+		var top: float = base - h
+		draw_rect(Rect2(Vector2(x0, horizon_y - 2600.0), Vector2(x1 - x0, top - (horizon_y - 2600.0) + 1.0)), _atrium_top * tints[0])
+		draw_rect(Rect2(Vector2(x0, base - 1.0), Vector2(x1 - x0, 900.0)), _atrium_bottom * tints[0])
+		_draw_smooth_strip(_atrium, ATRIUM_SCALE, ATRIUM_DEPTH, base, tints[0], x0, x1)
+	_draw_smooth_strip(_lab_strip, LAB_SCALE, LAB_DEPTH, horizon_y + LAB_BASE, tints[1], x0, x1)
+
+
+## A smooth painted strip over local x [x0, x1): `sc` world px a texel, its bottom at `base_y`,
+## repeating sideways and sampled by global x minus `depth` of the camera's x (it moves at
+## 1 - depth of the camera's speed and lines up at area seams).
+func _draw_smooth_strip(tex: Texture2D, sc: float, depth: float, base_y: float, tint: Color, x0: float, x1: float) -> void:
+	var tex_w: float = float(tex.get_width())
+	var tex_h: float = float(tex.get_height())
+	var u: float = fposmod((_gx0 + x0 - depth * _camera_x()) / sc, tex_w)
+	draw_texture_rect_region(tex, Rect2(Vector2(x0, base_y - tex_h * sc), Vector2(x1 - x0, tex_h * sc)),
+			Rect2(Vector2(u, 0.0), Vector2((x1 - x0) / sc, tex_h)), tint)

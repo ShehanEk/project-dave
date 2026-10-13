@@ -105,28 +105,50 @@ func _ready() -> void:
 func setup(pivot: Node2D) -> void:
 	if rig == null:
 		super.setup(pivot)
-		var gun := pivot.get_node_or_null("Scrapjack") as Node2D if pivot else null
+		var gun := _find_gun(pivot)
 		if gun:
 			gun.position = FALLBACK_GUN_POSITION
 		return
 	aim_pivot = pivot
 	if pivot == null:
 		return
-	_gun = pivot.get_node_or_null("Scrapjack") as CanvasItem
-	var gun_rig: Node2D = _gun.get("rig") if _gun else null
-	if gun_rig != null:
-		# Two draw layers for the gun's four parts (the frame and the battery cell under the
-		# barrel and the housing, as their own order has them), so the whole gun fits between
-		# the upper arm and the fist.
-		gun_rig.z_index = GUN_Z
-		for jname in gun_rig.sprites:
-			var s: Sprite2D = gun_rig.sprites[jname]
-			s.z_index = 1 if int(gun_rig.defs[jname]["z"]) <= 2 else 2
+	set_gun(_find_gun(pivot))
 	_wrist = pivot.get_node_or_null("WristLight") as Node2D
 	var wl := _wrist as PointLight2D
 	if wl:
 		wl.texture = SceneryDrawScript.smooth_disc_texture()
 	_place_wrist_light()
+
+
+## The gun on the aim pivot: the Scrapjack or (M3) the Boom Broom.
+func _find_gun(pivot: Node2D) -> Node2D:
+	if pivot == null:
+		return null
+	for n in ["Scrapjack", "BoomBroom"]:
+		var g := pivot.get_node_or_null(n) as Node2D
+		if g != null and not g.is_queued_for_deletion():
+			return g
+	return null
+
+
+## Takes `gun` as the one the near fist holds (hero.gd calls this when the held weapon's
+## type changes, M3): its rig is drawn between the upper arm and the fist, in two layers
+## (each gun's parts by their own order: z 1-2 under, 3 and up over), and the arm aims at
+## its grip. The Rook-frame fallback just remembers it.
+func set_gun(gun: Node2D) -> void:
+	_gun = gun
+	if gun == null:
+		return
+	if rig == null:
+		gun.position = FALLBACK_GUN_POSITION
+		return
+	var gun_rig: Node2D = gun.get("rig")
+	if gun_rig != null:
+		gun_rig.z_index = GUN_Z
+		for jname in gun_rig.sprites:
+			var s: Sprite2D = gun_rig.sprites[jname]
+			s.z_index = 1 if int(gun_rig.defs[jname]["z"]) <= 2 else 2
+	_gun.visible = not defeated
 
 
 func update_pose(p_facing: int, p_moving: bool, p_grounded: bool, p_vertical_velocity: float,
@@ -256,7 +278,8 @@ func aim_arm() -> void:
 	_place_wrist_light()
 
 
-## Where hero.gd puts the Scrapjack on the aim pivot for aim direction `step` (C50).
+## Where hero.gd puts the held gun (the Scrapjack or the Boom Broom: both have their grip
+## at the same spot in their own node) on the aim pivot for aim direction `step` (C50).
 ## The Rook-frame fallback keeps its one fixed spot.
 func gun_hold(step: int) -> Vector2:
 	if rig == null:

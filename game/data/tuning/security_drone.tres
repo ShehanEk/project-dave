@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="DroneTuning" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/tuning/drone_tuning.gd" id="1_drone"]
+
+[resource]
+script = ExtResource("1_drone")
+health = 2
+damage = 1
+patrol_speed_h_per_s = 0.9
+bob_px = 3.0
+patrol_half_span = 160.0
+notice_range = 520.0
+notice_below = 480.0
+windup_time = 1.0
+red_time = 0.25
+aim_track_speed_h_per_s = 3.0
+dive_speed_h_per_s = 7.0
+dive_max_h = 6.5
+hang_height_h = 0.85
+hang_time = 1.6
+climb_speed_h_per_s = 2.4
+rest_time = 1.0
+camera_margin_h = 1.0
+tell_pitch_deg = -16.0
+dive_pitch_deg = 26.0
+fork_dive_deg = -150.0
+rig_path = "res://assets/characters/lit/security_drone/rig.json"
+rig_variants = PackedStringArray()
+voice_tell = PackedStringArray("Hold position. Evaluation in progress.")
+sfx_tell = &"rover_windup"
+sfx_dive = &"rover_charge"
+sfx_hit = &"rover_armor"
+sfx_destroyed = &"rover_destroyed"

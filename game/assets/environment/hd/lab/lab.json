@@ -1,0 +1,329 @@
+{
+ "alignment_console": {
+  "anchor_x": 66.0,
+  "file": "props/alignment_console.png",
+  "points": {
+   "screen": [
+    59.5,
+    36.0
+   ],
+   "slot": [
+    87.0,
+    78.0
+   ]
+  },
+  "scale": 0.38919,
+  "size": [
+   132,
+   222
+  ]
+ },
+ "atrium_far": {
+  "bottom": [
+   63.0,
+   94.5,
+   133.1
+  ],
+  "file": "atrium_far.png",
+  "size": [
+   2112,
+   724
+  ],
+  "top": [
+   18.7,
+   41.6,
+   69.5
+  ]
+ },
+ "control_pad": {
+  "anchor_x": 56.0,
+  "file": "props/control_pad.png",
+  "points": {
+   "screen": [
+    57.5,
+    35.5
+   ],
+   "slot": [
+    71.0,
+    77.5
+   ]
+  },
+  "scale": 0.26063,
+  "size": [
+   112,
+   221
+  ]
+ },
+ "coolant_tank": {
+  "anchor_x": 102.0,
+  "file": "props/coolant_tank.png",
+  "scale": 0.38879,
+  "size": [
+   204,
+   321
+  ]
+ },
+ "freight_door_closed": {
+  "anchor_x": 182.5,
+  "file": "props/freight_door_closed.png",
+  "points": {
+   "frame": [
+    5,
+    360
+   ],
+   "reader": [
+    340.5,
+    307.0
+   ]
+  },
+  "scale": 0.42325,
+  "size": [
+   365,
+   499
+  ]
+ },
+ "freight_door_open": {
+  "anchor_x": 182.5,
+  "file": "props/freight_door_open.png",
+  "points": {
+   "frame": [
+    5,
+    360
+   ],
+   "reader": [
+    340.5,
+    307.0
+   ]
+  },
+  "scale": 0.42325,
+  "size": [
+   365,
+   499
+  ]
+ },
+ "glass_door_closed": {
+  "anchor_x": 122.0,
+  "file": "props/glass_door_closed.png",
+  "points": {
+   "frame": [
+    4,
+    220
+   ],
+   "reader": [
+    230.0,
+    188.5
+   ]
+  },
+  "scale": 0.4531,
+  "size": [
+   244,
+   339
+  ]
+ },
+ "glass_door_open": {
+  "anchor_x": 122.0,
+  "file": "props/glass_door_open.png",
+  "points": {
+   "frame": [
+    4,
+    220
+   ],
+   "reader": [
+    230.0,
+    188.5
+   ]
+  },
+  "scale": 0.4531,
+  "size": [
+   244,
+   339
+  ]
+ },
+ "kennel_pod": {
+  "anchor_x": 157.0,
+  "file": "props/kennel_pod.png",
+  "scale": 0.42198,
+  "size": [
+   314,
+   182
+  ]
+ },
+ "lab_backdrop": {
+  "file": "lab_backdrop.png",
+  "roof_row": 15,
+  "size": [
+   2124,
+   483
+  ]
+ },
+ "lab_bench": {
+  "anchor_x": 215.5,
+  "file": "props/lab_bench.png",
+  "scale": 0.26729,
+  "size": [
+   431,
+   248
+  ]
+ },
+ "lane_divider": {
+  "anchor_x": 75.5,
+  "file": "props/lane_divider.png",
+  "scale": 0.32852,
+  "size": [
+   151,
+   263
+  ]
+ },
+ "lattice": {
+  "file": "lattice.png",
+  "lit": [
+   26.3,
+   49.0,
+   740.4,
+   705.5
+  ],
+  "size": [
+   768,
+   768
+  ]
+ },
+ "office_pod": {
+  "anchor_x": 205.0,
+  "file": "props/office_pod.png",
+  "scale": 0.3328,
+  "size": [
+   410,
+   375
+  ]
+ },
+ "partition": {
+  "anchor_x": 122.5,
+  "file": "props/partition.png",
+  "scale": 0.33103,
+  "size": [
+   245,
+   348
+  ]
+ },
+ "proto_crate": {
+  "anchor_x": 108.5,
+  "file": "props/proto_crate.png",
+  "points": {
+   "deck": 0,
+   "top": 0
+  },
+  "scale": 0.41143,
+  "size": [
+   217,
+   140
+  ]
+ },
+ "rail_lamps": {
+  "anchor_x": 163.0,
+  "file": "props/rail_lamps.png",
+  "points": {
+   "lamps": [
+    [
+     29.0,
+     12.5
+    ],
+    [
+     162.5,
+     12.5
+    ],
+    [
+     298.5,
+     12.5
+    ]
+   ],
+   "lens_size": [
+    23,
+    13
+   ]
+  },
+  "scale": 0.29448,
+  "size": [
+   326,
+   85
+  ]
+ },
+ "range_bench": {
+  "anchor_x": 144.0,
+  "file": "props/range_bench.png",
+  "points": {
+   "deck": 15,
+   "top": 0
+  },
+  "scale": 0.36456,
+  "size": [
+   288,
+   158
+  ]
+ },
+ "security_door_closed": {
+  "anchor_x": 112.0,
+  "file": "props/security_door_closed.png",
+  "points": {
+   "frame": [
+    6,
+    199
+   ],
+   "reader": [
+    209.5,
+    171.0
+   ]
+  },
+  "scale": 0.47554,
+  "size": [
+   224,
+   323
+  ]
+ },
+ "security_door_open": {
+  "anchor_x": 112.0,
+  "file": "props/security_door_open.png",
+  "points": {
+   "frame": [
+    6,
+    199
+   ],
+   "reader": [
+    209.5,
+    171.0
+   ]
+  },
+  "scale": 0.47554,
+  "size": [
+   224,
+   323
+  ]
+ },
+ "server_rack": {
+  "anchor_x": 106.0,
+  "file": "props/server_rack.png",
+  "scale": 0.32195,
+  "size": [
+   212,
+   328
+  ]
+ },
+ "test_dummy": {
+  "anchor_x": 74.5,
+  "file": "props/test_dummy.png",
+  "points": {
+   "pole": [
+    206,
+    234
+   ],
+   "ring": [
+    74.5,
+    109.0
+   ]
+  },
+  "scale": 0.32,
+  "size": [
+   149,
+   300
+  ]
+ }
+}

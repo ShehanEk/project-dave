@@ -1,7 +1,13 @@
-# Eon City prototype — implementation conventions
+# DEAD EDEN game — implementation conventions
+
+This is the painted game (C56–C61): the Godot project "DEAD EDEN", exported as
+`DeadEden`. Level 1 is complete and Level 2 ([Alignment](../level-design/l02-alignment.md))
+is next. It was the hand-painted prototype until C61 moved it here from
+`prototypes/sunnyvale-handpainted/`; the pixel-art prototype is gone from the
+tree (tag `pixel-prototype-final`).
 
 Binding contracts for everyone (human or AI) building this Godot project. The
-design authority is `../../prototype-plans/level-01-sunnyvale/` (00–09 +
+design authority is `../prototype-plans/level-01-sunnyvale/` (00–09 +
 prototype-spec.json). This file only fixes *how* the code fits together. If
 you must change a contract here, update this file in the same edit.
 
@@ -72,6 +78,12 @@ ends or is freed.
   `Godot --path . res://scenes/debug/enemy_lab.tscn` (README, "Enemy lab", has
   the keys); `-- --autoplay` plays a scripted tour for captures. It replaces
   the deleted `spike/` test folder and `tools/spike/`.
+- `scenes/debug/enemy_lab_l02.tscn` (`scripts/debug/enemy_lab_l02.gd`, M4) is the
+  same kind of strip for Level 2's three new types: a Sidearm Guard behind a 0.6 H
+  range bench, a second one on a raised step (the aimed shot), a Security Drone over
+  a deck, and a Hound with its Night Guard handler before a kennel wall; keys in its
+  header; `-- --autoplay` (or `--autoplay=gunner|ledge|drone|hound`) plays the tour.
+  Saves and logs go to `user://enemy_lab_l02_throwaway`.
 - After adding/renaming a script with `class_name`, the import step must run
   before `-s` scripts can resolve it (test.sh does this). New visual scripts
   stay free of `class_name` unless the file already has one (import-cache
@@ -94,7 +106,7 @@ top-left. Floors' top surface is their `position.y`. Tuning seeds live in
 | 1 | world (1) | Block, moving platforms (AnimatableBody2D), backstops, doors/walkways | hero body, enemy bodies, bolts |
 | 2 | hero_body (2) | Hero CharacterBody2D | pickups (Area2D, mask 2), hazards (mask 2), triggers |
 | 3 | enemy_body (4) | Enemy CharacterBody2D | nothing by default (hero/enemies never body-block each other) |
-| 4 | hero_hurtbox (8) | Hero `Hurtbox` Area2D | enemy AttackBox |
+| 4 | hero_hurtbox (8) | Hero `Hurtbox` Area2D | enemy AttackBox, enemy rounds (ray sweep, mask 1\|8) |
 | 5 | hittable (16) | HitZone areas: enemy bodies (a person's zone `bleeds`), the Patrol Rover's armor (blocks) & rear battery, targets | bolts (ray/shape query, mask 1\|16) |
 | 6 | interactable (32) | Interactable areas | hero `InteractSensor` |
 | 7 | pickup (64) | chips, med-patches, the keycard (contact pickups) | — (they mask 2) |
@@ -123,7 +135,9 @@ rebuild, which changed every enemy ID; 2 since the revamp), `build`, `level`, `c
 `collected` (entity id -> chip value, 0 for evidence files, med-patches and
 the keycard), `evidence` (evidence-file ids such as
 `"EF01"`), `keycards` (clearance keycard ids such as `"L01-KC01"`),
-`upgrades`, `equipped_weapon`, `world_weapons`, `defeated`, `switches`,
+`upgrades`, `equipped_weapon`, `world_weapons`, `weapon_ammo` (M3: a
+finite weapon's shells per instance, see "Boom Broom and the held-weapon swap
+(M3)"), `defeated`, `switches`,
 `story`, `objective`, `active_seconds`. `collect(entity_id, chip_value)` is a
 one-time record; `record_evidence(evidence_id, pickup_entity_id)` and
 `take_keycard(keycard_id, pickup_entity_id)` each record their own list plus
@@ -252,6 +266,240 @@ deliberately never touches this file (only the checkpoint/backup/temp trio).
 `user://test_runs/<ticks>` directory for the whole run (clearing it between
 every case) and deletes it at the end, so no test — M0-M3 cases that call
 `Session.commit()` included — ever touches a real player save.
+
+## Levels and the campaign (M1, C61)
+
+Levels are data; this section supersedes the single-level constants named
+elsewhere in this file (`LevelDirector.AREA_SCENE_PATHS`/`CHECKPOINT_MARKERS`/
+`DEPOT_AREA_ID`/`PA_LINE`/`PA_CALM_LINE`/`ROUTE_PA_LINES`, `Session.LEVEL`/
+`STARTING_WEAPON`, `CheckpointService.LEVEL`/`WEAPON_INSTANCES`/`WEAPON_PADS`/
+`MAX_WALLET`/`STORY_FLAGS`, schema 3, Main loading `level_01.tscn`).
+
+- **`LevelDef`** (`scripts/levels/level_def.gd`, Resource; `data/levels/l01.tres`,
+  `l02.tres`): `id` (also the prefix of the level's ids), `number`,
+  `display_name`, `area_scenes`, `checkpoint_markers` (id -> [area index,
+  marker]; its keys are the checkpoint ids the level's saves may carry),
+  `first_checkpoint`, `exit_checkpoint`, `starting_weapon`, `world_weapons`,
+  `switches`, `keycard_id`, `story_defaults`, `objective_start`/`_complete`,
+  `intro_scene` (a `.gd` built with `new()` or a `.tscn`, emitting
+  `finished(skipped)`), `next_level`, completion data (`chip_total`,
+  `evidence_id`/`_name`, rank times, `completion_line`) and director data
+  (`depot_area_id`, `route_pa_lines`, `lockdown_pa_line`/`_voice`,
+  `exit_pa_speaker`/`_line`/`_voice`, `overlay_scenes`). Level 1's old
+  constants live in `l01.tres`. `l02.tres` lists Level 2's six greybox areas
+  (M2, below; M1's one-area stub is gone).
+- **Registry** `LevelDefs` (`scripts/levels/level_defs.gd`, static): `PATHS`,
+  `ORDER`, `get_def(id)`, `has_level`, `next_of`, `wallet_cap(id)` (the chips of
+  that level and the ones before), `WEAPON_TYPES` (types Dave can carry in:
+  W01 and, since M3, W02) and `CARRIED_STORY_FLAGS` (`awakening_done`). A new level is a .tres,
+  its area scenes and an entry in `PATHS` and `ORDER`.
+- **LevelDirector** builds `level_def` (set before `add_child()`, else the
+  `level_id` export, else Session's current level). `level_01.tscn` sets
+  `"L01"`; Main uses the generic `scenes/levels/level.tscn` and names the node
+  `Level01`, `Level02`, ... `checkpoint_markers()` replaces the constant.
+  Signals `next_level_requested(level_id)` and `new_run_requested` (Play again
+  in a level after the first) go to Main.
+- **Carried vs per level.** `state["level"]` names the level; schema **4**
+  adds `completed_levels` (older saves are rejected). Carried into the next
+  level: the held weapon's TYPE (as `LevelDef.hand_instance(type)`), `upgrades`
+  (Scrap Plating too), `wallet`, `evidence`, `completed_levels` and
+  `CARRIED_STORY_FLAGS`. Fresh from the next LevelDef: checkpoint, full health,
+  `collected`, `defeated`, `keycards`, `switches`, `world_weapons`, the other
+  story flags, `objective`, `active_seconds`. `Session.default_state(id = "")`
+  and `new_run(id = "")` start a level with the default campaign;
+  `next_level_state(from, id)` is the pure handover; `advance_to_level(id) ->
+  bool` adopts it as `state` and `committed` and saves its first checkpoint
+  (it adopts even when the save fails; the caller reports it);
+  `current_level_id()`, `current_level_def()`.
+- **Validation** checks a save against its own level's LevelDef: a registered
+  level, only that level's id prefix (`<L>(-[A-Z0-9]+)+`, `<L>-SW##`,
+  `<L>-KC##`), its checkpoint keys, exactly one of its weapon instance sets on
+  its pads, exactly its story flags, wallet up to `wallet_cap`, and
+  `completed_levels` as distinct earlier levels. Best-run records are per
+  level (`records.json` for L01, `records_l02.json` after).
+- **Flow (Main).** New Game plays the first level's intro, then Level 1. At a
+  level's end the exit PA plays and the completion screen opens; when there
+  is a registered next level it adds a focused **Continue** button and names
+  it ("Next: Level 2, Alignment"). Continue makes Main take the level out of
+  the tree, call `Session.advance_to_level()`, play that level's intro (if
+  any) and start it. Title Continue loads the save's level. Debug builds only:
+  `-- --level=L02` (or `L01`) skips the title and runs
+  `Main.start_level_direct(id)` (default campaign state), saving under
+  `user://level_flag_throwaway` unless `--m7-save-dir` already redirected the
+  saves. The M7 driver still plays Level 1 only. Tests:
+  `tests/cases/test_campaign_flow.gd`.
+
+### Level 2 greybox (M2, C59)
+
+Six areas `scenes/levels/l02/a01_sky_bridge.tscn` ... `a06_demo_floor.tscn`
+(blueprint `../prototype-plans/level-02-alignment/area-blueprints.md`), Level 1's
+kit as placeholder art. Tests: `tests/cases/test_l02_areas.gd`.
+
+- **Roof.** `AreaRoot.wet_until_x` (local x): an `indoors` area is outdoors
+  before it (A01's sky bridge, x 0-900). `dry_span()` / `is_indoors_at(x)`.
+  The atmosphere merges touching dry spans (its shaders take two). Block and
+  Scenery take the interior (depot) look from the owning area's roof, no longer
+  from the id `L01-A05` (Level 1 is unchanged: the depot is its only indoors
+  area); an interior backstop is the `ac_unit` housing, never the stone planter. Batch 7: Level 2's
+  areas set `interior_look = "lab"` and wear the painted lab ("Level 2's lab art" below).
+  Level 2's beds, tracks and footsteps are keyed by area id in `AmbienceMap`
+  (`LAB_AREA_BEDS`/`LAB_AREA_MUSIC`, which win over the lockdown rule) and
+  `SurfaceMap` (metal).
+- **A04 lanes.** `scripts/objects/rail_rack.gd` (extends MovingPlatform): waits
+  at `point_a` until its `switch_id` is on (a RouteSwitch control pad, `L02-SW01`
+  to `SW03`), warns `warn_time` (amber rail lamps, `adam_chime`, `move_warned(caption)`
+  = the caption hook), crosses once to `point_b` and docks (`arrived`); while
+  anything is in its way (a world-space shape cast ahead of its deck) it holds
+  still instead of reversing. `lane_partition.gd` (StaticBody2D, top-left +
+  `size` like a Block) opens on its rack's `arrived` and never closes. Both
+  start docked/open when the switch is already on. The fixed upper ledge (route
+  branch `LEDGE`, run alone by the test) crosses A04 with no lane used.
+- **Keycard.** `scenes/objects/keycard_console.tscn` (`keycard_console.gd`,
+  Interactable): interact = `Session.take_keycard(keycard_id, entity_id)`
+  (`L02-KC01`, pickup id `L02-KC01-P`) and `keycard_granted(id)` for M5's console
+  scene. The A06 freight lift is an ExitWicket (`required_keycard = "L02-KC01"`).
+- **Slots.** M2's enemy slots (`Marker2D` `Slot_<Type>` with `enemy`, `entity_id`,
+  `facing`, `milestone`, `notes` metadata) are gone: M4b put the real enemies there under
+  the same ids and kept the notes as metadata (placements: "Level 2's enemies (M4)");
+  M3 replaced A01's `Entities/Slot_SwapPad` with the real `Entities/WeaponPad` at x 1300
+  (`pad_id` `L02-A01-PAD01`, resting `L02-W02-P01`; next section). Staffer looks are picked by
+  entity id (`L02-E04-LK01-B01` = look B, `L02-E08-LK01-A`/`-C`).
+
+### Boom Broom and the held-weapon swap (M3)
+
+W02, Dave's pump shotgun (`art-design/weapons/w02-boom-broom.md`), on Level 2's A01 pad.
+Tests: `tests/cases/test_w02_boom_broom.gd`, `test_l02_swap_pad.gd`; capture demo
+`scenes/debug/boom_broom_demo.tscn` (`scripts/debug/boom_broom_demo.gd`).
+
+- **Types.** `WeaponTypes` (`scripts/weapons/weapon_types.gd`, static): per type its name,
+  gun node name (`Scrapjack`, `BoomBroom`), scene, tuning, HUD icon piece and upgrade
+  names; prices 40/90/160 (`upgrade_price`), `STAGE_GATES` (stage 2 after the
+  Peacekeeper, 3 after Stroud; only stage 1 is buyable: `MAX_WEAPON_STAGE` 1); ammo
+  helpers (`uses_ammo`, `capacity(type, stage)`, `full_ammo`). `LevelDefs.WEAPON_TYPES`
+  is `["W01", "W02"]`.
+- **Tuning.** `ShotgunTuning` (`scripts/tuning/shotgun_tuning.gd`, extends
+  `WeaponTuning`), `data/tuning/w02_boom_broom.tres`. From the brief and S02: 4 shells
+  (Extended Tube 6), reserve 24, 0.7 s a shell. Proposed: 6 pellets over a 22-degree
+  cone (+-1.5 jitter, kept inside), 0.75 damage a pellet at full, full to 120 px, down
+  to 0.25 at 360 px, none past 420 px; per target the pellets' shares are summed and
+  rounded (at least 1) into ONE `take_hit()` (point blank 4.5 -> 5: drops any Level 1-2
+  enemy; far: 1); pump 0.62 s (pump back 0.1-0.22 s, shell out at 0.22, forward by
+  0.4); knockback 420 px/s decaying 1600 px/s^2 (about 55 px) times the share of the
+  blast that hit, Rover x0.25 (stagger), Drone x1.25; reload starts at once when the
+  tube is empty or after 0.45 s idle (no reload key yet); burn 2 ticks of 1 every 0.8 s;
+  Twin Shell 2 shells, 10 pellets over 26 degrees, push x1.6, 1.1 s recovery; recoil
+  7 px and a 9-degree muzzle lift over 0.2 s; flash x1.9, light 3.4 / 220 px.
+  Placeholder sounds in the tuning: `rover_destroyed` (blast), `latch` (pump, and the
+  rack after a pad swap), `ready_click` (shell in), `debris_clatter` (casing lands),
+  `keycard_denied` (empty).
+- **The gun** (`scripts/weapons/boom_broom.gd`, `class_name BoomBroom`,
+  `scenes/weapons/boom_broom.tscn`): like the Scrapjack, on `AimPivot`, `GRIP_LOCAL`
+  (2, 3), its rig's origin the grip, drawn at `ART_SCALE` 0.9; `Muzzle` follows the rig's
+  `muzzle` socket. Holding `fire` blasts whenever `is_ready()` (not pumping, a shell
+  in). Pellets are rays from the muzzle (mask 1|16) along `hero.shot_direction()`; a
+  shoulder-to-muzzle ray first (the Scrapjack's clamp): a HitZone there takes every
+  pellet, a wall there stops the blast. Effects: `scripts/effects/blast_trails.gd`
+  (pellet flecks and streaks, the air ring; ember with Incendiary), `PixelFx`
+  `muzzle_flash` (x1.9), `ImpactSpark` on walls and machines, the muzzle light, a
+  camera kick, `scripts/effects/shell_casing.gd` (a copy of the rig's `shell` part,
+  thrown from `eject`, bounces, fades). `scripts/combat/knockback.gd` (a child node on
+  the enemy body that `move_and_collide()`s it sideways and frees itself; no enemy script
+  changed) and `scripts/combat/burn.gd` (Incendiary: ticks through the zone's own
+  `take_hit()`). Stage parts `ext_tube` (1), `heat_collar` (2), `twin_pod` (3) show by
+  `Session.weapon_stage("W02")`. `try_twin_blast()` (stage 3, >= 2 shells) reads an
+  optional `fire_alt` action, which the project does not define yet. Test hooks:
+  `last_blast`, `try_blast()`, `rng`, `shells_ejected`, `pump_stroke()`.
+- **Shells in Session.** `state["weapon_ammo"]`: `{instance: {"loaded", "reserve"}}` for
+  finite instances only. `has_ammo`, `weapon_ammo`, `held_ammo`, `set_weapon_ammo`
+  (clamped; signal `weapon_ammo_changed`), `refill_held_weapon()` (recovery stations and
+  the workbench's Repair and save). A swap moves nothing, a commit saves the counts, a
+  death rolls them back. A world weapon's start count is `LevelDef.weapon_ammo`
+  (`L02-W02-P01`: [4, 24]); `next_level_state()` carries the held weapon's count with
+  its type. `CheckpointService` accepts `weapon_ammo` only on the save's own finite
+  instances, whole counts 0..6 / 0..24, and a save without it (Session fills full).
+- **The held-weapon swap.** `Hero.held_weapon()` is the gun on `AimPivot`;
+  `Hero.sync_held_weapon()` (on `weapon_swapped`, `snapshot_restored`, `run_reset` and
+  in `_ready()`) replaces it with the held type's scene when the TYPE changed (a swap
+  between two copies of one type keeps the node), at the old gun's index and hold, and
+  calls `visual.set_gun()` (`hero_rig_visual.gd`: the fist takes the new grip, the rig is
+  layered between upper arm and fist by its parts' z) and, after a swap,
+  `announce_ready()` (the Scrapjack's ready click or the Broom's rack). Both guns keep
+  their grip at the same spot of their node, so `GUN_HOLD` serves both. The Scrapjack is
+  unchanged (`AimPivot/Scrapjack`); it gained `announce_ready()` and `show_tag`.
+- **LevelDef.hand_instance()** never returns a world weapon's id: a Broom carried into
+  Level 2 is `L02-W02-P02` beside the pad's `L02-W02-P01`.
+- **HUD and bench.** The slot shows the held type's icon (`weapon_icon.gd`
+  `set_weapon_type`, piece `weapon_boom_broom`), the pip is the held type's stage 1, and
+  `AmmoLabel` shows "loaded/reserve" for a finite weapon (`Hud.ammo_text()`). The
+  workbench card is the held type's stage 1 (Extended Tube, 40: "4 shells" -> "6 shells"),
+  and `Hud.announce_upgrade(type)` toasts it.
+- **Placeholder art.** `tools/art/paint_boom_broom.py` writes
+  `assets/characters/lit/boom_broom/` (parts `body` root at the grip, `pump`, `shell`
+  hidden, `ext_tube`, `heat_collar`, `twin_pod`; sockets `grip`, `muzzle`, `eject`,
+  `support`) and the icon `assets/ui/pixel/weapon_boom_broom.png` + `assets/ui/hd/`
+  twin. The painted `boom-broom-parts-v1` sheet replaces the folder through an
+  `import_parts_sheet.py` prop entry with the same joint and socket names (a commented
+  `boom_broom_hd` template sits beside `scrapjack_hd`), then re-run the icon from it.
+- **Open.** The far (support) hand is not posed onto the pump; no reload key or
+  `fire_alt`; the Rover's stagger is only a smaller push; cartridges (S02) are not in
+  Level 2 yet, so stations refill.
+
+### Level 2's lab art (batch 7, 2026-10-13)
+
+The Level 2 sheets (`../concept-art/style-handpainted/lab-*`, `atrium-far-*`,
+`lattice-hologram-*`, `l2-effects-*`, `l2-hud-*`; `../art-design/handpainted-style.md` "Batch 7")
+replace the depot placeholder in A01 (from the bridge door) to A06. Test:
+`tests/cases/test_l02_lab_art.gd`.
+
+- **Import.** `python3 tools/art/import_hd_env.py --batch7 [lab_backdrops|lab_hologram|lab_props|lab_doors]`
+  writes `assets/environment/hd/lab/` (the strips, `lattice.png`, `props/<piece>.png` + `_n.png`) and
+  `lab.json` (per piece `file`, `scale` world px a texel, `anchor_x`, `size`, `points`). Sizes are
+  Level 1's (H = 96 px): each prop keeps the prompt's size in person heights. The backdrop's desk
+  plants are painted out (C58), the rail lamps' lenses made neutral glass (the game lights them),
+  the console's card slot re-lit teal (the lane pads keep amber). `import_hd_ui.py --batch7` writes
+  the effects and HUD icons (below). New PNGs under `lab/` are imported with mipmaps (copy a
+  `props/*.png.import` stub's `[params]` before the import step).
+- **`AreaRoot.interior_look`** (`"depot"` default, `"lab"` on Level 2's six areas): what the
+  roofed part wears. `scripts/world/lab_skins.gd` (no class_name) loads the manifest, draws a piece
+  standing on its origin (`draw`, `draw_rows`, smooth and mipmapped, normal-mapped, tinted `DIM`
+  so white composite never clips under a lamp) and answers `in_lab(node)` (under such a roof).
+- **AreaBackdrop `LAB`** (mode 3): the atrium far layer (opaque, `ATRIUM_SCALE` 1.25, its bottom
+  `ATRIUM_BASE` under the floor line, depth 0.88, its own top/bottom colours above and below) behind
+  the lab strip (`LAB_SCALE` 0.86, about 415 px of two-storey glass labs on the floor line, depth
+  0.5), both sampled by global x like the campus strips and dimmed (`ATRIUM_TINT`, `LAB_TINT`;
+  red-leaning in a lockdown). `lab_far = false` on a raised storey's layer draws the strip only.
+  The depot's ceiling utility lights stay (real lights at `CEILING_Y`, no drawn housings or haze).
+  Level 1's `DEPOT` mode is unchanged; without the art `LAB` falls back to the code-drawn depot.
+- **The Lattice** (`scripts/world/visuals/lattice_hologram.gd`, A05 `Scenery/Hologram` at x 2100 on
+  the landing, `Slot_Hologram` kept for M5): additive (black adds nothing), `height` 440 px from its
+  base ring, `brightness` 0.36, z -15 (behind props and actors), a teal PointLight2D by it, no
+  collision. Motion: a slow breath, a mirrored "turn" cross-fade and a rising scan band; static
+  (not processing) under Reduced motion.
+- **Skins in the lab** (each keeps its code-drawn or Level 1 look elsewhere): `Scenery.Kind.LAB_PROP`
+  (22) draws `lab_piece` at its own size (`flip` mirrors): lab_bench, office_pod (A04's DeskPod, Dave's
+  desk at EF02), server_rack, lane_divider, kennel_pod (A02's pods), proto_crate, coolant_tank and
+  the doors `glass_door_*` (A01 BridgeDoor, shown open), `security_door_*` (A03, A04), each
+  `_closed`/`_open`. Block: `SCENERY_SOLID` is the range bench fitted to the block (its deck on the
+  top, at most 8 px wider each side), `BACKSTOP` a stack of prototype crates (`lab_skin()`).
+  RouteSwitch is the lane control pad (slot and screen amber/teal), the keycard console the alignment
+  console, ExitWicket the `lab_door` (`freight_door`: closed, open once the card is held; A06's
+  stand-in LiftDoor is gone), PracticeTarget the test dummy (chest ring on the origin, its shaft
+  repeated down to the floor a ray finds). A04: `lane_partition.gd` draws the glass panel (open: its
+  shoe under the ledge), `rail_rack.gd` the floor-rail segment with a lamp every bay
+  (`rail_lamps()`; the state colours lit over the lenses; it redraws once a docked rack settles).
+- **Effects** (`assets/effects/hd/`, painted-only: their `effects.json` entry adds `frame_size` and
+  `anchor` in art px; `PixelFx.meta_for()`, `hd_only()`, `opts.hold`, `opts.rotation`):
+  `pistol_flash` (the Sidearm Guard's muzzle), `pistol_round` (the EnemyRound's slug, white-hot on
+  import, tinted tracer ivory), `pistol_impact` (`ImpactSpark.effect`, turned to fan back at the
+  shooter), `shotgun_blast` (the Broom's muzzle, sized for it: `muzzle_flash_scale` 1.9 = 1),
+  `shotgun_pellets` (BlastTrails' burst at the muzzle), `shell_casing` (ShellCasing's frames at the
+  rig shell's length: tumbling, then on its side), `shock_arc` (the drone's `fork_tip` through its
+  dive, prongs left out), `lunge_dust` (behind a lunging Hound). Level 1's strips are unchanged.
+- **HUD.** `assets/ui/hd/` + pixel layout twins: `weapon_boom_broom` (the painted icon, replacing
+  `paint_boom_broom.py`'s; re-running that script's icon step would overwrite it), `shell_lit` /
+  `shell_unlit` (5 x 9 UI px: `scripts/ui/shell_row.gd` beside the slot, one per tube shell, AmmoLabel
+  then shows "+reserve"; `Hud.ammo_text()` stays "loaded/reserve"), `keycard_l2`, `evidence_memo`
+  (LevelDef `keycard_icon` / `evidence_icon`, default `keycard` / `evidence`).
 
 ## Autoload `Settings` (scripts/settings.gd)
 
@@ -559,7 +807,7 @@ so a cue can be switched back to its synthesized original by editing its
 ## Night look (revamp, C15; lit by C35)
 
 The game is a dark night campus, not the old cheerful daytime look. Every
-visual script draws in the style guide's palette (`../../art-design/
+visual script draws in the style guide's palette (`../art-design/
 style-guide.md`): near-black `#07090F` (voids, silhouettes), navy `#0E1726`
 (sky, far background), steel `#1C2A3A` and slate `#2E3B4E` (structures,
 paving), Arcadia/Adam teal `#3FE0D0`, hazard amber `#FFB02E`, alarm red
@@ -753,16 +1001,151 @@ is presentation only: no collision and no gameplay state live in it.
   only; in Godot 4.7.2's Compatibility renderer it also faintly washes the
   world (the script's header explains).
 - **Art tools:** `tools/art/` holds the painters (`paint_night_guard.py`,
-  `paint_staffer.py`, `paint_patrol_rover.py`, `paint_blood.py`), the shared
+  `paint_staffer.py`, `paint_patrol_rover.py`, `paint_blood.py`, and the M4
+  placeholders `paint_pistol.py`, `paint_security_drone.py`, `paint_hound.py`, and M3's
+  `paint_boom_broom.py`), the shared
   `lit_rig_common.py`, `make_normal_maps.py` and the Mixamo tools
   (`mixamo_to_rig.py`, `make_test_armature.py`, `README-mixamo.md`).
+
+## Level 2's enemies (M4): the Gunner and Drone templates and the Hound
+
+Three new types, each a Level 1 template with one small twist (C26), all lit cutout
+rigs, all in EncounterGroups like the Level 1 enemies (attack tokens, lanes,
+`is_active`, `claim_voice`), all recording `Session.mark_defeated(entity_id)` once and
+freeing themselves in `_ready()` when already defeated. Numbers are tuning data
+(`data/tuning/*.tres`); tests `tests/cases/test_l02_gunner.gd`, `test_l02_drone.gd`,
+`test_l02_hound.gd`. The fairness rules they implement are
+`design/04-world/encounter-and-boss-fairness.md` (P23).
+
+- **Gunner template** (`scripts/actors/gunner.gd`, `class_name Gunner`, states
+  `PATROL, APPROACH, AIM, FIRE, RELOAD, DEFEATED`; tuning `GunnerTuning`,
+  `scripts/tuning/gunner_tuning.gd`). First the SE02 **Sidearm Guard**
+  (`scenes/actors/sidearm_guard.tscn`, `data/tuning/sidearm_guard.tres`) with the
+  EG01 pistol: 3 health; walks in at 1.1 H/s while Dave is on his floor beyond range;
+  the tell (AIM, 0.9 s) is the deep two-hand stance with the muzzle lamp amber, then red
+  for the last 0.25 s with the lock click (`sfx_lock`); one round at 9 H/s, at most
+  6.5 H; FIRE (0.18 s recoil) then RELOAD (1.2 s, rooted, the slide racks back: the
+  punish window); `rest_time` 0.3 s before the next tell. He notices Dave by
+  proximity, like a Brawler (no stealth). Rules in code: a tell starts only while Dave
+  stands on a floor (never at an airborne Dave), he can see Dave's shoulders (a low
+  crate never hides him), Dave is in range (6 H) and in front, a shot at another floor
+  has a clear line as wide as a round from its origin to the target (else he walks
+  toward Dave up to his floor's edge until it has: "he leans over the edge"), his
+  round is not still alive (`max_live_rounds` 1) and his body is at least
+  `camera_margin_h` (1 H) inside the current Camera2D's view (`is_on_camera()`; no
+  camera = open); at the end of the tell the gate is checked again and a shut gate
+  holds the fire (no round, no reload). Dave's last grounded spot within
+  `same_floor_band` (24 px) of the gunner's floor is "his floor": the round flies flat at
+  0.5 H from `flat_muzzle_x` ahead of his feet. Otherwise the aim point (Dave's last
+  grounded spot + 0.5 H) follows at most 3 H/s through the amber part and locks at red,
+  and the round flies through the locked point from `shot_reach` along the line from
+  the stance shoulder `shot_pivot` (pose-independent tuning numbers, so the clear-line
+  check and the shot agree; the gun's drawn `muzzle` socket only places the flash).
+  Both upper arms (`aim_joints`) turn by the aim angle (-30 to +60 degrees) so the arm
+  and gun point at it. He turns to face Dave only
+  in APPROACH (between shots). Hits never interrupt AIM, FIRE or RELOAD (a flinch only
+  while holding or walking). Death: a ragdoll like a Brawler's, a pool, and the pistol
+  drops as loose debris (`Gun_<id>`, never a pickup); now and then a cut-off last line
+  (`voice_death`, caption only). Signals `defeated(entity_id)`, `fired(round)`.
+- **EnemyRound** (`scripts/combat/enemy_round.gd`, `class_name EnemyRound`, group
+  `"enemy_round"`; the pistol's scene is `scenes/weapons/pistol_round.tscn`): swept
+  each tick by three parallel rays (its centre and ±2.5 px) against the world (layer
+  1) and the hero hurtbox (layer 4), never enemy hit zones (rounds pass through
+  enemies); the world stops it (a 0.6 H crate stops a flat round), the hero takes
+  `damage` with `knockback_scale` 0.5; it expires after `max_range`. Signal
+  `resolved(outcome, at)` (`&"hit"`, `&"blocked"`, `&"expired"`). Tracer ivory with a
+  dark outline, never a tell colour.
+- **Drone template** (`scripts/actors/drone.gd`, `class_name Drone`, states
+  `PATROL, TELL, DIVE, HANG, CLIMB, DEFEATED`; tuning `DroneTuning`,
+  `scripts/tuning/drone_tuning.gd`). First the M02 **Security Drone**
+  (`scenes/actors/security_drone.tscn`, `data/tuning/security_drone.tres`): a floating
+  CharacterBody2D whose origin is the hull's centre; it hovers at the height it was
+  placed (`home_y()`) along `patrol_min_x..patrol_max_x` (area-local; default ±160 px)
+  with a 3 px bob, 2 health. The tell (1.0 s): it stops almost still and noses up, the
+  lightbar amber then red for the last 0.25 s, its announcement every other tell; the
+  dive's target (Dave's last grounded spot + 0.85 H, head height) follows at most
+  3 H/s and locks at red. DIVE: a straight committed line at 7 H/s (at most 6.5 H) to
+  the locked spot, the AttackBox live only here; it stops early against the world.
+  HANG: 1.6 s at head height, attack box off, fork spent (the punish window), the
+  attack token released. CLIMB at 2.4 H/s back to its height, then `rest_time` (1 s)
+  before the next tell. Same tell gates as the Gunner (Dave grounded, seen, the dive
+  within reach and below it, 1 H inside the camera). Hits throw sparks and a few drops
+  of oil (`Blood.oil_drip`), never blood, and never interrupt it; destroyed it bursts
+  into falling debris (`Wreck_<id>`) that settles in an oil stain. Its lights: the
+  lightbar (the tell, by role `lightbar`), a small amber lens glow while it hunts (the
+  hull's `lens_light` socket) and Adam's magenta underglow (the hull's painted strip and
+  a soft light under it); the fans (role `fan*`) spin by flipping their x scale.
+- **Hound** (K01, `scenes/actors/hound.tscn`, `scripts/actors/hound.gd`,
+  `class_name Hound extends Brawler`, tuning `data/tuning/hound.tres`, a
+  `BrawlerTuning`): a four-legged Brawler. M4 added to the Brawler template, all
+  defaulting to Level 1's behaviour: `lunge_count` (the Hound 2) and `relunge_time`
+  (0.5 s: after each lunge but the last it re-enters WINDUP, its own amber-then-red
+  blip, turning to face Dave through the amber part; `_strike_dir` is now set as STRIKE
+  starts), `body_half_width`/`body_height` (the probes and the warning cue),
+  `hit_jolt`, `death_twitch_joints`/`death_twitch_time` (the ragdoll's `twitch()`),
+  `tell_light_scale`/`tell_light_energy` (a small tell light: the Hound's jaw would
+  wash its head red), and the handler gate: a K9's exported `handler_path` names its
+  Night Guard; `attack_allowed()` keeps the handler from winding up during the K9's
+  chain or until `handler_delay` (1.5 s) after it, and the K9 from starting while its
+  handler attacks or within `handled_rest_time` (3.2 s) of its own chain. Hound
+  numbers: 2 health, trots in at 2.4 H/s, engages within 200 px, a 0.75 s crouch, two
+  2 H lunges of 0.4 s (0.9 s lunge to lunge), a low attack box (44 x 34, a held jump
+  clears it), a 1.2 s rigid recovery (the punish window), a 0.8 H tall hit zone (a level
+  shot lands). `hound.gd` only adds its lights: an additive glow on the jaw guard in the
+  tell's colour (the tell, with the jaw's emissive slot), and (C60) the spine strip lime with a
+  living handler (`has_handler()`), magenta without; the collar light teal while it
+  waits, small amber while it hunts; the visor's sensor point amber while it hunts.
+  It bleeds; its legs twitch for 1 s after death, then the body settles.
+- **Rigs and the painted sheets.** The coordinator's part lists (the sheets to come)
+  are already the rigs' part names, so a painted sheet replaces a placeholder folder
+  through an `import_parts_sheet.py` entry without code changes:
+  `assets/characters/lit/hound/` (`paint_hound.py`: torso, neck, head, jaw, tail,
+  front_/hind_ upper_leg, lower_leg, paw; near and far legs share a part, the far one
+  tinted by the rig; sockets `tell` on the jaw, `visor_light`, `collar_light`),
+  `assets/characters/lit/security_drone/` (`paint_security_drone.py`: hull with the
+  canopy, lens, skids, boom and magenta strip, nacelle twice, fan twice, lightbar,
+  fork; joints found by role; sockets `tell`, `lens_light`, `fork_tip`, `oil_drip`) and
+  `assets/characters/lit/pistol_eg01/` (`paint_pistol.py`, a prop rig: frame with the
+  teal strip, slide with the muzzle lamp; sockets `muzzle`, `lamp`, `support`). The
+  Sidearm Guard wears the Night Guard HD looks (`rig_variants`) minus the baton
+  (`strip_joints`, `cutout_rig.remove_joint()`) until the SE02 sheets exist: point
+  `rig_path`/`rig_variants` at the SE02 folders (same 15 joints as the guard, no
+  baton) and empty `strip_joints`; the gun hangs on `gun_joint` at the carrier rig's
+  `gun` socket when it has one (else `gun_offset`, turned `gun_rotation_deg`). The
+  clips are hand-keyed: `clips_sidearm_guard.gd` (the stance holds the barrel level
+  with the muzzle about 0.5 H up), `clips_hound.gd`. Rig additions: rig.json `"feet"`
+  (the joints the ground lock keeps on the floor: the Hound's four paws) and a joint's
+  `"lock": true` (it rides on its parent in a ragdoll: the Hound's jaw and paws);
+  `cutout_rig.darken_emissive()` (every glow dark on death).
+- **Placeholder sounds** (tuning StringNames, swap when the Level 2 audio exists):
+  the pistol `ready_click` (lock), `pistol_fire`, `latch` (rack); the drone
+  `rover_windup`, `rover_charge`, `rover_armor`, `rover_destroyed`; the Hound
+  `staffer_windup` (growl and servo whine), `staffer_lunge`. Barks are captions
+  (the briefs' lines); BarkMap gives them a voice once recorded.
+- **Placed in Level 2 (M4b)** (area-local): E01 Sidearm Guard `L02-E01-SE02-01` at
+  A02 x 2400 (holds his post until the ApproachZone, walks in no further than his lane,
+  x 1600); E02 Hound `L02-E02-K01-01` at A02 x 4450 before its handler (x 4600, the
+  KennelWall backstop at 4900); E03 Security Drone `L02-E03-M02-01` at A03 (2300, -420)
+  over Deck2, patrol x 2100-2500; E05 Sidearm Guard `L02-E05-SE02-01` on the GuardStep
+  (2500, -396) and Security Drone `L02-E05-M02-01` at (2000, -480), patrol x 1700-2300
+  (moved down from the slot's -520); E06 Hound `L02-E06-K01-01` at A06 x 2550 before
+  its handler (x 2700, the CrateStack backstop at 2976). A Hound sets `handler_path`
+  to its Night Guard sibling in the same EncounterGroup. A drone hovers at most about
+  1.9 H (180 px) over the floor Dave fights it from: the camera is centred on Dave's
+  feet and shows 300 px above them (zoom 1.2), so unless the area's camera limits shift
+  the view, a drone more than 204 px over his floor is not 1 H inside it and never tells. `tests/cases/test_l02_encounters.gd`
+  fights each encounter in the real level with the base Scrapjack (scripted player,
+  punish windows) and checks the fairness caps, gates and gun-lane pit edges.
 
 ## Shared node contracts
 
 - **Hero** (`scenes/actors/hero.tscn`, `class_name Hero`, group `"hero"`):
-  `take_damage(amount: int, source_position: Vector2) -> bool` (false while
-  immune/dead), `fall_to(safe_position: Vector2, damage: int)`,
+  `take_damage(amount: int, source_position: Vector2, knockback_scale: float = 1.0)
+  -> bool` (false while immune/dead; an enemy round passes 0.5, the fairness
+  rules' half knockback), `fall_to(safe_position: Vector2, damage: int)`,
   `respawn_at(position: Vector2)`, `input_enabled: bool`, signal `died`.
+  The hit's knockback is set before `Session.apply_damage()` (M2 fix), so a lethal
+  hit whose `died` respawns Dave at once (no death beat) leaves him on the marker.
   Children: `Hurtbox` (Area2D, layer 4, owner = hero), `InteractSensor`
   (Area2D, mask 6), and, since the night pass, a small `WristLight`
   (`PointLight2D`) under `AimPivot`. Hero never contains story logic. The hero is Dave
@@ -840,7 +1223,9 @@ is presentation only: no collision and no gameplay state live in it.
   `ArmorHitZone`. Every enemy dies and bleeds (C28, C29): people leave a
   ragdoll and a blood pool, the rover a debris wreck and an oil pool. A
   Staffer starts DORMANT (`dormant_until_active`) and wakes with its
-  encounter.
+  encounter. Level 2 adds the SE02 Sidearm Guard (`Gunner`), the M02 Security
+  Drone (`Drone`) and the K01 Hound (`Hound`, a Brawler); see "Level 2's enemies
+  (M4)" above.
 - **EncounterGroup** (Node2D, enemies as descendants): `group_id`
   (`L01-E07`), lane bounds, visible-approach activation;
   `request_attack_token(enemy) -> bool`, `release_attack_token(enemy)`. At most
@@ -861,7 +1246,9 @@ is presentation only: no collision and no gameplay state live in it.
 Exactly as `02-area-blueprints.md` / `04-godot-architecture.md`: areas
 `L01-A01`…, beats `L01-A02-B03`, encounters `L01-E01`…, enemies
 `L01-E01-SE01-01` (Night Guard `SE01`; Patrol Rover `M01`, as in
-`L01-E02-M01-01`; Staffer `LK01`, as in `L01-E10-LK01-01`), chips
+`L01-E02-M01-01`; Staffer `LK01`, as in `L01-E10-LK01-01`; from Level 2 the
+Sidearm Guard `SE02`, Security Drone `M02` and Hound `K01`, as in
+`L02-E01-SE02-01`, `L02-E03-M02-01`, `L02-E02-K01-01`), chips
 `L01-A02-G001`, clusters `L01-A02-GC01`, cache `L01-OPT02-CACHE01` (the `G` in
 the chip ids predates the microchip rename and is kept so ids, saves and tests
 stay stable), evidence file `EF01` (pickup entity `L01-OPT01-A01`), keycard
@@ -870,7 +1257,8 @@ stay stable), evidence file `EF01` (pickup entity `L01-OPT01-A01`), keycard
 C41 fun pass, numbered after the original six), switch `L01-SW01`, workbench
 `L01-UPG01`, weapon instances `L01-W01-P01`/`P02` (pad `L01-A05-PAD01`, no longer placed
 in the level since C51; the HUD hides the workshop tag without a pad; see
-`level-design/swap-pad-for-level-2.md`), core
+`level-design/swap-pad-for-level-2.md`; Level 2: `L02-W01-P01` in hand and the Boom Broom
+`L02-W02-P01` on `L02-A01-PAD01`, M3), core
 node `L01-SC01`. The workbench's own checkpoint id is `"UPG01"` (not one of
 `CP00`-`CP07`) — `CheckpointService` whitelists it alongside the `CP0[0-7]`
 pattern.
@@ -985,7 +1373,11 @@ mask 2; `Interactable` subclasses are layer 6 (hero's `InteractSensor` masks
   `Respawn_UPG01` under the area's own `Markers` node).
 - `weapon_pad.tscn` (`WeaponPad`): `pad_id`. Draws the resting weapon
   instance's own workshop tag (e.g. "P02") when
-  `Session.weapon_on_pad(pad_id) != ""`. Interact opens
+  `Session.weapon_on_pad(pad_id) != ""`, and (M3) that weapon's own gun lying on
+  the plate (child "Display": its scene with `held = false`, `display_gun()`,
+  rebuilt on a swap, a restore or a new run). Between two types the prompt names
+  the resting weapon ("Swap: Boom Broom") and the dialog names both
+  ("Take the Boom Broom P01? Your Scrapjack P01 stays on the pad."). Interact opens
   `scenes/ui/swap_confirm.tscn` (`SwapConfirm`, names both instances by tag)
   the same way the workbench opens `WorkbenchPanel`; Confirm calls
   `Session.swap_weapon(pad_id)` exactly once, Cancel/Escape changes nothing.
@@ -1030,6 +1422,12 @@ mask 2; `Interactable` subclasses are layer 6 (hero's `InteractSensor` masks
   until `Session.get_switch(switch_id)`, including on a fresh `_ready()`
   after a reload; **never retracts** once extended (the switch is a
   one-way latch). `is_extended()` for tests.
+- `moving_platform.tscn` (`MovingPlatform`, `AnimatableBody2D` layer 1): `point_a`,
+  `point_b` (parent-local, like `position`), `speed`, `pause_time`, `width`,
+  `thickness`. It turns back (and pauses) when the world or Dave is just ahead on its
+  track; the look-ahead ray is cast in WORLD space (M2 fix: it used to read the
+  parent-local track as global, wrong in any area away from x 0;
+  `test_m1_regress_platform_offset_area.gd`).
 - `pit_hazard.tscn` (`PitHazard`, `Area2D` mask 2): `damage`, `size`; child
   `Marker2D "Reset"`. Hero entry -> `hero.fall_to(Reset.global_position,
   damage)`. Its trigger is resized to `size` per instance (the A03 roof gaps,
@@ -1398,9 +1796,13 @@ Assert persistent contracts (collected/committed/switch state) through
 
 ## Hard rules (confirmed design; never violate)
 
-Solo hero (Dave Harlan); one carried weapon; W01 Scrapjack only, infinite
-basic fire, no magazine/reload/ammo UI; only Quickcycle stage 1 purchasable;
-Night Guard (SE01), Patrol Rover (M01) and Staffer (LK01) only; no boss,
+Solo hero (Dave Harlan); one carried weapon; the W01 Scrapjack (infinite
+basic fire, no magazine) and, from Level 2's pad (M3), the W02 Boom Broom (its
+shells, pump and one-shell reload; the HUD shows its tube and reserve); only
+stage 1 of a weapon purchasable (the Quickcycle, the Extended Tube);
+Night Guard (SE01), Patrol Rover (M01) and Staffer (LK01) only in Level 1, plus
+the Sidearm Guard (SE02), Security Drone (M02) and Hound (K01) from Level 2 (M4);
+no boss,
 companion, radio contact, Heirs, double jump, dash, climb, ladder,
 drop-through, or wall jump; **no stealth or detection (C16)**; enemies drop no
 chips; every damaging attack is preceded by a visible warning; no kill-all
@@ -1415,4 +1817,4 @@ Each milestone adds focused `tests/cases/test_mN_*.gd` cases (extend
 `TestCase`; simulate input with named actions). Tests prove state/physics
 contracts; visual captures prove readability. Never claim something was
 verified unless a command you ran shows it. Record results in
-`../../prototype-plans/level-01-sunnyvale/09-progress-and-handoff.md`.
+`../prototype-plans/level-01-sunnyvale/09-progress-and-handoff.md`.

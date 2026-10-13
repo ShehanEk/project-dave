@@ -72,6 +72,9 @@ var facing: int = 1:
 var _rest_pos: Dictionary = {}
 var _ground_lock: bool = true
 var _sole_points: Array[Vector2] = []
+## The joints whose sole points the ground lock keeps on the floor: a human's two feet,
+## or rig.json "feet" (the Hound's four lower legs, M4).
+var _feet: Array = ["near_foot", "far_foot"]
 var _materials: Array[ShaderMaterial] = []
 var _joint_materials: Dictionary = {}   # joint -> its own ShaderMaterial
 var _albedo: Texture2D
@@ -95,6 +98,8 @@ func build() -> void:
 	pixel_art = bool(data.get("pixel_art", false))
 	pixel_world = float(data.get("pixel_world", 1.5))
 	_ground_lock = bool(data.get("ground_lock", kind == "human"))
+	if data.has("feet"):
+		_feet = (data["feet"] as Array).duplicate()
 	_sole_points = DEFAULT_SOLE_POINTS.duplicate()
 	if data.has("sole_points"):
 		_sole_points.clear()
@@ -232,7 +237,7 @@ func snap_rotation(jname: String, rot: float) -> float:
 ## the ground line y = 0, in rig space; subtracted so the feet stay planted.
 func _ground_error() -> float:
 	var lowest := -INF
-	for foot in ["near_foot", "far_foot"]:
+	for foot in _feet:
 		if not joints.has(foot):
 			continue
 		var to_rig: Transform2D = _to_rig(joints[foot])
@@ -263,6 +268,37 @@ func set_ambient(c: Color) -> void:
 func set_flash(amount: float) -> void:
 	for m in _materials:
 		m.set_shader_parameter("flash", amount)
+
+
+## Every emissive spot on the rig goes dark (a death): the body's painted neon and lights
+## and every part's own tinted glow (set_emissive).
+func darken_emissive() -> void:
+	for m in _materials:
+		m.set_shader_parameter("emissive_energy", 0.0)
+
+
+## Takes a joint (and everything hanging from it) off the rig: a look that borrows another
+## character's rig without one of its props (the Sidearm Guard on the Night Guard's rig
+## has no baton, M4). Call it before the first pose.
+func remove_joint(jname: String) -> void:
+	if not joints.has(jname):
+		return
+	var doomed: Array[String] = [jname]
+	for other in order:
+		if doomed.has(String(defs[other]["parent"])):
+			doomed.append(other)
+	for d in doomed:
+		var node: Node2D = joints[d]
+		joints.erase(d)
+		sprites.erase(d)
+		defs.erase(d)
+		_rest_pos.erase(d)
+		_rot_step.erase(d)
+		_joint_materials.erase(d)
+		order.erase(d)
+		if is_instance_valid(node):
+			node.get_parent().remove_child(node)
+			node.queue_free()
 
 
 ## Global position of a point given in a joint's local (unflipped) space.

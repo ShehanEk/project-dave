@@ -89,11 +89,17 @@ text = ""
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.69, 0.18, 1)
 theme_override_font_sizes/font_size = 18
-text = "Next: Level 2, Curfew (not built yet)"
+text = "Next: Level 2"
 
 [node name="ButtonRow" type="HBoxContainer" parent="Panel/VBox/StatsView"]
 layout_mode = 2
 theme_override_constants/separation = 16
+
+[node name="NextButton" type="Button" parent="Panel/VBox/StatsView/ButtonRow"]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Continue"
 
 [node name="PlayAgainButton" type="Button" parent="Panel/VBox/StatsView/ButtonRow"]
 layout_mode = 2

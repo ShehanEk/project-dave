@@ -24,9 +24,9 @@ func open(pad_id: String) -> void:
 	_pad_id = pad_id
 	if Session == null:
 		return
-	var held_tag := _tag(Session.equipped_weapon())
-	var resting_tag := _tag(Session.weapon_on_pad(pad_id))
-	_title_label.text = "Swap held %s for pad %s?" % [held_tag, resting_tag]
+	var held_id := Session.equipped_weapon()
+	var resting_id := Session.weapon_on_pad(pad_id)
+	_title_label.text = question(held_id, resting_id)
 
 
 func _ready() -> void:
@@ -70,6 +70,24 @@ func _play_sfx(cue: StringName) -> void:
 	var audio := get_node_or_null("/root/Audio")
 	if audio:
 		audio.play_sfx(cue)
+
+
+## The dialog's question. Two copies of one type are named by their workshop tags (Level
+## 1's pad: "Swap held P01 for pad P02?"); two types by name and tag (M3, Level 2's pad:
+## "Take the Boom Broom P01? Your Scrapjack P01 stays on the pad."), since both copies
+## there are P01 and the safe trial is the point: the old gun waits on the pad.
+static func question(held_id: String, resting_id: String) -> String:
+	var held_type := _type(held_id)
+	var resting_type := _type(resting_id)
+	if held_type == resting_type or not WeaponTypes.has_type(held_type) or not WeaponTypes.has_type(resting_type):
+		return "Swap held %s for pad %s?" % [_tag(held_id), _tag(resting_id)]
+	return "Take the %s %s? Your %s %s stays on the pad." % [WeaponTypes.display_name(resting_type),
+			_tag(resting_id), WeaponTypes.display_name(held_type), _tag(held_id)]
+
+
+static func _type(instance_id: String) -> String:
+	var parts := instance_id.split("-")
+	return parts[1] if parts.size() >= 3 else ""
 
 
 static func _tag(instance_id: String) -> String:

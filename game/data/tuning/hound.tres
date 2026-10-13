@@ -1,0 +1,61 @@
+[gd_resource type="Resource" script_class="BrawlerTuning" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/tuning/brawler_tuning.gd" id="1_brawler"]
+
+[resource]
+script = ExtResource("1_brawler")
+health = 2
+damage = 1
+approach_speed_h_per_s = 2.4
+patrol_speed_h_per_s = 0.0
+notice_range = 560.0
+engage_range = 200.0
+floor_band = 64.0
+gravity = 1800.0
+windup_time = 0.75
+red_time = 0.25
+strike = 1
+lunge_distance_h = 2.0
+lunge_time = 0.4
+recovery_time = 1.2
+lunge_count = 2
+relunge_time = 0.5
+handler_delay = 1.5
+handled_rest_time = 3.2
+attack_box_size = Vector2(44, 34)
+attack_box_offset = Vector2(36, -18)
+dormant_until_active = false
+body_half_width = 30.0
+body_height = 44.0
+rig_path = "res://assets/characters/lit/hound/rig.json"
+rig_variants = PackedStringArray()
+clips_script = "res://scripts/actors/lit/clips_hound.gd"
+clip_idle = "idle"
+clip_walk = "trot"
+clip_stalk = "trot"
+clip_windup = "crouch"
+clip_strike = "lunge"
+clip_recover = "recover"
+clip_hit = "hit"
+hit_stagger_time = 0.3
+hit_stagger_cooldown = 1.5
+tell_joint = "jaw"
+tell_offset = Vector2(8, 0)
+tell_emissive = true
+tell_light_scale = 0.45
+tell_light_energy = 0.6
+tell_hand_glow = false
+link_joint = ""
+hit_jolt = {
+"head": -0.12,
+"neck": -0.22,
+"torso": -0.07
+}
+death_twitch_joints = PackedStringArray("near_front_upper_leg", "near_front_lower_leg", "far_front_upper_leg", "far_front_lower_leg", "near_hind_upper_leg", "near_hind_lower_leg", "far_hind_upper_leg", "far_hind_lower_leg")
+death_twitch_time = 1.0
+voice_notice = PackedStringArray()
+voice_windup = PackedStringArray()
+voice_hurt = PackedStringArray()
+sfx_windup = &"staffer_windup"
+sfx_strike = &"staffer_lunge"
+sfx_defeat = &""

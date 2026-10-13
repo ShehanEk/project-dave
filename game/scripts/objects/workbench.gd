@@ -9,7 +9,7 @@ extends Interactable
 ## itself — WorkbenchPanel is the only thing that calls Session.heal_full() /
 ## Session.commit() / Session.purchase_upgrade(). Child Marker2D "Respawn" is
 ## the safe spot UPG01 (the purchase checkpoint) uses via
-## LevelDirector.CHECKPOINT_MARKERS.
+## the LevelDef's `checkpoint_markers` (LevelDirector.checkpoint_markers()).
 
 const OUTLINE := Color("#07090F")
 const BODY := Color("#1C2A3A")
@@ -68,11 +68,15 @@ func _on_panel_closed(hero: Node) -> void:
 	# where it can be read (the one raised at the purchase faded behind the panel).
 	var bought: bool = _panel != null and _panel.bought
 	var bought_plating: bool = _panel != null and _panel.bought_plating
+	# M3: the weapon card is the held type's (the Quickcycle or the Extended Tube).
+	var bought_type: String = String(_panel.get("weapon_type")) if _panel != null else "W01"
 	_panel = null
 	if (bought or bought_plating) and get_tree():
 		var hud := get_tree().get_first_node_in_group("hud")
 		if hud and bought_plating and hud.has_method("announce_plating"):
 			hud.announce_plating()
+		elif hud and hud.has_method("announce_upgrade"):
+			hud.announce_upgrade(bought_type)
 		elif hud and hud.has_method("announce_quickcycle"):
 			hud.announce_quickcycle()
 	if hero and "input_enabled" in hero:

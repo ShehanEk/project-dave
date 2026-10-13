@@ -48,6 +48,20 @@ const AREA_BEDS := {
 	AREA_EXIT: YARD,
 }
 
+## Level 2, Alignment (M2 greybox, until its own lab beds and tracks): Dave enters it
+## with `awakening_done` already set, so its areas name their bed and track here
+## and these win over the lockdown rule. The lab hums like the depot until Adam's
+## lockdown in the training cells (A04); the Lattice (A05), around Adam's
+## hologram, has the server core's tone; the demo floor stays in lockdown.
+const LAB_AREA_BEDS := {
+	"L02-A01": DEPOT, "L02-A02": DEPOT, "L02-A03": DEPOT,
+	"L02-A04": LOCKDOWN, "L02-A05": CORE, "L02-A06": LOCKDOWN,
+}
+const LAB_AREA_MUSIC := {
+	"L02-A01": MUSIC_DEPOT, "L02-A02": MUSIC_DEPOT, "L02-A03": MUSIC_DEPOT,
+	"L02-A04": MUSIC_LOCKDOWN, "L02-A05": MUSIC_LOCKDOWN, "L02-A06": MUSIC_LOCKDOWN,
+}
+
 ## The depot's core node stands here in its area's own space (a05_depot.tscn puts
 ## CoreNode at x = 600); the director reads the real node and only falls back to this.
 const CORE_NODE_X := 600.0
@@ -62,6 +76,8 @@ const CORE_ROOM_EXIT := 480.0
 ## `in_core_room` only matters in the depot before the lockdown. An unknown or
 ## empty area id gets the lockdown bed once the lockdown is on, and silence before it.
 static func bed_for(area_id: String, awakening_done: bool, in_core_room: bool = false) -> StringName:
+	if LAB_AREA_BEDS.has(area_id):
+		return LAB_AREA_BEDS[area_id]
 	if area_id == AREA_EXIT:
 		return YARD
 	if awakening_done:
@@ -76,6 +92,8 @@ static func bed_for(area_id: String, awakening_done: bool, in_core_room: bool = 
 ## the server depot (A05) and the campus track everywhere else. Unlike a bed, music is
 ## never `none` inside a level: an unknown or empty area id plays the campus track.
 static func music_for(area_id: String, awakening_done: bool) -> StringName:
+	if LAB_AREA_MUSIC.has(area_id):
+		return LAB_AREA_MUSIC[area_id]
 	if awakening_done:
 		return MUSIC_LOCKDOWN
 	if area_id == AREA_DEPOT:

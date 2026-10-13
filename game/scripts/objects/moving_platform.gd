@@ -5,7 +5,8 @@ extends AnimatableBody2D
 ## step, so a CharacterBody2D on top (Hero) is carried automatically;
 ## Hero sets platform_on_leave = DO_NOTHING so a stop/reversal never
 ## launches it. point_a/point_b are in this node's PARENT's coordinate
-## space (same space as `position`).
+## space (same space as `position`); the blocker look-ahead converts them to
+## world space before casting (M2 fix: areas sit far from world x 0).
 
 @export var point_a: Vector2 = Vector2.ZERO
 @export var point_b: Vector2 = Vector2(320, 0)
@@ -106,8 +107,13 @@ func _is_blocked_ahead() -> bool:
 		return false
 	var reach: float = absf(dir_vec.x) * (width * 0.5) + absf(dir_vec.y) * (thickness * 0.5)
 	var lookahead: float = minf(speed * 0.15 + 10.0, remaining)
-	var from := position + dir_vec * reach
-	var to := from + dir_vec * lookahead
+	# position/point_a/point_b are PARENT-local; the ray is cast in WORLD space, so
+	# a platform in an area placed anywhere in the level looks at its own track.
+	var from_local := position + dir_vec * reach
+	var to_local := from_local + dir_vec * lookahead
+	var parent_2d := get_parent() as Node2D
+	var from := parent_2d.to_global(from_local) if parent_2d else from_local
+	var to := parent_2d.to_global(to_local) if parent_2d else to_local
 	var space_state := get_world_2d().direct_space_state
 	var params := PhysicsRayQueryParameters2D.create(from, to)
 	# World geometry (1) AND the hero body (2): a platform that is about to

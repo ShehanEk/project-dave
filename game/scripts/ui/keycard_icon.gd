@@ -9,6 +9,9 @@ extends Control
 const PixelUi := preload("res://scripts/ui/pixel_ui.gd")
 const PIECE := "keycard"
 
+## The piece drawn: the level's own card (LevelDef.keycard_icon, set by Hud; batch 7), else PIECE.
+var piece: String = PIECE
+
 const OUTLINE := Color("#07090F")
 const BODY := Color("#1C2A3A")
 const STRIPE := Color("#3FE0D0")
@@ -17,17 +20,29 @@ const CHIP := Color("#FFD166")
 
 func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	var tex := PixelUi.texture(PIECE)
+	var tex := PixelUi.texture(piece)
 	if tex:
 		custom_minimum_size = tex.get_size() * float(PixelUi.SCALE)
 
 
+## Shows the level's own card icon (a missing piece keeps the generic card).
+func set_piece(new_piece: String) -> void:
+	var p := new_piece if new_piece != "" and PixelUi.has_piece(new_piece) else PIECE
+	if p == piece:
+		return
+	piece = p
+	var tex := PixelUi.texture(piece)
+	if tex:
+		custom_minimum_size = tex.get_size() * float(PixelUi.SCALE)
+	queue_redraw()
+
+
 func has_art() -> bool:
-	return PixelUi.has_piece(PIECE)
+	return PixelUi.has_piece(piece)
 
 
 func _draw() -> void:
-	var tex := PixelUi.texture(PIECE)
+	var tex := PixelUi.texture(piece)
 	if tex:
 		var s: Vector2 = tex.get_size() * float(PixelUi.SCALE)
 		draw_texture_rect(tex, Rect2(((size - s) * 0.5).floor(), s), false)

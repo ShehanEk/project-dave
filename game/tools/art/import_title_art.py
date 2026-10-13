@@ -25,7 +25,7 @@ from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PROJECT = os.path.normpath(os.path.join(HERE, "..", ".."))
-REPO = os.path.normpath(os.path.join(PROJECT, "..", ".."))
+REPO = os.path.normpath(os.path.join(PROJECT, ".."))  # the game lives at <repo>/game (C61)
 SRC_DIR = os.path.join(REPO, "concept-art", "ui-sunnyvale")
 OUT_DIR = os.path.join(PROJECT, "assets", "ui", "pixel")
 

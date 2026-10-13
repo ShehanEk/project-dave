@@ -176,6 +176,36 @@ static func oil_pool(host: Node, near: Vector2, width_px: float = 48.0) -> void:
 	_spread(host, near, width_px, Color(0.17, 0.2, 0.25))
 
 
+## A few drops of black oil from a hit machine (the Security Drone, M4): they spit out
+## along the shot and fall. Never gore, so it ignores the Blood setting; no splats.
+static func oil_drip(host: Node, pos: Vector2, dir: Vector2) -> void:
+	var drop := _t("drop.png")
+	if drop == null or host == null or not host.is_inside_tree():
+		return
+	var d := dir.normalized() if dir.length() > 0.01 else Vector2.RIGHT
+	var p := CPUParticles2D.new()
+	p.texture = drop
+	p.one_shot = true
+	p.explosiveness = 0.85
+	p.amount = 6
+	p.lifetime = 0.8
+	p.local_coords = false
+	p.direction = d
+	p.spread = 30.0
+	p.initial_velocity_min = 40.0
+	p.initial_velocity_max = 120.0
+	p.gravity = Vector2(0.0, GRAVITY)
+	p.scale_amount_min = 0.08
+	p.scale_amount_max = 0.16
+	p.color = OIL
+	p.z_index = 2
+	host.add_child(p)
+	p.global_position = pos
+	p.reset_physics_interpolation()
+	p.emitting = true
+	_free_later(p, 1.2)
+
+
 static func _spread(host: Node, near: Vector2, width_px: float, tint: Color) -> void:
 	var pool_tex := _t("pool.png")
 	if pool_tex == null:

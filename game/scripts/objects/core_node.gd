@@ -15,7 +15,7 @@ extends Interactable
 ## and the lockdown starts. Each line is also spoken (N05: `Audio.play_voice()`,
 ## see `_say_line()`), its caption held until the clip is done; a skip cuts the
 ## voice with `Audio.stop_voice()`. The Security PA's lockdown announcement
-## after control returns belongs to LevelDirector (see its PA_CALM_LINE).
+## after control returns belongs to LevelDirector (l01.tres `lockdown_pa_line`).
 ## The node NEVER leaves its mount — only this fixed prop's own drawn phase
 ## changes. `awakening_done` keeps its name: it now means "Adam is aware of
 ## Dave and the campus is in lockdown".

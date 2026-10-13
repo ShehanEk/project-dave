@@ -42,8 +42,8 @@ import wave
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)                                   # prototypes/sunnyvale-godot
-REPO = os.path.dirname(os.path.dirname(ROOT))                  # repo root
+ROOT = os.path.dirname(HERE)                                   # game/ (C61)
+REPO = os.path.dirname(ROOT)                                   # repo root
 SRC = os.path.join(REPO, "audio-source", "elevenlabs")
 OUT = os.path.join(ROOT, "assets", "audio", "eleven")
 MANIFEST = os.path.join(ROOT, "scripts", "audio", "eleven_manifest.gd")

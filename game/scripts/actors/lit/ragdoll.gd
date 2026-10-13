@@ -45,6 +45,13 @@ var _rel: Dictionary = {}         # child joint -> body-relative angle at death
 var _age: float = 0.0
 var _still: float = 0.0
 var _done: bool = false
+## Death twitch (the Hound's legs, M4): these parts get small alternating spins for
+## `_twitch_time` seconds after the fall starts, so the body only settles after it.
+var _twitch_parts: Array = []
+var _twitch_time: float = 0.0
+var _twitch_kick: float = 0.0
+var _twitch_t: float = 0.0
+const TWITCH_PERIOD := 0.09
 
 
 ## Replaces `rig` (a cutout_rig.gd node) with physics bodies under this
@@ -63,7 +70,8 @@ func build(rig: Node2D, impulse: Vector2, hit_position: Vector2, base_velocity: 
 	for jname in rig.order:
 		var joint: Node2D = rig.joints[jname]
 		var def: Dictionary = rig.defs[jname]
-		if pinned and LOCKED.has(jname):
+		# A rig.json joint may ride on its parent too ("lock": the Hound's jaw on its skull).
+		if pinned and (LOCKED.has(jname) or bool(def.get("lock", false))):
 			locked_sprites.append([rig.sprites[jname], def["parent"], def["collider"], joint.global_transform])
 			continue
 		var gt: Transform2D = joint.global_transform
@@ -145,7 +153,7 @@ func build(rig: Node2D, impulse: Vector2, hit_position: Vector2, base_velocity: 
 			var lim: Vector2 = limits.get(jname, Vector2(-INF, INF))
 			bodies[jname].start(bodies[parent_of[jname]], lim, _rel[jname], STIFF_JOINTS.get(jname, 1.0))
 	# The killing shot: most of the push on the part it hit, some on the torso.
-	if LOCKED.has(hit_joint):
+	if LOCKED.has(hit_joint) or bool(rig.defs.get(hit_joint, {}).get("lock", false)):
 		hit_joint = rig.defs[hit_joint]["parent"]
 	if bodies.has(hit_joint):
 		bodies[hit_joint].linear_velocity += impulse
@@ -179,10 +187,36 @@ func _collider(col: Dictionary, flipped: bool) -> CollisionShape2D:
 	return cs
 
 
+## Makes the named parts twitch for `duration` seconds (a two-beat flick, alternating
+## sides, fading out), then lets the body settle as usual.
+func twitch(names: Array, duration: float = 1.0, kick: float = 7.0) -> void:
+	_twitch_parts = names.filter(func(n): return bodies.has(n))
+	_twitch_time = duration
+	_twitch_kick = kick
+	_twitch_t = 0.0
+
+
+func is_twitching() -> bool:
+	return not _done and not _twitch_parts.is_empty() and _age < _twitch_time
+
+
 func _physics_process(delta: float) -> void:
 	if _done:
 		return
 	_age += delta
+	if is_twitching():
+		_twitch_t -= delta
+		if _twitch_t <= 0.0:
+			_twitch_t = TWITCH_PERIOD
+			var beat := int(_age / TWITCH_PERIOD)
+			var fade := 1.0 - clampf(_age / _twitch_time, 0.0, 1.0) * 0.6
+			for i in _twitch_parts.size():
+				var body: RigidBody2D = bodies.get(_twitch_parts[i])
+				if body != null:
+					var side := 1.0 if (beat + i) % 2 == 0 else -1.0
+					body.angular_velocity += side * _twitch_kick * fade
+		_still = 0.0
+		return
 	var moving := false
 	for jname in bodies:
 		var body: RigidBody2D = bodies[jname]

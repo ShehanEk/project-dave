@@ -28,6 +28,12 @@ const DIR := "res://assets/effects/pixel/"
 const HD_DIR := "res://assets/effects/hd/"
 static var hd_enabled := true
 
+## Batch 7 (Level 2, tools/art/import_hd_ui.py --batch7): painted-only effects with no pixel
+## strip; their HD effects.json entry also carries `frame_size` and `anchor` in art px. The Sidearm
+## Guard's pistol (pistol_flash, pistol_round, pistol_impact), the Boom Broom's (shotgun_blast,
+## shotgun_pellets, shell_casing), the drone's shock fork (shock_arc) and the Hound's lunge
+## (lunge_dust). `opts.hold` keeps a one-frame effect up (no timer: the round's slug).
+##
 ## Per effect: seconds per frame, additive blend, world px per art px, z index
 ## (combat effects above the actors' rigs, which reach z 11; the rest where the
 ## smooth ones were), alpha, and the frames kept under reduced motion.
@@ -38,6 +44,14 @@ const FX := {
 	"machine_break": {"frame_time": 0.07, "add": false, "px": 3.0, "z": 20, "alpha": 1.0, "reduced": [0, 2, 3, 5]},
 	"checkpoint_sparkle": {"frame_time": 0.09, "add": true, "px": 3.0, "z": 0, "alpha": 1.0, "reduced": [0, 2, 4]},
 	"chip_glint": {"frame_time": 0.07, "add": true, "px": 3.0, "z": 0, "alpha": 1.0, "reduced": [0, 1, 3]},
+	"pistol_flash": {"frame_time": 0.026, "add": true, "px": 1.5, "z": 20, "alpha": 1.0, "reduced": [0, 1]},
+	"pistol_round": {"frame_time": 1.0, "add": false, "px": 1.5, "z": 3, "alpha": 1.0, "reduced": [0]},
+	"pistol_impact": {"frame_time": 0.05, "add": true, "px": 1.5, "z": 20, "alpha": 1.0, "reduced": [0, 1, 3]},
+	"shotgun_blast": {"frame_time": 0.03, "add": true, "px": 1.5, "z": 20, "alpha": 1.0, "reduced": [0, 1]},
+	"shotgun_pellets": {"frame_time": 0.07, "add": true, "px": 1.5, "z": 20, "alpha": 0.9, "reduced": [0]},
+	"shell_casing": {"frame_time": 0.06, "add": false, "px": 1.5, "z": 12, "alpha": 1.0, "reduced": [0, 2]},
+	"shock_arc": {"frame_time": 0.05, "add": true, "px": 1.5, "z": 12, "alpha": 1.0, "reduced": [0, 2]},
+	"lunge_dust": {"frame_time": 0.07, "add": false, "px": 1.5, "z": 0, "alpha": 0.85, "reduced": [0, 1, 3]},
 }
 ## Additive effects are dimmed by this under reduced motion.
 const REDUCED_GLOW := 0.6
@@ -100,6 +114,21 @@ static func hd_strip(fx_name: String) -> Array:
 	return [_textures[key], float(m["k"])]
 
 
+## The effect's frame data (frames, frame_size, anchor in art px): the pixel strip's, or for a
+## painted-only effect its HD entry.
+static func meta_for(fx_name: String) -> Dictionary:
+	var m: Dictionary = _load_meta().get(fx_name, {})
+	if not m.is_empty():
+		return m
+	var hd: Dictionary = _load_hd().get(fx_name, {})
+	return hd if hd_enabled and hd.has("frame_size") else {}
+
+
+## True for a painted-only effect (no pixel strip).
+static func hd_only(fx_name: String) -> bool:
+	return not _load_meta().has(fx_name) and _load_hd().get(fx_name, {}).has("frame_size")
+
+
 static func strip_texture(fx_name: String) -> Texture2D:
 	if not _textures.has(fx_name):
 		var path: String = DIR + fx_name + ".png"
@@ -110,11 +139,15 @@ static func strip_texture(fx_name: String) -> Texture2D:
 ## True when the effect's strip, its frame data and its settings all exist; the
 ## caller keeps its smooth effect when this is false.
 static func has_fx(fx_name: String) -> bool:
-	return FX.has(fx_name) and _load_meta().has(fx_name) and strip_texture(fx_name) != null
+	if not FX.has(fx_name):
+		return false
+	if _load_meta().has(fx_name):
+		return strip_texture(fx_name) != null
+	return not meta_for(fx_name).is_empty() and hd_strip(fx_name)[0] != null
 
 
 static func frame_count(fx_name: String) -> int:
-	return int(_load_meta().get(fx_name, {}).get("frames", 0))
+	return int(meta_for(fx_name).get("frames", 0))
 
 
 static func _is_reduced() -> bool:
@@ -176,7 +209,7 @@ static func spawn(effect_name: String, at: Vector2, host: Node, opts: Dictionary
 func _setup(fx_name: String, opts: Dictionary) -> void:
 	effect = fx_name
 	var cfg: Dictionary = FX[fx_name]
-	var meta: Dictionary = _load_meta()[fx_name]
+	var meta: Dictionary = meta_for(fx_name)
 	_reduced_motion = _is_reduced()
 	_frames = frames_for(fx_name, opts.get("frames", []), _reduced_motion)
 	_frame_time = cfg["frame_time"]
@@ -222,7 +255,9 @@ func _setup(fx_name: String, opts: Dictionary) -> void:
 		material = _additive
 	visible = _delay <= 0.0
 	_show(0)
-	set_process(true)
+	set_process(not opts.get("hold", false))
+	if opts.has("rotation"):
+		rotation = float(opts["rotation"])
 
 
 ## Which strip frame is showing (-1 before the first).

@@ -32,7 +32,7 @@ The JSON holds, in font pixels:
               top of the capitals (0 for a capital, 6 for the full stop, 6 for
               the comma, which hangs below the baseline)
 
-Run from the project root (prototypes/sunnyvale-godot), then re-import:
+Run from the project root (game/), then re-import:
   python3 tools/art/import_pixel_font.py
   /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --import
 """

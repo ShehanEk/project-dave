@@ -23,6 +23,9 @@ signal fired
 ## 05-content-and-assets.md), with no recoil/flash and a small contact
 ## shadow. Never read by _try_fire()/cadence/damage/the muzzle-clamp ray.
 @export var held: bool = true
+## M3: false hides the resting gun's own workshop tag (a WeaponPad draws its copy's tag
+## itself, so its display gun leaves it out).
+@export var show_tag: bool = true
 
 @onready var _muzzle: Marker2D = $Muzzle
 @onready var _quickcycle: Node2D = $Quickcycle
@@ -125,6 +128,13 @@ func _exit_tree() -> void:
 ## later the new gun clicks home, ready to fire. It happens once per swap, never
 ## per shot, and nothing here touches cooldown, cadence or input.
 func _on_weapon_swapped(_old_id: String, _new_id: String) -> void:
+	announce_ready()
+
+
+## The ready click a beat from now (a pad swap). M3: hero.gd also calls this on a
+## Scrapjack it has just put on the pivot because a swap changed the held type (that gun
+## came after the signal, so it never heard it).
+func announce_ready() -> void:
 	if held and is_inside_tree():
 		get_tree().create_timer(READY_CLICK_DELAY).timeout.connect(_play_ready_click)
 
@@ -381,7 +391,7 @@ func _draw_tag(o: Vector2) -> void:
 	# instance (ground/pad) where more than one tag could be on screen; the
 	# held gun's tag is already covered by the HUD.
 	var tag := _current_tag()
-	if not held and tag != "":
+	if not held and show_tag and tag != "":
 		var font := ThemeDB.fallback_font
 		# M6 integration fix: when held (mounted on the hero's AimPivot),
 		# this node inherits AimPivot's own rotation + facing-flip

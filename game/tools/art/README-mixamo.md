@@ -11,7 +11,7 @@ Mixamo-named clip and checks the converter against angles worked out independent
 
 ```sh
 BLENDER=/Applications/Blender.app/Contents/MacOS/Blender
-cd prototypes/sunnyvale-godot
+cd game
 
 $BLENDER -b --python tools/art/mixamo_to_rig.py -- clips/Walking.fbx out/walking.json
 $BLENDER -b --python tools/art/mixamo_to_rig.py -- clips/Walking.fbx out/walking.json --in-place --fps 24 --forward=-y

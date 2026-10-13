@@ -1,0 +1,412 @@
+[gd_scene load_steps=16 format=3]
+
+[ext_resource type="Script" path="res://scripts/levels/area_root.gd" id="1_area_root"]
+[ext_resource type="Script" path="res://scripts/world/visuals/area_backdrop.gd" id="2_area_backdrop"]
+[ext_resource type="Script" path="res://scripts/world/block.gd" id="3_block"]
+[ext_resource type="Script" path="res://scripts/world/decal.gd" id="4_decal"]
+[ext_resource type="PackedScene" path="res://scenes/objects/scenery.tscn" id="5_scenery"]
+[ext_resource type="PackedScene" path="res://scenes/objects/chip.tscn" id="6_chip"]
+[ext_resource type="PackedScene" path="res://scenes/objects/recovery_station.tscn" id="7_recovery_station"]
+[ext_resource type="Script" path="res://scripts/combat/encounter_group.gd" id="8_encounter_group"]
+[ext_resource type="PackedScene" path="res://scenes/actors/night_guard.tscn" id="9_night_guard"]
+[ext_resource type="PackedScene" path="res://scenes/objects/beat_zone.tscn" id="10_beat_zone"]
+[ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="11_route_point"]
+[ext_resource type="PackedScene" path="res://scenes/actors/sidearm_guard.tscn" id="12_sidearm_guard"]
+[ext_resource type="PackedScene" path="res://scenes/actors/hound.tscn" id="13_hound"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
+size = Vector2(80, 900)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2"]
+size = Vector2(80, 900)
+
+[node name="A02RangeKennel" type="Node2D"]
+script = ExtResource("1_area_root")
+area_id = "L02-A02"
+width = 5200.0
+camera_top = -480.0
+camera_bottom = 120.0
+indoors = true
+interior_look = "lab"
+
+[node name="Background" type="Node2D" parent="."]
+
+[node name="Interior" type="Parallax2D" parent="Background"]
+script = ExtResource("2_area_backdrop")
+mode = 3
+tile_width = 5200.0
+horizon_y = 0.0
+
+[node name="Geometry" type="Node2D" parent="."]
+
+[node name="FloorRange" type="StaticBody2D" parent="Geometry"]
+position = Vector2(0, 0)
+script = ExtResource("3_block")
+size = Vector2(2650, 300)
+kind = 0
+
+[node name="RangeBench" type="StaticBody2D" parent="Geometry"]
+position = Vector2(1460, -58)
+script = ExtResource("3_block")
+size = Vector2(80, 58)
+kind = 6
+
+[node name="ControlStep" type="StaticBody2D" parent="Geometry"]
+position = Vector2(2650, -96)
+script = ExtResource("3_block")
+size = Vector2(250, 396)
+kind = 0
+
+[node name="FloorKennel" type="StaticBody2D" parent="Geometry"]
+position = Vector2(2900, 0)
+script = ExtResource("3_block")
+size = Vector2(2300, 300)
+kind = 0
+
+[node name="KennelLedge" type="StaticBody2D" parent="Geometry"]
+position = Vector2(3400, -120)
+script = ExtResource("3_block")
+size = Vector2(300, 16)
+kind = 1
+
+[node name="KennelWall" type="StaticBody2D" parent="Geometry"]
+position = Vector2(4900, -72)
+script = ExtResource("3_block")
+size = Vector2(48, 72)
+kind = 4
+
+[node name="Ceiling" type="StaticBody2D" parent="Geometry"]
+position = Vector2(0, -460)
+script = ExtResource("3_block")
+size = Vector2(5200, 40)
+kind = 3
+
+[node name="Decals" type="Node2D" parent="."]
+
+[node name="Grate1" type="Node2D" parent="Decals"]
+position = Vector2(800, 18)
+script = ExtResource("4_decal")
+piece = "grate"
+
+[node name="Vent1" type="Node2D" parent="Decals"]
+position = Vector2(1700, 21)
+script = ExtResource("4_decal")
+piece = "vent"
+
+[node name="Cable1" type="Node2D" parent="Decals"]
+position = Vector2(3200, 19.5)
+script = ExtResource("4_decal")
+piece = "cable"
+
+[node name="Grate2" type="Node2D" parent="Decals"]
+position = Vector2(4200, 18)
+script = ExtResource("4_decal")
+piece = "grate"
+flip = true
+
+[node name="Vent2" type="Node2D" parent="Decals"]
+position = Vector2(5050, 21)
+script = ExtResource("4_decal")
+piece = "vent"
+flip = true
+
+[node name="Scenery" type="Node2D" parent="."]
+
+[node name="RangeSign" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(320, -280)
+kind = 11
+size = Vector2(160, 50)
+text = "FIRING RANGE"
+
+[node name="RangeSupport1" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(1000, 0)
+kind = 19
+size = Vector2(28, 420)
+
+[node name="RangeLamp" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(1585, 0)
+kind = 6
+size = Vector2(24, 198)
+
+[node name="RangeSupport2" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(2050, 0)
+kind = 19
+size = Vector2(28, 420)
+
+[node name="RangeTargetLamp" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(2330, 0)
+kind = 6
+size = Vector2(24, 180)
+
+[node name="ControlSign" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(2775, -300)
+kind = 11
+size = Vector2(170, 50)
+text = "RANGE CONTROL"
+
+[node name="ControlPanel" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(2700, -330)
+kind = 16
+size = Vector2(80, 110)
+
+[node name="KennelSign" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(3600, -300)
+kind = 11
+size = Vector2(120, 50)
+text = "K9 UNIT"
+
+[node name="KennelPod1" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(3250, 0)
+kind = 22
+size = Vector2(110, 150)
+lab_piece = "kennel_pod"
+
+[node name="KennelPod2" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(3950, 0)
+kind = 22
+size = Vector2(110, 150)
+lab_piece = "kennel_pod"
+flip = true
+
+[node name="KennelPod3" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(4350, 0)
+kind = 22
+size = Vector2(110, 150)
+lab_piece = "kennel_pod"
+
+[node name="KennelLamp" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(4150, 0)
+kind = 6
+size = Vector2(24, 180)
+
+[node name="KennelPanel" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(4750, -320)
+kind = 16
+size = Vector2(90, 130)
+
+[node name="LaneDivider1" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(620, 0)
+kind = 22
+lab_piece = "lane_divider"
+
+[node name="LaneDivider2" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(1120, 0)
+kind = 22
+lab_piece = "lane_divider"
+
+[node name="LaneDivider3" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(1900, 0)
+kind = 22
+lab_piece = "lane_divider"
+
+[node name="ControlBench" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(2790, -96)
+kind = 22
+lab_piece = "lab_bench"
+
+[node name="KennelRack" parent="Scenery" instance=ExtResource("5_scenery")]
+position = Vector2(4720, 0)
+kind = 22
+lab_piece = "server_rack"
+
+[node name="Entities" type="Node2D" parent="."]
+
+[node name="Chip_G001" parent="Entities" instance=ExtResource("6_chip")]
+position = Vector2(700, -20)
+entity_id = "L02-A02-G001"
+value = 1
+
+[node name="Chip_G002" parent="Entities" instance=ExtResource("6_chip")]
+position = Vector2(1200, -20)
+entity_id = "L02-A02-G002"
+value = 1
+
+[node name="Chip_G003" parent="Entities" instance=ExtResource("6_chip")]
+position = Vector2(1900, -20)
+entity_id = "L02-A02-G003"
+value = 1
+
+[node name="Chip_G004" parent="Entities" instance=ExtResource("6_chip")]
+position = Vector2(2720, -116)
+entity_id = "L02-A02-G004"
+value = 1
+
+[node name="Chip_G005" parent="Entities" instance=ExtResource("6_chip")]
+position = Vector2(2840, -116)
+entity_id = "L02-A02-G005"
+value = 1
+
+[node name="Chip_G006" parent="Entities" instance=ExtResource("6_chip")]
+position = Vector2(3200, -20)
+entity_id = "L02-A02-G006"
+value = 1
+
+[node name="Chip_G007" parent="Entities" instance=ExtResource("6_chip")]
+position = Vector2(3500, -140)
+entity_id = "L02-A02-G007"
+value = 1
+
+[node name="Chip_G008" parent="Entities" instance=ExtResource("6_chip")]
+position = Vector2(3620, -140)
+entity_id = "L02-A02-G008"
+value = 1
+
+[node name="Chip_G009" parent="Entities" instance=ExtResource("6_chip")]
+position = Vector2(5080, -20)
+entity_id = "L02-A02-G009"
+value = 1
+
+[node name="RecoveryStation_CP01" parent="Entities" instance=ExtResource("7_recovery_station")]
+position = Vector2(2960, 0)
+checkpoint_id = "CP01"
+
+[node name="Encounters" type="Node2D" parent="."]
+
+[node name="EncounterGroup_E01" type="Node2D" parent="Encounters"]
+script = ExtResource("8_encounter_group")
+group_id = "L02-E01"
+lane_rect = Rect2(1600, -400, 1050, 700)
+reactivate_cooldown = 0.35
+max_attackers = 1
+
+[node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E01"]
+position = Vector2(1850, 0)
+collision_layer = 0
+collision_mask = 2
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E01/ApproachZone"]
+shape = SubResource("RectangleShape2D_1")
+
+[node name="SidearmGuard" parent="Encounters/EncounterGroup_E01" instance=ExtResource("12_sidearm_guard")]
+position = Vector2(2400, 0)
+entity_id = "L02-E01-SE02-01"
+start_facing = -1
+metadata/notes = "E01: alone at the far end of the lit range lane, facing left, holding his post until Dave reaches the ApproachZone (x 1850); he walks in no further than the lane (x 1600). The range bench (x 1460-1540, 0.6 H) stops his flat round."
+
+[node name="EncounterGroup_E02" type="Node2D" parent="Encounters"]
+script = ExtResource("8_encounter_group")
+group_id = "L02-E02"
+lane_rect = Rect2(3800, -400, 1100, 700)
+reactivate_cooldown = 0.35
+max_attackers = 1
+
+[node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E02"]
+position = Vector2(3850, 0)
+collision_layer = 0
+collision_mask = 2
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E02/ApproachZone"]
+shape = SubResource("RectangleShape2D_2")
+
+[node name="NightGuard_Handler" parent="Encounters/EncounterGroup_E02" instance=ExtResource("9_night_guard")]
+position = Vector2(4600, 0)
+entity_id = "L02-E02-SE01-01"
+patrol_min_x = 4500.0
+patrol_max_x = 4720.0
+
+[node name="Hound" parent="Encounters/EncounterGroup_E02" instance=ExtResource("13_hound")]
+position = Vector2(4450, 0)
+entity_id = "L02-E02-K01-01"
+start_facing = -1
+handler_path = NodePath("../NightGuard_Handler")
+metadata/notes = "E02: on its handler's lead, in front of him; the KennelWall backstop (x 4900) stops its overshoot. The handler's tell starts 1.5 s after the lunge chain."
+
+[node name="Beats" type="Node2D" parent="."]
+
+[node name="Beat_B01" parent="Beats" instance=ExtResource("10_beat_zone")]
+position = Vector2(1300, -150)
+beat_id = "L02-A02-B01"
+size = Vector2(1400, 500)
+
+[node name="Beat_B02" parent="Beats" instance=ExtResource("10_beat_zone")]
+position = Vector2(2800, -150)
+beat_id = "L02-A02-B02"
+size = Vector2(400, 500)
+
+[node name="Beat_B03" parent="Beats" instance=ExtResource("10_beat_zone")]
+position = Vector2(4000, -150)
+beat_id = "L02-A02-B03"
+size = Vector2(2000, 500)
+
+[node name="Markers" type="Node2D" parent="."]
+
+[node name="Spawn_CP00" type="Marker2D" parent="Markers"]
+position = Vector2(96, -4)
+
+[node name="Respawn_CP01" type="Marker2D" parent="Markers"]
+position = Vector2(2960, -4)
+
+[node name="Route" type="Node2D" parent="."]
+
+[node name="R01_RangeLane" type="Marker2D" parent="Route"]
+position = Vector2(1380, 0)
+script = ExtResource("11_route_point")
+action = 0
+tolerance = 12.0
+
+[node name="R02_JumpBench" type="Marker2D" parent="Route"]
+position = Vector2(1405, 0)
+script = ExtResource("11_route_point")
+action = 1
+tolerance = 6.0
+hold_jump = 0.25
+
+[node name="R03_PastBench" type="Marker2D" parent="Route"]
+position = Vector2(1650, 0)
+script = ExtResource("11_route_point")
+action = 0
+tolerance = 12.0
+
+[node name="R04_JumpControlStep" type="Marker2D" parent="Route"]
+position = Vector2(2610, 0)
+script = ExtResource("11_route_point")
+action = 1
+tolerance = 6.0
+hold_jump = 0.42
+
+[node name="R05_OnControlStep" type="Marker2D" parent="Route"]
+position = Vector2(2850, -96)
+script = ExtResource("11_route_point")
+action = 0
+tolerance = 12.0
+
+[node name="R06_ToStation" type="Marker2D" parent="Route"]
+position = Vector2(2960, 0)
+script = ExtResource("11_route_point")
+action = 0
+tolerance = 12.0
+
+[node name="R07_UseCP01" type="Marker2D" parent="Route"]
+position = Vector2(2960, 0)
+script = ExtResource("11_route_point")
+action = 3
+tolerance = 16.0
+
+[node name="R08_KennelRun" type="Marker2D" parent="Route"]
+position = Vector2(4840, 0)
+script = ExtResource("11_route_point")
+action = 0
+tolerance = 12.0
+
+[node name="R09_JumpKennelWall" type="Marker2D" parent="Route"]
+position = Vector2(4855, 0)
+script = ExtResource("11_route_point")
+action = 1
+tolerance = 6.0
+hold_jump = 0.35
+
+[node name="R10_PastWall" type="Marker2D" parent="Route"]
+position = Vector2(5060, 0)
+script = ExtResource("11_route_point")
+action = 0
+tolerance = 12.0
+
+[node name="R11_ToExit" type="Marker2D" parent="Route"]
+position = Vector2(5180, 0)
+script = ExtResource("11_route_point")
+action = 0
+tolerance = 16.0

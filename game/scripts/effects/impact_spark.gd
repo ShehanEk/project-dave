@@ -37,6 +37,10 @@ const CHIP_GRAVITY := 760.0
 @export var shape: Shape = Shape.HIT
 ## The shot's travel direction (BLOCKED throws its sparks back against it).
 var dir: Vector2 = Vector2.RIGHT
+## The PixelFx strip played (batch 7: "pistol_impact", the Sidearm Guard's round). A
+## floor-anchored burst like it is turned so its sparks fan back against `dir` and plays whole
+## (its own fan is the BLOCKED shape); "bullet_impact" keeps the HIT / BLOCKED halves.
+var effect: String = "bullet_impact"
 
 var _t: float = 0.0
 var _scale: float = 1.0
@@ -77,7 +81,13 @@ func _ready() -> void:
 	var half := Vector2i.ZERO
 	if shape == Shape.BLOCKED:
 		half = Vector2i(int(signf(back.x)), 0) if absf(back.x) >= absf(back.y) else Vector2i(0, int(signf(back.y)))
-	_pixel = PixelFx.spawn("bullet_impact", global_position, self, {"tint": color, "half": half})
+	if effect != "bullet_impact" and PixelFx.has_fx(effect):
+		var back_dir := (-dir).normalized() if dir.length() > 0.01 else Vector2.LEFT
+		# The burst's up (its sparks) along back_dir: (sin r, -cos r) = back_dir.
+		_pixel = PixelFx.spawn(effect, global_position, self, {"tint": color,
+				"rotation": atan2(back_dir.x, -back_dir.y)})
+	else:
+		_pixel = PixelFx.spawn("bullet_impact", global_position, self, {"tint": color, "half": half})
 	if _pixel != null:
 		life = _pixel.total_time() + 0.03
 

@@ -1,0 +1,577 @@
+{
+ "name": "SE02 Sidearm Guard (look A)",
+ "kind": "human",
+ "texture_scale": 4,
+ "albedo": "albedo.png",
+ "normal": "normal.png",
+ "spec": "spec.png",
+ "ground_lock": true,
+ "sole_points": [
+  [
+   -2.59,
+   10.78
+  ],
+  [
+   6.48,
+   10.88
+  ],
+  [
+   12.95,
+   9.69
+  ]
+ ],
+ "parts": {
+  "head": {
+   "rect": [
+    294,
+    4,
+    73,
+    78
+   ],
+   "pivot": [
+    34.0,
+    68.0
+   ]
+  },
+  "torso": {
+   "rect": [
+    4,
+    4,
+    71,
+    104
+   ],
+   "pivot": [
+    39.4,
+    99.9
+   ]
+  },
+  "pelvis": {
+   "rect": [
+    220,
+    4,
+    70,
+    79
+   ],
+   "pivot": [
+    35.9,
+    46.4
+   ]
+  },
+  "upper_arm": {
+   "rect": [
+    177,
+    4,
+    39,
+    86
+   ],
+   "pivot": [
+    17.8,
+    10.6
+   ]
+  },
+  "forearm": {
+   "rect": [
+    371,
+    4,
+    30,
+    77
+   ],
+   "pivot": [
+    14.5,
+    8.9
+   ]
+  },
+  "hand_grip": {
+   "rect": [
+    79,
+    112,
+    38,
+    44
+   ],
+   "pivot": [
+    12.2,
+    4.4
+   ]
+  },
+  "hand_open": {
+   "rect": [
+    405,
+    4,
+    36,
+    56
+   ],
+   "pivot": [
+    12.4,
+    4.8
+   ]
+  },
+  "thigh": {
+   "rect": [
+    79,
+    4,
+    53,
+    94
+   ],
+   "pivot": [
+    24.5,
+    12.2
+   ]
+  },
+  "shin": {
+   "rect": [
+    136,
+    4,
+    37,
+    89
+   ],
+   "pivot": [
+    18.2,
+    9.1
+   ]
+  },
+  "foot": {
+   "rect": [
+    4,
+    112,
+    71,
+    54
+   ],
+   "pivot": [
+    17.2,
+    10.4
+   ]
+  }
+ },
+ "joints": [
+  {
+   "name": "pelvis",
+   "part": "pelvis",
+   "parent": "",
+   "pos": [
+    0.0,
+    -46.37
+   ],
+   "z": 3,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -4.0,
+     -4.0
+    ],
+    "b": [
+     4.0,
+     -4.0
+    ],
+    "r": 6.0
+   },
+   "mass": 12.0,
+   "limit": null,
+   "rest_dir": -90
+  },
+  {
+   "name": "torso",
+   "part": "torso",
+   "parent": "pelvis",
+   "pos": [
+    -0.52,
+    -9.84
+   ],
+   "z": 5,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     -2.0
+    ],
+    "b": [
+     -0.39,
+     -17.8
+    ],
+    "r": 6.04
+   },
+   "mass": 25.0,
+   "limit": [
+    -35,
+    75
+   ],
+   "rest_dir": -90
+  },
+  {
+   "name": "head",
+   "part": "head",
+   "parent": "torso",
+   "pos": [
+    -0.78,
+    -22.8
+   ],
+   "z": 6,
+   "far": false,
+   "collider": {
+    "type": "circle",
+    "c": [
+     3.89,
+     -7.25
+    ],
+    "r": 7.3
+   },
+   "mass": 5.0,
+   "limit": [
+    -40,
+    45
+   ],
+   "rest_dir": -90
+  },
+  {
+   "name": "far_upper_arm",
+   "part": "upper_arm",
+   "parent": "torso",
+   "pos": [
+    -6.37,
+    -17.82
+   ],
+   "z": 1,
+   "far": true,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     1.55,
+     16.58
+    ],
+    "r": 3.12
+   },
+   "mass": 2.5,
+   "limit": [
+    -175,
+    70
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "far_forearm",
+   "part": "forearm",
+   "parent": "far_upper_arm",
+   "pos": [
+    1.55,
+    16.58
+   ],
+   "z": 1,
+   "far": true,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     0.67,
+     15.02
+    ],
+    "r": 2.25
+   },
+   "mass": 1.8,
+   "limit": [
+    -145,
+    0
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "far_hand",
+   "part": "hand_open",
+   "parent": "far_forearm",
+   "pos": [
+    0.67,
+    15.02
+   ],
+   "z": 1,
+   "far": true,
+   "collider": {
+    "type": "circle",
+    "c": [
+     0.0,
+     4.66
+    ],
+    "r": 2.8
+   },
+   "mass": 0.7,
+   "limit": [
+    -60,
+    60
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "far_thigh",
+   "part": "thigh",
+   "parent": "pelvis",
+   "pos": [
+    0.0,
+    0.0
+   ],
+   "z": 2,
+   "far": true,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     2.33,
+     17.87
+    ],
+    "r": 5.3
+   },
+   "mass": 8.0,
+   "limit": [
+    -110,
+    40
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "far_shin",
+   "part": "shin",
+   "parent": "far_thigh",
+   "pos": [
+    2.33,
+    17.87
+   ],
+   "z": 2,
+   "far": true,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     -0.26,
+     17.61
+    ],
+    "r": 3.33
+   },
+   "mass": 4.0,
+   "limit": [
+    0,
+    150
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "far_foot",
+   "part": "foot",
+   "parent": "far_shin",
+   "pos": [
+    -0.26,
+    17.61
+   ],
+   "z": 2,
+   "far": true,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -0.5899999999999999,
+     8.48
+    ],
+    "b": [
+     10.95,
+     8.48
+    ],
+    "r": 2.3
+   },
+   "mass": 1.5,
+   "limit": [
+    -40,
+    35
+   ],
+   "rest_dir": 0
+  },
+  {
+   "name": "near_thigh",
+   "part": "thigh",
+   "parent": "pelvis",
+   "pos": [
+    0.0,
+    0.0
+   ],
+   "z": 4,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     2.33,
+     17.87
+    ],
+    "r": 5.3
+   },
+   "mass": 8.0,
+   "limit": [
+    -110,
+    40
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "near_shin",
+   "part": "shin",
+   "parent": "near_thigh",
+   "pos": [
+    2.33,
+    17.87
+   ],
+   "z": 4,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     -0.26,
+     17.61
+    ],
+    "r": 3.33
+   },
+   "mass": 4.0,
+   "limit": [
+    0,
+    150
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "near_foot",
+   "part": "foot",
+   "parent": "near_shin",
+   "pos": [
+    -0.26,
+    17.61
+   ],
+   "z": 4,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -0.5899999999999999,
+     8.48
+    ],
+    "b": [
+     10.95,
+     8.48
+    ],
+    "r": 2.3
+   },
+   "mass": 1.5,
+   "limit": [
+    -40,
+    35
+   ],
+   "rest_dir": 0
+  },
+  {
+   "name": "near_upper_arm",
+   "part": "upper_arm",
+   "parent": "torso",
+   "pos": [
+    -6.37,
+    -17.82
+   ],
+   "z": 7,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     1.55,
+     16.58
+    ],
+    "r": 3.12
+   },
+   "mass": 2.5,
+   "limit": [
+    -175,
+    70
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "near_forearm",
+   "part": "forearm",
+   "parent": "near_upper_arm",
+   "pos": [
+    1.55,
+    16.58
+   ],
+   "z": 8,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.0,
+     0.0
+    ],
+    "b": [
+     0.67,
+     15.02
+    ],
+    "r": 2.25
+   },
+   "mass": 1.8,
+   "limit": [
+    -145,
+    0
+   ],
+   "rest_dir": 90
+  },
+  {
+   "name": "near_hand",
+   "part": "hand_grip",
+   "parent": "near_forearm",
+   "pos": [
+    0.67,
+    15.02
+   ],
+   "z": 10,
+   "far": false,
+   "collider": {
+    "type": "circle",
+    "c": [
+     0.0,
+     4.66
+    ],
+    "r": 2.8
+   },
+   "mass": 0.7,
+   "limit": [
+    -60,
+    60
+   ],
+   "rest_dir": 90
+  }
+ ],
+ "sockets": {
+  "gun": {
+   "joint": "near_hand",
+   "pos": [
+    1.97,
+    4.66
+   ]
+  }
+ },
+ "source": "concept-art/se02-sidearm-guard/se02-sidearm-guard-parts-hd-a-v1.webp"
+}

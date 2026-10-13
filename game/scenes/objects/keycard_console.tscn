@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/objects/keycard_console.gd" id="1_console"]
+[ext_resource type="Script" path="res://scripts/world/toast_label.gd" id="2_toast"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_console"]
+size = Vector2(60, 100)
+
+[node name="KeycardConsole" type="Area2D"]
+script = ExtResource("1_console")
+entity_id = "L02-KC01-P"
+keycard_id = "L02-KC01"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -50)
+shape = SubResource("RectangleShape2D_console")
+
+[node name="Toast" type="Label" parent="."]
+offset_left = -120.0
+offset_top = -150.0
+offset_right = 120.0
+offset_bottom = -124.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+text = ""
+script = ExtResource("2_toast")

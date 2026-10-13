@@ -1,8 +1,10 @@
 # 04 — Godot implementation architecture
 
-**Visual direction (C11, C15, C35):** [hand-drawn 2D in a dark night-campus palette, painted flat and lit in the engine](../../art-design/style-guide.md). Revamped 2026-09-29 (C14–C24) and rebuilt 2026-09-30 (C33); there are no selected scene images for the new look.
+**Visual direction (C56, C58; was C11, C15, C35):** [hand-painted HD 2D, corporate cyberpunk in teal and amber, lit in the engine](../../art-design/handpainted-style.md); the approved style frame is `concept-art/style-handpainted/style-frame-v2.webp`. Revamped 2026-09-29 (C14–C24), rebuilt 2026-09-30 (C33) and repainted 2026-10-11 and 2026-10-12 (C56–C58).
 
-**Status:** Implemented (M0–M7), rebuilt to the revamp (C24), then rebuilt again around the new enemy roster (C33); this file describes the rebuilt game. It is the design; the project's own `CONVENTIONS.md` fixes the exact contracts, IDs and commands. M0 pinned **Godot 4.7.2.stable.official** and verified the documented APIs against it. All paths below are relative to prototypes/sunnyvale-godot/ unless stated otherwise.
+**Where it lives (C61, 2026-10-12):** the game is now in `game/` (Godot project "DEAD EDEN"); the old paths `prototypes/sunnyvale-godot` (pixel art, tag `pixel-prototype-final`) and `prototypes/sunnyvale-handpainted` are gone. Level 2 has its own plan in [level-02-alignment](../level-02-alignment/README.md).
+
+**Status:** Implemented (M0–M7), rebuilt to the revamp (C24), then rebuilt again around the new enemy roster (C33); this file describes the rebuilt game. It is the design; the project's own `CONVENTIONS.md` fixes the exact contracts, IDs and commands. M0 pinned **Godot 4.7.2.stable.official** and verified the documented APIs against it. All paths below are relative to `game/` (C61; formerly `prototypes/sunnyvale-godot/`) unless stated otherwise.
 
 ## Small project structure
 

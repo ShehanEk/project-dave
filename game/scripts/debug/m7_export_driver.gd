@@ -67,6 +67,8 @@ func _find_title(timeout: float = HERO_TIMEOUT) -> Control:
 func _find_level(timeout: float = HERO_TIMEOUT) -> Node:
 	var elapsed := 0.0
 	while elapsed < timeout:
+		# Main names the level node after its LevelDef ("Level01"); this
+		# driver plays Level 1 only.
 		var lvl := get_tree().root.find_child("Level01", true, false)
 		if lvl:
 			return lvl
@@ -230,8 +232,9 @@ func _run_continue() -> void:
 	_log_session_state("post-continue")
 	var resumed_checkpoint: String = String(Session.state.get("checkpoint_id", "CP00"))
 	var start_area_index: int = 0
-	if LevelDirector.CHECKPOINT_MARKERS.has(resumed_checkpoint):
-		start_area_index = LevelDirector.CHECKPOINT_MARKERS[resumed_checkpoint][0]
+	var markers: Dictionary = level.checkpoint_markers()
+	if markers.has(resumed_checkpoint):
+		start_area_index = markers[resumed_checkpoint][0]
 	print("[M7DRIVER] resumed at ", resumed_checkpoint, " (area index ", start_area_index, ") — driving to the end")
 
 	# BOXED (see the identical gotcha documented in

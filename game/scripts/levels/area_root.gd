@@ -24,8 +24,18 @@ extends Node2D
 ## fed to GameCamera.world_limits as a world-space Rect2 via get_camera_limits().
 @export var camera_top: float = -640.0
 @export var camera_bottom: float = 96.0
-## Under a roof (the depot): no rain falls here (scripts/world/atmosphere.gd).
+## Under a roof (the depot): no rain falls here (scripts/world/atmosphere.gd),
+## and its blocks and props take the interior look (Block, Scenery).
 @export var indoors: bool = false
+## M2 (Level 2): an `indoors` area is still outdoors before this local x (rain
+## falls, the exterior look) and under the roof from it on. 0 = all of it is
+## indoors. Level 2's A01 is a glass sky bridge in the rain (x 0-900) leading
+## into the coolant plant.
+@export var wet_until_x: float = 0.0
+## Batch 7 (Level 2): which painted interior the roofed part wears. "depot" (Level 1's server
+## depot look) or "lab" (Level 2's Cognition Lab: scripts/world/lab_skins.gd skins the range
+## bench, backstop crates, doors, pads, the console and the practice targets there).
+@export var interior_look: String = "depot"
 
 const CONTAINER_NAMES: Array[String] = [
 	"Geometry", "Scenery", "Entities", "Encounters", "Beats", "Route", "Markers",
@@ -51,6 +61,19 @@ func _ensure_container(container_name: String) -> Node:
 func get_camera_limits() -> Rect2:
 	return Rect2(global_position.x, global_position.y + camera_top,
 			width, camera_bottom - camera_top)
+
+
+## The roofed part of this area in LOCAL x (Vector2(x0, x1)), or an empty
+## span (x0 >= x1) when it is outdoors.
+func dry_span() -> Vector2:
+	if not indoors:
+		return Vector2(width, width)
+	return Vector2(clampf(wet_until_x, 0.0, width), width)
+
+
+## True when local x is under this area's roof (no rain, the interior look).
+func is_indoors_at(local_x: float) -> bool:
+	return indoors and local_x >= wet_until_x
 
 
 ## A Marker2D under Markers by exact name (e.g. "Respawn_CP01"), or null.

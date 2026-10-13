@@ -1,0 +1,59 @@
+[gd_resource type="Resource" script_class="LevelDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/levels/level_def.gd" id="1_leveldef"]
+
+[resource]
+script = ExtResource("1_leveldef")
+id = "L01"
+number = 1
+display_name = "Welcome to Eon City"
+area_scenes = Array[String](["res://scenes/levels/areas/a01_gate.tscn", "res://scenes/levels/areas/a02_gardens.tscn", "res://scenes/levels/areas/a03_roofs.tscn", "res://scenes/levels/areas/a04_square.tscn", "res://scenes/levels/areas/a05_depot.tscn", "res://scenes/levels/areas/a06_exit.tscn"])
+checkpoint_markers = {
+"CP00": [0, "Spawn_CP00"],
+"CP01": [1, "Respawn_CP01"],
+"CP02": [2, "Respawn_CP02"],
+"CP03": [3, "Respawn_CP03"],
+"CP04": [4, "Respawn_CP04"],
+"CP05": [5, "Respawn_CP05"],
+"CP06": [3, "Respawn_CP06"],
+"CP07": [5, "Respawn_CP07"],
+"UPG01": [4, "Respawn_UPG01"]
+}
+first_checkpoint = "CP00"
+exit_checkpoint = "CP05"
+starting_weapon = "L01-W01-P01"
+world_weapons = {
+"L01-W01-P02": "L01-A05-PAD01"
+}
+switches = {
+"L01-SW01": false
+}
+keycard_id = "L01-KC01"
+story_defaults = {
+"awakening_done": false,
+"core_installed": true,
+"hatch_open": false,
+"level_complete": false
+}
+objective_start = "Reach the server depot."
+objective_complete = "Eon City complete."
+intro_scene = "res://scripts/ui/intro_comic.gd"
+next_level = "L02"
+chip_total = 65
+evidence_id = "EF01"
+evidence_name = "Lockout Notice"
+rank_fast_seconds = 240.0
+rank_ok_seconds = 360.0
+completion_line = "Adam: “You got out of the depot, Dave. Eon City is bigger than one building, and every gate in it answers to me.”"
+depot_area_id = "L01-A05"
+route_pa_lines = {
+"L01-A02-B01": "Night shift, be advised: a flagged former employee is on campus. Dave Harlan. Detain on sight.",
+"L01-A03-B01": "Rooftop cameras have Harlan heading for the server depot. All units, cut him off.",
+"L01-A04-B01": "Reminder to staff: your Link keeps you calm and safe. Please stay at your workstations."
+}
+lockdown_pa_line = "Attention, staff. For your comfort, all exits are now closed. Please remain calm."
+lockdown_pa_voice = &"pa_remain_calm"
+exit_pa_speaker = "Security PA"
+exit_pa_line = "All teams: lethal force is authorized. Harlan is armed."
+exit_pa_voice = &"pa_lethal"
+overlay_scenes = Array[String](["res://scenes/world/night_overlay.tscn", "res://scenes/world/night_lighting.tscn", "res://scenes/world/atmosphere.tscn"])

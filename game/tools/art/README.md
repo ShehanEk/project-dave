@@ -6,13 +6,16 @@ The painters here generate placeholder art procedurally. Final art is painted by
 
 ## Commands
 
-Run from the project root (`prototypes/sunnyvale-godot`):
+Run from the project root (`game/`):
 
 ```bash
 python3 tools/art/paint_night_guard.py     # SE01 Night Guard  -> assets/characters/lit/night_guard/
 python3 tools/art/paint_staffer.py         # LK01 Staffer      -> assets/characters/lit/staffer/
 python3 tools/art/paint_patrol_rover.py    # M01 Patrol Rover  -> assets/characters/lit/patrol_rover/
 python3 tools/art/paint_blood.py           # blood decals      -> assets/effects/blood/
+python3 tools/art/paint_pistol.py          # EG01 pistol prop (M4 placeholder)      -> assets/characters/lit/pistol_eg01/
+python3 tools/art/paint_security_drone.py  # M02 Security Drone (M4 placeholder)    -> assets/characters/lit/security_drone/
+python3 tools/art/paint_hound.py           # K01 Hound, four legs (M4 placeholder)  -> assets/characters/lit/hound/
 python3 tools/art/make_normal_maps.py      # Dave's Rook frames -> assets/characters/rook/normals/
 python3 tools/art/import_parts_sheet.py night_guard   # the pixel-art parts sheet -> assets/characters/lit/night_guard/ (pixel_art rig)
 python3 tools/art/import_parts_sheet.py night_guard_smooth  # the first, smooth parts sheet -> the same folder (the old art)
@@ -52,6 +55,7 @@ After changing art, re-import it:
 | `paint_night_guard.py` | The lit-cutout test's procedural guard. Superseded by the imported sheet; running it overwrites the Night Guard with the placeholder |
 | `paint_staffer.py` | The Linked night-shift employee: the guard's joints minus `baton`. Superseded by the imported pixel sheet since 2026-10-06; running it overwrites the Staffer with the smooth procedural art (15 joints, no port or lanyard joint) |
 | `paint_patrol_rover.py` | The lit-cutout test's procedural rover. Superseded by the imported sheet; running it overwrites the Patrol Rover with the placeholder |
+| `paint_pistol.py`, `paint_security_drone.py`, `paint_hound.py` | Level 2's placeholders (M4), until the painted sheets exist: the EG01 pistol as a prop rig (frame with the teal strip, slide with the muzzle lamp; sockets `muzzle`, `lamp`, `support`), the M02 drone (hull with the canopy and magenta strip, two nacelles and fans, lightbar, fork) and the K01 Hound, a four-legged rig (torso, neck, head, jaw, tail, three-part legs; rig.json `feet` for the ground lock and `lock` for the jaw and paws in a ragdoll). The part names are the coming sheets' part lists, so an `import_parts_sheet.py` entry can replace each folder without code changes (CONVENTIONS.md, "Level 2's enemies") |
 | `paint_blood.py` | Wound marks, the floor pool, the spray droplet and the flat helpers used by `scripts/effects/blood.gd` |
 | `make_normal_maps.py` | Normal maps from the silhouette and painted detail of every PNG in `assets/characters/rook/` (the Rook frames, Dave's fallback since 2026-10-07), plus `dave_spec.png` |
 | `mixamo_to_rig.py`, `make_test_armature.py` | Mixamo FBX clip → per-joint rotations for the human rigs (Blender); see [README-mixamo.md](README-mixamo.md). No enemy uses converted clips now: the Night Guard is hand-keyed (C38), and his builder `build_guard_mocap.py` was deleted |
@@ -128,7 +132,7 @@ The Scrapjack (2026-10-07, `build_prop_pixel`; the smooth gun stays rebuildable 
 
 ### Dave (the hero)
 
-Dave Harlan (2026-10-07, the `dave` entry; `build_human`, like the Staffer) from [h01-dave-parts-pixel-v1.webp](../../../../concept-art/h01-dave/h01-dave-parts-pixel-v1.webp) (1448 x 1086, transparent; look reference `h01-dave-look-v1.webp`). Drawn by `scripts/actors/visuals/hero_rig_visual.gd`, which extends the old `hero_visual.gd` (the Rook frames are its fallback when `assets/characters/lit/dave/rig.json` is missing). What it taught:
+Dave Harlan (2026-10-07, the `dave` entry; `build_human`, like the Staffer) from [h01-dave-parts-pixel-v1.webp](../../../concept-art/h01-dave/h01-dave-parts-pixel-v1.webp) (1448 x 1086, transparent; look reference `h01-dave-look-v1.webp`). Drawn by `scripts/actors/visuals/hero_rig_visual.gd`, which extends the old `hero_visual.gd` (the Rook frames are its fallback when `assets/characters/lit/dave/rig.json` is missing). What it taught:
 
 - **Size.** `--measure` gave 7.0 to 8.4 sheet px per generated pixel (average 7.9 x 8.0, `gen`). `height` 94 asked for `reduce` 2.065, which came out 93.3 world px once the joints were rounded to whole art pixels; the joint rounding makes the standing height jump by an art pixel or two between neighbouring values (2.0: 98.1, 2.02: 99.4, 2.03: 94.8, 2.04: 96.2, 2.05: 94.6), so the entry fixes **`reduce` 2.04**: 64.1 art px = 96.2 world px, within 5% of the brief's 94 and of the Rook idle frame's 98. The head is 14 x 16 art px, the torso 16 x 20, a hand 7 x 9.
 - **Anchors** (sheet px, gridded crops; the parts are drawn hanging, as the guard's): the head pivots on its neck stub (158, 318) and sits on the torso at (930, 118), so the face is forward of the jacket and the back of the head over its middle; the shoulder (875, 150) is the jacket's middle-back, where the sleeve hangs; the torso pivots just above its hem (905, 355) and the pelvis takes it at the belt (1262, 215), so the jacket covers the belt by one art pixel; the hip is (1262, 318); knee, ankle and the three soles as the guard's. The grip (918, 605) is the fist's thumb side: with the arm level the hand points along the gun, so the grip runs down through the fist and its butt shows below it.

@@ -1,0 +1,62 @@
+[gd_resource type="Resource" script_class="GunnerTuning" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/tuning/gunner_tuning.gd" id="1_gunner"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/pistol_round.tscn" id="2_round"]
+
+[resource]
+script = ExtResource("1_gunner")
+health = 3
+damage = 1
+patrol_speed_h_per_s = 0.0
+approach_speed_h_per_s = 1.1
+notice_range = 620.0
+notice_vertical = 360.0
+engage_range_h = 6.0
+round_range_h = 6.5
+round_speed_h_per_s = 9.0
+same_floor_band = 24.0
+round_height_h = 0.5
+aim_track_speed_h_per_s = 3.0
+shot_pivot = Vector2(4, -57)
+shot_reach = 47.0
+flat_muzzle_x = 52.0
+aim_down_max_deg = 60.0
+aim_up_max_deg = 30.0
+camera_margin_h = 1.0
+gravity = 1800.0
+windup_time = 0.9
+red_time = 0.25
+fire_time = 0.18
+reload_time = 1.2
+rest_time = 0.3
+max_live_rounds = 1
+hit_stagger_time = 0.35
+hit_stagger_cooldown = 1.5
+rig_path = "res://assets/characters/lit/sidearm_guard_hd_a/rig.json"
+rig_variants = PackedStringArray("res://assets/characters/lit/sidearm_guard_hd_a/rig.json", "res://assets/characters/lit/sidearm_guard_hd_b/rig.json", "res://assets/characters/lit/sidearm_guard_hd_c/rig.json")
+strip_joints = PackedStringArray()
+clips_script = "res://scripts/actors/lit/clips_sidearm_guard.gd"
+clip_idle = "idle"
+clip_walk = "walk"
+clip_stalk = "stalk"
+clip_ready = "ready"
+clip_aim = "aim"
+clip_fire = "fire"
+clip_reload = "rack"
+clip_hit = "hit"
+gun_rig_path = "res://assets/characters/lit/pistol_eg01/rig.json"
+gun_joint = "near_hand"
+gun_offset = Vector2(2.6, 4.7)
+gun_rotation_deg = 90.0
+slide_rack_px = 3.0
+aim_joints = PackedStringArray("near_upper_arm", "far_upper_arm")
+round_scene = ExtResource("2_round")
+voice_notice = PackedStringArray("Shots fired! He's got a fucking gun!")
+voice_windup = PackedStringArray("Drop it! I will shoot, I swear to God!")
+voice_reload = PackedStringArray("Reloading! Cover me!", "Come on, come on, come on—")
+voice_hurt = PackedStringArray("Oh God. I'm hit, I'm hit.")
+voice_death = PackedStringArray("Tell Jo I'm—")
+sfx_lock = &"ready_click"
+sfx_fire = &"pistol_fire"
+sfx_reload = &"latch"
+sfx_hit = &"hit_flesh"

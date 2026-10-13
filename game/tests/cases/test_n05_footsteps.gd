@@ -147,7 +147,7 @@ func _test_cues_are_loaded() -> void:
 
 
 func _test_area_scenes_use_the_table() -> void:
-	var paths: Array[String] = LevelDirector.AREA_SCENE_PATHS
+	var paths: Array[String] = LevelDefs.get_def("L01").area_scenes
 	check_eq(paths.size(), EXPECTED_AREAS.size(), "the level has the six areas this test knows")
 	for i in mini(paths.size(), EXPECTED_AREAS.size()):
 		var area: AreaRoot = (load(paths[i]) as PackedScene).instantiate()

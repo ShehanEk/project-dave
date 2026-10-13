@@ -4,6 +4,7 @@ corporate cyberpunk sheets of C58) into assets/environment/hd/. Run from the pro
     python3 tools/art/import_hd_env.py                    batch 1: terrain, backgrounds, props
     python3 tools/art/import_hd_env.py --batch2           batch 2 (below)
     python3 tools/art/import_hd_env.py --batch2 details2  only the named steps of a batch
+    python3 tools/art/import_hd_env.py --batch7           batch 7: Level 2's lab (lab/, lab.json)
 
 Two kinds of output:
 1. Swap textures (the two background layers): each is rebuilt at its pixel piece's exact layout
@@ -633,10 +634,288 @@ def signs2():
     print(json.dumps(out))
 
 
+# --- batch 7 (2026-10-13): Level 2's lab ------------------------------------------------------
+#
+# Sizes are Level 1's (Dave, 96 px, is 1.75 m): the prompt gave each prop in units of a person's
+# height (H, 96 world px), and each prop keeps that size along its given dimension. Everything is
+# written under assets/environment/hd/lab/ with a manifest lab.json (scripts/world/lab_skins.gd):
+# per piece its file, `scale` (world px per texel), `anchor_x` (the texel column standing on the
+# prop's origin; the bottom row stands on it), its size in texels and named points in texels.
+#   python3 tools/art/import_hd_env.py --batch7               all of it
+#   python3 tools/art/import_hd_env.py --batch7 lab_props     only the named steps
+
+H = 96.0
+LAB = "lab"
+LAB_JSON = os.path.join(OUT, LAB, "lab.json")
+## The lab backdrop: two-storey glass labs on one ground line (sheet row 682), transparent above
+## (from row 215). The few desk plants in the offices are painted out (C58: no plants anywhere):
+## each box is refilled row by row from the glass either side of it.
+LAB_BACKDROP = "lab-backdrop-hd-v1.webp"
+LAB_GROUND = 683
+LAB_TOP = 200
+LAB_SEAM = 48
+LAB_PLANTS = [(283, 350, 312, 388), (610, 352, 645, 386), (930, 413, 962, 441), (993, 411, 1030, 441),
+              (1138, 410, 1180, 441), (1425, 408, 1470, 441), (1545, 355, 1585, 393), (1840, 344, 1882, 388)]
+## The atrium far layer: opaque, tileable; its seam window clear of the ring light.
+ATRIUM = "atrium-far-hd-v1.webp"
+ATRIUM_SEAM = 60
+## The Lattice hologram (on black): kept opaque, drawn additively (black adds nothing).
+LATTICE = "lattice-hologram-hd-v1.webp"
+LATTICE_SIZE = 768
+LAB_PROPS = "lab-props-hd-v1.webp"
+LAB_DOORS = "lab-doors-hd-v1.webp"
+## key: (sheet box, dimension kept, its size in H). The boxes hold one prop's pieces each.
+LAB_PROP_JOBS = {
+    "lab_bench": ((26, 229, 467, 487), "w", 1.2),        # lab bench with two monitors
+    "office_pod": ((476, 100, 896, 485), "h", 1.3),      # glass office pod: Dave's desk
+    "server_rack": ((908, 147, 1130, 485), "h", 1.1),
+    "partition": ((1144, 127, 1399, 485), "h", 1.2),     # sliding glass partition on its rail shoe
+    "rail_lamps": ((1415, 384, 1751, 479), "w", 1.0),    # floor-rail segment with three lamps
+    "control_pad": ((27, 611, 149, 842), "h", 0.6),      # lane control pad (hand-scan screen)
+    "test_dummy": ((159, 532, 318, 842), "h", 1.0),
+    "range_bench": ((334, 675, 632, 843), "h", 0.6),     # firing-range bench (cover)
+    "lane_divider": ((643, 569, 804, 842), "h", 0.9),
+    "kennel_pod": ((815, 650, 1139, 842), "h", 0.8),
+    "alignment_console": ((1152, 610, 1294, 842), "h", 0.9),
+    "proto_crate": ((1304, 693, 1531, 843), "h", 0.6),
+    "coolant_tank": ((1540, 511, 1754, 842), "h", 1.3),
+}
+## Doors: (closed box, open box) cut at the same offset from each frame's top-left, so the two
+## states line up; the freight lift's open frame is painted narrower and is fitted to the closed one.
+LAB_DOOR_JOBS = {
+    "freight_door": (((8, 200, 376, 702), (407, 200, 755, 702)), 2.2),
+    "glass_door": (((781, 360, 1028, 702), (1049, 360, 1291, 702)), 1.6),
+    "security_door": (((1311, 376, 1538, 702), (1553, 376, 1770, 702)), 1.6),
+}
+
+
+def amber_mask(c):
+    r, g, b, a = c[..., 0], c[..., 1], c[..., 2], c[..., 3]
+    return (r > 170) & (g > 100) & (b < 110) & (r - b > 90) & (a > 128)
+
+
+def blobs(mask, min_px=12):
+    """Bounding boxes (x0, y0, x1, y1) of the connected parts of `mask`, left to right."""
+    lab = components(mask.astype(np.float32) * 255.0)
+    out = []
+    for i in range(1, lab.max() + 1):
+        ys, xs = np.nonzero(lab == i)
+        if len(ys) >= min_px:
+            out.append((int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1))
+    return sorted(out)
+
+
+def paint_out(arr, box):
+    """Paints out the silhouette in `box`: its pixels darker or brighter than the glass around them
+    (grown by 2 px) are refilled smoothly from their surroundings (a Laplace fill)."""
+    x0, y0, x1, y1 = box
+    sub = arr[y0 - 3:y1 + 3, x0 - 3:x1 + 3].copy()
+    h, w = sub.shape[:2]
+    lum = sub[..., :3].mean(-1)
+    # The glass behind: each row's blend of the columns just outside the box.
+    t = np.linspace(0.0, 1.0, w)[None, :]
+    bg = lum[:, :3].mean(1, keepdims=True) * (1.0 - t) + lum[:, -3:].mean(1, keepdims=True) * t
+    mask = np.abs(lum - bg) > 18.0
+    mask[:3, :] = mask[-3:, :] = False
+    mask[:, :3] = mask[:, -3:] = False
+    for _ in range(2):
+        grown = mask.copy()
+        grown[1:] |= mask[:-1]
+        grown[:-1] |= mask[1:]
+        grown[:, 1:] |= mask[:, :-1]
+        grown[:, :-1] |= mask[:, 1:]
+        mask = grown
+    mask[:2, :] = mask[-2:, :] = False
+    mask[:, :2] = mask[:, -2:] = False
+    fill = sub.copy()
+    fill[mask] = (sub[..., :][~mask]).mean(0)
+    for _ in range(400):
+        avg = (np.roll(fill, 1, 0) + np.roll(fill, -1, 0) + np.roll(fill, 1, 1) + np.roll(fill, -1, 1)) * 0.25
+        fill[mask] = avg[mask]
+    arr[y0 - 3:y1 + 3, x0 - 3:x1 + 3] = fill
+
+
+def _lab_manifest():
+    return json.load(open(LAB_JSON)) if os.path.exists(LAB_JSON) else {}
+
+
+def _save_lab_manifest(m):
+    os.makedirs(os.path.dirname(LAB_JSON), exist_ok=True)
+    with open(LAB_JSON, "w") as f:
+        json.dump(m, f, indent=1, sort_keys=True)
+
+
+def lab_backdrops():
+    """The lab backdrop strip (transparent above its roofs) and the atrium far layer (opaque),
+    each seamed so it tiles; the backdrop's plants painted out."""
+    m = _lab_manifest()
+    a = load(LAB_BACKDROP)
+    for box in LAB_PLANTS:
+        paint_out(a, box)
+    strip = seam(a[LAB_TOP:LAB_GROUND], LAB_SEAM)
+    strip[-1, :, 3] = np.maximum(strip[-1, :, 3], strip[-2, :, 3])
+    save(strip, LAB + "/lab_backdrop.png")
+    m["lab_backdrop"] = {"file": "lab_backdrop.png", "size": [strip.shape[1], strip.shape[0]],
+                         "roof_row": 215 - LAB_TOP}
+    far = load(ATRIUM)
+    far = seam(far, ATRIUM_SEAM)
+    far[..., 3] = 255.0
+    save(far, LAB + "/atrium_far.png")
+    m["atrium_far"] = {"file": "atrium_far.png", "size": [far.shape[1], far.shape[0]],
+                       "top": [round(float(v), 1) for v in far[:6, :, :3].reshape(-1, 3).mean(0)],
+                       "bottom": [round(float(v), 1) for v in far[-6:, :, :3].reshape(-1, 3).mean(0)]}
+    _save_lab_manifest(m)
+    print("lab_backdrop %d x %d, atrium_far %d x %d" % (strip.shape[1], strip.shape[0], far.shape[1], far.shape[0]))
+
+
+def lab_hologram():
+    m = _lab_manifest()
+    a = load(LATTICE)
+    a[..., 3] = 255.0
+    out = resize(a, LATTICE_SIZE, LATTICE_SIZE)
+    out[..., 3] = 255.0
+    save(out, LAB + "/lattice.png")
+    lum = a[..., :3].max(-1)
+    ys, xs = np.nonzero(lum > 40)
+    k = LATTICE_SIZE / float(a.shape[0])
+    # Its painted extent (texels): the base ring's lowest lit row is the floor it stands on.
+    m["lattice"] = {"file": "lattice.png", "size": [LATTICE_SIZE, LATTICE_SIZE],
+                    "lit": [round(xs.min() * k, 1), round(ys.min() * k, 1), round((xs.max() + 1) * k, 1),
+                            round((ys.max() + 1) * k, 1)]}
+    _save_lab_manifest(m)
+    print("lattice", m["lattice"])
+
+
+def _lab_piece(key, crop, size_h, dim, points=None, normals_edge=None):
+    """Writes the piece and its normal map; returns its manifest entry (`size_h` in H along `dim`)."""
+    world = size_h * H
+    scale = world / float(crop.shape[0] if dim == "h" else crop.shape[1])
+    rel = LAB + "/props/%s.png" % key
+    save(crop, rel)
+    save(normals(crop, normals_edge or max(4.0, 0.035 * min(crop.shape[:2]))), rel.replace(".png", "_n.png"))
+    entry = {"file": "props/%s.png" % key, "scale": round(scale, 5), "anchor_x": round(crop.shape[1] / 2.0, 1),
+             "size": [crop.shape[1], crop.shape[0]]}
+    if points:
+        entry["points"] = points
+    print("%-18s %4d x %3d texels, %.1f x %.1f world px" % (key, crop.shape[1], crop.shape[0],
+          crop.shape[1] * scale, crop.shape[0] * scale))
+    return entry
+
+
+def _cut_components(sheet, lab, box):
+    crop = crop_box(sheet, box)
+    sub = lab[box[1]:box[3], box[0]:box[2]]
+    ids = [i for i in np.unique(sub) if i and (sub == i).sum() > 30]
+    crop[..., 3] *= np.isin(sub, ids)
+    ys, xs = np.nonzero(crop[..., 3] > 8)
+    return crop[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+
+
+def lab_props():
+    """The lab props. Extra work per piece: the rail lamps' lenses are made a neutral dim glass
+    (the game lights them amber, teal or dark by the lane's state) and their three centres
+    recorded; the console's card slot is re-lit teal (the pad keeps its amber slot, so the two
+    read apart); the pad's and console's slot and screen, the dummy's chest ring and its
+    repeating stand rows, the bench's top are recorded."""
+    m = _lab_manifest()
+    sheet = load(LAB_PROPS)
+    lab = components(sheet[..., 3])
+    for key, (box, dim, size_h) in LAB_PROP_JOBS.items():
+        crop = _cut_components(sheet, lab, box)
+        pts = {}
+        if key == "rail_lamps":
+            lenses = blobs(amber_mask(crop))
+            lenses = [b for b in lenses if (b[2] - b[0]) > 10][:3]
+            assert len(lenses) == 3, lenses
+            pts["lamps"] = [[round((b[0] + b[2]) / 2.0, 1), round((b[1] + b[3]) / 2.0, 1)] for b in lenses]
+            pts["lens_size"] = [max(b[2] - b[0] for b in lenses), max(b[3] - b[1] for b in lenses)]
+            for b in lenses:
+                sub = crop[b[1] - 1:b[3] + 1, b[0] - 1:b[2] + 1]
+                lum = sub[..., :3].mean(-1, keepdims=True)
+                glass = np.concatenate([lum * 0.42, lum * 0.46, lum * 0.52], -1)
+                am = amber_mask(sub) | ((sub[..., 0] > 120) & (sub[..., 0] > sub[..., 2] + 40))
+                sub[..., :3] = np.where(am[..., None], glass, sub[..., :3])
+        if key in ("control_pad", "alignment_console"):
+            slots = blobs(amber_mask(crop))
+            slot = max(slots, key=lambda b: (b[2] - b[0]) * (b[3] - b[1]))
+            pts["slot"] = [round((slot[0] + slot[2]) / 2.0, 1), round((slot[1] + slot[3]) / 2.0, 1)]
+            # The screen: the dark glass panel above the slot.
+            dark = (crop[..., :3].max(-1) < 70) & (crop[..., 3] > 200)
+            dark[slot[1] - 4:, :] = False
+            scr = max(blobs(dark, 40), key=lambda b: (b[2] - b[0]) * (b[3] - b[1]))
+            pts["screen"] = [round((scr[0] + scr[2]) / 2.0, 1), round((scr[1] + scr[3]) / 2.0, 1)]
+            if key == "alignment_console":
+                x0, y0, x1, y1 = slot
+                sub = crop[y0 - 2:y1 + 2, x0 - 2:x1 + 2]
+                am = amber_mask(sub) | ((sub[..., 0] > 110) & (sub[..., 0] > sub[..., 2] + 30) & (sub[..., 3] > 128))
+                lum = sub[..., :3].max(-1, keepdims=True) / 255.0
+                teal = np.concatenate([lum * 63.0, lum * 224.0, lum * 208.0], -1) * 1.15
+                sub[..., :3] = np.where(am[..., None], np.clip(teal, 0, 255), sub[..., :3])
+        if key == "test_dummy":
+            ring = (crop[..., :3].max(-1) < 60) & (crop[..., 3] > 200)
+            w = (crop[..., 3] > 128).sum(1)
+            # The chest ring: the dark disc on the white torso (the widest rows' middle).
+            wide = np.nonzero(w > 0.8 * w.max())[0]
+            cy = int(np.median(wide))
+            cx = crop.shape[1] / 2.0
+            pts["ring"] = [round(cx, 1), float(cy)]
+            # The stand's plain shaft (it repeats down to the floor): the longest run of narrow,
+            # pale rows under the torso, between the collars.
+            mid = crop[:, crop.shape[1] // 2, :3].mean(-1)
+            good = (w < 0.3 * w.max()) & (mid > 150) & (np.arange(len(w)) > cy)
+            best, run = (0, 0), None
+            for r in range(len(w) + 1):
+                if r < len(w) and good[r]:
+                    run = r if run is None else run
+                elif run is not None:
+                    if r - run > best[1] - best[0]:
+                        best = (run, r)
+                    run = None
+            pts["pole"] = [int(best[0]) + 1, int(best[1]) - 1]
+        if key in ("range_bench", "proto_crate"):
+            # The top row of its ends and the deck row at its middle (where feet stand).
+            ys = np.nonzero((crop[..., 3] > 128).any(1))[0]
+            pts["top"] = int(ys.min())
+            mid = crop[:, crop.shape[1] // 2, 3]
+            pts["deck"] = int(np.nonzero(mid > 128)[0].min())
+        m[key] = _lab_piece(key, crop, size_h, dim, pts or None)
+    _save_lab_manifest(m)
+
+
+def lab_doors():
+    """Each door closed and open, cut at one offset from its frame so the states line up; the
+    reader's lens recorded (the door's own state light)."""
+    m = _lab_manifest()
+    sheet = load(LAB_DOORS)
+    lab = components(sheet[..., 3])
+    for key, ((cbox, obox), size_h) in LAB_DOOR_JOBS.items():
+        closed = _cut_components(sheet, lab, cbox)
+        opened = _cut_components(sheet, lab, obox)
+        if opened.shape != closed.shape:
+            opened = resize(opened, closed.shape[1], closed.shape[0])
+        pts = {}
+        # The reader's lens: the amber mark furthest right (the frames carry amber hazard stripes).
+        lens = blobs(amber_mask(closed))
+        if lens:
+            b = max(lens, key=lambda b: b[0] + b[2])
+            pts["reader"] = [round((b[0] + b[2]) / 2.0, 1), round((b[1] + b[3]) / 2.0, 1)]
+        # The frame's own width (the reader sticks out on the right): the top row's extent.
+        top = np.nonzero(closed[3, :, 3] > 128)[0]
+        pts["frame"] = [int(top.min()), int(top.max()) + 1]
+        for state, crop in (("closed", closed), ("open", opened)):
+            name = "%s_%s" % (key, state)
+            m[name] = _lab_piece(name, crop, size_h, "h", pts)
+    _save_lab_manifest(m)
+
+
 if __name__ == "__main__":
     steps = [a for a in sys.argv[1:] if not a.startswith("--")]
-    batch = ["terrain2", "props2", "objects2", "details2", "depot2", "signs2"] if "--batch2" in sys.argv \
-        else ["terrain", "backgrounds", "props"]
+    if "--batch7" in sys.argv:
+        batch = ["lab_backdrops", "lab_hologram", "lab_props", "lab_doors"]
+    elif "--batch2" in sys.argv:
+        batch = ["terrain2", "props2", "objects2", "details2", "depot2", "signs2"]
+    else:
+        batch = ["terrain", "backgrounds", "props"]
     for step in batch:
         if not steps or step in steps:
             globals()[step]()

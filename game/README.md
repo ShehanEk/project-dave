@@ -1,12 +1,18 @@
-# DEAD EDEN — Eon City prototype
+# DEAD EDEN — the game
 
-A single-level (L01) Godot 4 prototype of DEAD EDEN's opening area. Dave
-Harlan, a fired AI researcher, breaks into Arcadia Dynamics' Eon City campus
-at night, takes the level's clearance keycard, plugs into one of the core
-nodes of Arcadia's sentient AI, Adam, to copy proof, and escapes through the
-lockdown. Design authority: `../../prototype-plans/level-01-sunnyvale/`.
-Implementation contracts (autoloads, IDs, node contracts, hard rules):
-`CONVENTIONS.md`.
+The painted game (C56–C61): the Godot 4 project "DEAD EDEN", exported as
+`DeadEden`. Level 1 is complete and Level 2
+([Alignment](../level-design/l02-alignment.md)) is next. It began as the
+hand-painted prototype in `prototypes/sunnyvale-handpainted/` and moved here
+under C61; the pixel-art prototype was removed from the tree (its last state is
+the tag `pixel-prototype-final`).
+
+Level 1: Dave Harlan, a fired AI researcher, breaks into Arcadia Dynamics' Eon
+City campus at night, takes the level's clearance keycard, plugs into one of
+the core nodes of Arcadia's sentient AI, Adam, to copy proof, and escapes
+through the lockdown. Design authority: `../prototype-plans/level-01-sunnyvale/`
+for Level 1 and `../level-design/` for the other levels. Implementation
+contracts (autoloads, IDs, node contracts, hard rules): `CONVENTIONS.md`.
 
 **Revamp (2026-09-29, C14–C24).** The prototype was rebuilt from the original
 zombie-suburb version to the new story and look: cyborg Staffers instead of
@@ -50,14 +56,18 @@ transparently falls back to its own backup), and **Quit**.
 x86_64, embedded PCK; "macOS", universal, unsigned) built with:
 
 ```sh
-Godot --headless --path . --export-release "Windows Desktop" exports/windows/Sunnyvale.exe
-Godot --headless --path . --export-release "macOS" exports/macos/Sunnyvale.zip
+Godot --headless --path . --export-release "Windows Desktop" exports/windows/DeadEden.exe
+Godot --headless --path . --export-release "macOS" exports/macos/DeadEden.zip
 ```
 
 (A third, undeclared-preset **macOS debug** build —
-`Godot --headless --path . --export-debug "macOS" exports/macos-debug/SunnyvaleDebug.zip`
+`Godot --headless --path . --export-debug "macOS" exports/macos-debug/DeadEdenDebug.zip`
 — exists only to carry the M7 export-verification driver described in
 `reports/export-report.md`; it is not part of the two-preset deliverable.)
+
+The `reports/` documents named in this file (export report, functional matrix,
+asset inventory, pacing risk, playtests) lived in the pixel prototype; they are
+in the tag `pixel-prototype-final` under `prototypes/sunnyvale-godot/reports/`.
 
 `exports/` is gitignored — re-run the commands above to produce a build; see
 `reports/export-report.md` for exact commands, sizes, and verification
@@ -73,8 +83,7 @@ predates the revamp.** The old exports were deleted in the 2026-09-30
 cleanup, so rebuild with the commands above, and treat the export evidence as
 belonging to the pre-revamp build until it is re-run.
 
-- **macOS**: unzip `Sunnyvale.zip` and open `DEAD EDEN - Sunnyvale
-  Prototype.app`. The build is unsigned (no Apple Developer ID on this
+- **macOS**: unzip `DeadEden.zip` and open `DEAD EDEN.app`. The build is unsigned (no Apple Developer ID on this
   project — Godot's own official arm64 template is pre-signed ad-hoc by the
   Godot Foundation, which is only what lets it run on Apple Silicon at all,
   not a publisher signature), so Gatekeeper **may** refuse a plain
@@ -84,14 +93,14 @@ belonging to the pre-revamp build until it is re-run.
   reports `code has no resources but signature indicates they must be
   present` — a stricter Mac could instead say the app **"is damaged and
   can't be opened."** in that harder-to-recover case, delete the `.app` and
-  re-unzip a fresh copy from `Sunnyvale.zip` rather than trying to repair in place). If a dialog
+  re-unzip a fresh copy from `DeadEden.zip` rather than trying to repair in place). If a dialog
   appears: right-click (or Control-click) the `.app` → **Open** → **Open** in
   the confirmation dialog; this is a one-time step per Mac. (The M7
   verification launched the exact same build cleanly with no dialog at
   all, including with a quarantine flag added to simulate a downloaded copy
   — Gatekeeper strictness varies by Mac/OS version/settings, so treat the
   above as "if it complains," not a certainty.)
-- **Windows**: unzip if needed and run `Sunnyvale.exe` directly — it is a
+- **Windows**: unzip if needed and run `DeadEden.exe` directly — it is a
   single embedded-PCK executable, nothing else to install. Windows
   SmartScreen may show an "unknown publisher" warning on first run for the
   same reason (unsigned build); choose **More info → Run anyway**.
@@ -100,8 +109,8 @@ Saves, settings, and playtest logs from an exported build land in the same
 kind of per-OS `user://` location as the editor (see below), keyed by the
 project's own name — a Windows build's save directory is **not** shared with
 the macOS build, but note that a macOS **debug** export and macOS **release**
-export of this same project *do* share one `app_userdata/DEAD EDEN -
-Sunnyvale Prototype/` folder (same product name), so a checkpoint saved by
+export of this same project *do* share one `app_userdata/DEAD EDEN/`
+folder (same product name), so a checkpoint saved by
 one is visible to the other, exactly like two ordinary launches of the same
 build.
 
@@ -139,8 +148,11 @@ Everything lives under the user data directory (Godot's `user://`):
 
 | Platform | Path |
 | --- | --- |
-| macOS | `~/Library/Application Support/Godot/app_userdata/DEAD EDEN - Sunnyvale Prototype/sunnyvale/` |
-| Windows | `%APPDATA%\Godot\app_userdata\DEAD EDEN - Sunnyvale Prototype\sunnyvale\` |
+| macOS | `~/Library/Application Support/Godot/app_userdata/DEAD EDEN/sunnyvale/` |
+| Windows | `%APPDATA%\Godot\app_userdata\DEAD EDEN\sunnyvale\` |
+
+Under C61 the folder follows the project name (`DEAD EDEN`), so saves made in
+the old prototype builds do not carry over: start a new run.
 
 - `checkpoint.json` / `checkpoint.bak.json` — the save and its own backup
   (`CheckpointService`; schema version 3: version 2 added the clearance
@@ -221,7 +233,7 @@ click), plus these keys:
 
 ## Current milestone status
 
-See `../../prototype-plans/level-01-sunnyvale/09-progress-and-handoff.md`
+See `../prototype-plans/level-01-sunnyvale/09-progress-and-handoff.md`
 for the authoritative, evidence-backed milestone table. Summary of the
 pre-revamp build: M0-M6 verified, including a subsequent adversarial-review
 pass that found and fixed real bugs across M4/M5 (see 09's own "M4/M5

@@ -1,16 +1,28 @@
 extends Node
-## Main — game flow shell (M5 part 2): Title screen <-> the L01 level.
-## Owns exactly the transition between them; Session/CheckpointService state
-## changes (new_run/load_from_snapshot/clear) happen here, right before
-## instancing LevelDirector, so its own `_ready()` (which reads
-## `Session.state["checkpoint_id"]` to place the hero) always sees the
-## correct state already adopted — the same "adopt state, then rebuild"
-## ordering LevelDirector's own `_on_play_again_confirmed()` already uses.
+## Main — game flow shell (M5 part 2): Title screen <-> the level the run is
+## in (M1, C61: any LevelDefs level; `scenes/levels/level.tscn` builds
+## whichever level `Session.state["level"]` names, and the node is named
+## "Level01", "Level02", ...). Owns exactly the transitions between them;
+## Session/CheckpointService state changes (new_run/load_from_snapshot/
+## advance_to_level/clear) happen here, right before instancing LevelDirector,
+## so its own `_ready()` (which reads `Session.state` to pick the level and
+## place the hero) always sees the correct state already adopted — the same
+## "adopt state, then rebuild" ordering LevelDirector's own
+## `_on_play_again_confirmed()` already uses.
+##
+## Campaign flow (M1): New Game plays the first level's intro (SC00) and
+## starts Level 1. The completion screen's Continue (LevelDirector.
+## next_level_requested) saves the next level's first checkpoint
+## (Session.advance_to_level()), plays that level's intro if it has one and
+## loads it. Continue from the title loads whichever level the save is in.
+## The debug flag `-- --level=L02` (debug builds only) skips the title and
+## starts that level with the default campaign state, against a throwaway save
+## dir (`start_level_direct()`, which the tests call).
 
-const LEVEL_01 := "res://scenes/levels/level_01.tscn"
+const LEVEL_SCENE := "res://scenes/levels/level.tscn"
 const TITLE_SCENE := "res://scenes/ui/title_screen.tscn"
-## SC00 (C49): the intro comic that tells the premise before a New Game.
-const IntroComic := preload("res://scripts/ui/intro_comic.gd")
+## Where the `--level` debug flag keeps its saves (never the player's).
+const LEVEL_FLAG_SAVE_DIR := "user://level_flag_throwaway"
 
 ## Crosshair cursor (M7 Kenney UI pass; assets/kenney/README.md section 3 —
 ## Crosshair Pack, Outline style, `crosshair-000`). Shown as the OS mouse
@@ -42,7 +54,10 @@ const WINDOW_TITLE := "DEAD EDEN - Eon City Prototype"
 
 var _level: Node = null
 var _title: Control = null
-var _intro: CanvasLayer = null
+var _intro: Node = null
+## A level handover whose save failed: reported (Session.save_failed) once the
+## new level's HUD exists. "" = nothing to report.
+var _report_save_failed: String = ""
 ## New Game from the title plays the intro comic first. Tests and debug demos that
 ## call `_on_new_game_confirmed()` directly start the level at once either way.
 var play_intro := true
@@ -57,7 +72,8 @@ func _ready() -> void:
 	# same reasoning PauseMenu's own PROCESS_MODE_ALWAYS doc comment gives.
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_maybe_redirect_m7_save_dir()
-	_show_title()
+	if not _maybe_start_debug_level():
+		_show_title()
 	_maybe_start_m7_export_driver()
 
 
@@ -189,6 +205,54 @@ func _maybe_start_m7_export_driver() -> void:
 	driver.start(phase)
 
 
+## The `--level=<id>` user argument's level id, or "" when it is absent.
+static func level_flag(args: PackedStringArray) -> String:
+	for arg in args:
+		if arg.begins_with("--level="):
+			return arg.substr(len("--level="))
+	return ""
+
+
+## M1 debug flag (debug builds only, like the M7 driver): `-- --level=L02`
+## starts that level directly with the default campaign state, skipping the
+## title, for tests and captures. Its saves go to LEVEL_FLAG_SAVE_DIR (cleared
+## first), never the player's save, unless `--m7-save-dir` already redirected
+## them. False (and the title shows) without the flag or for an unknown level.
+func _maybe_start_debug_level() -> bool:
+	if not OS.is_debug_build():
+		return false
+	var wanted := level_flag(OS.get_cmdline_user_args())
+	if wanted.is_empty():
+		return false
+	if not LevelDefs.has_level(wanted):
+		push_error("--level=%s: not a registered level (%s)" % [wanted, ", ".join(LevelDefs.ids())])
+		return false
+	var checkpoint_service := get_node_or_null("/root/CheckpointService")
+	if checkpoint_service and checkpoint_service.get_save_dir() == checkpoint_service.DEFAULT_SAVE_DIR:
+		checkpoint_service.set_save_dir(LEVEL_FLAG_SAVE_DIR)
+		var telemetry := get_node_or_null("/root/Telemetry")
+		if telemetry:
+			telemetry.set_playtest_dir(LEVEL_FLAG_SAVE_DIR.path_join("playtests"))
+		checkpoint_service.clear()
+	return start_level_direct(wanted)
+
+
+## Starts `level_id` at once with the default campaign state
+## (`Session.new_run(level_id)`), with no title, no intro and no disk access of
+## its own (the first checkpoint the player reaches saves as usual). What the
+## `--level` flag runs; tests call it directly. False for an unknown level.
+func start_level_direct(level_id: String) -> bool:
+	if not LevelDefs.has_level(level_id):
+		return false
+	_free_level()
+	if _intro:
+		_intro.queue_free()
+		_intro = null
+	Session.new_run(level_id)
+	_start_level()
+	return true
+
+
 func _show_title() -> void:
 	get_tree().paused = false
 	_title = load(TITLE_SCENE).instantiate()
@@ -209,10 +273,11 @@ func _show_title() -> void:
 		audio.set_ambience(&"none")
 
 
-## The title's New Game (after any overwrite confirm): the intro comic, then the
-## level. The run is reset and the old save deleted right away, as the confirm text
-## promises, so the comic only delays the level. The title music keeps playing under
-## the comic; the level's director takes over the music when the level starts.
+## The title's New Game (after any overwrite confirm): the first level's intro
+## (SC00, the LevelDef's `intro_scene`), then the level. The run is reset and the
+## old save deleted right away, as the confirm text promises, so the comic only
+## delays the level. The title music keeps playing under the comic; the level's
+## director takes over the music when the level starts.
 func _on_new_game_requested() -> void:
 	if not play_intro:
 		_on_new_game_confirmed()
@@ -221,9 +286,32 @@ func _on_new_game_requested() -> void:
 	if _title:
 		_title.queue_free()
 		_title = null
-	_intro = IntroComic.new()
+	_start_level_after_intro(Session.current_level_def())
+
+
+## Plays `def`'s intro scene, if it has one, and starts the level when it ends;
+## without one (or with `play_intro` off) the level starts at once.
+func _start_level_after_intro(def: LevelDef) -> void:
+	_intro = _make_intro(def.intro_scene) if play_intro and def else null
+	if _intro == null:
+		_start_level()
+		return
 	add_child(_intro)
 	_intro.finished.connect(_on_intro_finished)
+
+
+## An intro story scene from its path: a script (.gd, e.g. SC00's
+## intro_comic.gd) is built with new(), a scene instantiated. null for "" or a
+## missing file.
+static func _make_intro(path: String) -> Node:
+	if path == "" or not ResourceLoader.exists(path):
+		return null
+	var res: Resource = load(path)
+	if res is PackedScene:
+		return (res as PackedScene).instantiate()
+	if res is Script:
+		return (res as Script).new()
+	return null
 
 
 func _on_intro_finished(_skipped: bool) -> void:
@@ -269,9 +357,66 @@ func _start_level() -> void:
 	var telemetry := get_node_or_null("/root/Telemetry")
 	if telemetry:
 		telemetry.run_start()
-	_level = load(LEVEL_01).instantiate()
+	var def: LevelDef = Session.current_level_def()
+	_level = load(LEVEL_SCENE).instantiate()
+	_level.level_def = def
+	# "Level01", "Level02", ...: the name the M7 export driver looks for.
+	_level.name = "Level" + def.id.substr(1)
 	add_child(_level)
 	_level.quit_to_title_requested.connect(_on_quit_to_title)
+	_level.next_level_requested.connect(_on_next_level_requested)
+	_level.new_run_requested.connect(_on_level_new_run_requested)
+	if _report_save_failed != "":
+		Session.save_failed.emit("save_failed", _report_save_failed)
+		_report_save_failed = ""
+
+
+## Takes the current level out of the tree at once (its own `_exit_tree()` stops
+## its voices and sting) so the next one never meets its HUD, subtitle panel or
+## hero in the groups they join.
+func _free_level() -> void:
+	if _level == null:
+		return
+	if _level.get_parent() == self:
+		remove_child(_level)
+	_level.queue_free()
+	_level = null
+
+
+## The completion screen's Continue (M1). Deferred: the request comes from a
+## button inside the level about to be freed.
+func _on_next_level_requested(level_id: String) -> void:
+	_advance_to_level.call_deferred(level_id)
+
+
+## The level handover: swap the finished level for `level_id`, saved at its
+## first checkpoint with the campaign state carried over (Session.
+## advance_to_level()), after that level's intro if it has one. A failed save
+## still starts the level (kept in memory only) and the new HUD says so.
+func _advance_to_level(level_id: String) -> void:
+	if not LevelDefs.has_level(level_id):
+		return
+	_free_level()
+	get_tree().paused = false
+	var saved: bool = Session.advance_to_level(level_id)
+	var def: LevelDef = Session.current_level_def()
+	if not saved:
+		_report_save_failed = def.first_checkpoint
+	_start_level_after_intro(def)
+
+
+## "Play again" from a level after the first (M1): a brand-new run from Level 1,
+## like the first level's own in-place Play again (no intro). Deferred like the
+## handover.
+func _on_level_new_run_requested() -> void:
+	_restart_campaign.call_deferred()
+
+
+func _restart_campaign() -> void:
+	_free_level()
+	get_tree().paused = false
+	_reset_for_new_game()
+	_start_level()
 
 
 func _on_quit_to_title() -> void:

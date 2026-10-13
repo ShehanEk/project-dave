@@ -1,0 +1,58 @@
+[gd_resource type="Resource" script_class="LevelDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/levels/level_def.gd" id="1_leveldef"]
+
+[resource]
+script = ExtResource("1_leveldef")
+id = "L02"
+number = 2
+display_name = "Alignment"
+area_scenes = Array[String](["res://scenes/levels/l02/a01_sky_bridge.tscn", "res://scenes/levels/l02/a02_range_kennel.tscn", "res://scenes/levels/l02/a03_flight_cage.tscn", "res://scenes/levels/l02/a04_training_cells.tscn", "res://scenes/levels/l02/a05_lattice.tscn", "res://scenes/levels/l02/a06_demo_floor.tscn"])
+checkpoint_markers = {
+"CP00": [0, "Spawn_CP00"],
+"CP01": [1, "Respawn_CP01"],
+"CP02": [2, "Respawn_CP02"],
+"CP03": [3, "Respawn_CP03"],
+"CP04": [4, "Respawn_CP04"],
+"CP05": [5, "Respawn_CP05"],
+"UPG01": [2, "Respawn_UPG01"]
+}
+first_checkpoint = "CP00"
+exit_checkpoint = "CP05"
+starting_weapon = "L02-W01-P01"
+world_weapons = {
+"L02-W02-P01": "L02-A01-PAD01"
+}
+weapon_ammo = {
+"L02-W02-P01": [4, 24]
+}
+switches = {
+"L02-SW01": false,
+"L02-SW02": false,
+"L02-SW03": false
+}
+keycard_id = "L02-KC01"
+keycard_icon = "keycard_l2"
+story_defaults = {
+"awakening_done": true,
+"level_complete": false
+}
+objective_start = "Reach the freight lift."
+objective_complete = "Alignment complete."
+intro_scene = ""
+next_level = ""
+chip_total = 65
+evidence_id = "EF02"
+evidence_name = "Reassignment Memo"
+evidence_icon = "evidence_memo"
+rank_fast_seconds = 720.0
+rank_ok_seconds = 960.0
+completion_line = ""
+depot_area_id = ""
+route_pa_lines = {}
+lockdown_pa_line = ""
+lockdown_pa_voice = &""
+exit_pa_speaker = "Adam"
+exit_pa_line = "Showcase staff, please secure the exhibits. Dr. Harlan is coming down."
+exit_pa_voice = &""
+overlay_scenes = Array[String](["res://scenes/world/night_overlay.tscn", "res://scenes/world/night_lighting.tscn", "res://scenes/world/atmosphere.tscn"])

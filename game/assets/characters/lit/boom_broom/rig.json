@@ -1,0 +1,278 @@
+{
+ "name": "W02 Boom Broom",
+ "kind": "prop",
+ "texture_scale": 8,
+ "albedo": "albedo.png",
+ "normal": "normal.png",
+ "spec": "spec.png",
+ "ground_lock": false,
+ "parts": {
+  "body": {
+   "rect": [
+    4,
+    4,
+    341,
+    133
+   ],
+   "pivot": [
+    44.9,
+    73.5
+   ]
+  },
+  "pump": {
+   "rect": [
+    220,
+    141,
+    86,
+    41
+   ],
+   "pivot": [
+    1.4,
+    20.7
+   ]
+  },
+  "shell": {
+   "rect": [
+    310,
+    141,
+    61,
+    36
+   ],
+   "pivot": [
+    30.6,
+    17.7
+   ]
+  },
+  "ext_tube": {
+   "rect": [
+    115,
+    141,
+    101,
+    56
+   ],
+   "pivot": [
+    12.8,
+    27.2
+   ]
+  },
+  "heat_collar": {
+   "rect": [
+    349,
+    4,
+    75,
+    83
+   ],
+   "pivot": [
+    12.8,
+    40.8
+   ]
+  },
+  "twin_pod": {
+   "rect": [
+    4,
+    141,
+    107,
+    59
+   ],
+   "pivot": [
+    12.8,
+    44.8
+   ]
+  }
+ },
+ "joints": [
+  {
+   "name": "body",
+   "part": "body",
+   "parent": "",
+   "pos": [
+    0.0,
+    0.0
+   ],
+   "z": 1,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     1.47,
+     -0.88
+    ],
+    "b": [
+     29.93,
+     -0.88
+    ],
+    "r": 6.96
+   },
+   "mass": 3.0,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "frame"
+  },
+  {
+   "name": "shell",
+   "part": "shell",
+   "parent": "body",
+   "pos": [
+    13.76,
+    -4.98
+   ],
+   "z": 0,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     -1.89,
+     0.04
+    ],
+    "b": [
+     1.87,
+     0.04
+    ],
+    "r": 1.81
+   },
+   "mass": 0.05,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "shell"
+  },
+  {
+   "name": "pump",
+   "part": "pump",
+   "parent": "body",
+   "pos": [
+    19.18,
+    -1.53
+   ],
+   "z": 3,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     2.02,
+     -0.02
+    ],
+    "b": [
+     8.38,
+     -0.02
+    ],
+    "r": 2.07
+   },
+   "mass": 0.4,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "pump"
+  },
+  {
+   "name": "ext_tube",
+   "part": "ext_tube",
+   "parent": "body",
+   "pos": [
+    32.34,
+    -1.53
+   ],
+   "z": 2,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     0.5,
+     0.0
+    ],
+    "b": [
+     8.5,
+     0.0
+    ],
+    "r": 1.8
+   },
+   "mass": 0.2,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "upgrade"
+  },
+  {
+   "name": "heat_collar",
+   "part": "heat_collar",
+   "parent": "body",
+   "pos": [
+    19.87,
+    -5.41
+   ],
+   "z": 3,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     1.0,
+     0.0
+    ],
+    "b": [
+     5.0,
+     0.0
+    ],
+    "r": 3.2
+   },
+   "mass": 0.3,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "upgrade"
+  },
+  {
+   "name": "twin_pod",
+   "part": "twin_pod",
+   "parent": "body",
+   "pos": [
+    2.25,
+    -7.52
+   ],
+   "z": 3,
+   "far": false,
+   "collider": {
+    "type": "capsule",
+    "a": [
+     1.0,
+     -1.7
+    ],
+    "b": [
+     9.0,
+     -1.7
+    ],
+    "r": 1.8
+   },
+   "mass": 0.3,
+   "limit": null,
+   "rest_dir": 0,
+   "role": "upgrade"
+  }
+ ],
+ "sockets": {
+  "grip": {
+   "joint": "body",
+   "pos": [
+    0.0,
+    0.0
+   ]
+  },
+  "muzzle": {
+   "joint": "body",
+   "pos": [
+    36.8,
+    -4.75
+   ]
+  },
+  "eject": {
+   "joint": "body",
+   "pos": [
+    13.76,
+    -4.98
+   ]
+  },
+  "support": {
+   "joint": "pump",
+   "pos": [
+    5.24,
+    0.0
+   ]
+  }
+ },
+ "source": "concept-art/w02-boom-broom/w02-boom-broom-parts-hd-v1.webp"
+}

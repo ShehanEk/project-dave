@@ -12,6 +12,12 @@ extends CanvasLayer
 ## says what the chips can buy (C53: the main route pays about 45 chips, the two cost 65
 ## together, so a player who skipped the 20-chip cache picks one). The chip count sits in the
 ## header, and the line at the bottom says what just happened.
+##
+## M3: the weapon card is the HELD weapon type's stage-1 upgrade (S04: a bench offers the
+## held type only): the Scrapjack's Quickcycle (fire rate) or the Boom Broom's Extended
+## Tube (shells, 4 -> 6), at WeaponTypes.upgrade_price(1). Its later stages show as
+## locked until their campaign milestone (WeaponTypes.STAGE_GATES). Repair and save also
+## refills a finite weapon's shells (S02's station service).
 
 signal closed
 
@@ -48,9 +54,11 @@ const AMBER := Color(1, 0.69, 0.18, 1)
 @onready var _status_label: Label = $Panel/VBox/StatusLabel
 
 var _pause_was_pressed: bool = false
-## True once a Quickcycle was bought in this visit; the bench reads it on `closed` so the
-## HUD can announce it after the panel is gone.
+## True once the weapon card's upgrade was bought in this visit; the bench reads it on
+## `closed` so the HUD can announce it after the panel is gone.
 var bought: bool = false
+## The held weapon type the card offers for ("W01", "W02"), read when the panel opens.
+var weapon_type: String = WEAPON_TYPE
 ## True once Scrap Plating was bought in this visit.
 var bought_plating: bool = false
 var _tuning: WeaponTuning = null
@@ -58,6 +66,8 @@ var _tuning: WeaponTuning = null
 
 func _ready() -> void:
 	layer = 20
+	if Session and WeaponTypes.has_type(Session.held_weapon_type()):
+		weapon_type = Session.held_weapon_type()
 	_tuning = load(TUNING_PATH)
 	_service_button.pressed.connect(_on_service_pressed)
 	_confirm_button.pressed.connect(_on_confirm_pressed)
@@ -106,14 +116,19 @@ func _on_service_pressed() -> void:
 	if Session == null:
 		return
 	Session.heal_full()
+	var refilled := Session.refill_held_weapon()
 	var ok := Session.commit("UPG01")
-	_refresh("Repaired. Progress saved." if ok else WorkbenchPanel.save_failed_message())
+	var done := "Repaired and reloaded. Progress saved." if refilled else "Repaired. Progress saved."
+	_refresh(done if ok else WorkbenchPanel.save_failed_message())
 
 
 func _on_confirm_pressed() -> void:
-	if _buy(WEAPON_TYPE, PRICE):
+	if _buy(weapon_type, PRICE):
 		bought = true
-		_refresh("Quickcycle installed. It fires %.1f shots a second now." % _rate(TARGET_STAGE))
+		if weapon_type == "W02":
+			_refresh("Extended Tube fitted. The tube holds %d shells now." % _shells(TARGET_STAGE))
+		else:
+			_refresh("Quickcycle installed. It fires %.1f shots a second now." % _rate(TARGET_STAGE))
 
 
 func _on_plating_pressed() -> void:
@@ -176,6 +191,17 @@ func _on_upgrade_purchased(_type: String, _stage: int) -> void:
 	_refresh(_status_label.text)
 
 
+## The weapon card's upgrade name (the held type's stage 1).
+func upgrade_name() -> String:
+	var n := WeaponTypes.upgrade_name(weapon_type, TARGET_STAGE)
+	return n if n != "" else "Quickcycle"
+
+
+## Shells the Boom Broom's tube holds at `stage`.
+func _shells(stage: int) -> int:
+	return WeaponTypes.capacity("W02", stage)
+
+
 ## Shots per second at `stage`, from the tuning the gun uses.
 func _rate(stage: int) -> float:
 	return _tuning.shots_per_second(stage) if _tuning else (1.0 / 0.32 if stage < 1 else 1.0 / 0.18)
@@ -184,7 +210,7 @@ func _rate(stage: int) -> float:
 func _refresh(status: String) -> void:
 	if Session == null:
 		return
-	var owned := Session.weapon_stage(WEAPON_TYPE) >= TARGET_STAGE
+	var owned := Session.weapon_stage(weapon_type) >= TARGET_STAGE
 	var plated := Session.weapon_stage(PLATING_TYPE) >= TARGET_STAGE
 	var wallet := Session.get_wallet()
 	_wallet_label.text = "%d" % wallet
@@ -192,13 +218,25 @@ func _refresh(status: String) -> void:
 	# 1. Repair and save.
 	_service_info.text = "Free. Heals you fully (health %d of %d now) and saves your progress here." \
 			% [Session.get_health(), Session.max_health()]
+	if WeaponTypes.uses_ammo(weapon_type):
+		_service_info.text = "Free. Heals you fully (health %d of %d now), refills your shells and saves your progress here." \
+				% [Session.get_health(), Session.max_health()]
 
-	# 2a. The Quickcycle: what it does, as two bars on one scale (the fast one is full).
-	var base_rate := _rate(0)
-	var quick_rate := _rate(TARGET_STAGE)
-	_now_fill.anchor_right = base_rate / quick_rate
-	_now_value.text = "%.1f shots/s" % base_rate
-	_quick_value.text = "%.1f shots/s  (+%d%%)" % [quick_rate, roundi((quick_rate / base_rate - 1.0) * 100.0)]
+	# 2a. The weapon's upgrade: what it does, as two bars on one scale (the upgraded one is
+	# full): the Quickcycle's fire rate, or (M3) the Extended Tube's shells.
+	_set_card_names()
+	if weapon_type == "W02":
+		var base_shells := float(_shells(0))
+		var tube_shells := float(_shells(TARGET_STAGE))
+		_now_fill.anchor_right = base_shells / tube_shells
+		_now_value.text = "%d shells" % int(base_shells)
+		_quick_value.text = "%d shells  (+%d%%)" % [int(tube_shells), roundi((tube_shells / base_shells - 1.0) * 100.0)]
+	else:
+		var base_rate := _rate(0)
+		var quick_rate := _rate(TARGET_STAGE)
+		_now_fill.anchor_right = base_rate / quick_rate
+		_now_value.text = "%.1f shots/s" % base_rate
+		_quick_value.text = "%.1f shots/s  (+%d%%)" % [quick_rate, roundi((quick_rate / base_rate - 1.0) * 100.0)]
 	_set_state(_state_label, owned)
 	# The row you have now reads white, the offer teal; once bought the old row dims.
 	for l in [_now_name, _now_value]:
@@ -215,7 +253,10 @@ func _refresh(status: String) -> void:
 	# What the chips buy, and one Buy button per upgrade still to buy.
 	_balance_label.remove_theme_color_override("font_color")
 	if owned and plated:
-		_balance_label.text = "Everything here is fitted."
+		# The held weapon's next stage waits for its campaign milestone (S04).
+		var next := WeaponTypes.upgrade_name(weapon_type, TARGET_STAGE + 1)
+		_balance_label.text = "Everything here is fitted." if next == "" else \
+				"Everything here is fitted. %s opens %s." % [next, WeaponTypes.STAGE_GATES[TARGET_STAGE + 1]]
 	elif owned or plated:
 		var left_price := PLATING_PRICE if owned else PRICE
 		if wallet >= left_price:
@@ -228,13 +269,13 @@ func _refresh(status: String) -> void:
 		_balance_label.text = "You have %d chips: enough for one of them. Choose." % wallet
 		_balance_label.add_theme_color_override("font_color", AMBER)
 	elif wallet >= PLATING_PRICE:
-		_balance_label.text = "You have %d chips: enough for the Plating. %d more for the Quickcycle." % [wallet, PRICE - wallet]
+		_balance_label.text = "You have %d chips: enough for the Plating. %d more for the %s." % [wallet, PRICE - wallet, upgrade_name()]
 	else:
 		_balance_label.text = "You have %d chips. Find %d more for the Plating." % [wallet, PLATING_PRICE - wallet]
 		_balance_label.add_theme_color_override("font_color", WARN)
 	_confirm_button.visible = not owned
 	_confirm_button.disabled = owned or wallet < PRICE
-	_confirm_button.text = "Buy Quickcycle (%d)" % PRICE
+	_confirm_button.text = "Buy %s (%d)" % [upgrade_name(), PRICE]
 	_plating_button.visible = not plated
 	_plating_button.disabled = plated or wallet < PLATING_PRICE
 	_plating_button.text = "Buy Plating (%d)" % PLATING_PRICE
@@ -247,6 +288,18 @@ func _refresh(status: String) -> void:
 				b.grab_focus()
 				break
 	_status_label.text = status
+
+
+## The card's names and icon for the held type (the Scrapjack's stay as the scene has them).
+func _set_card_names() -> void:
+	var card := "Panel/VBox/QuickcycleCard/"
+	var name_label := get_node_or_null(card + "Info/NameRow/NameLabel") as Label
+	if name_label:
+		name_label.text = upgrade_name()
+	_quick_name.text = upgrade_name()
+	var icon := get_node_or_null(card + "Icon")
+	if icon and icon.has_method("set_piece"):
+		icon.set_piece(WeaponTypes.icon_piece(weapon_type))
 
 
 func _set_state(label: Label, installed: bool) -> void:

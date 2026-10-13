@@ -31,6 +31,22 @@
   "frames": 5,
   "k": 7.8182
  },
+ "lunge_dust": {
+  "anchor": [
+   22,
+   31
+  ],
+  "cell": [
+   209,
+   147
+  ],
+  "frame_size": [
+   44,
+   31
+  ],
+  "frames": 4,
+  "k": 4.7344
+ },
  "machine_break": {
   "cell": [
    146,
@@ -46,5 +62,117 @@
   ],
   "frames": 4,
   "k": 12.2
+ },
+ "pistol_flash": {
+  "anchor": [
+   0,
+   8
+  ],
+  "cell": [
+   174,
+   174
+  ],
+  "frame_size": [
+   16,
+   16
+  ],
+  "frames": 4,
+  "k": 10.875
+ },
+ "pistol_impact": {
+  "anchor": [
+   12,
+   23
+  ],
+  "cell": [
+   195,
+   187
+  ],
+  "frame_size": [
+   24,
+   23
+  ],
+  "frames": 4,
+  "k": 8.1176
+ },
+ "pistol_round": {
+  "anchor": [
+   14,
+   3
+  ],
+  "cell": [
+   109,
+   47
+  ],
+  "frame_size": [
+   14,
+   6
+  ],
+  "frames": 1,
+  "k": 7.725
+ },
+ "shell_casing": {
+  "anchor": [
+   6,
+   6
+  ],
+  "cell": [
+   131,
+   131
+  ],
+  "frame_size": [
+   12,
+   12
+  ],
+  "frames": 3,
+  "k": 10.875
+ },
+ "shock_arc": {
+  "anchor": [
+   12,
+   12
+  ],
+  "cell": [
+   182,
+   182
+  ],
+  "frame_size": [
+   24,
+   24
+  ],
+  "frames": 4,
+  "k": 7.5441
+ },
+ "shotgun_blast": {
+  "anchor": [
+   0,
+   19
+  ],
+  "cell": [
+   206,
+   196
+  ],
+  "frame_size": [
+   40,
+   38
+  ],
+  "frames": 4,
+  "k": 5.15
+ },
+ "shotgun_pellets": {
+  "anchor": [
+   0,
+   19
+  ],
+  "cell": [
+   203,
+   161
+  ],
+  "frame_size": [
+   48,
+   38
+  ],
+  "frames": 1,
+  "k": 4.2292
  }
 }

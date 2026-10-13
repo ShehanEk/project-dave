@@ -88,6 +88,8 @@ func interact(hero: Node) -> void:
 	if Session == null:
 		return
 	Session.heal_full()
+	# M3: station service fills the held finite weapon (the Boom Broom's tube and reserve).
+	Session.refill_held_weapon()
 	var ok := Session.commit(checkpoint_id)
 	if _toast:
 		_toast.show_message("Progress saved" if ok else

@@ -2,6 +2,7 @@
 """Import the hand-painted effects, HUD and menu sheet (batch 3, art-design/handpainted-style.md,
 concept-art/style-handpainted/ui-fx-hd-v1.webp). Run from the project root:
     python3 tools/art/import_hd_ui.py
+    python3 tools/art/import_hd_ui.py --batch7   Level 2's effects and HUD icons (l2-*-hd-v1.webp)
 
 Outputs (the pixel pieces stay as they are; they still give every piece its layout size):
 - assets/effects/hd/<effect>.png and effects.json: one strip per effect, frame cells K texels per
@@ -305,7 +306,149 @@ def ui(sh):
     print("ui: %d pieces at %d texels per UI px, logo %d x %d" % (len(pieces), UI_K, logo.shape[1], logo.shape[0]))
 
 
+# --- batch 7 (2026-10-13): Level 2's effects and HUD icons ----------------------------------------
+#   python3 tools/art/import_hd_ui.py --batch7
+# Effects with no pixel strip: effects.json also gives each one's `frame_size` and `anchor` in art
+# px (1.5 world px each, PixelFx's `px`), sized here so the largest frame spans `world` world px.
+L2_FX_SHEET = os.path.join(REPO, "concept-art/style-handpainted/l2-effects-hd-v1.webp")
+L2_HUD_SHEET = os.path.join(REPO, "concept-art/style-handpainted/l2-hud-hd-v1.webp")
+ART_PX = 1.5
+## name: sheet rows, each frame's columns, the anchor ("muzzle": the flame's root after the barrel
+## stub, mid-height; "head": the right end, mid-height; "floor": bottom centre; "centre"; "root":
+## the left end, mid-height), the largest frame's world width, and its treatment ("grey": made
+## white-hot for the game to tint; "arc": the prong tips left out, the arc kept).
+L2_FX = {
+    "pistol_flash": {"y": (120, 312), "cols": [(20, 155), (155, 326), (326, 522), (522, 690)],
+                     "anchor": "muzzle", "world": 24.0},
+    "pistol_round": {"y": (195, 250), "cols": [(722, 836)], "anchor": "head", "world": 20.0, "grey": True},
+    "pistol_impact": {"y": (118, 312), "cols": [(845, 985), (985, 1158), (1158, 1356), (1356, 1525)],
+                      "anchor": "floor", "world": 34.0, "grey": True},
+    "shotgun_blast": {"y": (390, 602), "cols": [(20, 201), (201, 418), (418, 640), (640, 862)],
+                      "anchor": "muzzle", "world": 60.0},
+    "shotgun_pellets": {"y": (415, 600), "cols": [(880, 1098)], "anchor": "root", "world": 72.0},
+    "shell_casing": {"y": (430, 580), "cols": [(1100, 1218), (1222, 1352), (1366, 1512)],
+                     "anchor": "centre", "world": 16.0},
+    "shock_arc": {"y": (700, 905), "cols": [(20, 180), (180, 378), (378, 578), (578, 768)],
+                  "anchor": "centre", "world": 34.0, "arc": True},
+    "lunge_dust": {"y": (715, 902), "cols": [(772, 955), (955, 1148), (1148, 1356), (1356, 1522)],
+                   "anchor": "floor", "world": 64.0},
+}
+
+
+def l2_effects():
+    sh = np.asarray(Image.open(L2_FX_SHEET).convert("RGBA"), np.float32)
+    path = os.path.join(FX_OUT, "effects.json")
+    out = json.load(open(path)) if os.path.exists(path) else {}
+    for name, cfg in L2_FX.items():
+        y0, y1 = cfg["y"]
+        frames = []
+        for x0, x1 in cfg["cols"]:
+            crop = sh[y0:y1, x0:x1].copy()
+            if cfg.get("arc"):
+                # Drop the two steel prong tips (the drone's own fork carries the arc): each is the
+                # grey, unsaturated body near one end of the frame, cleared with a margin.
+                rgb = crop[..., :3]
+                mx = rgb.max(-1)
+                sat = (mx - rgb.min(-1)) / np.maximum(mx, 1.0)
+                steel = (sat < 0.4) & (mx > 25) & (crop[..., 3] > 128)
+                w = crop.shape[1]
+                for lo, hi in ((0, int(w * 0.35)), (int(w * 0.65), w)):
+                    part = np.zeros_like(steel)
+                    part[:, lo:hi] = steel[:, lo:hi]
+                    if part.sum() < 50:
+                        continue
+                    ys, xs = np.nonzero(part)
+                    # the body: rows and columns holding a good share of the steel
+                    rows = np.nonzero(part.sum(1) > 4)[0]
+                    cols = np.nonzero(part.sum(0) > 4)[0]
+                    cut = np.zeros(steel.shape, np.float32)
+                    cut[max(0, rows.min() - 4):rows.max() + 5, max(0, cols.min() - 4):cols.max() + 5] = 1.0
+                    # feathered, so no hard edge shows in the glow round it
+                    for _ in range(6):
+                        cut = np.maximum(cut, (np.roll(cut, 1, 0) + np.roll(cut, -1, 0) + np.roll(cut, 1, 1)
+                                               + np.roll(cut, -1, 1)) * 0.25 * 0.85)
+                    crop[..., 3] *= 1.0 - cut
+                # The dark glow round the arc to nothing (it is drawn additively): no edge can show.
+                crop[..., :3] = np.clip((crop[..., :3] - 34.0) * (255.0 / 221.0), 0.0, 255.0)
+            if cfg["anchor"] == "muzzle":
+                # The barrel stub left of the flame: cut at the first column of the white-yellow core.
+                r, g, b = crop[..., 0], crop[..., 1], crop[..., 2]
+                hot = np.nonzero(((r > 245) & (g > 215) & (b > 150) & (crop[..., 3] > 128)).any(0))[0]
+                c0 = hot.min() + 2
+                crop[:, :c0] = 0.0
+                crop[:, c0:c0 + 6, 3] *= np.linspace(0.3, 1.0, 6)[None, :len(crop[0, c0:c0 + 6])]
+            frames.append(crop)
+        boxes = [bbox(c[..., 3]) for c in frames]
+        uy0 = min(b[1] for b in boxes)
+        uy1 = max(b[3] for b in boxes)
+        anchors = []
+        for b in boxes:
+            mode = cfg["anchor"]
+            if mode == "muzzle" or mode == "root":
+                anchors.append((b[0], (uy0 + uy1) * 0.5))
+            elif mode == "head":
+                anchors.append((b[2], (b[1] + b[3]) * 0.5))
+            elif mode == "floor":
+                anchors.append(((b[0] + b[2]) * 0.5, uy1))
+            else:
+                anchors.append(((b[0] + b[2]) * 0.5, (b[1] + b[3]) * 0.5))
+        left = max(ax - b[0] for b, (ax, ay) in zip(boxes, anchors))
+        right = max(b[2] - ax for b, (ax, ay) in zip(boxes, anchors))
+        up = max(ay - b[1] for b, (ax, ay) in zip(boxes, anchors))
+        down = max(b[3] - ay for b, (ax, ay) in zip(boxes, anchors))
+        k = (left + right) / (cfg["world"] / ART_PX)
+        an = [int(np.ceil(left / k)), int(np.ceil(up / k))]
+        fs = [an[0] + int(np.ceil(right / k)), an[1] + int(np.ceil(down / k))]
+        cw, ch = int(np.ceil(fs[0] * k)), int(np.ceil(fs[1] * k))
+        strip = np.zeros((ch, cw * len(frames), 4), np.float32)
+        for i, (crop, (ax, ay)) in enumerate(zip(frames, anchors)):
+            ox = int(round(an[0] * k - ax))
+            oy = int(round(an[1] * k - ay))
+            h, w = crop.shape[:2]
+            sx0, sy0 = max(0, -ox), max(0, -oy)
+            dx0, dy0 = max(0, ox), max(0, oy)
+            ww = min(w - sx0, cw - dx0)
+            hh = min(h - sy0, ch - dy0)
+            if ww > 0 and hh > 0:
+                strip[dy0:dy0 + hh, i * cw + dx0:i * cw + dx0 + ww] = crop[sy0:sy0 + hh, sx0:sx0 + ww]
+        if cfg.get("grey"):
+            g = (strip[..., 0] * 0.3 + strip[..., 1] * 0.59 + strip[..., 2] * 0.11) * 1.3
+            strip[..., :3] = np.clip(g, 0, 255)[..., None]
+        Image.fromarray(np.clip(strip, 0, 255).astype(np.uint8)).save(os.path.join(FX_OUT, name + ".png"))
+        out[name] = {"k": round(k, 4), "cell": [cw, ch], "frames": len(frames), "frame_size": fs, "anchor": an}
+        print("fx %-16s %d frames, cell %d x %d, k %.2f, frame %s art px, anchor %s" % (
+            name, len(frames), cw, ch, k, fs, an))
+    with open(path, "w") as f:
+        json.dump(out, f, indent=1, sort_keys=True)
+
+
+## The HUD icons (sheet boxes) and their layout size in UI px (the pixel twin's size; a new piece
+## gets a pixel twin reduced from the painting, for its layout and the no-HD fallback).
+L2_ICONS = {
+    "weapon_boom_broom": ((17, 269, 687, 596), (24, 14)),
+    "shell_lit": ((706, 221, 930, 650), (5, 9)),
+    "shell_unlit": ((988, 220, 1214, 649), (5, 9)),
+    "keycard_l2": ((136, 742, 655, 1158), (14, 10)),
+    "evidence_memo": ((724, 721, 1121, 1170), (12, 11)),
+}
+
+
+def l2_hud():
+    sh = np.asarray(Image.open(L2_HUD_SHEET).convert("RGBA"), np.float32)
+    for name, (box, (pw, ph)) in L2_ICONS.items():
+        c = crop(sh, box)
+        hd = fit(c, pw * UI_K, ph * UI_K)
+        save_ui(hd, name + ".png")
+        small = resize(hd, pw, ph)
+        Image.fromarray(np.clip(small, 0, 255).astype(np.uint8)).save(os.path.join(UI_PIX, name + ".png"))
+        print("ui %-18s %d x %d UI px" % (name, pw, ph))
+
+
 if __name__ == "__main__":
-    s = sheet()
-    effects(s)
-    ui(s)
+    if "--batch7" in sys.argv:
+        l2_effects()
+        l2_hud()
+    else:
+        s = sheet()
+        effects(s)
+        ui(s)

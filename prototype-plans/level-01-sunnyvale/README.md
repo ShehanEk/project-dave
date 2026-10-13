@@ -1,6 +1,8 @@
 # Eon City — Level 1 Godot prototype plan
 
-**Visual direction (C11, C15, C35):** [hand-drawn 2D in a dark night-campus palette, painted flat and lit in the engine](../../art-design/style-guide.md). Revamped 2026-09-29 (C14–C24) and rebuilt 2026-09-30 (C33); there are no selected scene images for the new look.
+**Visual direction (C56, C58; was C11, C15, C35):** [hand-painted HD 2D, corporate cyberpunk in teal and amber, lit in the engine](../../art-design/handpainted-style.md); the approved style frame is `concept-art/style-handpainted/style-frame-v2.webp`. Revamped 2026-09-29 (C14–C24), rebuilt 2026-09-30 (C33) and repainted 2026-10-11 and 2026-10-12 (C56–C58).
+
+**Where it lives (C61, 2026-10-12):** the game is now in `game/` (Godot project "DEAD EDEN"); the old paths `prototypes/sunnyvale-godot` (pixel art, tag `pixel-prototype-final`) and `prototypes/sunnyvale-handpainted` are gone. Level 2 has its own plan in [level-02-alignment](../level-02-alignment/README.md).
 
 **Status (C33):** Level 1 has been rebuilt from the ground up around the C31 roster, after the approved lit-cutout test (C35). It is built and the suite passes (2026-09-30). The enemies are the SE01 Night Guard, the M01 Patrol Rover and, at the alarm exit, the LK01 Staffer, all drawn as lit cutouts. The C24 build's disabled-not-killed Staffers (CY01, now LK01 in the [art briefs](../../art-design/linked/lk01-staffer.md)), the Clipper (removed under C32) and its no-gore rule are gone. Read them in [09](09-progress-and-handoff.md) as history that C25–C35 supersede.
 
@@ -63,7 +65,7 @@ Population: 8 Night Guards, 6 Patrol Rovers and 2 Staffers, 16 enemies (the C24 
 
 ## Working on the prototype
 
-The engine project exists at **prototypes/sunnyvale-godot/** (see its README.md for commands and its CONVENTIONS.md for contracts). To resume or extend it, open the **repository working folder**, give the AI access to these files, read [09](09-progress-and-handoff.md) for the current state, and use the prompts in [08](08-ai-execution-prompts.md): the master prompt and M0–M7 prompts describe the original build, the revamp prompt describes the C24 rebuild, and the rebuild prompt describes the C33 rebuild.
+The engine project exists at **game/** (C61; see its README.md for commands and its CONVENTIONS.md for contracts). To resume or extend it, open the **repository working folder**, give the AI access to these files, read [09](09-progress-and-handoff.md) for the current state, and use the prompts in [08](08-ai-execution-prompts.md): the master prompt and M0–M7 prompts describe the original build, the revamp prompt describes the C24 rebuild, and the rebuild prompt describes the C33 rebuild.
 
 The complete reference repository is needed because this folder links to source briefs and other repository files. Do not treat a clone lacking the local solo-hero and revamp updates as the latest design. Check C12 and C14–C35 in [the decision register](../../design/decisions.md).
 
