@@ -49,7 +49,7 @@ Confirm every successful hit with a small flash, a spray that fits the target's 
 **Blood by material** *(C29; full rules in [W02](../04-world/status-and-enemy-states.md))*:
 - People and dogs bleed red (wet #B3212F with two or three pale highlight drops, drying to #8A1A26). The Linked also throw white sparks at the implant, and their Link light dies.
 - Machines throw sparks and leak black oil (#14181E with a #46566A sheen rim).
-- Heirs drip grey-rose lymph (#A88A8C), under gravity only.
+- Heirs spark and leak black oil like machines; their face display glitches and goes dark (C60).
 - Blood is never gold, violet, teal, amber or green. There is no dismemberment for now.
 
 **Deaths and bodies:**

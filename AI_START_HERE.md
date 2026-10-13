@@ -1,14 +1,16 @@
 # Project Dave / DEAD EDEN — Start here, AI agent
 
-**Direction (C14–C35, 2026-09-29):** mature dark sci-fi — evil corporation Arcadia Dynamics, sentient AI Adam, rogue AI researcher Dave Harlan; human, cyborg and machine enemies with guns; visible blood; no zombies, no stealth. Enemy art: lit cutout rig with smooth realistic lighting ([style guide](art-design/style-guide.md)).
+**Direction (C14–C35, 2026-09-29; look updated C56–C61, 2026-10-12):** mature dark sci-fi — evil corporation Arcadia Dynamics, sentient AI Adam, rogue AI researcher Dave Harlan; human, cyborg and machine enemies with guns; visible blood; no zombies, no stealth. The look is hand-painted HD lit cutouts (C56) in a corporate cyberpunk setting (C58), with alert, energetic people (C57); the roster is redrawn to match, with neon per controller and Loopers (C60, [roster redesign](art-design/roster-painted-redesign.md)). The playable game lives in `game/` (C61). Enemy art: painted parts on a lit cutout rig with smooth realistic lighting ([style guide](art-design/style-guide.md)).
 
 This repository develops an original **dark sci-fi 2D platformer shooter** concept. Its references are the 2D *Metal Gear* games and *Dangerous Dave*. **The current task is idea development, not implementation.** Use the separate documents below to refine one area without inventing incompatible mechanics elsewhere.
 
 On 2026-09-29 the user replaced the story and atmosphere (C14–C21 in the [decision register](design/decisions.md)), then approved a new enemy roster and enemy gun kit (C25–C35): human enemies with guns, a mature and lethal game with visible blood, cyborg dogs, the Thornwall contractors, no Clipper, and a lit cutout art method for enemies. Anything that still mentions zombies, EDEN as the AI, gems, Rook Venn, a cheerful palette, the Clipper or any other removed enemy, "disabled, not killed" or "no gore" is out of date and should be fixed, not followed.
 
-## Level 1 prototype route
+## The game and the Level 1 route
 
-A separate [Godot prototype execution plan](prototype-plans/level-01-sunnyvale/README.md) defines a 10–15 minute slice of Level 1, and the prototype was built from it. **Both were rebuilt under C33 (2026-09-30)** around the new roster: Night Guards, Patrol Rovers and Staffers at the alarm exit only, drawn as lit cutouts (C35) that die and bleed. Read the plan's scope and progress record before any implementation work, and only change the prototype when the user asks.
+The playable game lives in **`game/`** (C61, 2026-10-12): the Godot project "DEAD EDEN", which began as the hand-painted prototype (C56–C58) and was promoted out of `prototypes/`. Level 1 is complete; Level 2 ([Alignment](level-design/l02-alignment.md), C59) is next. The pixel-art prototype was removed from the tree (its last state is the tag `pixel-prototype-final`). Read [game/README.md](game/README.md) and [game/CONVENTIONS.md](game/CONVENTIONS.md) before any code work.
+
+A separate [Level 1 execution plan](prototype-plans/level-01-sunnyvale/README.md) defines a 10–15 minute slice of Level 1, and the game was built from it. **Both were rebuilt under C33 (2026-09-30)** around the new roster: Night Guards, Patrol Rovers and Staffers at the alarm exit only, drawn as lit cutouts (C35) that die and bleed. Read the plan's scope and progress record before any implementation work, and only change the game when the user asks.
 
 ## Minimum reading
 
@@ -22,10 +24,10 @@ A separate [Godot prototype execution plan](prototype-plans/level-01-sunnyvale/R
 
 | Task | Read first | Add only when relevant |
 | --- | --- | --- |
-| Level 1 Godot prototype | [Prototype plan](prototype-plans/level-01-sunnyvale/README.md), scope and progress record | Area blueprints, Godot architecture, current milestone and acceptance checks |
+| The game (Godot, `game/`) and Level 1 | [Game README](game/README.md), [conventions](game/CONVENTIONS.md) and the [Level 1 plan](prototype-plans/level-01-sunnyvale/README.md), scope and progress record | Area blueprints, Godot architecture, current milestone and acceptance checks |
 | Overall gameplay | G01 loop, G02 controls, G03 swaps | G04 camera, S01 checkpoint, W04 encounters |
 | Hero concept art | H01 hero | N01 story scenes, style guide, the relevant held-weapon brief |
-| Enemy or enemy-gun concept art | Style guide (the lit cutout rig), the relevant enemy or gun brief | The concept's Enemies tables, W02 states, N04 audio for gun cues |
+| Enemy or enemy-gun concept art | Style guide (the lit cutout rig), the [painted roster redesign](art-design/roster-painted-redesign.md), the relevant enemy or gun brief | The concept's Enemies tables, W02 states, N04 audio for gun cues |
 | Health or save behavior | S01 health/checkpoints | G03 swap, S02 ammunition, S04 ownership |
 | Weapon behavior or balance | S02 resources, S04 upgrades | Existing weapon art brief, W02 states, W04 boss fairness |
 | Microchips and progression | S03 economy, S04 upgrades, S05 evidence files | S01 saving and the relevant level brief |
@@ -54,7 +56,7 @@ Find every ID in the [design index](design/README.md).
   - The Heirs are built by Adam.
 - **The roster is fixed (C31):** 24 regular enemy types in six factions (Arcadia Security, Thornwall, the Linked, cyborg dogs, Adam's machines, the Heirs) plus four mini-bosses. Human enemies (C25) carry guns from a nine-gun kit (C27), and there are cyborg dogs (C30). The Clipper is removed entirely, as an enemy and as scenery (C32). Enemies are built from five shared behavior templates plus a boss base (C26).
 - **Mature game, not for kids (C28, C29).** Combat is lethal and bodies stay. Blood is visible by material and never glows, never uses the tell colors and never hides a tell, ledge or pickup. Hard limits: no torture or execution on screen, no sexual violence, no children, no dismemberment for now, implants never treated as monstrous, and atrocity only as aftermath, at most one authored scene per level.
-- **Protected people are never targets and have no hit zone:** harmless Sleepwalkers (a non-combat NPC type), the staff held in the clinic, Arcadia's founder in L11, and Arcadia's executives (story only). L11 isolates the launch circuit, and L12 ends at Adam's core after the Sower, with no extra boss.
+- **Protected people are never targets and have no hit zone:** Loopers (a non-combat NPC type), the staff held in the clinic, Arcadia's founder in L11, and Arcadia's executives (story only). L11 isolates the launch circuit, and L12 ends at Adam's core after the Sower, with no extra boss.
 - **Every required route and fight supports the single weapon legitimately carried.** Tether routes have ordinary alternatives, and tether fights have replenishable props.
 - **Darkness and blood never hide gameplay:** tells, weak points, landings and pickups stay readable.
 - **Work in editable individual files.** Do not recreate removed duplicate archives.
@@ -88,8 +90,8 @@ Keep new balancing figures labeled untested. Keep proposed names and visuals edi
 
 ## Existing packs
 
-**Visual direction:** hand-drawn 2D rendering (C11) with the new dark sci-fi palette, lighting and mood (C15, P21). Enemies are drawn as a lit cutout rig with smooth, realistic engine lighting, hand-keyed motion (C38) and ragdoll deaths (C35): confirmed direction, validated by the approved lit-cutout test (2026-09-30). See the [style guide](art-design/style-guide.md).
+**Visual direction:** hand-painted HD 2D (C56, which replaces the hand-drawn look of C11) in a corporate cyberpunk setting, teal and amber (C58), with alert, energetic people (C57) and the new dark sci-fi mood (C15, P21). Characters are painted parts on a lit cutout rig with smooth, realistic engine lighting, hand-keyed motion (C38) and ragdoll deaths (C35): validated by the approved lit-cutout test (2026-09-30). The look is set by [the painted style brief](art-design/handpainted-style.md) and the approved style frame `concept-art/style-handpainted/style-frame-v2.webp`; the roster's look (neon trim per controller, Loopers, no body horror) is in the [roster redesign](art-design/roster-painted-redesign.md) (C60). See also the [style guide](art-design/style-guide.md).
 
-**Selected references:** none are current. The Clipper's selected design (C10) ended when the Clipper was removed (C32), and the zombie Resident art and the old daytime Eon City scenes were deleted (C23). The [concept-art gallery](concept-art/README.md) now holds only the hero's placeholder sprite pack. A test build of one lit Night Guard will validate the enemy look; new concept art for Dave, the enemies, the mini-bosses and the night campus is still needed.
+**Selected references:** the approved style frame `concept-art/style-handpainted/style-frame-v2.webp` is the reference attached to every painted sheet prompt, and the painted sheets for Dave, the Night Guard, the Staffer, the Patrol Rover and the campus are stored beside it and processed into `game/`. The Clipper's selected design (C10) ended when the Clipper was removed (C32), and the zombie Resident art and the old daytime Eon City scenes were deleted (C23). The [concept-art gallery](concept-art/README.md) lists what is kept. Painted sheets for the rest of the roster and for later levels are still to be generated, Level 2's first: the Sidearm Guard, the Hound and the Security Drone (C60).
 
 [Main concept](dead-eden-concept.md) · [Design documents](design/README.md) · [Twelve levels](level-design/README.md) · [Forty-three enemy, gun and weapon art briefs](art-design/README.md)

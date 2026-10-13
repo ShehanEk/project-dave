@@ -1,11 +1,11 @@
 # HG-40 "Thresher" Rotary Machine Gun
 
-**Direction (C14–C35, 2026-09-29):** mature dark sci-fi — evil corporation Arcadia Dynamics, sentient AI Adam, rogue AI researcher Dave Harlan; human, cyborg and machine enemies with guns; visible blood; no zombies, no stealth. Enemy art: lit cutout rig with smooth realistic lighting ([style guide](../style-guide.md)).
+**Direction (C14–C35, 2026-09-29; C56–C60, 2026-10-12):** mature corporate-cyberpunk sci-fi — evil corporation Arcadia Dynamics, sentient AI Adam, rogue AI researcher Dave Harlan; human, cyborg and machine enemies with guns; visible blood; no zombies, no stealth. Enemy art: painted HD parts on a lit cutout rig (C56), in the corporate cyberpunk look (C58), with alert, composed people (C57) and neon trim per controller (C60) ([style guide](../style-guide.md)).
 
 **Asset ID:** EG03\
 **Category:** enemy-guns\
 **First appearance:** Level 3\
-**Design status:** Enemy art direction (C35): a lit cutout rig with smooth, realistic engine lighting; confirmed direction, validated by the approved lit-cutout test (2026-09-30). This gun's name, look, colors and numbers are *proposed* (C27, P23), and no image is approved yet. Dimensions are provisional art proportions, not engine specifications.
+**Design status:** Look follows C60 (approved 2026-10-12): a painted HD gun sprite on a hand socket (C56), corporate cyberpunk (C58); every Arcadia gun is a sleek white-and-graphite product with the wordless Arcadia arch mark. Thornwall's guns are matte charcoal. Concept images are still to be generated. This gun's name, look, colors and numbers are *proposed* (C27, P23). Dimensions are provisional art proportions, not engine specifications.
 
 ## Identity and carriers
 
@@ -17,7 +17,7 @@ It is the gun that teaches cover: on Dave's floor it is cover-only, and against 
 
 ## Look, size and socket
 
-**Futuristic look:** a stubby three-barrel rotary in a white shroud, with a heat collar and a belt feeding from a back drum, or straight into the turret body. The heat collar is a plain ceramic-graphite ring, dark until the tell. The barrels are drawn as a fixed three-barrel cluster (the spin is an effect frame). The gun sprite carries only a short belt feed stub; the long belt and the back drum belong to the carrier's rig.
+**Futuristic look:** a stubby three-barrel rotary in a clean white shroud with a small wordless Arcadia arch mark, with a heat collar and a belt feeding from a back drum, or straight into the turret body. The heat collar is a plain composite-graphite ring, dark until the tell. The barrels are drawn as a fixed three-barrel cluster (the spin is an effect frame). The gun sprite carries only a short belt feed stub; the long belt and the back drum belong to the carrier's rig.
 
 **Size:** 0.95 m long and 0.32 m tall, about half a Heavy Gunner's height. His drum pack (0.36 m across, part of his own overlay) is drawn at 1.1x scale. On a Sentry Turret the same sprite sits in the gun cradle behind the shutter (the turret is about 1.40 m long with the barrels extended), and the belt runs into the housing. On the Peacekeeper it mounts on the roof turret ring at about 1.4 times scale, with its muzzle line 1.5 H above the floor.
 
@@ -43,35 +43,35 @@ It is the gun that teaches cover: on Dave's floor it is cover-only, and against 
 
 ## Rules and production
 
-Exactly three barrels and one heat collar; no brass, gold or legible text, and maker marks are plain stripes. The collar and barrels are dark in the base art, and the glow, steam and tracers are effects, never painted onto the gun. Cut the gun as one part with its own normal map (green = up), with the long belt as a separate stretchable part. Approve the neutral image before the carried study, and check the gun at gameplay size on a Heavy Gunner, a Sentry Turret mount and the Peacekeeper's roof, in grayscale and against near-black backgrounds. The lit cutout look is a confirmed direction, validated by the approved lit-cutout test (2026-09-30) (C35).
+Exactly three barrels and one heat collar; no brass, gold or legible text, and the maker mark is the wordless Arcadia arch. The collar and barrels are dark in the base art, and the glow, steam and tracers are effects, never painted onto the gun. Cut the gun as one part with its own normal map (green = up), with the long belt as a separate stretchable part. Approve the neutral image before the carried study, and check the gun at gameplay size on a Heavy Gunner, a Sentry Turret mount and the Peacekeeper's roof, in grayscale and against near-black backgrounds. The lit cutout look is a confirmed direction, validated by the approved lit-cutout test (2026-09-30) (C35).
 
 ## Image prompt 1 — neutral side view
 
 Copy the entire block into an image generator. Generate and approve this base design before requesting the carried study.
 
 ```text
-Original 2D game art for DEAD EDEN, a mature dark sci-fi side-view shooter: realistic adult proportions, clean dark outlines, flat base colors, evenly lit with no baked shadows (lighting is added in-engine), grounded industrial and corporate sci-fi design, unsettling rather than cartoonish.
+Original 2D game art for DEAD EDEN, a mature corporate-cyberpunk side-view shooter: detailed hand-painted style, realistic adult proportions, clean dark outlines, evenly lit with soft painted shading and no cast shadows (lighting is added in-engine), sleek, clean, expensive sci-fi design, polished rather than cartoonish.
 
 Design the HG-40 "Thresher" rotary machine gun, sold by a corporate defense division as perimeter denial: a single gun on its own, with no hands and no carrier.
 Scale: 0.95 m long and 0.32 m tall; about half the height of a heavily built adult.
 Silhouette: a stubby three-barrel rotary cluster in a white shroud, a chunky receiver with a rear pistol grip and a front carry handle, a heat collar around the barrels, and a short ammunition belt feed stub hanging from the receiver's underside.
-Physical design: three short barrels inside a white ceramic shroud, a plain ring-shaped heat collar behind the muzzle, a graphite receiver, a short stub of dark steel belt links ending in a loose tail (the back drum belongs to the carrier and is not drawn), and a rear pistol grip. No brass, no visible logos.
+Physical design: three short barrels inside a white composite shroud, a plain ring-shaped heat collar behind the muzzle, a graphite receiver, a short stub of dark steel belt links ending in a loose tail (the back drum belongs to the carrier and is not drawn), and a rear pistol grip. No brass, no visible logos.
 Materials and colors: Arcadia white #D5DDE3 shroud; steel #1C2A3A barrels and belt links; graphite #2E3B4E collar and receiver.
 Critical consistency: exactly three barrels, one heat collar, no brass, no text or logos; the collar is drawn dark and unlit.
 Show the gun in strict side view with the muzzle pointing to the right.
 
-One complete 2D subject only, centered and fully visible on a flat mid-grey (#808080) background, evenly lit and flat-colored so it can be cut into parts: no baked shadows, no cast or contact shadow, no highlights, no rim light, no glow, no muzzle flash, no projectile, no steam, no blood. No hands, no carrier, no airbrushed gradients, glossy chrome, photoreal volumetrics, pixel art, environment, UI, watermark, text, logos, labels, measurement arrows or franchise props. Draw one subject, not a multi-panel sheet.
+One complete 2D subject only, centered and fully visible on a flat mid-grey (#808080) background, evenly lit and hand-painted so it can be cut into parts: no baked shadows, no cast or contact shadow, no highlights, no rim light, no glow, no muzzle flash, no projectile, no steam, no blood. No hands, no carrier, no airbrushed gradients, glossy chrome, photoreal volumetrics, pixel art, environment, UI, watermark, text, logos, labels, measurement arrows or franchise props. Draw one subject, not a multi-panel sheet.
 ```
 ## Image prompt 2 — carried-in-hand study
 
 Attach the approved neutral image as the visual reference.
 
 ```text
-Original 2D game art for DEAD EDEN, a mature dark sci-fi side-view shooter: realistic adult proportions, clean dark outlines, flat base colors, evenly lit with no baked shadows (lighting is added in-engine), grounded industrial and corporate sci-fi design, unsettling rather than cartoonish. Preserve the attached approved 2D identity reference.
+Original 2D game art for DEAD EDEN, a mature corporate-cyberpunk side-view shooter: detailed hand-painted style, realistic adult proportions, clean dark outlines, evenly lit with soft painted shading and no cast shadows (lighting is added in-engine), sleek, clean, expensive sci-fi design, polished rather than cartoonish. Preserve the attached approved 2D identity reference.
 
-Using the attached approved HG-40 "Thresher" rotary, draw one carried-in-hand study in strict side view: an adult's right hand and forearm in a warm charcoal combat-shirt cuff and a black glove, gripping the rear pistol grip, and the left hand on the front carry handle, with a short section of a hip harness strap under the receiver. Forearms and hands only, with no body and no head. The rotary keeps the exact approved design, points to the right, and sits with its grip at the palm socket; its belt runs off the left edge of the frame toward the carrier's back. Preserve the gun's proportions, colors and part counts.
+Using the attached approved HG-40 "Thresher" rotary, draw one carried-in-hand study in strict side view: an adult's right hand and forearm in a charcoal combat-shirt cuff and a black glove, gripping the rear pistol grip, and the left hand on the front carry handle, with a short section of a hip harness strap under the receiver. Forearms and hands only, with no body and no head. The rotary keeps the exact approved design, points to the right, and sits with its grip at the palm socket; its belt runs off the left edge of the frame toward the carrier's back. Preserve the gun's proportions, colors and part counts.
 
-Flat mid-grey (#808080) background, evenly lit and flat-colored so the hands and the gun can be cut apart: no baked shadows, no cast shadow, no highlights, no rim light, no glow, no muzzle flash, no projectile, no steam, no blood. No text, logos, labels, motion blur, cinematic framing or new equipment.
+Flat mid-grey (#808080) background, evenly lit and hand-painted so the hands and the gun can be cut apart: no baked shadows, no cast shadow, no highlights, no rim light, no glow, no muzzle flash, no projectile, no steam, no blood. No text, logos, labels, motion blur, cinematic framing or new equipment.
 ```
 
 See [shared style guide](../style-guide.md), [asset index](../README.md) and [encounter and boss fairness](../../design/04-world/encounter-and-boss-fairness.md).

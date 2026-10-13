@@ -37,7 +37,7 @@ The [AI entry guide](../AI_START_HERE.md) identifies each system's owner. When r
 | 11 | Warden |
 | 12 | None |
 
-- Protected people are never targets and have no hit zone: Arcadia's founder in level 11, the staff held in the clinic, harmless Sleepwalkers (a protected NPC type, no longer an enemy) and Arcadia's executives, who appear in scenes only.
+- Protected people are never targets and have no hit zone: Arcadia's founder in level 11, the staff held in the clinic, Loopers (a protected NPC type, no longer an enemy) and Arcadia's executives, who appear in scenes only.
 - The Linked (Staffers, Linked Linemen, Nurses and Troopers) never block progress: Dave can always jump past one, so killing them is a choice.
 - Level 11 reveals Adam's dead-man switch and uses three existing controls to isolate the launch circuit, which enables the manual override. Level 12 ends at Adam's core after the fourth mini-boss. There is no separate final boss and no thirteenth level.
 - There are no stealth mechanics (C16).
@@ -144,7 +144,7 @@ Signal interesting detours and reconnect them cleanly. Critical story informatio
 
 Quiet spaces are part of the pacing. These must all be understandable without simultaneous combat:
 - plugging into Adam's core in L1;
-- harmless Sleepwalkers;
+- Loopers;
 - the archive consoles;
 - the founder's lab;
 - Adam's core in L12.
@@ -192,7 +192,7 @@ No engine, code architecture, sprite resolution, atlas layout or layered source 
 - Weapon types and enemies appear in the established order, each new enemy type is met alone before it is combined, and no more than one weapon is carried.
 - Every encounter stays within the screen budget (2 shooters, 3 attackers, 1 heavy gun) and has the cover its guns need.
 - Required routes work without assuming the tether is carried, and encounters support the actual single weapon, with visible recoveries.
-- Harmless Sleepwalkers, held staff and the founder are never accidental mandatory targets, protected people have no hit zone, and the Linked never block progress.
+- Loopers, held staff and the founder are never accidental mandatory targets, protected people have no hit zone, and the Linked never block progress.
 - There are no zombies, infection, conversion, dismemberment or stealth. Blood follows the material hit and never hides a tell.
 - Atrocity appears only as aftermath, at most once per level.
 - The darkness never hides a tell, a landing, a pickup or a keycard.

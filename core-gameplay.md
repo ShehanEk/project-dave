@@ -99,7 +99,7 @@ Recovery stations heal Dave and service the carried weapon. Ammunition, heat, re
 - **No surprise weapon lock.** Preview the coming challenge before a one-way transition or pickup choice.
 - **Darkness never hides gameplay.** Tells, weak points, landings and pickups stay readable (see the [style guide](art-design/style-guide.md)).
 - **Enemy guns are fair.** Every gun has a tell (a glow or sight line that goes amber, then red) and an answer: jump, keep moving, take cover or punish the recovery. Enemies never aim at an airborne Dave (P23, proposed).
-- **Protected people are never required targets.** This covers harmless Sleepwalkers, the held clinic staff, the founder and Arcadia's executives (story only). They have no hit zone.
+- **Protected people are never required targets.** This covers Loopers, the held clinic staff, the founder and Arcadia's executives (story only). They have no hit zone.
 
 ## Example loop
 

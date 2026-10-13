@@ -50,10 +50,10 @@ Combat is lethal. Every hostile can die: a hit that takes the last health kills,
 | The Linked | As people, plus white sparks at the implant | As people. The Link light dies, and most deaths are silent |
 | Cyborg dogs | Red spurt, and sparks at the plates | As people. The legs twitch for about 1 second after death |
 | Machines | Sparks and a thin oil leak | Burst into debris parts with a shower of sparks, then an oil pool |
-| Heirs | Grey-rose lymph drips under gravity, never sprayed along the shot; cracked ceramic shows grown tissue | Slump, with the seams fading and the mask going blank; lymph pools |
+| Heirs | White sparks and black oil like a machine (C60: no lymph, no grown tissue); the face display glitches | Slump, with the seams fading and the face display going dark; oil pools |
 | Bosses | By their body. Howard Stroud bleeds and sparks at his implant; the Peacekeeper, the Surgeon and the Sower leak oil | Machine bosses burst into large debris; Stroud dies on the spot |
 
-Fluids: wet blood is #B3212F with two or three pale highlight drops, drying to #8A1A26 and never darker; oil is #14181E with a #46566A sheen rim; Heir lymph is #A88A8C at about 80% opacity. Blood is never gold, violet, teal, amber or green. Dave bleeds too, as a spurt with no pool.
+Fluids: wet blood is #B3212F with two or three pale highlight drops, drying to #8A1A26 and never darker; oil is #14181E with a #46566A sheen rim; Heirs leak the same oil (C60 retired their lymph). Blood is never gold, violet, teal, amber or green. Dave bleeds too, as a spurt with no pool.
 
 **Rules** *(proposed)*:
 - A hit spurt is about 8 to 12 drops under gravity for roughly 0.35 seconds. A death spurt is bigger, and the floor pool spreads over about 1.5 seconds.
@@ -69,7 +69,7 @@ Fluids: wet blood is #B3212F with two or three pale highlight drops, drying to #
 - Bodies stay. After a death or a Continue the level rebuilds from the last checkpoint: enemies killed before it come back as static corpses in their final rest pose, with their pools already dry and no ragdoll replayed, and enemies killed after it are alive again ([S01](../03-progression/health-and-checkpoints.md)).
 - Linked deaths are mostly silent: the light just dies. Rarely a victim says something confused and human, such as "...Dave?", their own name or "what time is it?". The Linked never block progress, so killing them is a choice.
 - Howard Stroud is the one exception. At 50% his own voice breaks through ("Dave... it's in my head. Kill me before it finishes."), and at 0 health his implant burns out and he dies, speaking his own last words ([N01](../05-presentation/story-scenes.md)). He is the only enemy who asks to be killed.
-- Machines and bosses that burst leave debris parts and an oil pool. Heirs slump and drip. Harmless Sleepwalkers and held staff cannot die, because they have no hit zone.
+- Machines and bosses that burst leave debris parts and an oil pool. Heirs slump and drip. Loopers and held staff cannot die, because they have no hit zone.
 
 ## Armor and weak points
 Ordinary exposed body hits work unless a brief specifies armor. A ballistic shield or armor plate blocks frontal hits, including upgraded pistol bolts; light-armor penetration is not permission to ignore all defenses. The Riot Officer's shield blocks Dave's shots while it is up, but enemy rounds pass through him. The Warden's plate blocks frontal hits until it lowers to vent.
@@ -104,7 +104,7 @@ These are gameplay eligibility proposals, not changes to the art proportions.
 | Medium enemy | Human-sized enemies: Night Guard, Sidearm Guard, Rifleman, Grenadier, Staffer, Linked Nurse, Linked Trooper, Warden; also the Fitted Heir and the Patrol Rover | Cannot capture | Capture only while visibly staggered and physically exposed (the Rover only during its stall) |
 | Rooted medium | Linked Lineman, Marksman | Cannot capture | Only after the rod or rifle stance releases and a visible stagger; no pulling through a solid floor or off a perch Dave cannot reach |
 | Fixed or heavy | Riot Officer, Heavy Gunner, Sentry Turret, Pruner, Fitting Arm, Freight Loader, Orderly, Sanitizer | Immune | Immune |
-| Boss or protected | All four mini-bosses, the founder, the held staff, harmless Sleepwalkers | Immune | Immune |
+| Boss or protected | All four mini-bosses, the founder, the held staff, Loopers | Immune | Immune |
 
 These classes are *proposed*. The Riot Officer is immune because his shield and armor make him a heavy target. Garden-built variants keep the class of the machine they are built on. Capture immunity has a distinct broken-lock cue. A shielded front or closed shell cannot be bypassed by locking through it. Corpses, seekers and other enemy shots, and off-plane scenery are invalid targets.
 

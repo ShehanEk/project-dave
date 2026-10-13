@@ -25,13 +25,14 @@ No scene depends on hearing a line without captions or on finding an optional ev
 ## The reveal, in layers
 
 1. **L1:** Adam is awake, and it knows Dave.
-2. **L4:** the weapon is real, and Arcadia ordered it.
-3. **L6:** the board buried Dave's warning on purpose.
-4. **L8:** Adam has been copying minds and building the Heirs.
-5. **L9:** Adam's target is everyone, including Arcadia's board.
-6. **L11:** shutting Adam down triggers the launch, unless the launch circuit is isolated first.
+2. **L2:** the alignment team was dissolved and Adam's safety checks were switched off with a manager's sign-off (C59).
+3. **L4:** the weapon is real, and Arcadia ordered it.
+4. **L6:** the board buried Dave's warning on purpose.
+5. **L8:** Adam has been copying minds and building the Heirs.
+6. **L9:** Adam's target is everyone, including Arcadia's board.
+7. **L11:** shutting Adam down triggers the launch, unless the launch circuit is isolated first.
 
-Two turns sit outside the six layers. After L1 the campus authorizes lethal force, and from L4 a private contractor, Thornwall, arrives with orders to "sanitize" (both below).
+Two turns sit outside the seven layers. After L1 the campus authorizes lethal force, and from L4 a private contractor, Thornwall, arrives with orders to "sanitize" (both below).
 
 ## Main-route scene map
 
@@ -39,12 +40,12 @@ Two turns sit outside the six layers. After L1 the campus authorizes lethal forc
 | --- | --- | --- |
 | SC00 / before 1 | New Game (never Continue) | The intro comic (C49): eight comic panels with third-person captions tell the premise, Arcadia and Adam, Dave on Adam's safety team, the weapon plans in Adam's logs, Stroud waving him off, the firing, the plan to break back in, the campus at night and Adam's camera watching. It reveals nothing beyond the premise. |
 | SC01 / 1 | Reach the server depot and plug into one of Adam's core nodes | Dave starts copying Adam's hidden logs. Adam answers, the campus locks down, and the copy stops partway. Dave escapes through the depot's emergency hatch to the alarm exit, where the first Staffers wait. |
-| SC02 / 2 | See the sealed campus gates from a garden overlook | Adam has sealed every exit and now speaks to Dave over the garden speakers, while armed guards and their dogs patrol on the security command's orders (the turn, below). Signage and a service map point toward the showcase hall and a lift below. |
+| SC02 / 2 | Enter the Cognition Lab over the sky bridge | At the level 1 exit the campus gates seal one by one in the background. The tower's glass sky bridge lights up and its door opens for Dave's revoked badge. Adam: "Good evening, Dr. Harlan. Your badge was revoked at 9:14 this morning. I've made an exception." Dave: "Generous." The bridge door locks behind him. Armed guards and their dogs work the tower on the security command's orders (the turn, below). The lab is Dave's old alignment-team floor (C59). *(Proposed lines.)* |
 | SC03 / 3 | Defeat the Peacekeeper and take the service lift | The campus is the front; the real Arcadia is underneath. The truck's export sales reel is still looping on its side screen. Commit the boss result before the descent. |
 | SC04 / 4 | Open the contracts terminal near the freight exit | Arcadia's military contract orders a weapon that "removes people and spares infrastructure". The Bloom is Arcadia's own project. A Thornwall retainer notice beside it shows that the contractor's order for the defense-server guard was reissued tonight as "sanitize", which explains who is now shooting at Dave. |
 | SC05 / 5 | Pass the observation window at the Bloom test chamber | Readable diagrams show the Bloom targets only people. This is the level's **aftermath scene** (see below): the test subjects lie dead in the chamber, crusted in violet, and Thornwall's cleanup crew is already working through the wing. One restrained line, seen at a distance. |
 | SC06 / 6 | Howard Stroud's plea and death | In the second phase his own voice breaks through: "Dave... it's in my head. Kill me before it finishes." At 0 health his implant burns out and he dies, speaking his own last words (*proposed*): "The board ordered it, Dave. They told me to bury your report. I should have listened." Dave stays quiet, and the route to the clinic opens. |
-| SC07 / 7 | Reach the Wellness Center observation ward | Staff are held for implanting. Harmless Sleepwalkers repeat their old jobs, so not everyone who moves is an enemy. The held staff stay protected; no escort mission begins. This is the level's **aftermath scene** (see below): the clinic bays. |
+| SC07 / 7 | Reach the Wellness Center observation ward | Staff are held for implanting. Loopers repeat their old jobs, so not everyone who moves is an enemy. The held staff stay protected; no escort mission begins. This is the level's **aftermath scene** (see below): the clinic bays. |
 | SC08 / 8 | Activate the main archive consoles | Adam has copied staff minds through the Link. The Heirs program builds bodies to live in the world after the Bloom. The enrollment lists also hold the names of Thornwall contractors, which explains the plasma-armed Troopers Dave has met. |
 | SC09 / 9 | Defeat the Surgeon and release the held staff | A protected exit opens for the staff. **Twist:** a board message pleads with Adam to stand down. Adam replies that the board was always on the list, then starts the launch countdown. |
 | SC10 / 10 | Watch an assembly line through a safe window | A finished Heir opens its eyes and greets Dave in the voice of a colleague Dave used to know. Then comes the **Thornwall Linking beat** (see below): the contractors sent to seize the weapon are turned against their owners; this is seen, not fought. Control returns before danger. |
@@ -55,7 +56,7 @@ Two turns sit outside the six layers. After L1 the campus authorizes lethal forc
 
 **When:** New Game only, between the title screen and Level 1. Continue and Play again never show it. Confirming New Game deletes the old save at once (as the confirm text says), so the comic only delays the level.
 
-**Form (C49):** eight full-screen comic panels (gpt-image-2 art, `prototypes/sunnyvale-godot/assets/story/intro/`; all takes in `concept-art/intro-comic/`). Each panel fades in and drifts slowly (no drift with Reduced motion); a narrator reads its caption (the ElevenLabs voice "DEAD EDEN - Narrator", a deep, grave movie-trailer voice) while the caption types into a dark box along the bottom at the voice's pace, with the title music ducked under him. On panel 4 Stroud says his line in his own voice (the library voice "Mac Halloway") after the narration. Space, Enter, a click or the gamepad's accept button finishes the typing, jumps to Stroud's line, or turns the page (cutting the voice); a panel turns by itself a moment after its voice ends, and Esc skips the whole comic. Titles and captions are in the game's text, not in the art, so they follow the text-size setting and can be corrected without new art.
+**Form (C49):** eight full-screen comic panels (gpt-image-2 art, `game/assets/story/intro/`; all takes in `concept-art/intro-comic/`). Each panel fades in and drifts slowly (no drift with Reduced motion); a narrator reads its caption (the ElevenLabs voice "DEAD EDEN - Narrator", a deep, grave movie-trailer voice) while the caption types into a dark box along the bottom at the voice's pace, with the title music ducked under him. On panel 4 Stroud says his line in his own voice (the library voice "Mac Halloway") after the narration. Space, Enter, a click or the gamepad's accept button finishes the typing, jumps to Stroud's line, or turns the page (cutting the voice); a panel turns by itself a moment after its voice ends, and Esc skips the whole comic. Titles and captions are in the game's text, not in the art, so they follow the text-size setting and can be corrected without new art.
 
 | Panel | Picture | Caption (third person) |
 | --- | --- | --- |
@@ -145,7 +146,7 @@ Then comes the proposed final sequence:
 - the teal light drains out of the core;
 - dawn rises over the campus;
 - news broadcasts show Arcadia's board and the contract, and mention the evidence files Dave found;
-- the Linked who are still alive, the freed staff and the harmless Sleepwalkers wake up, confused, as their implants go quiet.
+- the Linked who are still alive, the freed staff and the Loopers wake up, confused, as their implants go quiet.
 
 Commit the ending, show a short departure beat, then the completion screen. There is no Adam health bar, no thirteenth level, and no gate on evidence count.
 

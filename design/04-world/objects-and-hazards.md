@@ -75,7 +75,7 @@ Levels are dark by design, so objects supply their own light. Darkness is a mood
 - Reserved colors keep one meaning: red is danger now (tells, active beams, and a lockdown change while it is moving), amber is a warning or Adam's attention, teal is Arcadia and Adam at rest, violet is the Bloom and nothing else, gold is pickups, and azure-white is the Graviton Tether's field and anchor markers. Nothing Dave can pick up, grab or use is violet.
 - Background LED walls, billboards and status lights blink on slow, independent cycles and never use alarm red or pickup gold, so they cannot pass for a tell or a pickup.
 - Fog, mist and glow are flat, low-contrast drawn bands. They never cover a platform edge, tell, weak point or pickup.
-- Blood, oil and lymph, and the bodies they pool under, lie on the floor line below every object here. They never cover a landing edge, a hazard boundary or a pickup ([W02](status-and-enemy-states.md), [G04](../01-core/camera-and-feedback.md)).
+- Blood and oil, and the bodies they pool under, lie on the floor line below every object here. They never cover a landing edge, a hazard boundary or a pickup ([W02](status-and-enemy-states.md), [G04](../01-core/camera-and-feedback.md)).
 - Strobes and alarm lights (red emergency strobes, lockdown alarms, holographic billboards, electrical flashes) follow the reduced-flash rules in [G04](../01-core/camera-and-feedback.md) (no more than three flashes in any one second, nothing across the full screen) and the reduced-flash setting in [N03](../05-presentation/interface-and-accessibility.md). With reduced flash on, they become a steady or slow pulse and the hazard boundary stays drawn.
 
 ## General interaction boundaries

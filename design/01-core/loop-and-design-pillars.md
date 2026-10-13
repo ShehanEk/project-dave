@@ -23,7 +23,7 @@ The confirmed loop is **explore → fight → collect treasure → overcome an o
 | A meaningful weapon choice | The weapon in my hands changes my approach. | One carried weapon; all mandatory encounters support the legitimate choice. |
 | Treasure with purpose | Looking around pays off. | Microchips reward routes and fund proposed upgrades; evidence files provide distinctive discoveries. |
 | Dangerous service | The world is dangerous for a believable reason. | Guards and contractors are armed professionals, scared or cold (C25). Adam's machines reflect their original campus jobs (security, freight and clinic work), now turned to Adam's purposes. The Linked repeat fragments of their old jobs. Every gun has an answer: a jump, cover or another floor ([W04](../04-world/encounter-and-boss-fairness.md)). |
-| People inside the machinery | There is more here than targets and loot. | Preserve quiet discoveries, harmless Sleepwalkers (protected people, not enemies), the staff held for implanting, and the First Patient. Kills give no drops and no score. |
+| People inside the machinery | There is more here than targets and loot. | Preserve quiet discoveries, Loopers (protected people, not enemies), the staff held for implanting, and the First Patient. Kills give no drops and no score. |
 | Dread with consequence | Something is wrong here, and what I do about it matters. | Build dread from dim light, wrong movement, a calm PA voice and the weight of lethal force: enemies die, bleed and stay down (C28, C29). Atrocity is shown only as aftermath, and rationed (see below). There is no stealth or detection system (C16), and every scare that can hurt is telegraphed. |
 
 ## A typical section
@@ -56,11 +56,11 @@ Except for the confirmed ones (the solo hero, C12, and no stealth, C16), these e
 
 The game is mature and not for children. Combat is lethal: every hostile can die, bleeds according to what it is made of and leaves a body ([W02](../04-world/status-and-enemy-states.md)). Blood is visible, with an on/off setting in Settings (*proposed*, [N03](../05-presentation/interface-and-accessibility.md)). Kills give no drops, no score and no praise.
 
-- **Shown:** blood by material, corpses, restrained body horror (stapled ports, shaved scalps, cracked ceramic over grown tissue), hard language in human barks, and atrocity as aftermath.
+- **Shown:** blood by material, corpses, restrained horror (clean Link ports and implants, faces shown on the Heirs' displays, Linked who are calm and precise rather than wounded; C60), hard language in human barks, and atrocity as aftermath.
 - **Rationed:** at most one authored aftermath scene per level, out of the combat lanes, escalating by act. Act 1 shows only the bodies Dave makes. Act 2 adds Thornwall's cleanup and the Bloom test chamber, Act 3 the clinic bays, Act 4 the Garden ([N01](../05-presentation/story-scenes.md)).
 - **Never shown:** torture or execution on screen, sexual violence, children, and dismemberment (not for now; one "heavy death" frame for rail and plasma kills may come later).
 - **Never treated as monstrous:** implants themselves. The fear comes from what Adam does to people.
-- **Untouchable:** the founder, the staff held in the clinic and harmless Sleepwalkers have no hit zone at all ([W01](../04-world/factions-and-friendly-fire.md)).
+- **Untouchable:** the founder, the staff held in the clinic and Loopers have no hit zone at all ([W01](../04-world/factions-and-friendly-fire.md)).
 
 ## Keycards and exit doors *(proposed, P19)*
 

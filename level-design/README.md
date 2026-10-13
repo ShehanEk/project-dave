@@ -29,7 +29,7 @@ For system-design work, read the [AI entry guide](../AI_START_HERE.md) and the r
 | Level | Brief | Setting | New weapon | New enemy types | Mini-boss | Draft duration |
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | [Welcome to Eon City](l01-welcome-to-sunnyvale.md) | Arcadia's campus at night | Scrapjack Pistol (carried at entry) | Night Guard, Patrol Rover, Staffer (at the alarm exit) | — | 10–14 minutes |
-| 2 | [Curfew](l02-curfew.md) | Campus hedge maze and gardens | Boom Broom | Sidearm Guard, Security Drone, Hound | — | 12–16 minutes |
+| 2 | [Alignment](l02-alignment.md) | The Cognition Lab, Dave's old AI lab (C59) | Boom Broom | Sidearm Guard, Security Drone, Hound (with a handler) | — | 12–16 minutes |
 | 3 | [Parade of Progress](l03-parade-of-progress.md) | Product showcase hall | — | Riot Officer, Rifleman | The Peacekeeper | 14–18 minutes including mini-boss |
 | 4 | [Roots and Rivets](l04-roots-and-rivets.md) | Rootworks server halls | Arc Welder | Sentry Turret, Freight Loader | — | 14–18 minutes |
 | 5 | [Test Subjects](l05-test-subjects.md) | E-waste recycling plant | Seedlobber | Heavy Gunner, Grenadier, Gun Hound | — | 15–19 minutes |
@@ -41,7 +41,7 @@ For system-design work, read the [AI entry guide](../AI_START_HERE.md) and the r
 | 11 | [The First Patient](l11-the-first-patient.md) | The founder's lab | — | Warden | — | 18–24 minutes |
 | 12 | [The Heart of Adam](l12-the-heart-of-adam.md) | Launch chamber and Adam's core | — | None | The Sower | 22–28 minutes including mini-boss and ending |
 
-*History:* levels 2, 5 and 6 were renamed under C34 (new names are proposal P22) from "Hedge Your Bets", "Compost Confidential" and "The Hungry Engine", and their files were renamed with history kept.
+*History:* levels 2, 5 and 6 were renamed under C34 (new names are proposal P22) from "Hedge Your Bets", "Compost Confidential" and "The Hungry Engine", and their files were renamed with history kept. Level 2 (then "Curfew", a hedge maze) was replaced by [Alignment](l02-alignment.md) under C59; [Curfew](l02-curfew.md) is kept for history.
 
 ## Contents of each brief
 
@@ -65,7 +65,7 @@ The core loop is explore → fight → collect microchips → overcome an obstac
 
 See [Core gameplay rules](../core-gameplay.md).
 
-Weapons arrive in levels 1, 2, 4, 5 and 6. The 24 enemy types are introduced across levels 1–11, each alone before it is combined with others. All types except the two Garden machines (Pruner, Fitting Arm) and the two Heirs (Fitted Heir, Warden) have appeared by level 9. The Fitted Heir, Pruner and Fitting Arm begin in level 10 and the Warden in level 11, and levels 9 and 12 introduce no new type. Arcadia's founder in level 11 stays a non-combat story character, and harmless Sleepwalkers are protected NPCs, not enemies. Level 12 ends with the Sower encounter and an interactive ending at Adam's core.
+Weapons arrive in levels 1, 2, 4, 5 and 6. The 24 enemy types are introduced across levels 1–11, each alone before it is combined with others. All types except the two Garden machines (Pruner, Fitting Arm) and the two Heirs (Fitted Heir, Warden) have appeared by level 9. The Fitted Heir, Pruner and Fitting Arm begin in level 10 and the Warden in level 11, and levels 9 and 12 introduce no new type. Arcadia's founder in level 11 stays a non-combat story character, and Loopers are protected NPCs, not enemies. Level 12 ends with the Sower encounter and an interactive ending at Adam's core.
 
 The detailed briefs propose room layouts and encounter sequences, not new weapons or enemy classes. The design pack proposes movement, health, resource, economy, save and enemy-fairness defaults. Those values are untested; exact geometry, damage, durability and difficulty tuning still need work.
 
@@ -78,4 +78,4 @@ The detailed briefs propose room layouts and encounter sequences, not new weapon
 
 The editable Markdown and JSON files are the sources of truth.
 
-**Kept for later:** [the weapon swap pad, for Level 2](swap-pad-for-level-2.md) (taken out of Level 1, C51).
+**Kept for later:** [the weapon swap pad, for Level 2](swap-pad-for-level-2.md) (taken out of Level 1, C51); it goes in [Alignment](l02-alignment.md)'s coolant plant (A01).

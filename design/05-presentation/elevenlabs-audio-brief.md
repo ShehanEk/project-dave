@@ -4,7 +4,7 @@
 **Status:** All five batches are generated, stored under `audio-source/elevenlabs/` and processed into the game (2026-10-08, decision C47), except Dave's hurt and death as speech (the `hero_hurt` effect plays instead) and the checkpoint sting (made, not wired). The music prompts below were shortened to 1 to 3 sentences for the Music model. The prompts below are the ones used.  
 **Purpose:** the cue list, prompts, durations and file names for replacing and extending Level 1's sound with ElevenLabs output.
 
-**Read with:** [audio direction](audio-direction.md) (the sound identity, mix rules and the cue families these prompts follow) · [dialogue and writing](dialogue-and-writing.md) · `prototypes/sunnyvale-godot/scripts/audio/audio_director.gd` (the live cue list)
+**Read with:** [audio direction](audio-direction.md) (the sound identity, mix rules and the cue families these prompts follow) · [dialogue and writing](dialogue-and-writing.md) · `game/scripts/audio/audio_director.gd` (the live cue list)
 
 ## Where the game's sound is now
 

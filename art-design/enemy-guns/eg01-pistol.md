@@ -1,11 +1,11 @@
 # AS-9 "Civic" Smart Pistol
 
-**Direction (C14–C35, 2026-09-29):** mature dark sci-fi — evil corporation Arcadia Dynamics, sentient AI Adam, rogue AI researcher Dave Harlan; human, cyborg and machine enemies with guns; visible blood; no zombies, no stealth. Enemy art: lit cutout rig with smooth realistic lighting ([style guide](../style-guide.md)).
+**Direction (C14–C35, 2026-09-29; C56–C60, 2026-10-12):** mature corporate-cyberpunk sci-fi — evil corporation Arcadia Dynamics, sentient AI Adam, rogue AI researcher Dave Harlan; human, cyborg and machine enemies with guns; visible blood; no zombies, no stealth. Enemy art: painted HD parts on a lit cutout rig (C56), in the corporate cyberpunk look (C58), with alert, composed people (C57) and neon trim per controller (C60) ([style guide](../style-guide.md)).
 
 **Asset ID:** EG01\
 **Category:** enemy-guns\
 **First appearance:** Level 2\
-**Design status:** Enemy art direction (C35): a lit cutout rig with smooth, realistic engine lighting; confirmed direction, validated by the approved lit-cutout test (2026-09-30). This gun's name, look, colors and numbers are *proposed* (C27, P23), and no image is approved yet. Dimensions are provisional art proportions, not engine specifications.
+**Design status:** Look follows C60 (approved 2026-10-12): a painted HD gun sprite on a hand socket (C56), corporate cyberpunk (C58); every Arcadia gun is a sleek white-and-graphite product with the wordless Arcadia arch mark. Concept images are still to be generated. This gun's name, look, colors and numbers are *proposed* (C27, P23). Dimensions are provisional art proportions, not engine specifications.
 
 ## Identity and carriers
 
@@ -17,13 +17,13 @@ It is the first enemy gun, and it teaches the pattern every gunner repeats: a te
 
 ## Look, size and socket
 
-**Futuristic look:** a matte ivory polymer slab with no hammer, a thin status strip along the slide and a flush lamp at the muzzle. The strip is a small, steady teal light and never a tell. The muzzle lamp is the tell and stays dark until it glows. There is no ejection port and no brass.
+**Futuristic look:** a sleek matte white-and-graphite polymer slab with no hammer, a small wordless Arcadia arch mark on the slide, a thin status strip along the slide and a flush lamp at the muzzle. The strip is a small, steady teal light and never a tell. The muzzle lamp is the tell and stays dark until it glows. There is no ejection port and no brass.
 
 **Size:** 0.21 m long and 0.14 m tall, about the length of the carrier's head.
 
 **Socket:** the grip origin sits at the center of the grip, one third up from the heel, where the weapon hand's palm socket meets it; the gun rotates about this point to aim. The muzzle marker sits at the muzzle lamp. The support-hand point sits under the slide for the two-hand stance, and is drawn on the carrier's support hand, not on the gun.
 
-**Colors (flat, unlit):** warm ivory #D9D3BF slide and frame; graphite #2A3341 grip and slide details; dark #1C2A3A muzzle lamp housing; small teal #3FE0D0 status strip.
+**Colors (flat, unlit):** white #DCE0E3 slide and frame; graphite #2A3341 grip and slide details; dark #1C2A3A muzzle lamp housing; small teal #3FE0D0 status strip.
 
 ## Fire pattern, tell and dodge
 
@@ -43,35 +43,35 @@ It is the first enemy gun, and it teaches the pattern every gunner repeats: a te
 
 ## Rules and production
 
-No hammer, brass, gold, laser sight (sight lines belong to the rail rifle and the cutter beam) or legible text; maker marks are plain stripes. The lamp is dark in the base art, and the flash and tracer are effects, never painted onto the gun. Cut the gun as one part with its own normal map (green = up). Approve the neutral image before the carried study, and check the gun at gameplay size in the carrier's hand, in grayscale and against near-black backgrounds. The lit cutout look is a confirmed direction, validated by the approved lit-cutout test (2026-09-30) (C35).
+No hammer, brass, gold, laser sight (sight lines belong to the rail rifle and the cutter beam) or legible text; the maker mark is the small wordless Arcadia arch. The lamp is dark in the base art, and the flash and tracer are effects, never painted onto the gun. Cut the gun as one part with its own normal map (green = up). Approve the neutral image before the carried study, and check the gun at gameplay size in the carrier's hand, in grayscale and against near-black backgrounds. The lit cutout look is a confirmed direction, validated by the approved lit-cutout test (2026-09-30) (C35).
 
 ## Image prompt 1 — neutral side view
 
 Copy the entire block into an image generator. Generate and approve this base design before requesting the carried study.
 
 ```text
-Original 2D game art for DEAD EDEN, a mature dark sci-fi side-view shooter: realistic adult proportions, clean dark outlines, flat base colors, evenly lit with no baked shadows (lighting is added in-engine), grounded industrial and corporate sci-fi design, unsettling rather than cartoonish.
+Original 2D game art for DEAD EDEN, a mature corporate-cyberpunk side-view shooter: detailed hand-painted style, realistic adult proportions, clean dark outlines, evenly lit with soft painted shading and no cast shadows (lighting is added in-engine), sleek, clean, expensive sci-fi design, polished rather than cartoonish.
 
 Design the AS-9 "Civic" smart pistol, the campus sidearm made by a corporate defense division: a single gun on its own, with no hands and no carrier.
 Scale: 0.21 m long and 0.14 m tall; about the length of an adult's head.
 Silhouette: a slim slab-sided pistol with a short slide, no hammer and a slightly raked grip.
-Physical design: a matte ivory polymer slab with a smooth slide and frame, a thin status strip along the slide, and a flush round lamp at the very front of the muzzle. No visible hammer, ejection port, laser sight or brass. A graphite grip panel with fine texture.
-Materials and colors: warm ivory #D9D3BF slide and frame; graphite #2A3341 grip and slide details; dark #1C2A3A lamp housing; small teal #3FE0D0 status strip.
-Critical consistency: no hammer, no brass, no laser sight, no text or logos; the muzzle lamp is drawn dark and unlit.
+Physical design: a sleek matte white-and-graphite polymer slab with a smooth slide and frame, a tiny wordless arch mark (an abstract arch shape, no lettering) on the slide, a thin status strip along the slide, and a flush round lamp at the very front of the muzzle. No visible hammer, ejection port, laser sight or brass. A graphite grip panel with fine texture.
+Materials and colors: white #DCE0E3 slide and frame; graphite #2A3341 grip and slide details; dark #1C2A3A lamp housing; small teal #3FE0D0 status strip.
+Critical consistency: no hammer, no brass, no laser sight, no text or lettering; the muzzle lamp is drawn dark and unlit.
 Show the pistol in strict side view with the muzzle pointing to the right and the grip at the lower left.
 
-One complete 2D subject only, centered and fully visible on a flat mid-grey (#808080) background, evenly lit and flat-colored so it can be cut into parts: no baked shadows, no cast or contact shadow, no highlights, no rim light, no glow, no muzzle flash, no projectile, no blood. No hands, no carrier, no airbrushed gradients, glossy chrome, photoreal volumetrics, pixel art, environment, UI, watermark, text, logos, labels, measurement arrows or franchise props. Draw one subject, not a multi-panel sheet.
+One complete 2D subject only, centered and fully visible on a flat mid-grey (#808080) background, evenly lit and hand-painted so it can be cut into parts: no baked shadows, no cast or contact shadow, no highlights, no rim light, no glow, no muzzle flash, no projectile, no blood. No hands, no carrier, no airbrushed gradients, glossy chrome, photoreal volumetrics, pixel art, environment, UI, watermark, text, logos, labels, measurement arrows or franchise props. Draw one subject, not a multi-panel sheet.
 ```
 ## Image prompt 2 — carried-in-hand study
 
 Attach the approved neutral image as the visual reference.
 
 ```text
-Original 2D game art for DEAD EDEN, a mature dark sci-fi side-view shooter: realistic adult proportions, clean dark outlines, flat base colors, evenly lit with no baked shadows (lighting is added in-engine), grounded industrial and corporate sci-fi design, unsettling rather than cartoonish. Preserve the attached approved 2D identity reference.
+Original 2D game art for DEAD EDEN, a mature corporate-cyberpunk side-view shooter: detailed hand-painted style, realistic adult proportions, clean dark outlines, evenly lit with soft painted shading and no cast shadows (lighting is added in-engine), sleek, clean, expensive sci-fi design, polished rather than cartoonish. Preserve the attached approved 2D identity reference.
 
 Using the attached approved AS-9 "Civic" pistol, draw one carried-in-hand study in strict side view: an adult's right hand and forearm in a pale grey shirt cuff (#C7CED5) and a thin black glove, gripping the pistol at its grip with the trigger finger outside the guard, and the left hand cupped under the slide in a two-hand stance. Forearms and hands only, with no body and no head. The pistol keeps the exact approved design and is about the length of the hand plus half; it points to the right, with the grip at the palm socket. Preserve the pistol's proportions, colors and part counts.
 
-Flat mid-grey (#808080) background, evenly lit and flat-colored so the hand and the gun can be cut apart: no baked shadows, no cast shadow, no highlights, no rim light, no glow, no muzzle flash, no projectile, no blood. No text, logos, labels, motion blur, cinematic framing or new equipment.
+Flat mid-grey (#808080) background, evenly lit and hand-painted so the hand and the gun can be cut apart: no baked shadows, no cast shadow, no highlights, no rim light, no glow, no muzzle flash, no projectile, no blood. No text, logos, labels, motion blur, cinematic framing or new equipment.
 ```
 
 See [shared style guide](../style-guide.md), [asset index](../README.md) and [encounter and boss fairness](../../design/04-world/encounter-and-boss-fairness.md).

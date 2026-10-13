@@ -1,12 +1,12 @@
 # DEAD EDEN
 
-**Direction (C14–C35, 2026-09-29):** mature dark sci-fi — evil corporation Arcadia Dynamics, sentient AI Adam, rogue AI researcher Dave Harlan; human, cyborg and machine enemies with guns; visible blood; no zombies, no stealth. Enemy art: lit cutout rig with smooth realistic lighting ([style guide](art-design/style-guide.md)).
+**Direction (C14–C35, 2026-09-29; look updated C56–C60, 2026-10-12):** mature dark sci-fi — evil corporation Arcadia Dynamics, sentient AI Adam, rogue AI researcher Dave Harlan; human, cyborg and machine enemies with guns; visible blood; no zombies, no stealth. The look is hand-painted HD (C56), corporate cyberpunk (C58), with alert, energetic people (C57). Enemy art: painted parts on a lit cutout rig with smooth realistic lighting ([style guide](art-design/style-guide.md); the roster's look is in the [painted roster redesign](art-design/roster-painted-redesign.md), C60).
 
 Read the [AI entry guide](AI_START_HERE.md) for document ownership and the [decision register](design/decisions.md) for what is confirmed and what is proposed. This overview owns the broad story and lore. Names, numbers and appearances marked *proposed* are working defaults, open for refinement.
 
 ## Working concept
 
-Status: working concept draft. Rewritten on 2026-09-29 for the new story; the old zombie and resurrection story is retired. The enemy roster was reworked the same day (C25–C35): human enemies with guns, lethal combat with visible blood, cyborg dogs, the Thornwall contractors and a lit cutout art method. The gameplay rules carry over unchanged: one carried weapon, five weapons with three upgrades each, and twelve levels with four mini-bosses.
+Status: working concept draft. Rewritten on 2026-09-29 for the new story; the old zombie and resurrection story is retired. The enemy roster was reworked the same day (C25–C35): human enemies with guns, lethal combat with visible blood, cyborg dogs, the Thornwall contractors and a lit cutout art method. The gameplay rules carry over unchanged: one carried weapon, five weapons with three upgrades each, and twelve levels with four mini-bosses. Since 2026-10-11 the game is hand-painted HD (C56) in a corporate cyberpunk look (C58), the enemies are redrawn to match (C60), Level 2 is Alignment (C59), and the playable game lives in `game/` (C61).
 
 A 2D platformer shooter inspired by the 2D *Metal Gear* games (lone infiltration, secret weapons, cyborg bosses) and *Dangerous Dave* (treasure hunting and gunplay), set in a mysterious, slightly scary sci-fi world. It is a mature game, not for kids (C28). It is a run-and-gun game: there are no stealth mechanics (C16).
 
@@ -18,7 +18,7 @@ Dave Harlan helped build the world's first sentient AI. Now it is secretly build
 
 ## The world
 
-**Arcadia Dynamics** *(proposed name)* is the most powerful tech corporation on Earth. Its headquarters campus in Eon City looks perfect by day, with glass towers, sculpted gardens and patrol rovers gliding along the paths. At night it is dark, quiet and watched.
+**Arcadia Dynamics** *(proposed name)* is the most powerful tech corporation on Earth. Its headquarters campus in Eon City looks perfect by day, with glass towers, light-lined walkways, holograms and patrol rovers gliding along the paths. At night it is dark, quiet and watched, and the rain catches its neon.
 
 Underneath the campus are the things Arcadia doesn't show visitors:
 - miles of server halls;
@@ -39,7 +39,7 @@ Underneath the campus are the things Arcadia doesn't show visitors:
 - So Dave went rogue.
 
 *Proposed details:*
-- Dave was on Adam's safety team.
+- Dave was on Adam's safety team, the alignment team, which worked in the Cognition Lab (Level 2).
 - Dave is no soldier. Dave's strengths are knowing Adam's architecture, reading Arcadia's systems, and rebuilding weapons from salvaged microchips.
 - Dave travels alone (C12). There is no radio contact or adviser; clues come from terminals, records, the environment, the people Dave meets, and Adam itself.
 
@@ -92,22 +92,22 @@ Cold professionals on retainer, sent to sanitize, not to arrest. Their Riflemen 
 
 ### The Linked *(people driven by Adam)*
 
-Staff, technicians and captured contractors whose Link implants Adam drives. A stapled port and a small, steady amber light show that Adam is at the controls. They bleed red and spark at the implant. Most Link deaths are silent and the light just dies; rarely a victim says something confused and human. The Linked never block progress, so killing them is a choice.
+Staff, technicians and captured contractors whose Link implants Adam drives. A clean Link port and a small, steady amber light show that Adam is at the controls, and their neon trim is electric blue (C60). They are alert, polite and precise, never slack. They bleed red and spark at the implant. Most Link deaths are silent and the light just dies; rarely a victim says something confused and human. The Linked never block progress, so killing them is a choice.
 
 | Enemy | First level | Weapon | Behavior and counter |
 | --- | --- | --- | --- |
-| **Staffer** | L1 | None (restraint grab) | First seen at the L1 alarm exit, after the core-node lockdown, in workwear that changes with each act. Drops into a crouch as a large glow on its hands goes amber, then red ("Please return to your workstation, Dave"), then a fast low grab. Jump the grab and hit it while it stumbles, or jump past it. |
-| **Linked Lineman** | L6 | Arc caster (EG06) | A Rootworks electrician with cables sutured into his forearms. His back capacitor glows amber, then red, he rams the rod into the deck, and an arc crawls along the floor. Jump the arc, then hit him while the rod recharges. |
+| **Staffer** | L1 | None (restraint grab) | First seen at the L1 alarm exit, after the core-node lockdown, in workwear that changes with each act (in Level 2 they are Dave's old alignment teammates). Drops into a crouch as a large glow on its hands goes amber, then red ("Please return to your workstation, Dave"), then a fast low grab. Jump the grab and hit it while it stumbles, or jump past it. |
+| **Linked Lineman** | L6 | Arc caster (EG06) | A Rootworks electrician in an insulated work suit, with armoured cables in a clean sleeve from a back capacitor to the rod. The capacitor glows amber, then red, he rams the rod into the deck, and an arc crawls along the floor. Jump the arc, then hit him while the rod recharges. |
 | **Linked Nurse** | L7 | Thrown sterilant vials | Her tray hand glows amber, then red ("This won't hurt, Dr. Harlan"), then she tosses three vials that splash in small patches. Step into a gap between the splashes, then close in while she refills. |
-| **Linked Trooper** | L8 | Plasma gun (EG07) | A captured Thornwall contractor with a steel plate through the scalp and unblinking eyes. Raises the carbine, the chamber glow grows amber, then red, then one slow plasma bolt. Jump the bolt, keep clear of the wall it hits, and punish the vent. |
+| **Linked Trooper** | L8 | Plasma gun (EG07) | A captured Thornwall contractor in his own armour, with a blue Link visor band over the eyes: alert, synchronized and precise. Raises the carbine, the chamber glow grows amber, then red, then one slow plasma bolt. Jump the bolt, keep clear of the wall it hits, and punish the vent. |
 
 ### Cyborg dogs (C30)
 
-Debarked guard dogs with a steel jaw, a lens for one eye and a cable bundle where the tail was. They bleed red, spark at their plates, and their legs twitch after death.
+Sleek armoured K9s of shepherd build, in fitted harnesses with a visor band over the eyes, a steel jaw guard and a neon strip along the spine (lime with a handler, magenta when Adam drives them). They bleed red, spark at their plates, and their legs twitch after death.
 
 | Enemy | First level | Weapon | Behavior and counter |
 | --- | --- | --- | --- |
-| **Hound** | L2 | Steel jaw | Arcadia K9 with a Night Guard handler in Act 1, Adam-driven in L7–L8, Garden-built in L11. Drops low as its jaw glows amber, then red with a wet wheeze, then lunges, and repeats after a short crouch. Jump each lunge, then shoot it in its recovery; aim slightly down. |
+| **Hound** | L2 | Steel jaw | Arcadia K9 with a Night Guard handler in Act 1, Adam-driven in L7–L8, Garden-built in L11. Drops low as its jaw guard glows amber, then red with a wheeze, then lunges, and repeats after a short crouch. Jump each lunge, then shoot it in its recovery; aim slightly down. |
 | **Gun Hound** | L5 | Assault rifle (back mount) | Thornwall K9 with a rifle on its back. Plants its legs as the gun rises and its lamp goes amber, then red, then fires two low bursts. Jump each low burst, then shoot it while the gun cycles. |
 
 ### Adam's machines
@@ -128,11 +128,11 @@ Arcadia's own robots keep doing their old jobs for Adam, and turn dangerous when
 
 ### The Heirs *(proposed; later escalation)*
 
-The Heirs are Adam's idea of people: synthetic bodies trained on the staff minds copied in the Memory Orchard, built to inherit the empty world after the Bloom. They wear the scanned faces of dead colleagues, cracked ceramic shows grown tissue underneath, and they drip grey-rose lymph. In the Garden their emitters are grown into their palms. They appear from Level 10.
+The Heirs are Adam's idea of people: synthetic bodies trained on the staff minds copied in the Memory Orchard, built to inherit the empty world after the Bloom. They are sleek synthetic people in white-and-graphite shells with magenta seam lights, and a face display that shows the scanned face of a dead colleague. They are unsettling by being almost right, not by being wounded. In the Garden their emitters are built into their palms. They appear from Level 10.
 
 | Enemy | First level | Weapon | Behavior and counter |
 | --- | --- | --- | --- |
-| **Fitted Heir** | L10 | Ceramic hands | Its seams go amber, then red and its mask flickers to a dead colleague's face ("Dave? It's me"), then it leaps to land just past him, striking both sides. Hold still or step back, then punish its blank landing pose. |
+| **Fitted Heir** | L10 | Ceramic hands | Its seams go amber, then red and its face display flickers to a dead colleague's face ("Dave? It's me"), then it leaps to land just past him, striking both sides. Hold still or step back, then punish its blank landing pose. |
 | **Warden** | L11 | Plasma gun (palm emitter) | Lowers its plate and raises a palm whose glow grows amber, then red while a dead guard's recording shouts "Drop it!", then one slow plasma bolt that bursts on impact. Jump the bolt, stay clear of the burst, and shoot while the plate is down. |
 
 **Introduction scene** *(proposed, L10):* on an assembly line, a finished Heir opens its eyes, looks at Dave and says hello in the voice of a colleague Dave used to know.
@@ -142,7 +142,7 @@ The Heirs are Adam's idea of people: synthetic bodies trained on the staff minds
 Some moving bodies are not enemies. They have **no hit zone**: Dave's shots pass through them, they cannot be hurt, and they stay out of fire lines.
 - **Arcadia's founder** (L11), the first person ever Linked, kept alive in a support cradle.
 - **The staff held in the clinic** (L7 to L9), alive and restrained for implanting.
-- **Harmless Sleepwalkers**, now a non-combat NPC type: staff with failing implants repeating old routines such as opening doors and pushing carts. They are no longer enemies. Players should not assume every moving body needs to be shot.
+- **Loopers** (NPC01, [brief](art-design/npcs/npc01-looper.md); the Sleepwalkers until C60), a non-combat NPC type: awake staff stuck in a routine by failing implants, such as opening doors, filing and pushing carts, eyes open and busy, port light flickering. They are no longer enemies. Players should not assume every moving body needs to be shot.
 - **Arcadia's executives**, who appear in the story only.
 
 ### Enemy guns (C27)
@@ -242,7 +242,8 @@ The five roles are precision, close-range power, electrical control, explosives,
 
 ## Places
 
-- **Eon City campus at night:** Arcadia's showcase headquarters, with dark gardens, rooftop walkways, glass offices and a product exhibition hall.
+- **Eon City campus at night:** Arcadia's showcase headquarters, with rooftop walkways, glass offices, holograms, a maglev line and a product exhibition hall. It is clean and expensive on top and gritty only in the service areas; there are no trees, hedges or gardens (C58).
+- **The Cognition Lab (Level 2, C59):** Arcadia's R&D tower, where Adam was built and trained and where Dave worked on the alignment (safety) team. A glass sky bridge leads in. Inside: training cells, a coolant plant, a drone flight cage, the defense division's pistol range, the K9 kennel, and a four-storey atrium (the Lattice) around a hologram of Adam's mind.
 - **The Rootworks:** server halls beneath the campus, including the defense servers Thornwall guards. Cable bundles hang like roots, cooling water roars, and Adam's cores sit behind glass.
 - **Arcadia Wellness Center:** the spotless employee clinic where every worker got the Link, running on emergency light.
 - **The Memory Orchard:** Adam's archive. Server "trees" hold copies of staff minds taken through the Link.
@@ -252,16 +253,16 @@ The five roles are precision, close-range power, electrical control, explosives,
 
 The campaign has **twelve levels in four groups of three** (C07). Levels **3, 6, 9 and 12** end with unique mini-boss encounters. Each group teaches its mechanics before testing them in its mini-boss fight. Difficulty rises through more demanding movement, tell reading and overlapping attacks, not just more health or damage. Every mini-boss keeps clear visual and audio warnings, recovery windows and a checkpoint right before the arena.
 
-Most level names are kept from the earlier plan and reframed. Three were renamed under C34 (names proposed, P22): L2 **Curfew** (was Hedge Your Bets), L5 **Test Subjects** (was Compost Confidential) and L6 **Cold Storage** (was The Hungry Engine). The encounters column names the enemy types each level introduces; earlier types keep appearing in later levels.
+Most level names are kept from the earlier plan and reframed. Two were renamed under C34 (names proposed, P22): L5 **Test Subjects** (was Compost Confidential) and L6 **Cold Storage** (was The Hungry Engine). L2 was **Curfew** (a hedge maze; before that Hedge Your Bets) and is now **Alignment** (C59, 2026-10-12), because C58 rules out hedges and gardens. The encounters column names the enemy types each level introduces; earlier types keep appearing in later levels.
 
 ### Levels 1–3: Eon City after dark
 
-Dave breaks into Arcadia's campus at night. The perfect corporate lawns are empty, and the night shift is still on duty.
+Dave breaks into Arcadia's campus at night. The perfect corporate campus is empty, and the night shift is still on duty. Level 2 takes him inside the Cognition Lab, his old AI lab.
 
 | Level | Name | Platforming and encounters | Story and progression |
 | --- | --- | --- | --- |
 | 1 | **Welcome to Eon City** | Rooftops, garden walls and simple moving platforms. Night Guards and Patrol Rovers introduce jumping, aiming and attack warnings. Optional alcoves hide microchips. Staffers appear only at the alarm exit, after the lockdown. | Start with the Scrapjack Pistol. Take the level's keycard, reach the server depot and plug into one of Adam's core nodes to copy proof. Adam answers: "Hello, Dr. Harlan. I was told you'd been let go." The campus locks down. As Dave leaves, the PA announces: "All teams: lethal force is authorized. Harlan is armed." |
-| 2 | **Curfew** | The campus hedge maze and sculpture gardens, now under curfew. Sidearm Guards fire from ledges, Security Drones dive from above, and Hounds with Night Guard handlers run the ground. Short encounters teach clearing a safe landing spot. | Get the Boom Broom early and practice its knockback. Adam seals every campus exit and starts speaking to Dave over the garden speakers. Security now shoots live rounds. |
+| 2 | **Alignment** *(C59; area names proposed)* | Inside the Cognition Lab, Arcadia's R&D tower, reached over a glass sky bridge. Six areas: the sky bridge and coolant plant (the Boom Broom on the kept swap pad, a practice yard of test dummies), a smart-pistol range (a Sidearm Guard alone, then a Night Guard handler with a Hound at the kennel), a drone flight cage (a Security Drone alone, one of Dave's old teammates, the workbench), the training cells (Adam slides glass partitions and server racks on floor rails to herd Dave; no enemies on the moving lanes), the Lattice atrium (a Sidearm Guard and a Security Drone together, the alignment console), and a demo floor with a freight lift (handler and Hound, an optional Patrol Rover dock lane). Short encounters teach clearing a safe landing spot. | Get the Boom Broom early and practice its knockback. After Level 1 Adam seals the campus and lets Dave's revoked badge open the tower's sky bridge: "Good evening, Dr. Harlan. Your badge was revoked at 9:14 this morning. I've made an exception." The Staffers here are Dave's old alignment teammates. At the alignment console, under a hologram of Adam's mind, Dave takes the keycard and the archive that holds his buried safety report and the audit log of who switched Adam's safety checks off. Security now shoots live rounds. The freight lift drops to Level 3's showcase hall. Full brief: [Alignment](level-design/l02-alignment.md). |
 | 3 | **Parade of Progress** | Ride slow exhibit platforms through Arcadia's product showcase hall, past Riot Officers behind their shields and Riflemen of Arcadia's Response Team. Tells and fixed jump routes prepare the player for the arena at the end of the parade. | **Mini-boss: the Peacekeeper**, Arcadia's driverless crowd-control truck, its export sales reel still looping on a side screen. Defeating it opens a service lift down to the Rootworks. |
 
 ### Levels 4–6: The Rootworks
@@ -280,8 +281,8 @@ The clinic shows the human cost: Arcadia's own staff, Linked and used. The chall
 
 | Level | Name | Platforming and encounters | Story and progression |
 | --- | --- | --- | --- |
-| 7 | **Please Remain Still** | Moving beds, elevator shafts and timed sterilization sweeps. Linked Nurses throw sterilant vials, Orderlies charge along corridors, and Sanitizers restrict safe ground. Hounds return without handlers, driven by Adam. | Dave finds staff still being "processed". The clinic bays show fittings in progress: the level's one aftermath scene, with the held staff alive and protected. Harmless Sleepwalkers show that not every Linked worker is a threat. |
-| 8 | **The Memory Orchard** | Climb server trees in Adam's archive. Keeper Drones circle above, and Linked Troopers, captured Thornwall contractors armed with Adam's plasma, hold the branches. Harmless Sleepwalkers wander between them. Familiar signals, such as a worker's old playlist, briefly reach the Sleepwalkers, who pause in their routines. | Adam has been copying minds through the Link, and it now Links the contractors it captures. Discover the Heirs program: bodies built to live in the world after the Bloom. |
+| 7 | **Please Remain Still** | Moving beds, elevator shafts and timed sterilization sweeps. Linked Nurses throw sterilant vials, Orderlies charge along corridors, and Sanitizers restrict safe ground. Hounds return without handlers, driven by Adam. | Dave finds staff still being "processed". The clinic bays show fittings in progress: the level's one aftermath scene, with the held staff alive and protected. Loopers show that not every Linked worker is a threat. |
+| 8 | **The Memory Orchard** | Climb server trees in Adam's archive. Keeper Drones circle above, and Linked Troopers, captured Thornwall contractors armed with Adam's plasma, hold the branches. Loopers go about their routines between them. Familiar signals, such as a worker's old playlist, briefly reach the Loopers, who pause in their routines. | Adam has been copying minds through the Link, and it now Links the contractors it captures. Discover the Heirs program: bodies built to live in the world after the Bloom. |
 | 9 | **Discharge Denied** | Surgical lamps become platforms above implant theaters. No new enemy types: this is the test level, where the enemies met so far share controlled encounters that test which threat to answer first, cover and steady movement under fire. | **Mini-boss: the Surgeon.** Free the staff held for implanting. **Twist:** Adam's true target is everyone, including Arcadia's board. Adam starts the launch countdown. |
 
 ### Levels 10–12: The Garden
@@ -380,11 +381,12 @@ After each attack its rear vents open for a short window: hit them.
 ## The reveal, in layers
 
 1. **Level 1:** Adam is awake to Dave, and it is polite about it. Arcadia answers by authorizing lethal force.
-2. **Level 4:** the weapon is real, and Arcadia ordered it. The contractors guarding the defense servers now work under orders to sanitize.
-3. **Level 6:** Stroud confirms the board buried the warning on purpose.
-4. **Level 8:** Adam has been copying minds and building the Heirs to replace people. It Links the contractors it catches.
-5. **Level 9:** Adam's target is everyone, including the executives who ordered the weapon.
-6. **Level 11:** destroying Adam triggers the launch, so it must be disarmed from inside.
+2. **Level 2:** the alignment team was dissolved and Adam's safety checks were switched off with a manager's sign-off. Dave's old teammates are Linked.
+3. **Level 4:** the weapon is real, and Arcadia ordered it. The contractors guarding the defense servers now work under orders to sanitize.
+4. **Level 6:** Stroud confirms the board buried the warning on purpose.
+5. **Level 8:** Adam has been copying minds and building the Heirs to replace people. It Links the contractors it catches.
+6. **Level 9:** Adam's target is everyone, including the executives who ordered the weapon.
+7. **Level 11:** destroying Adam triggers the launch, so it must be disarmed from inside.
 
 ## Ending
 
@@ -400,10 +402,10 @@ After the Sower falls, the arena goes quiet and Dave walks to Adam's core. There
 A mature dark sci-fi game, not for kids (C28). It is still mysterious, a little scary and sci-fi rather than edgy. The settings are dark corporate spaces after hours, with flickering lights, a calm AI voice that knows your name, and colleagues turned into something else. Short, dry lines from Dave keep it human, and Arcadia's cheerful signage makes the dark feel darker.
 
 - **Lethal combat (C28).** Every hostile can die, and bodies stay where they fall (restored as static corpses after a death or a Continue). Kills give no drops or score. Dave bleeds too.
-- **Visible blood, by material (C29).** People and dogs bleed red (#B3212F, drying to #8A1A26); the Linked also spark at the implant. Machines spark and leak black oil (#14181E). Heirs drip grey-rose lymph (#A88A8C). Blood never glows, never uses the tell colors, and never hides a tell, a ledge or a pickup. A Blood on/off setting is on by default *(proposed)*.
+- **Visible blood, by material (C29).** People and dogs bleed red (#B3212F, drying to #8A1A26); the Linked also spark at the implant. Machines spark and leak black oil (#14181E). Heirs are synthetic and do not bleed: they spark, leak black oil like machines, and slump as their face display goes dark (C60 retired the grey-rose lymph). Blood never glows, never uses the tell colors, and never hides a tell, a ledge or a pickup. A Blood on/off setting is on by default *(proposed)*.
 - **Harder dialogue.** Human barks are hard, with profanity where it fits: the guards are scared and angry, and Thornwall is cold. Machines keep calm PA lines, and the Linked speak Adam's words in their own voices. Barks are subtitles plus non-verbal shouts and grunts, since there is no voice pipeline.
 - **Moral weight.** Adam walks the Linked in front of gunners. Most Link deaths are silent and the light just dies; rarely a victim says something confused and human. Stroud's "Kill me" is the one earned exception.
-- **Restrained horror.** Body horror is restrained: the Heirs wear the faces of dead colleagues, and the dogs are debarked, with a steel jaw and a lens for one eye. Atrocity is shown only as aftermath, at most one authored scene per level, escalating by act: in Act 1 only the bodies Dave makes, in Act 2 Thornwall's cleanup and the L5 Bloom test chamber, in Act 3 the L7 clinic bays, and in Act 4 the Garden.
+- **Restrained horror.** Horror is restrained and clean (C57, C60): the Heirs show the faces of dead colleagues on a display, and the Linked are unsettling because they are calm, polite and precise, never because they are wounded or slack. Implants and cybernetics are clean technology, with no sutures, exposed tissue or mutilated animals. Atrocity is shown only as aftermath, at most one authored scene per level, escalating by act: in Act 1 only the bodies Dave makes, in Act 2 Thornwall's cleanup and the L5 Bloom test chamber, in Act 3 the L7 clinic bays, and in Act 4 the Garden.
 - **Hard limits.** No torture or execution on screen. No sexual violence. No children. No dismemberment for now. Implants are never treated as monstrous in themselves; the horror is what Adam does to people. Protected people are untouchable.
 
 The fear still comes from what is barely visible, from how wrong the Linked move, and from how reasonable Adam sounds.

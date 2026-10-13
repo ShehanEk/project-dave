@@ -55,7 +55,7 @@ Provide a protected recovery lane to supplies and a viable attack window after r
 ## Upgrades and safety
 Quickcycle changes pistol cadence; Power Shot adds charge time. Twin Shell spends exactly 2 loaded shells and is unavailable with only 1; normal fire still works. Coolant Jacket increases Arc firing endurance; Capacitor Burst spends accumulated heat, matching its established art brief: a proposed minimum of 60 heat, consuming 60 and forcing a 2-second recharge pause with no firing. It cannot be used during an overheat lock or its own recharge. This is a deliberate venting attack, not another ammunition pool; thresholds and pause length require testing.
 
-Seedlobber splash can hurt the hero; Cluster Charges must remain legible and allow retreat. Friendly-fire protection prevents harm to noncombatants (harmless Sleepwalkers, held clinic staff, the founder), who have no hit zone at all. Impact Pulse cannot damage the hero, preventing a close-range tether hit from becoming a mandatory self-hit. See the world interaction rules for status effects.
+Seedlobber splash can hurt the hero; Cluster Charges must remain legible and allow retreat. Friendly-fire protection prevents harm to noncombatants (Loopers, held clinic staff, the founder), who have no hit zone at all. Impact Pulse cannot damage the hero, preventing a close-range tether hit from becoming a mandatory self-hit. See the world interaction rules for status effects.
 
 Review each mandatory room with an empty finite-ammunition weapon and a base tether. If the only proposed fix is adding a second carried gun, redesign the room.
 

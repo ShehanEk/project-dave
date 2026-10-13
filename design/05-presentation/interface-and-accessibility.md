@@ -28,7 +28,7 @@ In the Level 1 prototype (2026-10-07) the HUD and menus are pixel art matching t
 | Microchip gold | #FFD166 | Microchip counter and pickup glints |
 | Dave orange | warm burnt orange | Dave's marker in journal recaps |
 
-Every color is paired with a shape, icon or word, so no meaning depends on hue alone. Blood, oil and lymph tones are world colors only: they never appear on the HUD, and no blood is drawn on the screen.
+Every color is paired with a shape, icon or word, so no meaning depends on hue alone. Blood and oil tones are world colors only: they never appear on the HUD, and no blood is drawn on the screen.
 
 ## Normal play HUD
 | Element | Content | Behavior |
@@ -72,7 +72,7 @@ There is no equip-from-collection action. A read-only five-type upgrade journal 
 Service and saving confirmations are distinct from the upgrade purchase. An ordinary recovery station opens no purchase menu. Leaving a workbench without buying remains a complete, valid action.
 
 ## Journal, pause, and completion
-The journal has the current objective, concise story recaps, evidence files by level (memos, photos, recordings and logs that can be reread or replayed, with captions), encountered enemies, and read-only weapon knowledge. Enemies are listed by faction (Arcadia Security, Thornwall, Adam's machines, the Linked, cyborg dogs, the Heirs). Mark harmless Sleepwalkers and the held staff as protected in their entries. Describe the Linked as people driven by Adam, never as a kill target or a count.
+The journal has the current objective, concise story recaps, evidence files by level (memos, photos, recordings and logs that can be reread or replayed, with captions), encountered enemies, and read-only weapon knowledge. Enemies are listed by faction (Arcadia Security, Thornwall, Adam's machines, the Linked, cyborg dogs, the Heirs). Mark Loopers and the held staff as protected in their entries. Describe the Linked as people driven by Adam, never as a kill target or a count.
 
 Pause shows Continue, Settings, Journal, Restart from checkpoint, and Quit. Restart and Quit explain that progress since the last committed checkpoint will be lost. A confirmation prevents an accidental restart; it does not need to interrupt ordinary play actions.
 
@@ -93,7 +93,7 @@ Do not make optional settings disable saving, evidence files, or story completio
 
 ## Blood setting *(proposed, C29)*
 A **Blood** toggle sits in Settings and is also reachable from the pause menu. **It is on by default.**
-- **Off** swaps blood spurts for dark dust and hides floor pools and blood overlays (oil and lymph included, since they pool the same way). Sparks stay.
+- **Off** swaps blood spurts for dark dust and hides floor pools and blood overlays (oil included, since it pools the same way). Sparks stay.
 - Nothing else changes. Bodies still fall and stay, ragdolls, tells, timings and hit reactions are identical, and Dave's own spray follows the same setting.
 - Every readability rule holds in both states, and no scene depends on the blood: an aftermath scene must still read with Blood off, from its bodies, bags and lights.
 - The setting never disables saving, evidence files or story completion.
@@ -102,7 +102,7 @@ A **Blood** toggle sits in Settings and is also reachable from the pause menu. *
 The game is dark by design (C15), so three options keep shape and timing readable without flattening the mood. Each preserves hazard boundaries and attack tells.
 
 - **Brightness / gamma.** A slider runs from Dimmer (the lowest setting) through Default to Brighter, with a calibration screen on first launch. The screen shows a dark test panel, a platform edge in shadow, a dim landing light and a gold microchip, and Default is the point where the darkest gameplay-relevant edge is still distinguishable. The slider moves only the dark end (the Night, Navy, Steel and Slate tokens). Accent lights, rim lights, outlines and text are unaffected, so the mood survives while shape stays legible. Menus ignore it.
-- **High-contrast outline.** A toggle adds a bright outline pass around Dave, enemies, pickups, interactive objects and platform tops so silhouettes separate from dark backgrounds. Outlines are shape-coded as well as color-coded: a solid line for characters (heavier for Dave), dashed for hazards and enemy shots, dotted for pickups and interactive objects, and a soft double line for protected characters, with the object that holds the interaction prompt drawn thicker. Dave uses a warm orange-white line, hostile units a pale cool white, hazards and enemy shots amber (red only while active), pickups gold, and interactive objects and protected characters teal (tether anchors keep their azure-white marker). Harmless Sleepwalkers, held staff and the founder never receive the hostile outline. Corpses and blood get no outline, so nothing on the floor competes with a pickup.
+- **High-contrast outline.** A toggle adds a bright outline pass around Dave, enemies, pickups, interactive objects and platform tops so silhouettes separate from dark backgrounds. Outlines are shape-coded as well as color-coded: a solid line for characters (heavier for Dave), dashed for hazards and enemy shots, dotted for pickups and interactive objects, and a soft double line for protected characters, with the object that holds the interaction prompt drawn thicker. Dave uses a warm orange-white line, hostile units a pale cool white, hazards and enemy shots amber (red only while active), pickups gold, and interactive objects and protected characters teal (tether anchors keep their azure-white marker). Loopers, held staff and the founder never receive the hostile outline. Corpses and blood get no outline, so nothing on the floor competes with a pickup.
 - **Reduced flash.** A toggle replaces strobes and alarm flashes with steady or slowly fading light of the same color and meaning: red emergency strobes, lockdown alarm lights, attack-tell flashes on the attacking part, muzzle-flash lights and impact flashes, and electrical flashes. Rapid fire is already one held glow. It also holds billboard and lamp flicker still and shrinks flash size and brightness. The default already follows the ceiling in [G04](../01-core/camera-and-feedback.md): no effect flashes more than three times in any one second, and nothing flashes across the full screen (*proposed*, to be checked with a flash-analysis tool). The setting never removes or delays a tell: timing moves to posture, sound and a steady outline pulse. No mandatory scene depends on a strobe, and alarm sounds still play with captions.
 
 Acceptance checks: every platform top, hazard boundary, pickup and attack tell stays distinguishable at Default and at Dimmer; with high-contrast outlines on, Dave, hostile units, hazards, pickups and protected characters can be told apart in a grayscale screenshot by outline style alone; with reduced flash on, no scene flashes above the cap and every tell still has a non-flashing form; with Blood off, every tell, ledge, pickup and aftermath scene still reads.

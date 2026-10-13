@@ -54,7 +54,7 @@
       "reach a checkpoint",
       "upgrade"
     ],
-    "visual_style": "Hand-drawn 2D rendering (C11): clean outlines, flat painted colors, layered backgrounds; dark sci-fi palette and mood (C15). Enemies use a lit cutout rig with smooth realistic engine lighting, hand-keyed motion (C38) and ragdoll deaths (C35), amending C11's flat cel light bands: confirmed direction, validation test in progress",
+    "visual_style": "Hand-painted HD 2D (C56, replacing the hand-drawn look of C11): detailed painterly art, layered backgrounds, a corporate cyberpunk campus in teal and amber (C58) with alert, energetic people (C57); dark sci-fi palette and mood (C15). Characters use painted parts on a lit cutout rig with smooth realistic engine lighting, hand-keyed motion (C38) and ragdoll deaths (C35); the roster's look is in art-design/roster-painted-redesign.md (C60)",
     "gameplay_plane": "2D side-scrolling",
     "companion_present": false,
     "player_party": "solo hero (Dave Harlan); no radio contact",
@@ -420,9 +420,9 @@
         },
         {
           "id": "NPC01",
-          "name": "Harmless Sleepwalker (non-combat NPC)",
+          "name": "Looper (non-combat NPC; the Sleepwalker until C60)",
           "first_level": 7,
-          "brief": "art-design/npcs/npc01-sleepwalker.md"
+          "brief": "art-design/npcs/npc01-looper.md"
         },
         {
           "name": "Arcadia's executives",
@@ -448,8 +448,8 @@
     {
       "level": 2,
       "act": 1,
-      "name": "Curfew",
-      "brief": "level-design/l02-curfew.md",
+      "name": "Alignment",
+      "brief": "level-design/l02-alignment.md",
       "new_weapon": "Boom Broom",
       "mini_boss": null,
       "new_enemy_types": [
@@ -1274,12 +1274,13 @@
       "entry": "prototype-plans/level-01-sunnyvale/README.md",
       "specification": "prototype-plans/level-01-sunnyvale/prototype-spec.json",
       "progress": "prototype-plans/level-01-sunnyvale/09-progress-and-handoff.md",
-      "implementation_path": "prototypes/sunnyvale-godot",
+      "implementation_path": "game",
       "implementation_requested_in_current_task": false,
-      "note": "C33: rebuild the Level 1 prototype from the ground up around the new roster (Night Guard, Patrol Rover, Staffers at the alarm exit only), after the lit-cutout test on one Night Guard (C35). The current build is the C14-C24 revamp (disabled-not-killed Staffers and the Clipper) and is superseded on enemies.",
+      "note": "C33: rebuild the Level 1 prototype from the ground up around the new roster (Night Guard, Patrol Rover, Staffers at the alarm exit only), after the lit-cutout test on one Night Guard (C35). The current build is the C14-C24 revamp (disabled-not-killed Staffers and the Clipper) and is superseded on enemies. C61 (2026-10-12): the painted prototype became the game and moved to game/ (Godot project DEAD EDEN); the pixel prototype was removed from the tree (tag pixel-prototype-final).",
       "later_decisions": [
         "C24",
-        "C33"
+        "C33",
+        "C61"
       ]
     }
   ]

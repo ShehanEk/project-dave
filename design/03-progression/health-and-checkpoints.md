@@ -39,7 +39,7 @@ Saving and reloading use the same checkpoint boundary as death. Show "Progress s
 | World weapons | Identities, positions, resource states, and fitted stages of dropped/authored pickups in the active level |
 | Progression | Microchip wallet, earned upgrade stages by weapon type, recorded evidence-file IDs |
 | World progress | Consumed treasure and supplies, defeated encounter groups (their bodies come back as static corpses, see [W02](../04-world/status-and-enemy-states.md)), switches, doors, completed objectives, and the level's keycard (taken or not) |
-| Story | Completed scenes, protected staff outcomes (freed clinic staff, harmless Sleepwalkers, the founder), route state, server-depot state (Adam's awareness of Dave, the partial evidence copy, the open emergency hatch) and lockdown state, the three L11 launch-circuit controls, isolation verification, manual override access, and latest committed story milestone |
+| Story | Completed scenes, protected staff outcomes (freed clinic staff, Loopers, the founder), route state, server-depot state (Adam's awareness of Dave, the partial evidence copy, the open emergency hatch) and lockdown state, the three L11 launch-circuit controls, isolation verification, manual override access, and latest committed story milestone |
 
 On death, restore **all** of these from one snapshot. Microchips, evidence files, purchases, enemies, pickups, and the keycard acquired or changed after it roll back together. A weapon taken after it returns to its saved location; the saved held weapon returns to the hero. This is rollback, not recovery of an abandoned arsenal.
 

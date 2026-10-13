@@ -55,7 +55,7 @@ All required fights are designed for base weapons. Neither microchip collection 
 - Spending is confined to workbenches in this draft; health and mandatory ammunition are not microchip purchases.
 - Evidence files and keycards cannot be sold, consumed, or converted into microchips.
 - Purchases have no resale or refund loop in this draft. A purchase preview names cost, effect, and resulting wallet before confirmation.
-- Fixed rewards have unique collection identities. Enemy respawns, checkpoint reloads, breakable decoration, and renewable throwables cannot duplicate them. No enemy drops microchips *(proposed)*: not a machine, a guard, a contractor or a Linked person, because people are not loot and machines are not piñatas. A harmless Sleepwalker or a freed staff member never yields a reward either. A mini-boss victory awards one fixed reward, placed in the arena and released when the fight ends rather than dropped from the body, and counted inside that level's main-route figure.
+- Fixed rewards have unique collection identities. Enemy respawns, checkpoint reloads, breakable decoration, and renewable throwables cannot duplicate them. No enemy drops microchips *(proposed)*: not a machine, a guard, a contractor or a Linked person, because people are not loot and machines are not piñatas. A Looper or a freed staff member never yields a reward either. A mini-boss victory awards one fixed reward, placed in the arena and released when the fight ends rather than dropped from the body, and counted inside that level's main-route figure.
 - Death restores the last committed wallet and world reward state together. There is no extra percentage penalty.
 
 ## Level-designer allocation recipe

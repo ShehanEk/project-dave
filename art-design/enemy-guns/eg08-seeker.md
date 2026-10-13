@@ -1,11 +1,11 @@
 # "Lantern" Seeker
 
-**Direction (C14–C35, 2026-09-29):** mature dark sci-fi — evil corporation Arcadia Dynamics, sentient AI Adam, rogue AI researcher Dave Harlan; human, cyborg and machine enemies with guns; visible blood; no zombies, no stealth. Enemy art: lit cutout rig with smooth realistic lighting ([style guide](../style-guide.md)).
+**Direction (C14–C35, 2026-09-29; C56–C60, 2026-10-12):** mature corporate-cyberpunk sci-fi — evil corporation Arcadia Dynamics, sentient AI Adam, rogue AI researcher Dave Harlan; human, cyborg and machine enemies with guns; visible blood; no zombies, no stealth. Enemy art: painted HD parts on a lit cutout rig (C56), in the corporate cyberpunk look (C58), with alert, composed people (C57) and neon trim per controller (C60) ([style guide](../style-guide.md)).
 
 **Asset ID:** EG08\
 **Category:** enemy-guns\
 **First appearance:** Level 8\
-**Design status:** Enemy art direction (C35): a lit cutout rig with smooth, realistic engine lighting; confirmed direction, validated by the approved lit-cutout test (2026-09-30). This gun's name, look, colors and numbers are *proposed* (C27, P23), and no image is approved yet. Dimensions are provisional art proportions, not engine specifications.
+**Design status:** Look follows C60 (approved 2026-10-12): a painted HD gun sprite on a hand socket (C56), corporate cyberpunk (C58); Adam's guns read as magenta-trimmed hardware. Concept images are still to be generated. This gun's name, look, colors and numbers are *proposed* (C27, P23). Dimensions are provisional art proportions, not engine specifications.
 
 ## Identity and carriers
 
@@ -17,13 +17,13 @@ It teaches the homing round: a seeker can be jumped late, led into a wall or sho
 
 ## Look, size and socket
 
-**Futuristic look:** a small pale "eye" round with three fins, trailing a thin wisp. The body is a smooth pale ceramic teardrop with a round lens at the nose, a dark iris and a small white pupil, and three curved fins around the tail.
+**Futuristic look:** a small pale "eye" round with three fins, trailing a thin wisp. The body is a smooth pale composite teardrop, with a thin magenta (#FF3DD5) trim line along each fin edge, with a round lens at the nose, a dark iris and a small white pupil, and three curved fins around the tail.
 
 **Size:** 0.20 m long and 0.10 m across, with a fin span of 0.14 m, about the length of an adult's hand. The two-door hatch under the Keeper Drone's lantern opens about 0.14 m across.
 
 **Socket:** there is no hand grip. The launch ports are the Keeper Drone's lantern hatch (two doors under a frosted glass lantern) and the Sower's two rear vent ports. The muzzle marker sits at the center of the port, and the seeker sprite's origin sits at its center of mass. It leaves the port along the port's axis and then turns toward its heading.
 
-**Colors (flat, unlit):** pale ceramic #E6ECEF body; #C9D3DA fins; dark #14181E iris with a small white pupil; a dark outline. The wisp is a thin pale blue-white line at low opacity.
+**Colors (flat, unlit):** pale composite #E6ECEF body; #C9D3DA fins with thin magenta #FF3DD5 edge lines; dark #14181E iris with a small white pupil; a dark outline. The wisp is a thin pale blue-white line at low opacity.
 
 ## Fire pattern, tell and dodge
 
@@ -43,35 +43,35 @@ It teaches the homing round: a seeker can be jumped late, led into a wall or sho
 
 ## Rules and production
 
-One lens and three fins; no brass, gold or legible text. Adam's shots are strange but never fleshy: the round is ceramic, and its lens is white, never red. The wisp, glow and pop are effects, never painted onto the round. Cut the round as one small sprite with its own normal map (green = up) and a shootable hit zone; the launch hatch or vent belongs to its carrier. Approve the neutral image before the mounted study, and check the round at gameplay size in flight, in grayscale and against near-black backgrounds: it must read as a shot, not a pickup or a drone. The lit cutout look is a confirmed direction, validated by the approved lit-cutout test (2026-09-30) (C35).
+One lens and three fins; no brass, gold or legible text. Adam's shots are strange but never fleshy: the round is composite with thin magenta trim, and its lens is white, never red. The wisp, glow and pop are effects, never painted onto the round. Cut the round as one small sprite with its own normal map (green = up) and a shootable hit zone; the launch hatch or vent belongs to its carrier. Approve the neutral image before the mounted study, and check the round at gameplay size in flight, in grayscale and against near-black backgrounds: it must read as a shot, not a pickup or a drone. The lit cutout look is a confirmed direction, validated by the approved lit-cutout test (2026-09-30) (C35).
 
 ## Image prompt 1 — neutral side view
 
 Copy the entire block into an image generator. Generate and approve this base design before requesting the mounted study.
 
 ```text
-Original 2D game art for DEAD EDEN, a mature dark sci-fi side-view shooter: realistic adult proportions, clean dark outlines, flat base colors, evenly lit with no baked shadows (lighting is added in-engine), grounded industrial and corporate sci-fi design, unsettling rather than cartoonish.
+Original 2D game art for DEAD EDEN, a mature corporate-cyberpunk side-view shooter: detailed hand-painted style, realistic adult proportions, clean dark outlines, evenly lit with soft painted shading and no cast shadows (lighting is added in-engine), sleek, clean, expensive sci-fi design, polished rather than cartoonish.
 
 Design the "Lantern" seeker, a small homing round from an AI's own weapon technology: a single round on its own, with no launcher and no carrier.
 Scale: 0.20 m long and 0.10 m across, with a fin span of 0.14 m; about the length of an adult's hand.
 Silhouette: a smooth teardrop with a round lens at the nose and three curved fins around the tail, like a pale eye with a tail.
-Physical design: a seamless pale ceramic teardrop body, a round lens at the nose with a dark iris and a small white pupil, three curved fins around the tail, and a thin dark seam ring around the middle. No brass, no visible logos.
-Materials and colors: pale ceramic #E6ECEF body; #C9D3DA fins; dark #14181E iris with a small white pupil.
+Physical design: a seamless pale composite teardrop body, a round lens at the nose with a dark iris and a small white pupil, three curved fins around the tail, and a thin dark seam ring around the middle. No brass, no visible logos.
+Materials and colors: pale composite #E6ECEF body; #C9D3DA fins with thin magenta #FF3DD5 edge lines; dark #14181E iris with a small white pupil.
 Critical consistency: one lens, three fins, no fleshy details, no brass, no text or logos.
 Show the round in strict side view with the nose pointing to the right, two fins visible and the third foreshortened behind.
 
-One complete 2D subject only, centered and fully visible on a flat mid-grey (#808080) background, evenly lit and flat-colored so it can be cut into parts: no baked shadows, no cast or contact shadow, no highlights, no rim light, no glow, no wisp, no muzzle flash, no blood. No launcher, no carrier, no airbrushed gradients, glossy chrome, photoreal volumetrics, pixel art, environment, UI, watermark, text, logos, labels, measurement arrows or franchise props. Draw one subject, not a multi-panel sheet.
+One complete 2D subject only, centered and fully visible on a flat mid-grey (#808080) background, evenly lit and hand-painted so it can be cut into parts: no baked shadows, no cast or contact shadow, no highlights, no rim light, no glow, no wisp, no muzzle flash, no blood. No launcher, no carrier, no airbrushed gradients, glossy chrome, photoreal volumetrics, pixel art, environment, UI, watermark, text, logos, labels, measurement arrows or franchise props. Draw one subject, not a multi-panel sheet.
 ```
 ## Image prompt 2 — mounted study
 
 Attach the approved neutral image as the visual reference.
 
 ```text
-Original 2D game art for DEAD EDEN, a mature dark sci-fi side-view shooter: realistic adult proportions, clean dark outlines, flat base colors, evenly lit with no baked shadows (lighting is added in-engine), grounded industrial and corporate sci-fi design, unsettling rather than cartoonish. Preserve the attached approved 2D identity reference.
+Original 2D game art for DEAD EDEN, a mature corporate-cyberpunk side-view shooter: detailed hand-painted style, realistic adult proportions, clean dark outlines, evenly lit with soft painted shading and no cast shadows (lighting is added in-engine), sleek, clean, expensive sci-fi design, polished rather than cartoonish. Preserve the attached approved 2D identity reference.
 
 Using the attached approved "Lantern" seeker, draw one mounted study in strict side view: the lower part of a small frosted glass lantern in a slim steel cage, seen from the side, with its two-door hatch open at the bottom (about 0.14 m across) and one seeker seated in the opening with its nose pointing down and to the right. The lantern is dark and unlit, and the seeker keeps the exact approved design at its true size. Show only the lantern's lower part, with no drone body. Preserve the seeker's proportions, colors and part counts.
 
-Flat mid-grey (#808080) background, evenly lit and flat-colored so the lantern and the seeker can be cut apart: no baked shadows, no cast shadow, no highlights, no rim light, no glow, no wisp, no muzzle flash, no blood. No text, logos, labels, motion blur, cinematic framing or new equipment.
+Flat mid-grey (#808080) background, evenly lit and hand-painted so the lantern and the seeker can be cut apart: no baked shadows, no cast shadow, no highlights, no rim light, no glow, no wisp, no muzzle flash, no blood. No text, logos, labels, motion blur, cinematic framing or new equipment.
 ```
 
 See [shared style guide](../style-guide.md), [asset index](../README.md) and [encounter and boss fairness](../../design/04-world/encounter-and-boss-fairness.md).

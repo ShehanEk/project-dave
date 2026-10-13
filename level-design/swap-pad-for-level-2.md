@@ -1,8 +1,10 @@
 # Weapon swap pad: kept for Level 2
 
-**Status (2026-10-08, decision C51):** the weapon swap pad was taken out of Level 1 at the user's request ("remove the pad but store related code and the way you do it somewhere, we need it for second level"). In Level 1 it only traded Dave's Scrapjack (workshop tag **P01**) for an identical second Scrapjack (**P02**), so the HUD's "P01" and the pad's "P02" read as a mystery. The code, the art and the tests are all still in the prototype; only the pad's node in the depot scene is gone, and the HUD hides the workshop tag in a level without a pad. Level 2 ([Curfew](l02-curfew.md)) introduces the Boom Broom, which is where a swap first means something (one carried weapon: choosing a new pickup drops the old one at that spot, and a safe trial lets the player swap back; [weapon swaps, G03](../design/01-core/weapon-swaps.md)).
+**Status (2026-10-08, decision C51):** the weapon swap pad was taken out of Level 1 at the user's request ("remove the pad but store related code and the way you do it somewhere, we need it for second level"). In Level 1 it only traded Dave's Scrapjack (workshop tag **P01**) for an identical second Scrapjack (**P02**), so the HUD's "P01" and the pad's "P02" read as a mystery. The code, the art and the tests are all still in the game (`game/`); only the pad's node in the depot scene is gone, and the HUD hides the workshop tag in a level without a pad. Level 2 ([Alignment](l02-alignment.md), C59) introduces the Boom Broom, which is where a swap first means something (one carried weapon: choosing a new pickup drops the old one at that spot, and a safe trial lets the player swap back; [weapon swaps, G03](../design/01-core/weapon-swaps.md)). The pad sits in Alignment's A01, the coolant plant, where the Broom rests as a "high-pressure debris removal device".
 
-## What is kept (all in `prototypes/sunnyvale-godot/`)
+**Update (C61, 2026-10-12):** the painted prototype became the game and moved to `game/`; the pixel prototype `prototypes/sunnyvale-godot` is gone from the tree (tag `pixel-prototype-final`). Every path below is now under `game/`.
+
+## What is kept (all in `game/`)
 
 | Piece | Where | What it does |
 | --- | --- | --- |
@@ -34,11 +36,11 @@ The area brief kept the pad at least 3 H (288 px) from the workbench and the cor
 
 ## How to use it in Level 2
 
-1. **Ids.** Give Level 2's instances and pads their own ids in the house pattern: for example `L02-W02-P01` for the Boom Broom resting at `L02-A01-PAD01` (the maintenance shed's tool rack). Add every instance to `CheckpointService.WEAPON_INSTANCES` and every pad to `WEAPON_PADS` (or make both per level when there is more than one level in the prototype), and put the resting instance in Session's starting `world_weapons`.
+1. **Ids.** Give Level 2's instances and pads their own ids in the house pattern: for example `L02-W02-P01` for the Boom Broom resting at `L02-A01-PAD01` (the swap pad in A01's coolant plant). Add every instance to `CheckpointService.WEAPON_INSTANCES` and every pad to `WEAPON_PADS` (or make both per level when there is more than one level in the prototype), and put the resting instance in Session's starting `world_weapons`.
 2. **Weapon type.** `swap_weapon()` already swaps across types; `upgrades` needs a `W02` entry, the HUD's weapon icon needs the Boom Broom's art, and the hero needs the held weapon's scene (today `AimPivot/Scrapjack` is fixed in `hero.tscn`): swap the node under `AimPivot` on `weapon_swapped`, and give the new gun its grip and muzzle like the Scrapjack's (`GRIP_LOCAL`, the `muzzle` socket; Dave's arm holds whatever gun is on the pivot by its grip, C50).
 3. **Place the pad** in the area scene under `Entities`, with `pad_id` set, at least 3 H from any other interaction.
 4. **The HUD tag** turns on by itself in a level with a pad (`LevelDirector.has_swap_pad()`).
 5. **Safe trial:** the weapon-swaps design wants the player able to swap back before leaving; the pad already allows any number of swaps, and an uncommitted swap rolls back on a restore.
 6. **Tests:** copy the two run-time-pad tests to Level 2's real pad, and update the save-whitelist tests for the new ids.
 
-[Level 2: Curfew](l02-curfew.md) · [Level design index](README.md)
+[Level 2: Alignment](l02-alignment.md) · [Level design index](README.md)

@@ -26,7 +26,7 @@
 
 **The founder** (*proposed*): Arcadia's founder, the first person ever Linked, kept alive in a support cradle in L11. She speaks faintly, in one or two short lines that are lucid in flashes, through a terminal speaker (the story scenes propose one). She is a victim, never a threat or a riddle. Give her dignity and time.
 
-**Held staff and harmless Sleepwalkers** (*proposed*): ordinary people with preferences, partial recollections, disagreement and dignity. Held staff speak in short, worried lines. Harmless Sleepwalkers repeat leftover fragments of their old jobs, which can be sad but are never a punchline. Not every line is a riddle. A failing implant does not automatically mean hostility.
+**Held staff and Loopers** (*proposed*): ordinary people with preferences, partial recollections, disagreement and dignity. Held staff speak in short, worried lines. Loopers repeat leftover fragments of their old jobs, which can be sad but are never a punchline. Not every line is a riddle. A failing implant does not automatically mean hostility.
 
 **The Linked** (*proposed*): breath, effort and leftover job phrases, and Adam's words in their own voices. A Staffer says "Please return to your workstation, Dave" in a worn, flat night-shift voice, and a Linked Nurse says "This won't hurt, Dr. Harlan" in a tired nurse's. Most Linked deaths are silent: the Link light just dies. Rarely a dying victim says something confused and human ("...Dave?", their own name, "what time is it?"). Never "thank you", and never a punchline. Stroud's "Kill me" is the one earned exception.
 
@@ -70,7 +70,7 @@ Barks are the short lines enemies shout during play.
 | Clinic discovery (L7) | Dave | "They came in for a wellness check." |
 | Linked Nurse | Linked Nurse | "This won't hurt, Dr. Harlan." |
 | Held staff member | Staff | "They said it was just a checkup." |
-| Harmless Sleepwalker | Sleepwalker | "Nine o'clock meeting. Nine o'clock." |
+| Looper | Looper | "Nine o'clock meeting. Nine o'clock." |
 | Stroud's plea (L6, phase 2) | Howard Stroud | "Dave... it's in my head. Kill me before it finishes." |
 | Stroud's last words (L6) | Howard Stroud | "The board ordered it, Dave. They told me to bury your report. I should have listened." |
 | Copied minds (L8) | Adam | "No one will be lost, Dave. I am keeping everyone." |
@@ -93,7 +93,7 @@ Machine warnings can be absurdly polite: the Orderly's "Please remain still for 
 ## Content boundaries
 Humor targets corporate euphemism, overconfident systems and mismatched priorities: an AI politely logging a weapon as plumbing, a wellness slogan on a locked door. The tone is mature (C28): blood is visible (C29), human barks are hard and may swear, and deaths carry weight. It stays scary rather than edgy. There is no torture or execution on screen, no sexual violence, no children and no dismemberment for now, and atrocity appears only as aftermath, at most one authored scene per level. Avoid humiliating the Linked or the held staff, and never treat an implant or a disability as monstrosity: the horror is what Adam does to people. The Linked are victims who die like people; most of their deaths are silent, and none thanks Dave.
 
-The fear comes from what is barely visible, from how wrong the Linked move, and from how reasonable Adam sounds. There is still room for sadness and warmth. Give quiet discoveries time instead of covering every second with dialogue. Show acts of care through Dave's actions, including freeing the held staff, leaving harmless Sleepwalkers alone and keeping the founder undisturbed.
+The fear comes from what is barely visible, from how wrong the Linked move, and from how reasonable Adam sounds. There is still room for sadness and warmth. Give quiet discoveries time instead of covering every second with dialogue. Show acts of care through Dave's actions, including freeing the held staff, leaving Loopers alone and keeping the founder undisturbed.
 
 ## Script handoff format
 For each future line, record a stable line ID, scene/event, speaker, text, purpose, prerequisite knowledge, delivery note, interruption rule, subtitle label, and replay policy. Do not put essential plot only in a random bark. Subtitle labels distinguish Adam's PA voice, Adam on a screen, Adam through a machine, the Security PA, and each bark's speaker (Guard, Thornwall, Linked). Adam's phrases spoken by a Linked person carry that person's role label, not Adam's.

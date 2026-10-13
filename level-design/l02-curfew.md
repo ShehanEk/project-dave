@@ -1,5 +1,7 @@
 # Level 2 — Curfew
 
+> **Superseded (C59, 2026-10-12):** Level 2 is now [Alignment](l02-alignment.md), set in the Cognition Lab. This hedge-maze version is ruled out by C58 (no trees, hedges or gardens) and is kept for history only.
+
 **Direction (C14–C35, 2026-09-29):** mature dark sci-fi — evil corporation Arcadia Dynamics, sentient AI Adam, rogue AI researcher Dave Harlan; human, cyborg and machine enemies with guns; visible blood; no zombies, no stealth. Enemy art: lit cutout rig with smooth realistic lighting ([style guide](../art-design/style-guide.md)).
 
 System details are proposed in the [design pack](../design/README.md): movement, checkpoint rollback, weapon resources, microchip budgets, evidence files, keycards, single-weapon boss requirements and the enemy fairness rules (P23). Use the [AI entry guide](../AI_START_HERE.md) to find the owner before refining this level. Exact supply, evidence-file and keycard placements still need local allocation.

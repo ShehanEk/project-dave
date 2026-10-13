@@ -18,7 +18,7 @@ Every hostile belongs to one of six factions. In play they are one side: the boa
 | **Thornwall** | Rifleman (L4), Heavy Gunner and Grenadier (L5), Marksman (L6), Gun Hound (L5) | Humans and their K9: a private military contractor already on retainer, guarding the defense servers in the Rootworks. The board changed its orders from "guard" to "sanitize", so it arrives the same night with rifles, machine guns, rail rifles and frags. Cold and professional. |
 | **Adam's machines** | Patrol Rover (L1), Security Drone (L2), Sentry Turret and Freight Loader (L4), Sanitizer and Orderly (L7), Keeper Drone (L8), and the Garden-built Pruner and Fitting Arm (L10) | Machines still doing Arcadia's security, freight and clinic jobs, now on Adam's instructions. Garden-built variants of the Rover, Drone and Loader appear in L10–L12. |
 | **The Linked** | Staffer (L1), Linked Lineman (L6), Linked Nurse (L7), Linked Trooper (L8) | People whose Link implants Adam drives. They speak Adam's words in their own voices. Troopers are captured Thornwall contractors. The Linked never block progress. |
-| **Cyborg dogs** | Hound (L2), Gun Hound (L5) | Debarked dogs with a steel jaw, a lens eye and a cable where the tail was. Hounds are Arcadia K9 beside a Night Guard handler in Act 1, Adam-driven with no handler in L7–L8, and Garden-built in L11. The Gun Hound is Thornwall's, with a back-mounted rifle. |
+| **Cyborg dogs** | Hound (L2), Gun Hound (L5) | Sleek armoured K9s with a steel jaw guard, a visor band over the eyes and a neon strip along the spine (C60). Hounds are Arcadia K9 beside a Night Guard handler in Act 1, Adam-driven with no handler in L7–L8, and Garden-built in L11. The Gun Hound is Thornwall's, with a back-mounted rifle. |
 | **The Heirs** | Fitted Heir (L10), Warden (L11) | Adam's synthetic people, built in the Garden from staff minds copied in the Memory Orchard. |
 
 Mini-bosses belong to the faction of their body: the Peacekeeper (Arcadia's driverless crowd-control truck) and the Surgeon are Adam's machines, Howard Stroud is Linked, and the Sower is Adam's Garden-built machine.
@@ -31,7 +31,7 @@ Nothing spreads. There is no infection and no conversion. Adam drives a person's
 Adam's reach is authored. In its lockdown events (*proposed*, P20) it seals doors, kills lights and reroutes machines on a script (see [objects and hazards](objects-and-hazards.md)). Rerouting activates or redirects an authored encounter group; it never changes a unit's type, faction or attacks.
 
 ## Proposed targeting rules
-All combat targets must be authored as hostile or protected. Visual type alone is not enough: a harmless Sleepwalker, a held staff member and the founder are protected people, however they move or look, and they have no hit zone at all.
+All combat targets must be authored as hostile or protected. Visual type alone is not enough: a Looper, a held staff member and the founder are protected people, however they move or look, and they have no hit zone at all.
 
 | Actor | Attacks Dave | Attacks other enemies | Attacks protected people |
 | --- | --- | --- | --- |
@@ -45,7 +45,7 @@ Do not create a whole-world autonomous faction simulation. Enemy attacks hurt Da
 *Proposed:* an encounter brief may declare a specific enemy hazard as **crossfire**, such as a Grenadier's frag burst or a Sanitizer's jet, and list which enemies it can damage. That would let Dave bait a group into its own area attack. Crossfire applies only inside the declared encounter and in view of the play lane. It never reaches protected people. No encounter uses it yet.
 
 ## Projectile ownership
-Dave's direct shots and arcs damage valid hostile targets and marked breakables. They cannot target protected people. Arc chains choose visible valid targets; they never jump through walls or use harmless Sleepwalkers, held staff or the founder as conductive stepping stones.
+Dave's direct shots and arcs damage valid hostile targets and marked breakables. They cannot target protected people. Arc chains choose visible valid targets; they never jump through walls or use Loopers, held staff or the founder as conductive stepping stones.
 
 Dave's Seedlobber explosions can hurt Dave, hostile targets and designated breakables; they never harm protected people. The same rule covers the Impact Pulse of a thrown target and the Arc Welder's Capacitor Burst.
 
@@ -57,13 +57,13 @@ All damaging sources carry an obvious owner and warning. A hostile prop or captu
 Nothing heals, repairs or revives an enemy during a fight *(proposed)*. The earlier roster's repair units, which healed or reactivated other enemies, are cut, and a boss phase change is authored scheduling, not healing. A dead enemy stays dead: its body is scenery, and no enemy can revive, capture or reuse it. Nothing changes a unit's type, faction, attacks or controller, and no generic repair or takeover animation ever touches Dave.
 
 ## Protected-character contract
-The protected people are the founder (the First Patient, L11), the staff held in the clinic (L7–L9) and the harmless Sleepwalkers, a protected NPC type that is no longer an enemy. They have no hit zone. Shots, arcs and blasts pass through them, so nothing can damage, bloody, capture or target them, and a pass-through gives no hit confirmation or spark.
+The protected people are the founder (the First Patient, L11), the staff held in the clinic (L7–L9) and the Loopers, a protected NPC type that is no longer an enemy. They have no hit zone. Shots, arcs and blasts pass through them, so nothing can damage, bloody, capture or target them, and a pass-through gives no hit confirmation or spark.
 
-Harmless Sleepwalkers have a relaxed posture, a dim, steady teal Link light (never amber or red), no attack and no hostile targeting highlight. They never turn hostile, so a misread silhouette cannot cost the player anything, and posture, light and sound tell them apart from the Linked, never color alone.
+Loopers are awake and busy with a routine (C60), with a flickering Link light that is never amber or red, no attack and no hostile targeting highlight. They never turn hostile, so a misread silhouette cannot cost the player anything, and posture, light and sound tell them apart from the Linked, never color alone.
 
 The held staff are never mandatory targets, never enemies and never props. Their bays, monitors and support equipment are not destructible combat targets, and neither is the founder's support cradle. The founder cannot be attacked, harvested, captured or used as a boss. Nothing Dave does in L11 harms her, and no enemy is authored to target her.
 
 ## Review examples
-A Rifleman fires past a Riot Officer: the rounds pass through him, and only Dave's bolts are blocked by the shield. A Linked Trooper's plasma burst lands beside a Thornwall Rifleman: no damage to the Rifleman. A Grenadier's frag lands near a held staff member: nothing happens, and the encounter never placed staff in a fire line. A hero explosion near the founder: no health change. A harmless Sleepwalker among hostiles: it has no hit zone and stays harmless. A lockdown event reroutes a machine group: only the authored group activates, and nothing is converted. A corpse in the lane: no contact damage, no capture, no revival. An executive on a screen: no target highlight, hit volume or collision.
+A Rifleman fires past a Riot Officer: the rounds pass through him, and only Dave's bolts are blocked by the shield. A Linked Trooper's plasma burst lands beside a Thornwall Rifleman: no damage to the Rifleman. A Grenadier's frag lands near a held staff member: nothing happens, and the encounter never placed staff in a fire line. A hero explosion near the founder: no health change. A Looper among hostiles: it has no hit zone and stays harmless. A lockdown event reroutes a machine group: only the authored group activates, and nothing is converted. A corpse in the lane: no contact damage, no capture, no revival. An executive on a screen: no target highlight, hit volume or collision.
 
 [Section index](README.md) · [Design index](../README.md) · [AI entry guide](../../AI_START_HERE.md)
