@@ -15,6 +15,27 @@ The design is [L02 Alignment](../../level-design/l02-alignment.md) (C59). The ga
 | M6 | Lab art | One lab style frame approved first, then the lab sheets imported (walls, floors, partitions, racks, props, the hologram, freight lift); every placement checked in game. | Style frame, then sheets |
 | M7 | Finish | Audio placeholders (or ElevenLabs if asked), tests for every new system, full suite, exported build plays Level 1 into Level 2 to the end. | Playtest |
 
+## v2 redesign (approved 2026-10-14, C62)
+
+The user played Level 2: "level design is not fun. also environment looks really boring"; full redesign, Level 2 only, "longer denser. need more environment objects. more enemies. some of the areas look so artificial". The design is [L02 Alignment v2](../../level-design/l02-alignment.md): six areas, about 40,800 px, 28 encounters, 58 enemies, 8 set pieces, 4 hazard kinds, about 40 breakables, 3 secret rooms, 7 checkpoints, a look per area. The art is Batch 8 (`art-design/handpainted-style.md`): 8a, six area keyframes for approval; 8b, 16 sheets.
+
+| # | Milestone | Done when | Needs the user |
+| --- | --- | --- | --- |
+| R0 | Approve | The v2 design approved; the 8a keyframes approved | Design, keyframes |
+| R1 | Systems | Breakables (states, debris, rewards, secret walls), hazards H1/H2 (cycle, tell, damage area), conveyors H3, the drill sequencer, sliding cover plates, triggered pods and plinths, the launch rack, the vent wave, CP00b; each with tests | — |
+| R2 | Layout | The six areas rebuilt to the v2 tables with supported platforms, stairs, room seams, ceilings and the existing lab pieces as stand-ins; the route bot finishes it | — |
+| R3 | Encounters | All 28 encounters placed under P23; fair-fight tests for each new group; the hold-out with three waves | — |
+| R4 | Art | Batch 8b imported: backdrops per area, the architecture kits, foreground, props, breakables, hazards, background life; every placement checked in captures | 8b sheets |
+| R5 | Life and light | Background motion in every view; each area's own light; lockdown and set-piece light states | — |
+| R6 | Verify | Full suite, the export check, a capture tour; playtest | Playtest |
+
+R1–R3 can be built with stand-in art while the sheets are generated.
+
+- 2026-10-14: R0 done: the design approved ("i agree with your redesign . start working on it", C62); the 8a keyframes stored (`concept-art/style-handpainted/l2v2-key-*-v1.webp`) and the 8b prompt handed over with its references.
+- 2026-10-14: R1 done (five parallel builders, each its own files): breakables and secret walls (`breakable.gd`), hazards H1/H2 and the vent wave (`hazard_vent.gd`, `vent_sequencer.gd`), conveyors (`conveyor.gd`), the drill and pop-up targets (`drill_pad.gd`, `popup_target.gd`), cover plates and the live range (`cover_plate.gd`, `range_live.gd`), release props (`release_pod.gd`), the launch rack (`launch_rack.gd`), ExitWicket waves, and the architecture kit (`stairs.gd` with the hero's floor snap, `lab_structure.gd` for supported catwalks, panelled raised floors, ceilings and walls, `room_seam.gd`). Shared fixes: a newer toast no longer hidden by an older one's fade. 96/96.
+- 2026-10-14: R2–R3 done (three area builders, two areas each, from `area-blueprints-v2.md`): 40,800 px, 28 encounters, 60 enemies + 1 optional, every set piece, 60 main-route chips + trays 20 + cache 20 (`chip_total` 100), 7 checkpoints; a fair-fight playthrough per mandatory encounter (`test_l02v2_a01_a02/a03_a04/a05_a06.gd`). Shared fixes: a vertical lift with a rider never left (its look-ahead ray started on his feet: `moving_platform.gd` RIDER_GAP), a Hound/handler pair errored once its partner was freed (`brawler.gd` `_alive`), the bridge door followed the first hero in the tree (now its own level's). The six v1 level tests rewritten for v2; the full-level route bot finishes in about 198 s (v1 78 s), the hold-out included. The kennel pods' two Hounds are Adam's (no handler, magenta).
+- Next: R4 (the 8b sheets when they arrive), R5 (background life and per-area light), R6 (the export check, a playtest).
+
 ## Art order (C56 rule: one still first)
 
 1. **Lab style frame** (prompt below), approved before any lab sheet.
