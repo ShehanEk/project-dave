@@ -1,300 +1,1156 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=26 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/area_root.gd" id="1_area_root"]
 [ext_resource type="Script" path="res://scripts/world/visuals/area_backdrop.gd" id="2_area_backdrop"]
 [ext_resource type="Script" path="res://scripts/world/block.gd" id="3_block"]
-[ext_resource type="Script" path="res://scripts/world/decal.gd" id="4_decal"]
-[ext_resource type="PackedScene" path="res://scenes/objects/scenery.tscn" id="5_scenery"]
-[ext_resource type="PackedScene" path="res://scenes/objects/chip.tscn" id="6_chip"]
-[ext_resource type="PackedScene" path="res://scenes/objects/practice_target.tscn" id="7_practice_target"]
-[ext_resource type="PackedScene" path="res://scenes/objects/beat_zone.tscn" id="8_beat_zone"]
-[ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="9_route_point"]
-[ext_resource type="PackedScene" path="res://scenes/objects/weapon_pad.tscn" id="10_weapon_pad"]
-[ext_resource type="Script" path="res://scripts/objects/bridge_door.gd" id="11_bridge_door"]
+[ext_resource type="Script" path="res://scripts/world/stairs.gd" id="4_stairs"]
+[ext_resource type="Script" path="res://scripts/world/decal.gd" id="5_decal"]
+[ext_resource type="PackedScene" path="res://scenes/objects/scenery.tscn" id="6_scenery"]
+[ext_resource type="Script" path="res://scripts/world/room_seam.gd" id="7_room_seam"]
+[ext_resource type="PackedScene" path="res://scenes/objects/chip.tscn" id="8_chip"]
+[ext_resource type="PackedScene" path="res://scenes/objects/breakable.tscn" id="9_breakable"]
+[ext_resource type="PackedScene" path="res://scenes/objects/ammo_cartridge.tscn" id="10_ammo_cartridge"]
+[ext_resource type="PackedScene" path="res://scenes/objects/weapon_pad.tscn" id="11_weapon_pad"]
+[ext_resource type="Script" path="res://scripts/objects/bridge_door.gd" id="12_bridge_door"]
+[ext_resource type="PackedScene" path="res://scenes/objects/recovery_station.tscn" id="13_recovery_station"]
+[ext_resource type="PackedScene" path="res://scenes/objects/hazard_vent.tscn" id="14_hazard_vent"]
+[ext_resource type="PackedScene" path="res://scenes/objects/popup_target.tscn" id="15_popup_target"]
+[ext_resource type="PackedScene" path="res://scenes/objects/chip_cache.tscn" id="16_chip_cache"]
+[ext_resource type="PackedScene" path="res://scenes/objects/drill_pad.tscn" id="17_drill_pad"]
+[ext_resource type="PackedScene" path="res://scenes/objects/release_pod.tscn" id="18_release_pod"]
+[ext_resource type="Script" path="res://scripts/combat/encounter_group.gd" id="19_encounter_group"]
+[ext_resource type="PackedScene" path="res://scenes/actors/night_guard.tscn" id="20_night_guard"]
+[ext_resource type="PackedScene" path="res://scenes/actors/staffer.tscn" id="21_staffer"]
+[ext_resource type="PackedScene" path="res://scenes/actors/patrol_rover.tscn" id="22_patrol_rover"]
+[ext_resource type="PackedScene" path="res://scenes/objects/beat_zone.tscn" id="23_beat_zone"]
+[ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="24_route_point"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
+size = Vector2(80, 900)
 
 [node name="A01SkyBridge" type="Node2D"]
 script = ExtResource("1_area_root")
 area_id = "L02-A01"
-width = 2800.0
-camera_top = -480.0
+width = 6200.0
+camera_top = -560.0
 camera_bottom = 120.0
 indoors = true
-wet_until_x = 900.0
+wet_until_x = 1100.0
 interior_look = "lab"
 
 [node name="Background" type="Node2D" parent="."]
 
-[node name="Sky" type="Parallax2D" parent="Background"]
-script = ExtResource("2_area_backdrop")
-mode = 0
-tile_width = 900.0
-horizon_y = 0.0
-
-[node name="Homes" type="Parallax2D" parent="Background"]
-script = ExtResource("2_area_backdrop")
-mode = 1
-tile_width = 900.0
-horizon_y = 0.0
-
-[node name="Plant" type="Node2D" parent="Background"]
-position = Vector2(900, 0)
-
-[node name="Interior" type="Parallax2D" parent="Background/Plant"]
-script = ExtResource("2_area_backdrop")
-mode = 3
-tile_width = 1900.0
-horizon_y = 0.0
-
 [node name="Geometry" type="Node2D" parent="."]
-
-[node name="FloorBridge" type="StaticBody2D" parent="Geometry"]
-position = Vector2(0, 0)
-script = ExtResource("3_block")
-size = Vector2(900, 300)
-kind = 0
-
-[node name="FloorPlant" type="StaticBody2D" parent="Geometry"]
-position = Vector2(900, 0)
-script = ExtResource("3_block")
-size = Vector2(1050, 300)
-kind = 0
-
-[node name="YardStep" type="StaticBody2D" parent="Geometry"]
-position = Vector2(1950, -60)
-script = ExtResource("3_block")
-size = Vector2(450, 360)
-kind = 0
-
-[node name="FloorExit" type="StaticBody2D" parent="Geometry"]
-position = Vector2(2400, 0)
-script = ExtResource("3_block")
-size = Vector2(400, 300)
-kind = 0
-
-[node name="PlantLintel" type="StaticBody2D" parent="Geometry"]
-position = Vector2(900, -460)
-script = ExtResource("3_block")
-size = Vector2(40, 200)
-kind = 2
-
-[node name="CeilingPlant" type="StaticBody2D" parent="Geometry"]
-position = Vector2(940, -460)
-script = ExtResource("3_block")
-size = Vector2(1860, 40)
-kind = 3
 
 [node name="Decals" type="Node2D" parent="."]
 
-[node name="Vent1" type="Node2D" parent="Decals"]
-position = Vector2(1200, 21)
-script = ExtResource("4_decal")
-piece = "vent"
-
-[node name="Grate1" type="Node2D" parent="Decals"]
-position = Vector2(1700, 18)
-script = ExtResource("4_decal")
-piece = "grate"
-
-[node name="Cable1" type="Node2D" parent="Decals"]
-position = Vector2(2550, 19.5)
-script = ExtResource("4_decal")
-piece = "cable"
-
 [node name="Scenery" type="Node2D" parent="."]
 
-[node name="BridgeRail1" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(300, 0)
-kind = 15
-size = Vector2(220, 70)
-
-[node name="BridgeRail2" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(620, 0)
-kind = 15
-size = Vector2(220, 70)
-
-[node name="BridgeBollard1" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(120, 0)
-kind = 21
-size = Vector2(24, 44)
-
-[node name="BridgeBollard2" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(470, 0)
-kind = 21
-size = Vector2(24, 44)
-
-[node name="BridgeSign" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(780, 0)
-kind = 11
-size = Vector2(170, 72)
-text = "COGNITION LAB"
-
-[node name="PlantSign" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(1120, -280)
-kind = 11
-size = Vector2(170, 50)
-text = "COOLANT PLANT"
-
-[node name="PlantSupport1" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(1060, 0)
-kind = 19
-size = Vector2(28, 420)
-
-[node name="PlantPanelA" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(1450, -300)
-kind = 16
-size = Vector2(90, 130)
-
-[node name="PlantLampA" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(1560, 0)
-kind = 6
-size = Vector2(24, 180)
-
-[node name="PlantSupport2" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(1900, 0)
-kind = 19
-size = Vector2(28, 420)
-
-[node name="YardSign" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(1760, -280)
-kind = 11
-size = Vector2(150, 50)
-text = "TEST YARD"
-
-[node name="YardLamp" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(2200, -60)
-kind = 6
-size = Vector2(24, 180)
-
-[node name="YardPanel" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(2450, -300)
-kind = 16
-size = Vector2(90, 130)
-
-[node name="ExitBench" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(2660, 0)
-kind = 22
-size = Vector2(150, 90)
-lab_piece = "lab_bench"
-
-[node name="CoolantTank1" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(1660, 0)
-kind = 22
-lab_piece = "coolant_tank"
-
-[node name="CoolantTank2" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(2560, -60)
-kind = 22
-lab_piece = "coolant_tank"
-flip = true
-
 [node name="Entities" type="Node2D" parent="."]
-
-[node name="Chip_G001" parent="Entities" instance=ExtResource("6_chip")]
-position = Vector2(420, -20)
-entity_id = "L02-A01-G001"
-value = 1
-
-[node name="Chip_G002" parent="Entities" instance=ExtResource("6_chip")]
-position = Vector2(780, -20)
-entity_id = "L02-A01-G002"
-value = 1
-
-[node name="Chip_G003" parent="Entities" instance=ExtResource("6_chip")]
-position = Vector2(1150, -20)
-entity_id = "L02-A01-G003"
-value = 1
-
-[node name="Chip_G004" parent="Entities" instance=ExtResource("6_chip")]
-position = Vector2(1600, -20)
-entity_id = "L02-A01-G004"
-value = 1
-
-[node name="Chip_G005" parent="Entities" instance=ExtResource("6_chip")]
-position = Vector2(2180, -80)
-entity_id = "L02-A01-G005"
-value = 1
-
-[node name="Chip_G006" parent="Entities" instance=ExtResource("6_chip")]
-position = Vector2(2600, -20)
-entity_id = "L02-A01-G006"
-value = 1
-
-[node name="PracticeTarget_1" parent="Entities" instance=ExtResource("7_practice_target")]
-position = Vector2(1800, -150)
-
-[node name="PracticeTarget_2" parent="Entities" instance=ExtResource("7_practice_target")]
-position = Vector2(2050, -210)
-
-[node name="PracticeTarget_3" parent="Entities" instance=ExtResource("7_practice_target")]
-position = Vector2(2300, -210)
-
-[node name="WeaponPad" parent="Entities" instance=ExtResource("10_weapon_pad")]
-position = Vector2(1300, 0)
-pad_id = "L02-A01-PAD01"
-
-[node name="BridgeDoor" type="StaticBody2D" parent="Entities"]
-position = Vector2(920, 0)
-script = ExtResource("11_bridge_door")
 
 [node name="Encounters" type="Node2D" parent="."]
 
 [node name="Beats" type="Node2D" parent="."]
 
-[node name="Beat_B01" parent="Beats" instance=ExtResource("8_beat_zone")]
+[node name="Markers" type="Node2D" parent="."]
+
+[node name="Route" type="Node2D" parent="."]
+
+[node name="Sky" type="Parallax2D" parent="Background"]
+script = ExtResource("2_area_backdrop")
+mode = 0
+tile_width = 1100.0
+horizon_y = 0.0
+
+[node name="Homes" type="Parallax2D" parent="Background"]
+script = ExtResource("2_area_backdrop")
+mode = 1
+tile_width = 1100.0
+horizon_y = 0.0
+
+[node name="Plant" type="Node2D" parent="Background"]
+position = Vector2(1100, 0)
+
+[node name="Interior" type="Parallax2D" parent="Background/Plant"]
+script = ExtResource("2_area_backdrop")
+mode = 3
+tile_width = 5100.0
+horizon_y = 0.0
+
+[node name="FloorBridge" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(0, 0)
+size = Vector2(1100, 300)
+kind = 0
+
+[node name="PlantLintel" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(1100, -460)
+size = Vector2(40, 200)
+kind = 2
+
+[node name="PlantFacade" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(1100, -640)
+size = Vector2(40, 180)
+kind = 2
+
+[node name="FloorAirlock" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(1100, 0)
+size = Vector2(500, 300)
+kind = 0
+
+[node name="CeilingAirlock" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(1140, -340)
+size = Vector2(470, 40)
+kind = 3
+
+[node name="BulkheadPump" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(1580, -560)
+size = Vector2(40, 260)
+kind = 2
+
+[node name="CeilingPump" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(1580, -600)
+size = Vector2(1340, 40)
+kind = 3
+
+[node name="FloorPumpEntry" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(1600, 0)
+size = Vector2(200, 300)
+kind = 0
+
+[node name="CoolantWalk" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(1800, 0)
+size = Vector2(900, 40)
+kind = 0
+
+[node name="CoolantChannel" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(1800, 64)
+size = Vector2(900, 236)
+kind = 0
+fill_override = Color(0.04, 0.2, 0.24, 1)
+
+[node name="FloorPumpExit" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(2700, 0)
+size = Vector2(200, 300)
+kind = 0
+
+[node name="StairsPump" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("4_stairs")
+position = Vector2(1620, 0)
+rise = 96.0
+run = 144.0
+direction = 1
+
+[node name="PumpPlinth" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(1764, -96)
+size = Vector2(136, 96)
+kind = 0
+
+[node name="PumpCatwalk" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(1950, -190)
+size = Vector2(470, 16)
+kind = 1
+support = 1
+
+[node name="BulkheadBay" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(2880, -560)
+size = Vector2(40, 80)
+kind = 2
+
+[node name="CeilingBay" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(2900, -520)
+size = Vector2(1300, 40)
+kind = 3
+
+[node name="FloorBay" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(2900, 0)
+size = Vector2(1300, 300)
+kind = 0
+
+[node name="DrillDeck" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(3900, -120)
+size = Vector2(220, 16)
+kind = 1
+support = 2
+
+[node name="BulkheadGallery" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(4180, -480)
+size = Vector2(40, 180)
+kind = 2
+
+[node name="CeilingGallery" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(4200, -340)
+size = Vector2(1200, 40)
+kind = 3
+
+[node name="FloorGallery" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(4200, 0)
+size = Vector2(1200, 300)
+kind = 0
+
+[node name="ValveBlock" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(4420, -72)
+size = Vector2(48, 72)
+kind = 4
+
+[node name="PipeA" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(4580, -150)
+size = Vector2(240, 24)
+kind = 1
+support = 1
+railing = 3
+
+[node name="PipeB" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(5000, -150)
+size = Vector2(240, 24)
+kind = 1
+support = 1
+railing = 3
+
+[node name="BulkheadStair" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(5380, -520)
+size = Vector2(40, 220)
+kind = 2
+
+[node name="CeilingStair" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(5400, -560)
+size = Vector2(800, 40)
+kind = 3
+
+[node name="FloorStair" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(5400, 0)
+size = Vector2(800, 300)
+kind = 0
+
+[node name="StairsService" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("4_stairs")
+position = Vector2(5450, 0)
+rise = 180.0
+run = 250.0
+direction = 1
+
+[node name="ServiceLanding" type="StaticBody2D" parent="Geometry"]
+script = ExtResource("3_block")
+position = Vector2(5700, -180)
+size = Vector2(250, 16)
+kind = 1
+support = 2
+
+[node name="BridgeGrate" type="Node2D" parent="Decals"]
+script = ExtResource("5_decal")
+position = Vector2(640, 18)
+piece = "grate"
+
+[node name="AirlockGrate1" type="Node2D" parent="Decals"]
+script = ExtResource("5_decal")
+position = Vector2(1250, 18)
+piece = "grate"
+
+[node name="AirlockVent" type="Node2D" parent="Decals"]
+script = ExtResource("5_decal")
+position = Vector2(1460, 21)
+piece = "vent"
+
+[node name="PumpCable" type="Node2D" parent="Decals"]
+script = ExtResource("5_decal")
+position = Vector2(1700, 19.5)
+piece = "cable"
+
+[node name="WalkGrate1" type="Node2D" parent="Decals"]
+script = ExtResource("5_decal")
+position = Vector2(1990, 18)
+piece = "grate"
+
+[node name="WalkGrate2" type="Node2D" parent="Decals"]
+script = ExtResource("5_decal")
+position = Vector2(2420, 18)
+piece = "grate"
+flip = true
+
+[node name="BayCable" type="Node2D" parent="Decals"]
+script = ExtResource("5_decal")
+position = Vector2(3200, 19.5)
+piece = "cable"
+flip = true
+
+[node name="BayVent" type="Node2D" parent="Decals"]
+script = ExtResource("5_decal")
+position = Vector2(3620, 21)
+piece = "vent"
+
+[node name="YardGrate" type="Node2D" parent="Decals"]
+script = ExtResource("5_decal")
+position = Vector2(4060, 18)
+piece = "grate"
+
+[node name="GalleryCable" type="Node2D" parent="Decals"]
+script = ExtResource("5_decal")
+position = Vector2(4620, 19.5)
+piece = "cable"
+
+[node name="GalleryGrate" type="Node2D" parent="Decals"]
+script = ExtResource("5_decal")
+position = Vector2(5080, 18)
+piece = "grate"
+flip = true
+
+[node name="StairVent" type="Node2D" parent="Decals"]
+script = ExtResource("5_decal")
+position = Vector2(6080, 21)
+piece = "vent"
+
+[node name="BridgeBollard1" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(120, 0)
+kind = 21
+size = Vector2(24, 44)
+
+[node name="BridgeRail1" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(300, 0)
+kind = 15
+size = Vector2(220, 70)
+
+[node name="BridgeLamp1" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(460, 0)
+kind = 6
+size = Vector2(24, 190)
+
+[node name="BridgeRail2" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(640, 0)
+kind = 15
+size = Vector2(220, 70)
+
+[node name="BridgeBollard2" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(780, 0)
+kind = 21
+size = Vector2(24, 44)
+
+[node name="BridgeLamp2" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(900, 0)
+kind = 6
+size = Vector2(24, 190)
+
+[node name="BridgeSign" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(1010, 0)
+kind = 11
+size = Vector2(170, 72)
+text = "COGNITION LAB"
+
+[node name="AirlockSign" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(1380, -250)
+kind = 11
+size = Vector2(150, 40)
+text = "AIRLOCK"
+
+[node name="AirlockPanel" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(1240, -150)
+kind = 16
+size = Vector2(70, 100)
+
+[node name="AirlockLamp" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(1340, 0)
+kind = 6
+size = Vector2(24, 170)
+
+[node name="AirlockPartition" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(1560, 0)
+kind = 22
+lab_piece = "partition"
+
+[node name="AirlockReader" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(1180, 0)
+kind = 22
+lab_piece = "control_pad"
+
+[node name="AirlockLockers" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(1480, 0)
+kind = 22
+lab_piece = "proto_crate"
+flip = true
+
+[node name="AirlockPipe" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(1420, 0)
+kind = 19
+size = Vector2(22, 300)
+
+[node name="SeamPump" type="Node2D" parent="Scenery"]
+script = ExtResource("7_room_seam")
+position = Vector2(1600, 0)
+icon = 10
+height = 300.0
+
+[node name="PumpSign" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(1760, -360)
+kind = 11
+size = Vector2(180, 50)
+text = "COOLANT PLANT"
+
+[node name="PumpTankA" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(1700, 0)
+kind = 22
+lab_piece = "coolant_tank"
+
+[node name="PlinthLamp" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(1880, -96)
+kind = 6
+size = Vector2(24, 120)
+
+[node name="PipeRun1" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(1995, 0)
+kind = 19
+size = Vector2(30, 560)
+
+[node name="PumpTankB" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(2120, 0)
+kind = 22
+lab_piece = "coolant_tank"
+
+[node name="CatwalkLamp1" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(2060, -190)
+kind = 6
+size = Vector2(24, 110)
+
+[node name="PumpTankC" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(2400, 0)
+kind = 22
+lab_piece = "coolant_tank"
+flip = true
+
+[node name="PipeRun2" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(2500, 0)
+kind = 19
+size = Vector2(30, 560)
+
+[node name="CatwalkLamp2" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(2380, -190)
+kind = 6
+size = Vector2(24, 110)
+
+[node name="PumpPanel" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(2660, -280)
+kind = 16
+size = Vector2(90, 120)
+
+[node name="PumpLamp" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(2640, 0)
+kind = 6
+size = Vector2(24, 190)
+
+[node name="PumpTankD" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(2880, 0)
+kind = 22
+lab_piece = "coolant_tank"
+flip = true
+
+[node name="PipeRun0" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(1650, 0)
+kind = 19
+size = Vector2(26, 560)
+
+[node name="PipeRun3" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(2290, 0)
+kind = 19
+size = Vector2(22, 560)
+
+[node name="PipeRun4" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(2780, 0)
+kind = 19
+size = Vector2(34, 560)
+
+[node name="PumpScreens" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(2180, -420)
+kind = 16
+size = Vector2(160, 90)
+
+[node name="PumpSign2" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(2600, -440)
+kind = 11
+size = Vector2(110, 36)
+text = "LOOP 2"
+
+[node name="PumpRack" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(2700, 0)
+kind = 22
+lab_piece = "server_rack"
+flip = true
+
+[node name="SeamBay" type="Node2D" parent="Scenery"]
+script = ExtResource("7_room_seam")
+position = Vector2(2900, 0)
+icon = 2
+height = 480.0
+
+[node name="CagePartitionA" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(2925, 0)
+kind = 22
+lab_piece = "partition"
+
+[node name="BaySign" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(3010, -330)
+kind = 11
+size = Vector2(140, 44)
+text = "TEST ARMS"
+
+[node name="CagePanel" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(3060, -210)
+kind = 16
+size = Vector2(80, 110)
+
+[node name="CagePartitionB" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(3105, 0)
+kind = 22
+lab_piece = "partition"
+flip = true
+
+[node name="BayLamp" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(3170, 0)
+kind = 6
+size = Vector2(24, 190)
+
+[node name="PadLamp" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(3340, 0)
+kind = 6
+size = Vector2(24, 190)
+
+[node name="DrillSign" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(3560, -370)
+kind = 11
+size = Vector2(160, 46)
+text = "DRILL YARD"
+
+[node name="DrillBench" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(3660, 0)
+kind = 22
+lab_piece = "lab_bench"
+
+[node name="DrillLamp" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(3820, 0)
+kind = 6
+size = Vector2(24, 200)
+
+[node name="DeckLamp" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(4105, -120)
+kind = 6
+size = Vector2(24, 110)
+
+[node name="DrillRack" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(4150, 0)
+kind = 22
+lab_piece = "server_rack"
+
+[node name="WeaponBench" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(3040, 0)
+kind = 22
+lab_piece = "range_bench"
+
+[node name="DrillConsole" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(3480, 0)
+kind = 22
+lab_piece = "control_pad"
+
+[node name="BayScreens" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(3600, -330)
+kind = 16
+size = Vector2(170, 80)
+
+[node name="DrillCrates" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(3880, 0)
+kind = 22
+lab_piece = "proto_crate"
+
+[node name="BayPipe" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(3330, 0)
+kind = 19
+size = Vector2(26, 480)
+
+[node name="SeamGallery" type="Node2D" parent="Scenery"]
+script = ExtResource("7_room_seam")
+position = Vector2(4200, 0)
+icon = 10
+height = 300.0
+
+[node name="GalleryPipe1" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(4330, 0)
+kind = 19
+size = Vector2(34, 300)
+
+[node name="GalleryLamp1" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(4380, -72)
+kind = 6
+size = Vector2(24, 110)
+
+[node name="GalleryTank" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(4860, 0)
+kind = 22
+lab_piece = "coolant_tank"
+
+[node name="GalleryPipe2" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(4920, 0)
+kind = 19
+size = Vector2(34, 300)
+
+[node name="GalleryLamp2" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(4960, 0)
+kind = 6
+size = Vector2(24, 160)
+
+[node name="GallerySign" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(4740, -265)
+kind = 11
+size = Vector2(150, 34)
+text = "PIPE GALLERY"
+
+[node name="GalleryCrates" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(5200, 0)
+kind = 22
+lab_piece = "proto_crate"
+
+[node name="GalleryPipe3" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(4560, 0)
+kind = 19
+size = Vector2(40, 300)
+
+[node name="GalleryPipe4" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(5270, 0)
+kind = 19
+size = Vector2(40, 300)
+
+[node name="GalleryTank2" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(4640, 0)
+kind = 22
+lab_piece = "coolant_tank"
+flip = true
+
+[node name="GalleryPanel" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(5100, -260)
+kind = 16
+size = Vector2(90, 70)
+
+[node name="SeamStair" type="Node2D" parent="Scenery"]
+script = ExtResource("7_room_seam")
+position = Vector2(5400, 0)
+icon = 9
+height = 300.0
+
+[node name="StairPanel" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(5560, -330)
+kind = 16
+size = Vector2(90, 110)
+
+[node name="LandingLamp" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(5930, -180)
+kind = 6
+size = Vector2(24, 110)
+
+[node name="StairLamp" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(5420, 0)
+kind = 6
+size = Vector2(24, 190)
+
+[node name="StairCrates" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(6120, 0)
+kind = 22
+lab_piece = "proto_crate"
+flip = true
+
+[node name="StairSign" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(6060, -330)
+kind = 11
+size = Vector2(160, 44)
+text = "FIRING RANGE"
+
+[node name="ExitLamp" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(6000, 0)
+kind = 6
+size = Vector2(24, 190)
+
+[node name="StairRack" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(5560, 0)
+kind = 22
+lab_piece = "server_rack"
+
+[node name="StairPipe" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(5975, 0)
+kind = 19
+size = Vector2(26, 520)
+
+[node name="LandingPad" parent="Scenery" instance=ExtResource("6_scenery")]
+position = Vector2(5700, 0)
+kind = 22
+lab_piece = "control_pad"
+
+[node name="Chip_G001" parent="Entities" instance=ExtResource("8_chip")]
+position = Vector2(420, -20)
+entity_id = "L02-A01-G001"
+value = 1
+
+[node name="Chip_G002" parent="Entities" instance=ExtResource("8_chip")]
+position = Vector2(800, -20)
+entity_id = "L02-A01-G002"
+value = 1
+
+[node name="Chip_G003" parent="Entities" instance=ExtResource("8_chip")]
+position = Vector2(1840, -116)
+entity_id = "L02-A01-G003"
+value = 1
+
+[node name="Chip_G004" parent="Entities" instance=ExtResource("8_chip")]
+position = Vector2(2180, -210)
+entity_id = "L02-A01-G004"
+value = 1
+
+[node name="Chip_G006" parent="Entities" instance=ExtResource("8_chip")]
+position = Vector2(4020, -140)
+entity_id = "L02-A01-G006"
+value = 1
+
+[node name="Chip_G007" parent="Entities" instance=ExtResource("8_chip")]
+position = Vector2(4700, -170)
+entity_id = "L02-A01-G007"
+value = 1
+
+[node name="Chip_G008" parent="Entities" instance=ExtResource("8_chip")]
+position = Vector2(5120, -170)
+entity_id = "L02-A01-G008"
+value = 1
+
+[node name="Chip_G009" parent="Entities" instance=ExtResource("8_chip")]
+position = Vector2(5840, -200)
+entity_id = "L02-A01-G009"
+value = 1
+
+[node name="Chip_G005" parent="Entities" instance=ExtResource("8_chip")]
+position = Vector2(2740, -20)
+entity_id = "L02-A01-G005"
+value = 1
+
+[node name="ToolCart" parent="Entities" instance=ExtResource("9_breakable")]
+position = Vector2(2740, 0)
+kind = 3
+entity_id = "L02-A01-BR01"
+contents = Array[NodePath]([NodePath("../Chip_G005")])
+
+[node name="GaugePumpA" parent="Entities" instance=ExtResource("9_breakable")]
+position = Vector2(1995, -150)
+kind = 4
+
+[node name="GaugePumpB" parent="Entities" instance=ExtResource("9_breakable")]
+position = Vector2(2500, -140)
+kind = 4
+
+[node name="GaugeCatwalk" parent="Entities" instance=ExtResource("9_breakable")]
+position = Vector2(2240, -270)
+kind = 4
+
+[node name="SightGlassA" parent="Entities" instance=ExtResource("9_breakable")]
+position = Vector2(2200, 0)
+kind = 0
+size = Vector2(20, 90)
+
+[node name="SightGlassB" parent="Entities" instance=ExtResource("9_breakable")]
+position = Vector2(2620, 0)
+kind = 0
+size = Vector2(20, 100)
+
+[node name="GaugeGalleryA" parent="Entities" instance=ExtResource("9_breakable")]
+position = Vector2(4330, -130)
+kind = 4
+
+[node name="GaugeGalleryB" parent="Entities" instance=ExtResource("9_breakable")]
+position = Vector2(4920, -140)
+kind = 4
+
+[node name="AmmoCartridge_AM01" parent="Entities" instance=ExtResource("10_ammo_cartridge")]
+position = Vector2(5770, -180)
+entity_id = "L02-A01-AM01"
+
+[node name="LandingCrate" parent="Entities" instance=ExtResource("9_breakable")]
+position = Vector2(5770, -180)
+kind = 3
+entity_id = "L02-A01-BR02"
+contents = Array[NodePath]([NodePath("../AmmoCartridge_AM01")])
+
+[node name="WeaponPad" parent="Entities" instance=ExtResource("11_weapon_pad")]
+position = Vector2(2960, 0)
+pad_id = "L02-A01-PAD01"
+
+[node name="BridgeDoor" type="StaticBody2D" parent="Entities"]
+script = ExtResource("12_bridge_door")
+position = Vector2(1120, 0)
+
+[node name="RecoveryStation_CP00B" parent="Entities" instance=ExtResource("13_recovery_station")]
+position = Vector2(3250, 0)
+checkpoint_id = "CP00B"
+
+[node name="SteamVent1" parent="Entities" instance=ExtResource("14_hazard_vent")]
+position = Vector2(2080, 0)
+phase = 0.0
+active_time = 0.9
+idle_time = 2.0
+
+[node name="SteamVent2" parent="Entities" instance=ExtResource("14_hazard_vent")]
+position = Vector2(2300, 0)
+phase = 0.7
+active_time = 0.9
+idle_time = 2.0
+
+[node name="SteamVent3" parent="Entities" instance=ExtResource("14_hazard_vent")]
+position = Vector2(2560, 0)
+phase = 1.4
+active_time = 0.9
+idle_time = 2.0
+
+[node name="Dummy1" parent="Entities" instance=ExtResource("15_popup_target")]
+position = Vector2(3630, 0)
+mount = 0
+appear_at = 0.8
+chest_height = 70.0
+
+[node name="Dummy2" parent="Entities" instance=ExtResource("15_popup_target")]
+position = Vector2(3700, -250)
+mount = 1
+appear_at = 1.6
+chest_height = 90.0
+stem_height = 208.0
+
+[node name="Dummy3" parent="Entities" instance=ExtResource("15_popup_target")]
+position = Vector2(3780, 0)
+mount = 0
+appear_at = 2.4
+chest_height = 100.0
+
+[node name="Dummy4" parent="Entities" instance=ExtResource("15_popup_target")]
+position = Vector2(3850, -250)
+mount = 1
+appear_at = 3.2
+chest_height = 90.0
+stem_height = 208.0
+
+[node name="Dummy5" parent="Entities" instance=ExtResource("15_popup_target")]
+position = Vector2(3950, -120)
+mount = 0
+appear_at = 4.4
+chest_height = 62.0
+
+[node name="Dummy6" parent="Entities" instance=ExtResource("15_popup_target")]
+position = Vector2(4080, -120)
+mount = 0
+appear_at = 5.6
+chest_height = 62.0
+
+[node name="Dummy7" parent="Entities" instance=ExtResource("15_popup_target")]
+position = Vector2(4160, 0)
+mount = 0
+appear_at = 7.0
+chest_height = 90.0
+
+[node name="Dummy8" parent="Entities" instance=ExtResource("15_popup_target")]
+position = Vector2(3750, -250)
+mount = 1
+appear_at = 8.4
+chest_height = 50.0
+stem_height = 208.0
+
+[node name="DrillTray" parent="Entities" instance=ExtResource("16_chip_cache")]
+position = Vector2(3540, 0)
+entity_id = "L02-A01-CACHE01"
+value = 10
+
+[node name="DrillPad" parent="Entities" instance=ExtResource("17_drill_pad")]
+position = Vector2(3400, 0)
+entity_id = "L02-A01-DRILL01"
+duration = 15.0
+targets = Array[NodePath]([NodePath("../Dummy1"), NodePath("../Dummy2"), NodePath("../Dummy3"), NodePath("../Dummy4"), NodePath("../Dummy5"), NodePath("../Dummy6"), NodePath("../Dummy7"), NodePath("../Dummy8")])
+reward = NodePath("../DrillTray")
+
+[node name="MaintenanceDoor" parent="Entities" instance=ExtResource("18_release_pod")]
+position = Vector2(5320, 0)
+variant = 2
+group = NodePath("../../Encounters/EncounterGroup_E04")
+after = NodePath("../../Encounters/EncounterGroup_E03")
+delay = 0.8
+
+[node name="EncounterGroup_E01" type="Node2D" parent="Encounters"]
+script = ExtResource("19_encounter_group")
+group_id = "L02-E01"
+lane_rect = Rect2(1140, -300, 470, 400)
+reactivate_cooldown = 0.35
+max_attackers = 1
+
+[node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E01"]
+position = Vector2(1190, 0)
+collision_layer = 0
+collision_mask = 2
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E01/ApproachZone"]
+shape = SubResource("RectangleShape2D_1")
+
+[node name="NightGuard_A" parent="Encounters/EncounterGroup_E01" instance=ExtResource("20_night_guard")]
+position = Vector2(1330, 0)
+entity_id = "L02-E01-SE01-01"
+start_facing = -1
+patrol_min_x = 1300.0
+patrol_max_x = 1380.0
+metadata/notes = "E01: posted inside the airlock; the level opens with a fight against a type Level 1 taught."
+
+[node name="NightGuard_B" parent="Encounters/EncounterGroup_E01" instance=ExtResource("20_night_guard")]
+position = Vector2(1450, 0)
+entity_id = "L02-E01-SE01-02"
+start_facing = -1
+patrol_min_x = 1420.0
+patrol_max_x = 1520.0
+
+[node name="EncounterGroup_E02" type="Node2D" parent="Encounters"]
+script = ExtResource("19_encounter_group")
+group_id = "L02-E02"
+lane_rect = Rect2(1910, -400, 890, 450)
+reactivate_cooldown = 0.35
+max_attackers = 1
+
+[node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E02"]
+position = Vector2(1770, 0)
+collision_layer = 0
+collision_mask = 2
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E02/ApproachZone"]
+shape = SubResource("RectangleShape2D_1")
+
+[node name="Staffer_Catwalk" parent="Encounters/EncounterGroup_E02" instance=ExtResource("21_staffer")]
+position = Vector2(2330, -190)
+entity_id = "L02-E02-LK01-01"
+start_facing = -1
+metadata/notes = "E02: a Linked engineer on the catwalk over the pumps."
+
+[node name="Staffer_Floor" parent="Encounters/EncounterGroup_E02" instance=ExtResource("21_staffer")]
+position = Vector2(2640, 0)
+entity_id = "L02-E02-LK01-02"
+start_facing = -1
+metadata/notes = "E02: a Linked engineer at the pump past the last steam vent."
+
+[node name="EncounterGroup_E03" type="Node2D" parent="Encounters"]
+script = ExtResource("19_encounter_group")
+group_id = "L02-E03"
+lane_rect = Rect2(4470, -300, 800, 400)
+reactivate_cooldown = 0.35
+max_attackers = 1
+
+[node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E03"]
+position = Vector2(4270, 0)
+collision_layer = 0
+collision_mask = 2
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E03/ApproachZone"]
+shape = SubResource("RectangleShape2D_1")
+
+[node name="PatrolRover" parent="Encounters/EncounterGroup_E03" instance=ExtResource("22_patrol_rover")]
+position = Vector2(4760, 0)
+entity_id = "L02-E03-M01-01"
+patrol_min_x = 4640.0
+patrol_max_x = 4860.0
+metadata/notes = "E03: charges left down the gallery and stalls against the valve block (x 4420); its battery is the Broom's first real target."
+
+[node name="EncounterGroup_E04" type="Node2D" parent="Encounters"]
+script = ExtResource("19_encounter_group")
+group_id = "L02-E04"
+lane_rect = Rect2(4470, -300, 930, 400)
+reactivate_cooldown = 0.35
+max_attackers = 1
+wait_for_trigger = true
+
+[node name="NightGuard" parent="Encounters/EncounterGroup_E04" instance=ExtResource("20_night_guard")]
+position = Vector2(5320, 0)
+entity_id = "L02-E04-SE01-01"
+start_facing = -1
+metadata/notes = "E04: steps out of the maintenance door once the rover is down."
+
+[node name="EncounterGroup_E05" type="Node2D" parent="Encounters"]
+script = ExtResource("19_encounter_group")
+group_id = "L02-E05"
+lane_rect = Rect2(5710, -400, 700, 450)
+reactivate_cooldown = 0.35
+max_attackers = 1
+
+[node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E05"]
+position = Vector2(5470, 0)
+collision_layer = 0
+collision_mask = 2
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E05/ApproachZone"]
+shape = SubResource("RectangleShape2D_1")
+
+[node name="NightGuard" parent="Encounters/EncounterGroup_E05" instance=ExtResource("20_night_guard")]
+position = Vector2(5820, 0)
+entity_id = "L02-E05-SE01-01"
+start_facing = -1
+patrol_min_x = 5760.0
+patrol_max_x = 5900.0
+metadata/notes = "E05: on the floor under the service landing."
+
+[node name="Staffer_Landing" parent="Encounters/EncounterGroup_E05" instance=ExtResource("21_staffer")]
+position = Vector2(5880, -180)
+entity_id = "L02-E05-LK01-01"
+start_facing = -1
+metadata/notes = "E05: on the landing; the lane keeps him off the stair flight."
+
+[node name="Beat_B01" parent="Beats" instance=ExtResource("23_beat_zone")]
 position = Vector2(540, -150)
 beat_id = "L02-A01-B01"
 size = Vector2(640, 500)
 
-[node name="Beat_B02" parent="Beats" instance=ExtResource("8_beat_zone")]
-position = Vector2(1400, -150)
+[node name="Beat_B02" parent="Beats" instance=ExtResource("23_beat_zone")]
+position = Vector2(3500, -150)
 beat_id = "L02-A01-B02"
-size = Vector2(900, 500)
+size = Vector2(600, 500)
 
-[node name="Beat_B03" parent="Beats" instance=ExtResource("8_beat_zone")]
-position = Vector2(2300, -150)
+[node name="Beat_B03" parent="Beats" instance=ExtResource("23_beat_zone")]
+position = Vector2(5800, -200)
 beat_id = "L02-A01-B03"
-size = Vector2(900, 500)
-
-[node name="Markers" type="Node2D" parent="."]
+size = Vector2(600, 500)
 
 [node name="Spawn_CP00" type="Marker2D" parent="Markers"]
 position = Vector2(150, -4)
 
-[node name="Route" type="Node2D" parent="."]
+[node name="Respawn_CP00B" type="Marker2D" parent="Markers"]
+position = Vector2(3250, -4)
 
 [node name="R01_CrossBridge" type="Marker2D" parent="Route"]
-position = Vector2(850, 0)
-script = ExtResource("9_route_point")
+script = ExtResource("24_route_point")
+position = Vector2(1000, 0)
 action = 0
 tolerance = 12.0
 
-[node name="R02_PastPadSlot" type="Marker2D" parent="Route"]
-position = Vector2(1400, 0)
-script = ExtResource("9_route_point")
+[node name="R02_Airlock" type="Marker2D" parent="Route"]
+script = ExtResource("24_route_point")
+position = Vector2(1560, 0)
 action = 0
 tolerance = 12.0
 
-[node name="R03_JumpYardStep" type="Marker2D" parent="Route"]
-position = Vector2(1912, 0)
-script = ExtResource("9_route_point")
+[node name="R03_StairsPump" type="Marker2D" parent="Route"]
+script = ExtResource("24_route_point")
+position = Vector2(1700, -50)
+action = 0
+tolerance = 12.0
+
+[node name="R04_OnPlinth" type="Marker2D" parent="Route"]
+script = ExtResource("24_route_point")
+position = Vector2(1850, -96)
+action = 0
+tolerance = 10.0
+
+[node name="R05_JumpCatwalk" type="Marker2D" parent="Route"]
+script = ExtResource("24_route_point")
+position = Vector2(1872, -96)
 action = 1
 tolerance = 6.0
-hold_jump = 0.2
+hold_jump = 0.38
 
-[node name="R04_OnYardStep" type="Marker2D" parent="Route"]
-position = Vector2(2200, -60)
-script = ExtResource("9_route_point")
+[node name="R06_OnCatwalk" type="Marker2D" parent="Route"]
+script = ExtResource("24_route_point")
+position = Vector2(2000, -190)
 action = 0
 tolerance = 12.0
 
-[node name="R05_DropToExit" type="Marker2D" parent="Route"]
-position = Vector2(2500, 0)
-script = ExtResource("9_route_point")
+[node name="R07_CatwalkEnd" type="Marker2D" parent="Route"]
+script = ExtResource("24_route_point")
+position = Vector2(2400, -190)
 action = 0
 tolerance = 12.0
 
-[node name="R06_ToExit" type="Marker2D" parent="Route"]
-position = Vector2(2780, 0)
-script = ExtResource("9_route_point")
+[node name="R08_PastSteam" type="Marker2D" parent="Route"]
+script = ExtResource("24_route_point")
+position = Vector2(2700, 0)
+action = 0
+tolerance = 12.0
+
+[node name="R09_ToStation" type="Marker2D" parent="Route"]
+script = ExtResource("24_route_point")
+position = Vector2(3250, 0)
+action = 0
+tolerance = 12.0
+
+[node name="R10_UseCP00B" type="Marker2D" parent="Route"]
+script = ExtResource("24_route_point")
+position = Vector2(3250, 0)
+action = 3
+tolerance = 16.0
+
+[node name="R11_DrillYard" type="Marker2D" parent="Route"]
+script = ExtResource("24_route_point")
+position = Vector2(3700, 0)
+action = 0
+tolerance = 12.0
+
+[node name="R12_GalleryEntry" type="Marker2D" parent="Route"]
+script = ExtResource("24_route_point")
+position = Vector2(4300, 0)
+action = 0
+tolerance = 12.0
+
+[node name="R13_JumpValveBlock" type="Marker2D" parent="Route"]
+script = ExtResource("24_route_point")
+position = Vector2(4380, 0)
+action = 1
+tolerance = 6.0
+hold_jump = 0.3
+
+[node name="R14_PastValveBlock" type="Marker2D" parent="Route"]
+script = ExtResource("24_route_point")
+position = Vector2(4560, 0)
+action = 0
+tolerance = 12.0
+
+[node name="R15_StairFoot" type="Marker2D" parent="Route"]
+script = ExtResource("24_route_point")
+position = Vector2(5440, 0)
+action = 0
+tolerance = 12.0
+
+[node name="R16_StairTop" type="Marker2D" parent="Route"]
+script = ExtResource("24_route_point")
+position = Vector2(5720, -180)
+action = 0
+tolerance = 12.0
+
+[node name="R17_Landing" type="Marker2D" parent="Route"]
+script = ExtResource("24_route_point")
+position = Vector2(5920, -180)
+action = 0
+tolerance = 12.0
+
+[node name="R18_ToExit" type="Marker2D" parent="Route"]
+script = ExtResource("24_route_point")
+position = Vector2(6180, 0)
 action = 0
 tolerance = 16.0

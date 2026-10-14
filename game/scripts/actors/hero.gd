@@ -7,6 +7,8 @@ extends CharacterBody2D
 signal died
 
 const H := 96.0
+## Floor snap (px) for walking down stairs and ramps (see _ready()).
+const FLOOR_SNAP := 20.0
 
 @export var tuning: HeroTuning
 @export var input_enabled: bool = true
@@ -117,6 +119,16 @@ func _ready() -> void:
 	collision_mask = 1        # layer 1: world
 	motion_mode = CharacterBody2D.MOTION_MODE_GROUNDED
 	platform_on_leave = CharacterBody2D.PLATFORM_ON_LEAVE_DO_NOTHING
+	# Slopes (Level 2 v2 stairs and ramps, scripts/world/stairs.gd): walking down, each tick's
+	# level move leaves the slope (8.5 px a tick at a run down a 1:1.5 flight at 30 fps), so the snap
+	# pulls him back onto it and he stays on the floor (no hop, no landing puff, no flicker in
+	# limit_ground_aim()); a jump or knockback moves up and is never snapped. Stop-on-slope (the
+	# default) keeps him from sliding while standing. floor_constant_speed stays off (he climbs a
+	# little slower than he runs, and descends a little faster): with it on, move_and_slide()'s
+	# slide collisions changed on Level 1's roofs, and test_m3_regress_route's landing probe, which
+	# reads the floor from them, put a jump's takeoff on the moving GapPlatform.
+	floor_snap_length = FLOOR_SNAP
+	floor_stop_on_slope = true
 	if Session:
 		Session.health_changed.connect(_on_health_changed)
 		# M3: the gun on AimPivot follows the held weapon's type.

@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/objects/cover_plate.gd" id="1_plate"]
+[ext_resource type="Script" path="res://scripts/combat/hit_zone.gd" id="2_hitzone"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_plate"]
+size = Vector2(52, 58)
+
+[node name="CoverPlate" type="Node2D"]
+script = ExtResource("1_plate")
+
+[node name="Plate" type="Area2D" parent="."]
+script = ExtResource("2_hitzone")
+blocks = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Plate"]
+position = Vector2(0, -29)
+shape = SubResource("RectangleShape2D_plate")

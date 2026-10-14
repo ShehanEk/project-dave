@@ -77,7 +77,7 @@ func is_solid() -> bool:
 
 
 func _physics_process(delta: float) -> void:
-	var hero := get_tree().get_first_node_in_group("hero") as Node2D
+	var hero := _hero()
 	if hero:
 		var dx := hero.global_position.x - global_position.x
 		match state:
@@ -94,6 +94,17 @@ func _physics_process(delta: float) -> void:
 	if open_amount != target:
 		open_amount = move_toward(open_amount, target, delta / SLIDE_TIME)
 		queue_redraw()
+
+
+## The hero of the level this door is in (its LevelDirector's), else the first in the group: a
+## test that leaves another hero in the tree must not drive this door.
+func _hero() -> Node2D:
+	var n := get_parent()
+	while n:
+		if n is LevelDirector:
+			return n.hero
+		n = n.get_parent()
+	return get_tree().get_first_node_in_group("hero") as Node2D
 
 
 func _open_door() -> void:

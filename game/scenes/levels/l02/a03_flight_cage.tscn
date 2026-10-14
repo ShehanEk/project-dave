@@ -1,349 +1,936 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=27 format=3]
 
-[ext_resource type="Script" path="res://scripts/levels/area_root.gd" id="1_area_root"]
-[ext_resource type="Script" path="res://scripts/world/visuals/area_backdrop.gd" id="2_area_backdrop"]
-[ext_resource type="Script" path="res://scripts/world/block.gd" id="3_block"]
-[ext_resource type="Script" path="res://scripts/world/decal.gd" id="4_decal"]
-[ext_resource type="PackedScene" path="res://scenes/objects/scenery.tscn" id="5_scenery"]
-[ext_resource type="PackedScene" path="res://scenes/objects/chip.tscn" id="6_chip"]
-[ext_resource type="PackedScene" path="res://scenes/objects/workbench.tscn" id="7_workbench"]
-[ext_resource type="PackedScene" path="res://scenes/objects/recovery_station.tscn" id="8_recovery_station"]
-[ext_resource type="Script" path="res://scripts/combat/encounter_group.gd" id="9_encounter_group"]
-[ext_resource type="PackedScene" path="res://scenes/actors/staffer.tscn" id="10_staffer"]
-[ext_resource type="PackedScene" path="res://scenes/objects/beat_zone.tscn" id="11_beat_zone"]
-[ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="12_route_point"]
-[ext_resource type="PackedScene" path="res://scenes/actors/security_drone.tscn" id="13_security_drone"]
-[ext_resource type="PackedScene" path="res://scenes/objects/ammo_cartridge.tscn" id="ammo_cartridge"]
+[ext_resource type="Script" path="res://scripts/levels/area_root.gd" id="area_root"]
+[ext_resource type="Script" path="res://scripts/world/visuals/area_backdrop.gd" id="backdrop"]
+[ext_resource type="Script" path="res://scripts/world/block.gd" id="block"]
+[ext_resource type="Script" path="res://scripts/world/stairs.gd" id="stairs"]
+[ext_resource type="PackedScene" path="res://scenes/objects/moving_platform.tscn" id="platform"]
+[ext_resource type="Script" path="res://scripts/world/decal.gd" id="decal"]
+[ext_resource type="Script" path="res://scripts/world/room_seam.gd" id="seam"]
+[ext_resource type="PackedScene" path="res://scenes/objects/scenery.tscn" id="scenery"]
+[ext_resource type="PackedScene" path="res://scenes/objects/chip.tscn" id="chip"]
+[ext_resource type="PackedScene" path="res://scenes/objects/ammo_cartridge.tscn" id="cartridge"]
+[ext_resource type="PackedScene" path="res://scenes/objects/breakable.tscn" id="breakable"]
+[ext_resource type="PackedScene" path="res://scenes/objects/workbench.tscn" id="workbench"]
+[ext_resource type="PackedScene" path="res://scenes/objects/recovery_station.tscn" id="station"]
+[ext_resource type="PackedScene" path="res://scenes/objects/hazard_vent.tscn" id="vent"]
+[ext_resource type="PackedScene" path="res://scenes/objects/chip_cache.tscn" id="cache"]
+[ext_resource type="PackedScene" path="res://scenes/objects/launch_rack.tscn" id="rack"]
+[ext_resource type="Script" path="res://scripts/combat/encounter_group.gd" id="group"]
+[ext_resource type="PackedScene" path="res://scenes/actors/staffer.tscn" id="staffer"]
+[ext_resource type="PackedScene" path="res://scenes/actors/security_drone.tscn" id="drone"]
+[ext_resource type="PackedScene" path="res://scenes/actors/sidearm_guard.tscn" id="gunner"]
+[ext_resource type="PackedScene" path="res://scenes/objects/beat_zone.tscn" id="beat"]
+[ext_resource type="Script" path="res://scripts/debug/route_point.gd" id="route"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
-size = Vector2(80, 900)
+size = Vector2(60, 200)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2"]
-size = Vector2(80, 300)
+size = Vector2(60, 240)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3"]
+size = Vector2(60, 200)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4"]
+size = Vector2(60, 200)
 
 [node name="A03FlightCage" type="Node2D"]
-script = ExtResource("1_area_root")
+script = ExtResource("area_root")
 area_id = "L02-A03"
-width = 4600.0
-camera_top = -680.0
-camera_bottom = 120.0
+width = 6400
+camera_top = -900
+camera_bottom = 120
 indoors = true
 interior_look = "lab"
 
 [node name="Background" type="Node2D" parent="."]
 
 [node name="Interior" type="Parallax2D" parent="Background"]
-script = ExtResource("2_area_backdrop")
+script = ExtResource("backdrop")
 mode = 3
-tile_width = 4600.0
-horizon_y = 0.0
+tile_width = 6400
+horizon_y = 0
 
 [node name="UpperStorey" type="Node2D" parent="Background"]
-position = Vector2(1700, -360)
+position = Vector2(1420, -450)
 
 [node name="Wall" type="Parallax2D" parent="Background/UpperStorey"]
-script = ExtResource("2_area_backdrop")
+script = ExtResource("backdrop")
 mode = 3
-tile_width = 2900.0
-horizon_y = 0.0
+tile_width = 4980
+horizon_y = 0
 lab_far = false
 
 [node name="Geometry" type="Node2D" parent="."]
 
 [node name="GroundFloor" type="StaticBody2D" parent="Geometry"]
 position = Vector2(0, 0)
-script = ExtResource("3_block")
-size = Vector2(3700, 300)
+script = ExtResource("block")
+size = Vector2(6400, 300)
 kind = 0
 
-[node name="Rig1" type="StaticBody2D" parent="Geometry"]
-position = Vector2(700, -60)
-script = ExtResource("3_block")
-size = Vector2(100, 60)
-kind = 1
+[node name="BayCeiling" type="StaticBody2D" parent="Geometry"]
+position = Vector2(0, -680)
+script = ExtResource("block")
+size = Vector2(1420, 40)
+kind = 3
+
+[node name="CageCeiling" type="StaticBody2D" parent="Geometry"]
+position = Vector2(1420, -940)
+script = ExtResource("block")
+size = Vector2(4980, 40)
+kind = 3
+
+[node name="CageStairs" type="StaticBody2D" parent="Geometry"]
+position = Vector2(1440, 0)
+script = ExtResource("stairs")
+rise = 140
+run = 210
+direction = 1
 
 [node name="Deck1" type="StaticBody2D" parent="Geometry"]
-position = Vector2(800, -120)
-script = ExtResource("3_block")
-size = Vector2(800, 16)
+position = Vector2(1650, -140)
+script = ExtResource("block")
+size = Vector2(400, 16)
 kind = 1
+support = 2
 
-[node name="Step2" type="StaticBody2D" parent="Geometry"]
-position = Vector2(1650, -180)
-script = ExtResource("3_block")
-size = Vector2(100, 16)
-kind = 1
+[node name="Lift1" parent="Geometry" instance=ExtResource("platform")]
+position = Vector2(2175, -130)
+point_a = Vector2(2175, -130)
+point_b = Vector2(2179, -270)
+speed = 50
+pause_time = 1.6
+width = 240
+thickness = 20
 
 [node name="Deck2" type="StaticBody2D" parent="Geometry"]
-position = Vector2(1800, -240)
-script = ExtResource("3_block")
-size = Vector2(1000, 16)
+position = Vector2(2300, -280)
+script = ExtResource("block")
+size = Vector2(450, 16)
 kind = 1
+support = 2
 
-[node name="Step3" type="StaticBody2D" parent="Geometry"]
-position = Vector2(2850, -300)
-script = ExtResource("3_block")
-size = Vector2(100, 16)
-kind = 1
+[node name="Lift2" parent="Geometry" instance=ExtResource("platform")]
+position = Vector2(2850, -270)
+point_a = Vector2(2850, -270)
+point_b = Vector2(2853, -410)
+speed = 50
+pause_time = 1.6
+width = 190
+thickness = 20
 
 [node name="Deck3" type="StaticBody2D" parent="Geometry"]
-position = Vector2(3000, -360)
-script = ExtResource("3_block")
-size = Vector2(700, 16)
+position = Vector2(2950, -420)
+script = ExtResource("block")
+size = Vector2(400, 16)
 kind = 1
 
-[node name="ObservationRoom" type="StaticBody2D" parent="Geometry"]
-position = Vector2(3700, -360)
-script = ExtResource("3_block")
-size = Vector2(500, 660)
+[node name="Lift3" parent="Geometry" instance=ExtResource("platform")]
+position = Vector2(3425, -410)
+point_a = Vector2(3425, -410)
+point_b = Vector2(3428, -550)
+speed = 50
+pause_time = 1.6
+width = 140
+thickness = 20
+
+[node name="Deck4" type="StaticBody2D" parent="Geometry"]
+position = Vector2(3500, -560)
+script = ExtResource("block")
+size = Vector2(400, 16)
+kind = 1
+
+[node name="ObservationFloor" type="StaticBody2D" parent="Geometry"]
+position = Vector2(3900, -560)
+script = ExtResource("block")
+size = Vector2(1100, 560)
 kind = 0
 
-[node name="GroundExit" type="StaticBody2D" parent="Geometry"]
-position = Vector2(4200, 0)
-script = ExtResource("3_block")
-size = Vector2(400, 300)
+[node name="HangarBase" type="StaticBody2D" parent="Geometry"]
+position = Vector2(5000, -300)
+script = ExtResource("block")
+size = Vector2(330, 300)
 kind = 0
 
-[node name="Ceiling" type="StaticBody2D" parent="Geometry"]
-position = Vector2(0, -680)
-script = ExtResource("3_block")
-size = Vector2(4600, 40)
+[node name="HangarStairsUpper" type="StaticBody2D" parent="Geometry"]
+position = Vector2(5000, -300)
+script = ExtResource("stairs")
+rise = 260
+run = 330
+direction = -1
+
+[node name="Gantry" type="StaticBody2D" parent="Geometry"]
+position = Vector2(5330, -300)
+script = ExtResource("block")
+size = Vector2(350, 16)
+kind = 1
+support = 2
+
+[node name="HangarStairsLower" type="StaticBody2D" parent="Geometry"]
+position = Vector2(5680, 0)
+script = ExtResource("stairs")
+rise = 300
+run = 330
+direction = -1
+
+[node name="DuctShelf" type="StaticBody2D" parent="Geometry"]
+position = Vector2(5000, -680)
+script = ExtResource("block")
+size = Vector2(340, 16)
+kind = 1
+support = 1
+railing = 3
+
+[node name="DuctRoof" type="StaticBody2D" parent="Geometry"]
+position = Vector2(5150, -800)
+script = ExtResource("block")
+size = Vector2(210, 20)
 kind = 3
+
+[node name="DuctEnd" type="StaticBody2D" parent="Geometry"]
+position = Vector2(5340, -780)
+script = ExtResource("block")
+size = Vector2(30, 116)
+kind = 2
 
 [node name="Decals" type="Node2D" parent="."]
 
 [node name="Grate1" type="Node2D" parent="Decals"]
-position = Vector2(500, 18)
-script = ExtResource("4_decal")
+position = Vector2(240, 18)
+script = ExtResource("decal")
 piece = "grate"
 
-[node name="Cable1" type="Node2D" parent="Decals"]
-position = Vector2(1500, 19.5)
-script = ExtResource("4_decal")
+[node name="Cable2" type="Node2D" parent="Decals"]
+position = Vector2(880, 19.5)
+script = ExtResource("decal")
 piece = "cable"
 
-[node name="Vent1" type="Node2D" parent="Decals"]
-position = Vector2(2600, 21)
-script = ExtResource("4_decal")
+[node name="Vent3" type="Node2D" parent="Decals"]
+position = Vector2(1180, 21)
+script = ExtResource("decal")
 piece = "vent"
 
-[node name="Grate2" type="Node2D" parent="Decals"]
-position = Vector2(4400, 18)
-script = ExtResource("4_decal")
+[node name="Grate4" type="Node2D" parent="Decals"]
+position = Vector2(1800, 18)
+script = ExtResource("decal")
 piece = "grate"
 flip = true
 
+[node name="Cable5" type="Node2D" parent="Decals"]
+position = Vector2(2500, 19.5)
+script = ExtResource("decal")
+piece = "cable"
+flip = true
+
+[node name="Vent6" type="Node2D" parent="Decals"]
+position = Vector2(3150, 21)
+script = ExtResource("decal")
+piece = "vent"
+
+[node name="Grate7" type="Node2D" parent="Decals"]
+position = Vector2(3700, 18)
+script = ExtResource("decal")
+piece = "grate"
+
+[node name="Grate8" type="Node2D" parent="Decals"]
+position = Vector2(6150, 18)
+script = ExtResource("decal")
+piece = "grate"
+flip = true
+
+[node name="Cable9" type="Node2D" parent="Decals"]
+position = Vector2(6280, 19.5)
+script = ExtResource("decal")
+piece = "cable"
+
 [node name="Scenery" type="Node2D" parent="."]
 
-[node name="CageSign" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(320, -280)
+[node name="SeamBayCage" type="Node2D" parent="Scenery"]
+position = Vector2(1400, 0)
+script = ExtResource("seam")
+icon = 5
+
+[node name="SeamCageObservation" type="Node2D" parent="Scenery"]
+position = Vector2(3900, -560)
+script = ExtResource("seam")
+icon = 2
+
+[node name="SeamObservationHangar" type="Node2D" parent="Scenery"]
+position = Vector2(5000, -560)
+script = ExtResource("seam")
+icon = 9
+
+[node name="SeamHangarExit" type="Node2D" parent="Scenery"]
+position = Vector2(6370, 0)
+script = ExtResource("seam")
+icon = 6
+
+[node name="BaySign" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(330, -330)
 kind = 11
-size = Vector2(160, 50)
-text = "FLIGHT CAGE"
+size = Vector2(156, 44)
+text = "DRONE BAY"
 
-[node name="Deck1Support" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(1200, 0)
-kind = 19
-size = Vector2(24, 104)
-
-[node name="Deck2SupportA" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(2050, 0)
-kind = 19
-size = Vector2(24, 224)
-
-[node name="Deck2SupportB" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(2550, 0)
-kind = 19
-size = Vector2(24, 224)
-
-[node name="Deck3Support" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(3350, 0)
-kind = 19
-size = Vector2(24, 344)
-
-[node name="Deck1Rail" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(1000, -120)
-kind = 1
-size = Vector2(160, 46)
-
-[node name="Deck2Rail" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(2150, -240)
-kind = 1
-size = Vector2(200, 46)
-
-[node name="Workstation" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(3230, -360)
-kind = 22
-size = Vector2(120, 70)
-lab_piece = "lab_bench"
-
-[node name="OpenDoor" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(3470, -360)
-kind = 22
-size = Vector2(110, 150)
-lab_piece = "security_door_open"
-
-[node name="ObservationSign" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(3960, -560)
+[node name="ChargeSign" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(230, -190)
 kind = 11
-size = Vector2(170, 50)
-text = "OBSERVATION"
+size = Vector2(130, 36)
+text = "CHARGING"
 
-[node name="ObservationLamp" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(3990, -360)
-kind = 6
-size = Vector2(24, 180)
+[node name="ChargeRackA" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(170, 0)
+kind = 22
+lab_piece = "server_rack"
 
-[node name="ExitPanel" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(4420, -260)
+[node name="ChargeRackB" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(245, 0)
+kind = 22
+lab_piece = "server_rack"
+
+[node name="ChargeRackC" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(320, 0)
+kind = 22
+lab_piece = "server_rack"
+flip = true
+
+[node name="BayPanelA" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(400, -150)
 kind = 16
-size = Vector2(80, 110)
+size = Vector2(72, 96)
 
-[node name="GroundRack1" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(420, 0)
+[node name="TechBench" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(600, 0)
 kind = 22
-lab_piece = "server_rack"
+lab_piece = "lab_bench"
+flip = true
 
-[node name="GroundRack2" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(500, 0)
+[node name="BayCrates" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(760, 0)
 kind = 22
-lab_piece = "server_rack"
+lab_piece = "proto_crate"
 
-[node name="GroundTank" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(2950, 0)
+[node name="BayTank" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(960, 0)
 kind = 22
 lab_piece = "coolant_tank"
 
-[node name="ObservationRack" parent="Scenery" instance=ExtResource("5_scenery")]
-position = Vector2(4000, -360)
+[node name="BayRackD" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(1190, 0)
 kind = 22
 lab_piece = "server_rack"
 
+[node name="BayRackE" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(1265, 0)
+kind = 22
+lab_piece = "server_rack"
+flip = true
+
+[node name="BayPanelB" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(1100, -170)
+kind = 16
+size = Vector2(90, 70)
+
+[node name="BayLampA" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(110, 0)
+kind = 6
+size = Vector2(26, 130)
+
+[node name="BayLampB" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(680, 0)
+kind = 6
+size = Vector2(26, 130)
+
+[node name="FloodRig" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(1080, 0)
+kind = 6
+size = Vector2(44, 300)
+
+[node name="BayLampC" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(1350, 0)
+kind = 6
+size = Vector2(26, 130)
+
+[node name="CageSign" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(1750, -520)
+kind = 11
+size = Vector2(184, 44)
+text = "FLIGHT CAGE"
+
+[node name="CageFrameL" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(1480, 0)
+kind = 19
+size = Vector2(30, 900)
+
+[node name="CageFrameR" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(3880, 0)
+kind = 19
+size = Vector2(30, 900)
+
+[node name="CageFrameM" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(2650, 0)
+kind = 19
+size = Vector2(30, 900)
+
+[node name="Rig1Rails" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(2177, 0)
+kind = 19
+size = Vector2(34, 300)
+
+[node name="Rig2Rails" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(2851, 0)
+kind = 19
+size = Vector2(34, 440)
+
+[node name="Rig3Rails" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(3426, 0)
+kind = 19
+size = Vector2(34, 580)
+
+[node name="Rig1Sign" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(2177, -420)
+kind = 11
+size = Vector2(90, 36)
+text = "RIG 1"
+
+[node name="Rig2Sign" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(2851, -560)
+kind = 11
+size = Vector2(90, 36)
+text = "RIG 2"
+
+[node name="Rig3Sign" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(3426, -700)
+kind = 11
+size = Vector2(90, 36)
+text = "RIG 3"
+
+[node name="StairLamp" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(1430, 0)
+kind = 6
+size = Vector2(26, 140)
+
+[node name="Rig1LampLow" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(2030, -140)
+kind = 6
+size = Vector2(26, 110)
+
+[node name="Rig1LampHigh" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(2322, -280)
+kind = 6
+size = Vector2(26, 110)
+
+[node name="Rig2LampLow" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(2730, -280)
+kind = 6
+size = Vector2(26, 110)
+
+[node name="Rig2LampHigh" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(2972, -420)
+kind = 6
+size = Vector2(26, 110)
+
+[node name="Rig3LampLow" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(3330, -420)
+kind = 6
+size = Vector2(26, 110)
+
+[node name="Rig3LampHigh" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(3522, -560)
+kind = 6
+size = Vector2(26, 110)
+
+[node name="CatchLampA" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(1820, 0)
+kind = 6
+size = Vector2(26, 120)
+
+[node name="CatchLampB" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(2620, 0)
+kind = 6
+size = Vector2(26, 120)
+
+[node name="CatchLampC" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(3300, 0)
+kind = 6
+size = Vector2(26, 120)
+
+[node name="CatchTank" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(1720, 0)
+kind = 22
+lab_piece = "coolant_tank"
+
+[node name="CatchCrates" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(1960, 0)
+kind = 22
+lab_piece = "proto_crate"
+
+[node name="CatchBench" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(2450, 0)
+kind = 22
+lab_piece = "lab_bench"
+
+[node name="CatchRack" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(2740, 0)
+kind = 22
+lab_piece = "server_rack"
+
+[node name="CatchCratesB" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(3100, 0)
+kind = 22
+lab_piece = "proto_crate"
+flip = true
+
+[node name="CatchTankB" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(3560, 0)
+kind = 22
+lab_piece = "coolant_tank"
+
+[node name="CatchRackB" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(3700, 0)
+kind = 22
+lab_piece = "server_rack"
+
+[node name="CatchRackC" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(3775, 0)
+kind = 22
+lab_piece = "server_rack"
+flip = true
+
+[node name="Deck1Crates" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(1720, -140)
+kind = 22
+lab_piece = "proto_crate"
+
+[node name="Deck2Panel" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(2520, -400)
+kind = 16
+size = Vector2(80, 70)
+
+[node name="Deck2Bench" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(2560, -280)
+kind = 22
+lab_piece = "lab_bench"
+
+[node name="Deck3Panel" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(3120, -540)
+kind = 16
+size = Vector2(80, 70)
+
+[node name="Deck4Rack" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(3650, -560)
+kind = 22
+lab_piece = "server_rack"
+
+[node name="Deck4Panel" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(3780, -680)
+kind = 16
+size = Vector2(80, 70)
+
+[node name="ObservationSign" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(3700, -800)
+kind = 11
+size = Vector2(184, 44)
+text = "OBSERVATION"
+
+[node name="Workstation" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(3990, -560)
+kind = 22
+lab_piece = "office_pod"
+flip = true
+
+[node name="ObsBenchA" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(4170, -560)
+kind = 22
+lab_piece = "lab_bench"
+
+[node name="ObsBenchB" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(4320, -560)
+kind = 22
+lab_piece = "lab_bench"
+flip = true
+
+[node name="ObsRack" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(4630, -560)
+kind = 22
+lab_piece = "server_rack"
+
+[node name="ObsScreenA" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(4170, -760)
+kind = 16
+size = Vector2(100, 70)
+
+[node name="ObsScreenB" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(4630, -760)
+kind = 16
+size = Vector2(100, 70)
+
+[node name="ObsWallSign" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(4400, -840)
+kind = 11
+size = Vector2(198, 44)
+text = "TEST CONTROL"
+
+[node name="ObsLampA" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(3940, -560)
+kind = 6
+size = Vector2(26, 130)
+
+[node name="ObsLampB" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(4390, -560)
+kind = 6
+size = Vector2(26, 130)
+
+[node name="ObsLampC" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(4900, -560)
+kind = 6
+size = Vector2(26, 130)
+
+[node name="HangarSign" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(5750, -800)
+kind = 11
+size = Vector2(114, 44)
+text = "HANGAR"
+
+[node name="DuctSign" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(5250, -850)
+kind = 11
+size = Vector2(100, 34)
+text = "VENT 7"
+
+[node name="GantryLamp" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(5345, -300)
+kind = 6
+size = Vector2(26, 110)
+
+[node name="GantryLampR" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(5668, -300)
+kind = 6
+size = Vector2(26, 110)
+
+[node name="HangarLampA" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(6040, 0)
+kind = 6
+size = Vector2(26, 140)
+
+[node name="HangarLampB" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(6300, 0)
+kind = 6
+size = Vector2(26, 140)
+
+[node name="PocketCratesA" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(5420, 0)
+kind = 22
+lab_piece = "proto_crate"
+
+[node name="PocketCratesB" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(5560, 0)
+kind = 22
+lab_piece = "proto_crate"
+flip = true
+
+[node name="HangarRack" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(6230, 0)
+kind = 22
+lab_piece = "server_rack"
+
+[node name="HangarPanel" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(5820, -520)
+kind = 16
+size = Vector2(90, 70)
+
+[node name="GantryPanel" parent="Scenery" instance=ExtResource("scenery")]
+position = Vector2(5500, -440)
+kind = 16
+size = Vector2(80, 60)
+
 [node name="Entities" type="Node2D" parent="."]
 
-[node name="Chip_G001" parent="Entities" instance=ExtResource("6_chip")]
-position = Vector2(1000, -140)
+[node name="Chip_G001" parent="Entities" instance=ExtResource("chip")]
+position = Vector2(1760, -160)
 entity_id = "L02-A03-G001"
 value = 1
 
-[node name="Chip_G002" parent="Entities" instance=ExtResource("6_chip")]
-position = Vector2(1400, -140)
+[node name="Chip_G002" parent="Entities" instance=ExtResource("chip")]
+position = Vector2(2177, -320)
 entity_id = "L02-A03-G002"
 value = 1
 
-[node name="Chip_G003" parent="Entities" instance=ExtResource("6_chip")]
-position = Vector2(2000, -260)
+[node name="Chip_G003" parent="Entities" instance=ExtResource("chip")]
+position = Vector2(2330, -300)
 entity_id = "L02-A03-G003"
 value = 1
 
-[node name="Chip_G004" parent="Entities" instance=ExtResource("6_chip")]
-position = Vector2(2550, -260)
+[node name="Chip_G004" parent="Entities" instance=ExtResource("chip")]
+position = Vector2(2720, -300)
 entity_id = "L02-A03-G004"
 value = 1
 
-[node name="Chip_G005" parent="Entities" instance=ExtResource("6_chip")]
-position = Vector2(2780, -360)
+[node name="Chip_G005" parent="Entities" instance=ExtResource("chip")]
+position = Vector2(2851, -460)
 entity_id = "L02-A03-G005"
 value = 1
 
-[node name="Chip_G006" parent="Entities" instance=ExtResource("6_chip")]
-position = Vector2(3150, -380)
+[node name="Chip_G006" parent="Entities" instance=ExtResource("chip")]
+position = Vector2(2990, -440)
 entity_id = "L02-A03-G006"
 value = 1
 
-[node name="Chip_G007" parent="Entities" instance=ExtResource("6_chip")]
-position = Vector2(3550, -380)
+[node name="Chip_G007" parent="Entities" instance=ExtResource("chip")]
+position = Vector2(3426, -600)
 entity_id = "L02-A03-G007"
 value = 1
 
-[node name="Chip_G008" parent="Entities" instance=ExtResource("6_chip")]
-position = Vector2(3680, -480)
+[node name="Chip_G008" parent="Entities" instance=ExtResource("chip")]
+position = Vector2(3870, -580)
 entity_id = "L02-A03-G008"
 value = 1
 
-[node name="Chip_G009" parent="Entities" instance=ExtResource("6_chip")]
-position = Vector2(3980, -380)
+[node name="Chip_G009" parent="Entities" instance=ExtResource("chip")]
+position = Vector2(5420, -320)
 entity_id = "L02-A03-G009"
 value = 1
 
-[node name="Workbench" parent="Entities" instance=ExtResource("7_workbench")]
-position = Vector2(3830, -360)
+[node name="Chip_G010" parent="Entities" instance=ExtResource("chip")]
+position = Vector2(5560, -320)
+entity_id = "L02-A03-G010"
+value = 1
+
+[node name="AmmoCartridge_AM01" parent="Entities" instance=ExtResource("cartridge")]
+position = Vector2(1380, 0)
+entity_id = "L02-A03-AM01"
+
+[node name="AmmoCartridge_AM02" parent="Entities" instance=ExtResource("cartridge")]
+position = Vector2(5265, -680)
+entity_id = "L02-A03-AM02"
+
+[node name="Breakable_SecretVent" parent="Entities" instance=ExtResource("breakable")]
+position = Vector2(5170, -680)
+kind = 5
+entity_id = "L02-A03-BR01"
+solid = true
+contents = Array[NodePath]([NodePath("../AmmoCartridge_AM02")])
+size = Vector2(36, 100)
+
+[node name="Breakable_BayMonitor" parent="Entities" instance=ExtResource("breakable")]
+position = Vector2(600, -66)
+kind = 1
+
+[node name="Breakable_BayCrateA" parent="Entities" instance=ExtResource("breakable")]
+position = Vector2(820, 0)
+kind = 3
+
+[node name="Breakable_BayCrateB" parent="Entities" instance=ExtResource("breakable")]
+position = Vector2(1330, 0)
+kind = 3
+
+[node name="Breakable_ObsMonitorA" parent="Entities" instance=ExtResource("breakable")]
+position = Vector2(4170, -626)
+kind = 1
+
+[node name="Breakable_ObsMonitorB" parent="Entities" instance=ExtResource("breakable")]
+position = Vector2(4320, -626)
+kind = 1
+
+[node name="Breakable_HangarCrate" parent="Entities" instance=ExtResource("breakable")]
+position = Vector2(6130, 0)
+kind = 3
+
+[node name="Workbench" parent="Entities" instance=ExtResource("workbench")]
+position = Vector2(4480, -560)
 entity_id = "L02-UPG01"
 
-[node name="RecoveryStation_CP02" parent="Entities" instance=ExtResource("8_recovery_station")]
-position = Vector2(4130, -360)
+[node name="RecoveryStation_CP02" parent="Entities" instance=ExtResource("station")]
+position = Vector2(4780, -560)
 checkpoint_id = "CP02"
 
-[node name="AmmoCartridge_AM01" parent="Entities" instance=ExtResource("ammo_cartridge")]
-position = Vector2(400, 0)
-entity_id = "L02-A03-AM01"
+[node name="LiveCable_D1" parent="Entities" instance=ExtResource("vent")]
+position = Vector2(1890, -140)
+kind = 1
+length = 120
+idle_time = 2.2
+phase = 0
+
+[node name="LiveCable_D3" parent="Entities" instance=ExtResource("vent")]
+position = Vector2(3200, -420)
+kind = 1
+length = 120
+idle_time = 2.2
+phase = 1.4
+
+[node name="RackCache" parent="Entities" instance=ExtResource("cache")]
+position = Vector2(3060, -420)
+entity_id = "L02-A03-CACHE01"
+value = 5
+
+[node name="LaunchRack_RACK01" parent="Entities" instance=ExtResource("rack")]
+position = Vector2(2600, -450)
+size = Vector2(300, 100)
+drones = Array[NodePath]([NodePath("../../Encounters/EncounterGroup_RACK01/SecurityDrone_1"), NodePath("../../Encounters/EncounterGroup_RACK01/SecurityDrone_2"), NodePath("../../Encounters/EncounterGroup_RACK01/SecurityDrone_3")])
+group = NodePath("../../Encounters/EncounterGroup_RACK01")
+interval = 6
+count = 3
+max_live = 2
+trigger_x = 2340
+trigger_dir = 1
+reward = NodePath("../RackCache")
+switch_id = "L02-SW04"
+hanger_length = 350
+metadata/entity_id = "L02-A03-RACK01"
 
 [node name="Encounters" type="Node2D" parent="."]
 
-[node name="EncounterGroup_E03" type="Node2D" parent="Encounters"]
-script = ExtResource("9_encounter_group")
-group_id = "L02-E03"
-lane_rect = Rect2(1800, -700, 1000, 480)
+[node name="EncounterGroup_E11" type="Node2D" parent="Encounters"]
+script = ExtResource("group")
+group_id = "L02-E11"
+lane_rect = Rect2(100, -320, 1250, 420)
 reactivate_cooldown = 0.35
 max_attackers = 1
 
-[node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E03"]
-position = Vector2(1700, 0)
+[node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E11"]
+position = Vector2(170, -60)
 collision_layer = 0
 collision_mask = 2
 monitoring = true
 monitorable = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E03/ApproachZone"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E11/ApproachZone"]
 shape = SubResource("RectangleShape2D_1")
 
-[node name="SecurityDrone" parent="Encounters/EncounterGroup_E03" instance=ExtResource("13_security_drone")]
-position = Vector2(2300, -420)
-entity_id = "L02-E03-M02-01"
-patrol_min_x = 2100.0
-patrol_max_x = 2500.0
+[node name="Staffer_Tech" parent="Encounters/EncounterGroup_E11" instance=ExtResource("staffer")]
+position = Vector2(470, 0)
+entity_id = "L02-E11-LK01-01"
 start_facing = -1
-metadata/notes = "E03: alone, hovering 1.9 H over the widest deck (Deck2, x 1800-2800, y -240): with Dave on that deck the camera shows it 1.25 H inside the view's top, so its tell can start. A missed landing drops to the ground floor, never onto an enemy."
+metadata/notes = "E11: the drone tech at his bench in the bay, wakes as Dave comes in from the kennel's ramp."
 
-[node name="EncounterGroup_E04" type="Node2D" parent="Encounters"]
-script = ExtResource("9_encounter_group")
-group_id = "L02-E04"
-lane_rect = Rect2(3020, -560, 680, 260)
+[node name="EncounterGroup_E12" type="Node2D" parent="Encounters"]
+script = ExtResource("group")
+group_id = "L02-E12"
+lane_rect = Rect2(700, -560, 700, 660)
 reactivate_cooldown = 0.35
 max_attackers = 1
 
-[node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E04"]
-position = Vector2(2950, -400)
+[node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E12"]
+position = Vector2(800, -80)
 collision_layer = 0
 collision_mask = 2
 monitoring = true
 monitorable = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E04/ApproachZone"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E12/ApproachZone"]
 shape = SubResource("RectangleShape2D_2")
 
-[node name="Staffer_LookB" parent="Encounters/EncounterGroup_E04" instance=ExtResource("10_staffer")]
-position = Vector2(3300, -360)
-entity_id = "L02-E04-LK01-B01"
+[node name="SecurityDrone" parent="Encounters/EncounterGroup_E12" instance=ExtResource("drone")]
+position = Vector2(1050, -170)
+entity_id = "L02-E12-M02-01"
 start_facing = -1
-metadata/look = "B"
+patrol_min_x = 900
+patrol_max_x = 1200
+metadata/notes = "E12, the Security Drone's introduction: alone over the bay's open floor, 1.8 H up (its tell needs it 1 H inside the camera)."
+
+[node name="EncounterGroup_RACK01" type="Node2D" parent="Encounters"]
+script = ExtResource("group")
+group_id = "L02-A03-RACK01"
+lane_rect = Rect2(2300, -760, 600, 500)
+reactivate_cooldown = 0.35
+max_attackers = 1
+wait_for_trigger = true
+
+[node name="SecurityDrone_1" parent="Encounters/EncounterGroup_RACK01" instance=ExtResource("drone")]
+position = Vector2(2400, -430)
+entity_id = "L02-A03-RACK01-M02-01"
+start_facing = -1
+patrol_min_x = 2340
+patrol_max_x = 2460
+metadata/notes = "S4: launched from the rack, hovers 1.25-1.6 H over Deck 2 (the rack keeps at most two alive)."
+
+[node name="SecurityDrone_2" parent="Encounters/EncounterGroup_RACK01" instance=ExtResource("drone")]
+position = Vector2(2800, -430)
+entity_id = "L02-A03-RACK01-M02-02"
+start_facing = -1
+patrol_min_x = 2740
+patrol_max_x = 2860
+metadata/notes = "S4: launched from the rack, hovers 1.25-1.6 H over Deck 2 (the rack keeps at most two alive)."
+
+[node name="SecurityDrone_3" parent="Encounters/EncounterGroup_RACK01" instance=ExtResource("drone")]
+position = Vector2(2600, -400)
+entity_id = "L02-A03-RACK01-M02-03"
+start_facing = -1
+patrol_min_x = 2540
+patrol_max_x = 2660
+metadata/notes = "S4: launched from the rack, hovers 1.25-1.6 H over Deck 2 (the rack keeps at most two alive)."
+
+[node name="EncounterGroup_E13" type="Node2D" parent="Encounters"]
+script = ExtResource("group")
+group_id = "L02-E13"
+lane_rect = Rect2(3910, -720, 400, 220)
+reactivate_cooldown = 0.35
+max_attackers = 1
+
+[node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E13"]
+position = Vector2(3760, -640)
+collision_layer = 0
+collision_mask = 2
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E13/ApproachZone"]
+shape = SubResource("RectangleShape2D_3")
+
+[node name="Staffer_Workstation" parent="Encounters/EncounterGroup_E13" instance=ExtResource("staffer")]
+position = Vector2(3970, -560)
+entity_id = "L02-E13-LK01-01"
+start_facing = -1
+metadata/notes = "E13: the Staffer at her workstation in the observation room (asks Dave to return to his)."
+
+[node name="EncounterGroup_E14" type="Node2D" parent="Encounters"]
+script = ExtResource("group")
+group_id = "L02-E14"
+lane_rect = Rect2(5340, -800, 340, 520)
+reactivate_cooldown = 0.35
+max_attackers = 1
+
+[node name="ApproachZone" type="Area2D" parent="Encounters/EncounterGroup_E14"]
+position = Vector2(5030, -640)
+collision_layer = 0
+collision_mask = 2
+monitoring = true
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Encounters/EncounterGroup_E14/ApproachZone"]
+shape = SubResource("RectangleShape2D_4")
+
+[node name="SidearmGuard" parent="Encounters/EncounterGroup_E14" instance=ExtResource("gunner")]
+position = Vector2(5650, -300)
+entity_id = "L02-E14-SE02-01"
+start_facing = -1
+metadata/notes = "E14: on the hangar gantry's far end, facing the stair Dave comes down; his lane is the gantry (no pit behind any standing spot)."
+
+[node name="SecurityDrone" parent="Encounters/EncounterGroup_E14" instance=ExtResource("drone")]
+position = Vector2(5360, -470)
+entity_id = "L02-E14-M02-01"
+start_facing = -1
+patrol_min_x = 5290
+patrol_max_x = 5430
+metadata/notes = "E14: 1.8 H over the gantry's near end."
 
 [node name="Beats" type="Node2D" parent="."]
 
-[node name="Beat_B01" parent="Beats" instance=ExtResource("11_beat_zone")]
-position = Vector2(1200, -300)
+[node name="Beat_B01" parent="Beats" instance=ExtResource("beat")]
+position = Vector2(1450, -400)
 beat_id = "L02-A03-B01"
-size = Vector2(2400, 800)
+size = Vector2(2100, 1000)
 
-[node name="Beat_B02" parent="Beats" instance=ExtResource("11_beat_zone")]
-position = Vector2(3000, -300)
+[node name="Beat_B02" parent="Beats" instance=ExtResource("beat")]
+position = Vector2(3300, -450)
 beat_id = "L02-A03-B02"
-size = Vector2(1200, 800)
+size = Vector2(1600, 1000)
 
-[node name="Beat_B03" parent="Beats" instance=ExtResource("11_beat_zone")]
-position = Vector2(4100, -300)
+[node name="Beat_B03" parent="Beats" instance=ExtResource("beat")]
+position = Vector2(5200, -450)
 beat_id = "L02-A03-B03"
-size = Vector2(1000, 800)
+size = Vector2(2200, 1000)
 
 [node name="Markers" type="Node2D" parent="."]
 
@@ -351,111 +938,123 @@ size = Vector2(1000, 800)
 position = Vector2(96, -4)
 
 [node name="Respawn_CP02" type="Marker2D" parent="Markers"]
-position = Vector2(4130, -364)
+position = Vector2(4780, -564)
 
 [node name="Respawn_UPG01" type="Marker2D" parent="Markers"]
-position = Vector2(3830, -364)
+position = Vector2(4480, -564)
 
 [node name="Route" type="Node2D" parent="."]
 
-[node name="R01_ToRig" type="Marker2D" parent="Route"]
-position = Vector2(650, 0)
-script = ExtResource("12_route_point")
+[node name="R01_StairBase" type="Marker2D" parent="Route"]
+position = Vector2(1380, 0)
+script = ExtResource("route")
 action = 0
-tolerance = 12.0
+tolerance = 12
 
-[node name="R02_JumpRig" type="Marker2D" parent="Route"]
-position = Vector2(668, 0)
-script = ExtResource("12_route_point")
-action = 1
-tolerance = 6.0
-hold_jump = 0.2
-
-[node name="R03_OnRig" type="Marker2D" parent="Route"]
-position = Vector2(760, -60)
-script = ExtResource("12_route_point")
+[node name="R02_UpToDeck1" type="Marker2D" parent="Route"]
+position = Vector2(1700, -140)
+script = ExtResource("route")
 action = 0
-tolerance = 10.0
+tolerance = 12
 
-[node name="R04_JumpDeck1" type="Marker2D" parent="Route"]
-position = Vector2(770, -60)
-script = ExtResource("12_route_point")
-action = 1
-tolerance = 6.0
-hold_jump = 0.2
-
-[node name="R05_AcrossDeck1" type="Marker2D" parent="Route"]
-position = Vector2(1560, -120)
-script = ExtResource("12_route_point")
+[node name="R03_Deck1End" type="Marker2D" parent="Route"]
+position = Vector2(2030, -140)
+script = ExtResource("route")
 action = 0
-tolerance = 12.0
+tolerance = 8
 
-[node name="R06_JumpStep2" type="Marker2D" parent="Route"]
-position = Vector2(1572, -120)
-script = ExtResource("12_route_point")
-action = 1
-tolerance = 6.0
-hold_jump = 0.2
+[node name="R04_WaitRig1Low" type="Marker2D" parent="Route"]
+position = Vector2(2030, -140)
+script = ExtResource("route")
+action = 2
+tolerance = 1
+platform = NodePath("../../Geometry/Lift1")
+platform_target = Vector2(2175, -130)
 
-[node name="R07_OnStep2" type="Marker2D" parent="Route"]
-position = Vector2(1700, -180)
-script = ExtResource("12_route_point")
+[node name="R05_OnRig1" type="Marker2D" parent="Route"]
+position = Vector2(2177, -140)
+script = ExtResource("route")
 action = 0
-tolerance = 10.0
+tolerance = 10
 
-[node name="R08_JumpDeck2" type="Marker2D" parent="Route"]
-position = Vector2(1722, -180)
-script = ExtResource("12_route_point")
-action = 1
-tolerance = 6.0
-hold_jump = 0.2
+[node name="R06_RideRig1" type="Marker2D" parent="Route"]
+position = Vector2(2177, -280)
+script = ExtResource("route")
+action = 2
+tolerance = 1
+platform = NodePath("../../Geometry/Lift1")
+platform_target = Vector2(2179, -270)
 
-[node name="R09_AcrossDeck2" type="Marker2D" parent="Route"]
-position = Vector2(2760, -240)
-script = ExtResource("12_route_point")
+[node name="R07_AcrossDeck2" type="Marker2D" parent="Route"]
+position = Vector2(2730, -280)
+script = ExtResource("route")
 action = 0
-tolerance = 12.0
+tolerance = 8
 
-[node name="R10_JumpStep3" type="Marker2D" parent="Route"]
-position = Vector2(2772, -240)
-script = ExtResource("12_route_point")
-action = 1
-tolerance = 6.0
-hold_jump = 0.2
+[node name="R08_WaitRig2Low" type="Marker2D" parent="Route"]
+position = Vector2(2730, -280)
+script = ExtResource("route")
+action = 2
+tolerance = 1
+platform = NodePath("../../Geometry/Lift2")
+platform_target = Vector2(2850, -270)
 
-[node name="R11_OnStep3" type="Marker2D" parent="Route"]
-position = Vector2(2900, -300)
-script = ExtResource("12_route_point")
+[node name="R09_OnRig2" type="Marker2D" parent="Route"]
+position = Vector2(2851, -280)
+script = ExtResource("route")
 action = 0
-tolerance = 10.0
+tolerance = 10
 
-[node name="R12_JumpDeck3" type="Marker2D" parent="Route"]
-position = Vector2(2922, -300)
-script = ExtResource("12_route_point")
-action = 1
-tolerance = 6.0
-hold_jump = 0.2
+[node name="R10_RideRig2" type="Marker2D" parent="Route"]
+position = Vector2(2851, -420)
+script = ExtResource("route")
+action = 2
+tolerance = 1
+platform = NodePath("../../Geometry/Lift2")
+platform_target = Vector2(2853, -410)
 
-[node name="R13_PastStaffer" type="Marker2D" parent="Route"]
-position = Vector2(3830, -360)
-script = ExtResource("12_route_point")
+[node name="R11_AcrossDeck3" type="Marker2D" parent="Route"]
+position = Vector2(3330, -420)
+script = ExtResource("route")
 action = 0
-tolerance = 12.0
+tolerance = 8
 
-[node name="R14_ToStation" type="Marker2D" parent="Route"]
-position = Vector2(4130, -360)
-script = ExtResource("12_route_point")
+[node name="R12_WaitRig3Low" type="Marker2D" parent="Route"]
+position = Vector2(3330, -420)
+script = ExtResource("route")
+action = 2
+tolerance = 1
+platform = NodePath("../../Geometry/Lift3")
+platform_target = Vector2(3425, -410)
+
+[node name="R13_OnRig3" type="Marker2D" parent="Route"]
+position = Vector2(3426, -420)
+script = ExtResource("route")
 action = 0
-tolerance = 12.0
+tolerance = 10
 
-[node name="R15_UseCP02" type="Marker2D" parent="Route"]
-position = Vector2(4130, -360)
-script = ExtResource("12_route_point")
+[node name="R14_RideRig3" type="Marker2D" parent="Route"]
+position = Vector2(3426, -560)
+script = ExtResource("route")
+action = 2
+tolerance = 1
+platform = NodePath("../../Geometry/Lift3")
+platform_target = Vector2(3428, -550)
+
+[node name="R15_ToStation" type="Marker2D" parent="Route"]
+position = Vector2(4780, -560)
+script = ExtResource("route")
+action = 0
+tolerance = 12
+
+[node name="R16_UseCP02" type="Marker2D" parent="Route"]
+position = Vector2(4780, -560)
+script = ExtResource("route")
 action = 3
-tolerance = 16.0
+tolerance = 16
 
-[node name="R16_DropToExit" type="Marker2D" parent="Route"]
-position = Vector2(4580, 0)
-script = ExtResource("12_route_point")
+[node name="R17_DownToExit" type="Marker2D" parent="Route"]
+position = Vector2(6380, 0)
+script = ExtResource("route")
 action = 0
-tolerance = 16.0
+tolerance = 16

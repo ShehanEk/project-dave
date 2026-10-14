@@ -211,8 +211,10 @@ func _link_handler() -> void:
 		_handler._k9 = self
 
 
-static func _alive(b: Brawler) -> bool:
-	return b != null and is_instance_valid(b) and not b.is_queued_for_deletion() and b.state != State.DEFEATED
+## Untyped on purpose: a typed `Brawler` argument errors ("previously freed") the moment the
+## partner it is handed (a Hound's handler, a handler's Hound) has been freed.
+static func _alive(b) -> bool:
+	return b != null and is_instance_valid(b) and not (b as Node).is_queued_for_deletion() and b.state != State.DEFEATED
 
 
 func has_handler() -> bool:

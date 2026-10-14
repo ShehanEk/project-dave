@@ -22,17 +22,29 @@ extends Area2D
 ## (EncounterGroups with `wait_for_trigger`). When it finishes the bar drops
 ## and the level ends as soon as Dave is in the gate. A death resets it (the
 ## area is rebuilt), so the hold-out always starts over from the card swipe.
+##
+## Sequential waves (Level 2 v2, S7 the freight-lift hold-out): `wave_groups` is an
+## optional ordered list of waves, each an EncounterGroup (`wait_for_trigger`) or a release
+## prop (`scripts/objects/release_pod.gd`, a service door holding its wave's group). The
+## first wave opens the moment the override starts; each next one `wave_delay` after the
+## one before is fully defeated (a door's `release()` runs its own amber-then-red warning
+## before it opens; a bare group is `activate()`d). Waves open only while the override
+## runs: once it finishes no new wave opens. Everything above (override_groups,
+## reinforcement_groups) is unchanged and independent of the waves.
 
 signal wicket_reached
 signal wicket_denied
 signal override_started
 signal override_finished
+## A wave of `wave_groups` was opened (released or activated), by index.
+signal wave_opened(index: int)
 
 const LOCKED := Color("#FFB02E")  # amber: a warning, not danger (red stays reserved for attack tells)
 const UNLOCKED := Color("#3FE0D0")
 const FRAME := Color("#2E3B4E")
 const OUTLINE := Color("#07090F")
 const DENY_COOLDOWN := 1.6
+const ReleasePod := preload("res://scripts/objects/release_pod.gd")
 ## The override's progress bar over the gate (C41 hold-out).
 const BAR_W := 64.0
 const BAR_H := 8.0
@@ -65,6 +77,11 @@ const LabSkins := preload("res://scripts/world/lab_skins.gd")
 @export var override_groups: Array[NodePath] = []
 @export var reinforcement_groups: Array[NodePath] = []
 @export var reinforcement_delay: float = 8.0
+## S7: ordered waves (EncounterGroups or release props), each opened only after the one
+## before is fully defeated, starting when the override starts.
+@export var wave_groups: Array[NodePath] = []
+## Seconds between a wave being defeated and the next one opening.
+@export var wave_delay: float = 1.0
 @export var override_text: String = "Overriding the lockdown. Hold on!"
 @export var open_text: String = "Override complete"
 
@@ -74,6 +91,9 @@ var _deny_cooldown: float = 0.0
 var _override_t: float = -1.0
 var _open: bool = false
 var _reinforced: bool = false
+## Index of the last wave opened (-1 = none yet); the countdown to the next one.
+var _wave: int = -1
+var _wave_wait: float = -1.0
 var _gate: StaticBody2D
 
 @onready var _toast: ToastLabel = get_node_or_null("Toast")
@@ -128,6 +148,7 @@ func _physics_process(delta: float) -> void:
 	if not _reinforced and _override_t >= reinforcement_delay:
 		_reinforced = true
 		_wake(reinforcement_groups)
+	_tick_waves(delta)
 	if _override_t >= override_time:
 		_finish_override()
 	queue_redraw()
@@ -155,6 +176,8 @@ func _start_override() -> void:
 	if _toast:
 		_toast.show_message(override_text)
 	_wake(override_groups)
+	if not wave_groups.is_empty():
+		_open_wave(0)
 	override_started.emit()
 	queue_redraw()
 
@@ -173,6 +196,43 @@ func _finish_override() -> void:
 		if body.is_in_group("hero"):
 			_reach()
 			return
+
+
+## Index of the last wave opened, -1 before the first.
+func current_wave() -> int:
+	return _wave
+
+
+## True when wave `i` exists, has opened and every one of its enemies is down.
+func wave_cleared(i: int) -> bool:
+	if i < 0 or i >= wave_groups.size() or i > _wave:
+		return false
+	return ReleasePod.node_cleared(get_node_or_null(wave_groups[i]))
+
+
+func _tick_waves(delta: float) -> void:
+	if _wave < 0 or _wave >= wave_groups.size() - 1:
+		return
+	if not wave_cleared(_wave):
+		_wave_wait = -1.0
+		return
+	if _wave_wait < 0.0:
+		_wave_wait = wave_delay
+	_wave_wait -= delta
+	if _wave_wait <= 0.0:
+		_wave_wait = -1.0
+		_open_wave(_wave + 1)
+
+
+func _open_wave(i: int) -> void:
+	_wave = i
+	var n := get_node_or_null(wave_groups[i])
+	if n:
+		if n.has_method("release"):
+			n.release()
+		elif n.has_method("activate"):
+			n.activate()
+	wave_opened.emit(i)
 
 
 func _wake(paths: Array[NodePath]) -> void:

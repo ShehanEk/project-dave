@@ -7,9 +7,10 @@ extends TestCase
 ##   2. The Lattice hologram in A05: additive, no collision, a teal light; animated, and static
 ##      under Reduced motion.
 ##   3. The lab props and doors are placed and their pieces exist: the range bench and the
-##      backstop crates, the kennel pods, benches, pods, racks, crates, tanks and doors, the
-##      lane control pads, the A04 partitions and rail lamps, the alignment console, the
-##      freight lift door (closed, then open with the card) and the dummy practice targets.
+##      backstop crates, the kennel pods, benches, pods, racks, crates, tanks and doors (v2's
+##      rooms, C62), the lane control pads, the A04 partitions and rail lamps, the alignment
+##      console, the dummy practice and pop-up targets, and the freight lift door: shut without
+##      the card, still shut while the card's 45 s override (the hold-out) runs, open after it.
 ##   4. The new effects resolve and are wired: the pistol's flash, round and impact, the
 ##      Broom's blast, pellets and casing, the drone's shock arc, the Hound's lunge dust.
 ##   5. The HUD icons exist and Level 2 names its own card and memo.
@@ -28,16 +29,21 @@ const EFFECTS := {
 	"pistol_flash": 4, "pistol_round": 1, "pistol_impact": 4, "shotgun_blast": 4,
 	"shotgun_pellets": 1, "shell_casing": 3, "shock_arc": 4, "lunge_dust": 4,
 }
-## Area index -> {scenery node: lab piece}.
+## Area index -> {scenery node: lab piece} (v2's rooms, C62).
 const PROPS := {
-	0: {"ExitBench": "lab_bench", "CoolantTank1": "coolant_tank"},
+	0: {"DrillBench": "lab_bench", "PumpTankA": "coolant_tank", "PumpRack": "server_rack",
+		"AirlockPartition": "partition", "DrillCrates": "proto_crate"},
 	1: {"KennelPod1": "kennel_pod", "KennelPod2": "kennel_pod", "KennelPod3": "kennel_pod",
-		"LaneDivider1": "lane_divider", "ControlBench": "lab_bench"},
-	2: {"Workstation": "lab_bench", "OpenDoor": "security_door_open", "GroundRack1": "server_rack"},
-	3: {"DeskPod": "office_pod", "PodDoor": "security_door_open", "ChipRack1": "server_rack"},
-	4: {"ArchiveRack1": "server_rack", "LandingBench": "lab_bench"},
-	5: {"ProtoBench1": "proto_crate", "ProtoBench2": "proto_crate", "EntryTank": "coolant_tank"},
+		"LaneDivider1": "lane_divider", "WaitingBench": "lab_bench", "ShootingBench1": "range_bench"},
+	2: {"Workstation": "office_pod", "ObsBenchA": "lab_bench", "Deck4Rack": "server_rack", "BayTank": "coolant_tank"},
+	3: {"DeskPod": "office_pod", "PodDoor": "security_door_open", "OpenCellDoor": "security_door_open",
+		"DeskRackA": "server_rack", "CellDummy1": "test_dummy"},
+	4: {"ArchiveRack1": "server_rack", "Prop_lab_bench3": "lab_bench", "ReceptionDesk": "office_pod"},
+	5: {"BalconyStore1": "proto_crate", "BalconyStore2": "proto_crate", "Prop_coolant_tank": "coolant_tank",
+		"LobbyDesk": "lab_bench"},
 }
+## The freight lift's override (the A06 hold-out, S7).
+const OVERRIDE_S := 45.0
 
 
 func run() -> void:
@@ -51,6 +57,8 @@ func run() -> void:
 	_test_props_and_doors(lvl)
 	await _test_freight_door_opens(lvl)
 	await _free(lvl)
+	# Freed even if a sub-test above aborted on a script error before its own clean-up.
+	await _clear_leftovers()
 	await _test_level_1_unchanged()
 	await _test_hologram_reduced_motion()
 	await _test_effects()
@@ -72,6 +80,16 @@ func _free(node) -> void:
 	if is_instance_valid(node):
 		node.queue_free()
 	await physics_frames(2)
+
+
+## Frees whatever is still under this case (a level a sub-test left when a script error aborted
+## it before its own _free()), so nothing stray is in the world for the next sub-test.
+func _clear_leftovers() -> void:
+	var left := get_children()
+	for c in left:
+		c.queue_free()
+	if not left.is_empty():
+		await physics_frames(2)
 
 
 func _test_pieces_exist() -> void:
@@ -141,15 +159,21 @@ func _test_props_and_doors(lvl: LevelDirector) -> void:
 	var bench: Block = lvl.areas[1].get_node("Geometry/RangeBench")
 	check_eq(bench.lab_skin(), "range_bench", "the range bench (cover block) wears the painted bench")
 	check_eq(lvl.areas[1].get_node("Geometry/KennelWall").lab_skin(), "proto_crate", "the kennel backstop is a crate stack")
-	for n in ["DockBackstopL", "DockBackstopR", "CrateStack"]:
+	for n in ["DockBackstopL", "DockBackstopR", "PedestalB", "PedestalC"]:
 		check_eq(lvl.areas[5].get_node("Geometry/" + n).lab_skin(), "proto_crate", "A06's %s is backstop crates" % n)
-	check_eq(lvl.areas[1].get_node("Geometry/FloorRange").lab_skin(), "", "a floor keeps its terrain skin")
+	for n in ["CoverCrateA", "CoverCrateB"]:
+		check_eq(lvl.areas[5].get_node("Geometry/" + n).lab_skin(), "range_bench", "A06's cover %s wears the painted bench" % n)
+	check_eq(lvl.areas[1].get_node("Geometry/FloorLane").lab_skin(), "", "a floor keeps its terrain skin")
 	for p in ["ControlPad_SW01", "ControlPad_SW02", "ControlPad_SW03"]:
 		check_eq(lvl.areas[3].get_node("Entities/" + p).lab_piece(), "control_pad", "A04's %s is the lane control pad" % p)
 	# M5: the sky bridge's door is the working glass door (bridge_door.gd), painted.
 	check(lvl.areas[0].get_node("Entities/BridgeDoor").painted(), "A01's bridge door is the painted glass door")
-	for t in ["PracticeTarget_1", "PracticeTarget_2", "PracticeTarget_3"]:
-		check_eq(lvl.areas[0].get_node("Entities/" + t).lab_piece(), "test_dummy", "A01's %s is the test dummy" % t)
+	for t in ["RangeTarget1", "RangeTarget2"]:
+		check_eq(lvl.areas[1].get_node("Entities/" + t).lab_piece(), "test_dummy", "A02's %s is the test dummy" % t)
+	var drill: Node = lvl.areas[0].get_node("Entities/DrillPad")
+	for p in drill.targets:
+		var dummy: Node = drill.get_node(p)
+		check_eq(dummy.piece, "test_dummy", "A01's drill target %s is the test dummy" % dummy.name)
 	# The A04 lanes: the painted partition and the rail lamps along the trench.
 	var rack = lvl.areas[3].get_node("Geometry/RailRack_1")
 	var x0: float = rack.point_a.x - rack.width * 0.5 + 12.0
@@ -164,13 +188,30 @@ func _test_props_and_doors(lvl: LevelDirector) -> void:
 
 
 func _test_freight_door_opens(lvl: LevelDirector) -> void:
-	var lift = lvl.areas[5].get_node("Entities/FreightLift")
+	var lift: ExitWicket = lvl.areas[5].get_node("Entities/FreightLift")
 	check_eq(lift.lab_piece(), "freight_door_closed", "the freight lift is shut without the card")
 	var console = lvl.areas[4].get_node("Entities/AlignmentConsole")
 	check(console != null, "the alignment console is in A05")
 	Session.take_keycard("L02-KC01", "L02-KC01-P")
 	await physics_frames(1)
-	check_eq(lift.lab_piece(), "freight_door_open", "the lift door opens once the card is held")
+	check(lift.is_unlocked() and not lift.is_overriding(), "setup: the card is held, the lift not called yet")
+	check_eq(lift.lab_piece(), "freight_door_closed", "the lift door stays shut with the card until Dave calls the lift")
+	# The card at the gate starts the 45 s override (the hold-out): the door stays shut.
+	lvl.hero.debug_invulnerable = true
+	lvl.hero.respawn_at(lift.global_position + Vector2(0, -4))
+	await physics_frames(4)
+	check(lift.is_overriding(), "setup: the override runs")
+	check_eq(lift.lab_piece(), "freight_door_closed", "the door stays shut while the override runs")
+	var frames := 0
+	var opened_early := false
+	while not lift.is_open() and frames < int((OVERRIDE_S + 5.0) * 60.0):
+		await get_tree().physics_frame
+		frames += 1
+		opened_early = opened_early or (lift.lab_piece() != "freight_door_closed" and not lift.is_open())
+	check(not opened_early, "...all the way through it")
+	check(lift.is_open() and frames >= int((OVERRIDE_S - 1.0) * 60.0), "setup: the override ends after its 45 s (%.1f s)" % (frames / 60.0))
+	await physics_frames(1)
+	check_eq(lift.lab_piece(), "freight_door_open", "the lift door opens once the override is over")
 
 
 func _test_level_1_unchanged() -> void:

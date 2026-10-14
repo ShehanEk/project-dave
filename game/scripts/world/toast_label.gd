@@ -20,6 +20,7 @@ const OUTLINE := Color(0.11, 0.165, 0.227, 1.0)
 const ICON_GAP := 9.0
 
 var _icon: TextureRect = null
+var _tween: Tween = null
 var _base_margin_left := 0.0
 var _base_margin_top := 0.0
 var _base_margin_bottom := 0.0
@@ -60,10 +61,13 @@ func show_message(message: String, hold: float = HOLD_TIME, fade: float = FADE_T
 	_set_icon(icon)
 	modulate = Color(1, 1, 1, 1)
 	visible = true
-	var tween := create_tween()
-	tween.tween_interval(hold)
-	tween.tween_property(self, "modulate:a", 0.0, fade)
-	tween.tween_callback(func(): visible = false)
+	# A new message restarts the hold: the earlier message's fade must not hide this one.
+	if _tween and _tween.is_valid():
+		_tween.kill()
+	_tween = create_tween()
+	_tween.tween_interval(hold)
+	_tween.tween_property(self, "modulate:a", 0.0, fade)
+	_tween.tween_callback(func(): visible = false)
 
 
 ## The icon piece shown with the current message ("" when none).

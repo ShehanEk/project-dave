@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/objects/breakable.gd" id="1_breakable"]
+[ext_resource type="Script" path="res://scripts/combat/hit_zone.gd" id="2_hitzone"]
+
+[node name="Breakable" type="StaticBody2D"]
+script = ExtResource("1_breakable")
+entity_id = ""
+health = 0
+solid = false
+piece = ""
+
+[node name="Solid" type="CollisionShape2D" parent="."]
+
+[node name="HitZone" type="Area2D" parent="."]
+script = ExtResource("2_hitzone")
+
+[node name="Shape" type="CollisionShape2D" parent="HitZone"]

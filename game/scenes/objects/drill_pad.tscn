@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/objects/drill_pad.gd" id="1_drill"]
+
+[node name="DrillPad" type="Area2D"]
+script = ExtResource("1_drill")

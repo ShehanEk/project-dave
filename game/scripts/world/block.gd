@@ -71,6 +71,15 @@ const Skins := preload("res://scripts/world/terrain_skins.gd")
 ## faint lit edge on the top. Collision is untouched.
 const LabSkins := preload("res://scripts/world/lab_skins.gd")
 const LAB_OVERHANG := 8.0
+## Level 2 v2 architecture kit: in a lab area every other kind wears a structure look (catwalk
+## decks with railings and supports, panelled raised floors with kick plates, ceilings with beams
+## and light troughs, panelled walls); scripts/world/lab_structure.gd has the roles. Drawing only.
+const Arch := preload("res://scripts/world/lab_structure.gd")
+## How a lab catwalk deck is held up (drawing only): AUTO hangs it from a ceiling within reach,
+## else stands it on columns down to the floor under it; NONE draws no supports.
+enum Support { AUTO, HANG, COLUMNS, NONE }
+## A lab catwalk deck's railing (drawing only): AUTO is glass on a deck at least 150 px long.
+enum Railing { AUTO, GLASS, STEEL, NONE }
 ## The roofs' backstop is the rooftop AC unit; every other backstop is the
 ## stone planter.
 const ROOF_AREA_ID := "L01-A03"
@@ -95,6 +104,25 @@ const ROOF_AREA_ID := "L01-A03"
 @export var cracked: bool = false:
 	set(v):
 		cracked = v
+		queue_redraw()
+
+## Level 2 lab look only (Arch): a deck's supports and railing, and a wall's doorway under it with
+## its sign icon (Arch.Icon). Drawing only; collision never changes.
+@export var support: Support = Support.AUTO:
+	set(v):
+		support = v
+		queue_redraw()
+@export var railing: Railing = Railing.AUTO:
+	set(v):
+		railing = v
+		queue_redraw()
+@export var door_frame: bool = false:
+	set(v):
+		door_frame = v
+		queue_redraw()
+@export var door_icon: int = 0:
+	set(v):
+		door_icon = v
 		queue_redraw()
 
 var _shape_node: CollisionShape2D
@@ -205,6 +233,14 @@ func _joins(skin: String) -> Vector2i:
 	return _join
 
 
+## The lab structure role this block is drawn in (Arch.role(): "deck", "raised", "floor",
+## "ceiling", "wall"), or "" (outside the lab, a fill override, or a bench/crate lab skin).
+func lab_structure() -> String:
+	if fill_override.a > 0.0 or lab_skin() != "":
+		return ""
+	return Arch.role(self)
+
+
 ## The lab piece this block wears (batch 7), or "" for its terrain or code-drawn look.
 func lab_skin() -> String:
 	if fill_override.a > 0.0 or not LabSkins.in_lab(self):
@@ -222,6 +258,11 @@ func _draw() -> void:
 	var lab := lab_skin()
 	if lab != "":
 		_draw_lab(lab)
+		return
+	var arch := lab_structure()
+	if arch != "":
+		texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		Arch.draw_block(self, arch)
 		return
 	var skin := skin_name()
 	if skin != "":

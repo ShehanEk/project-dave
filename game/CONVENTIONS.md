@@ -400,6 +400,87 @@ Tests: `tests/cases/test_l02_story.gd`.
 - **Capture.** `scenes/debug/l02_story_demo.tscn` (tools/capture.sh): the bridge, the door,
   the lockdown, the console. Throwaway save.
 
+## Level 2 v2 systems (C62, 2026-10-14)
+
+The redesign's kit (`../level-design/l02-alignment.md`, `../prototype-plans/level-02-alignment/area-blueprints-v2.md`). All are stand-in art until art Batch 8 (`piece` exports). No `class_name` on any of them: preload by path.
+
+### Level 2 architecture kit (v2): stairs, structure look, room seams
+
+Tests: `tests/cases/test_l02_architecture.gd`; capture `scenes/debug/architecture_demo.tscn`.
+
+- **Stairs and ramps** (`scripts/world/stairs.gd`, `scenes/world/stairs.tscn`, no class_name) are the only sloped solid: a StaticBody2D on the world layer (group `terrain_stairs`). Exports `rise`, `run` (stairs about 96 over 144; ramps gentler, never over 45 degrees), `direction` (+1 rises toward +x), `style` (STAIRS/RAMP), `steps` (0 = auto), `handrail`, `piece`. Origin = the flight's left end on the lower floor's top; the footprint x 0..run, y -rise..0 is solid (a triangle, high side vertical). The high end MUST meet a landing at that height (a Block, deck or another flight). It is drawn `FOOT_INSET` (20 px, half the hero's box) toward its low end so his feet stand on the drawn pitch line (`surface_y()`); each tread's nosing is lit. Enemies are not tuned for slopes: keep patrols off flights. RouteBot walks flights with MOVE points.
+- **Hero floor settings:** `floor_snap_length = Hero.FLOOR_SNAP` (20), `floor_stop_on_slope = true`; `floor_constant_speed` off. He stays on the floor walking down a flight; a drop of 20 px or less off a ledge snaps instead of falling.
+- **Structure look** (`scripts/world/lab_structure.gd`, no class_name, called by Block): in a lab area, `Block.lab_structure()` gives deck / raised / floor / ceiling / wall (BACKSTOP and SCENERY_SOLID keep LabSkins' crates and bench). Drawing only; collision, size, position and kind never change. A block 40 px or less tall is a catwalk deck: railing (`Block.railing`) and supports (`Block.support`: AUTO hangs from a ROOF within 480 px above, else columns to a top within 900 px below), so every deck needs a ceiling over it or a floor under it. A raised GROUND block above local y 0 gets a panelled fascia and its kick plate at y 0; a PLATFORM box gets it at its foot. `Block.door_frame`/`door_icon` draw a doorway under a WALL. Warm accents are matte copper and rust-orange, never glowing. Painted replacements: add the `Arch.PIECES` names (`arch_catwalk`, `arch_fascia`, `arch_subfloor`, `arch_ceiling`, `arch_wall`, `arch_door_frame`) to `lab.json`.
+- **Room seams** (`scripts/world/room_seam.gd`, no class_name): a Node2D under Scenery, origin on the floor line at the seam's x. Exports `height` (0 = up to the ROOF above), `door_height`, `pier_width`, `style` (DOORWAY/AIRLOCK), `icon` (`Arch.Icon`: NONE, ARROW, LAB, RANGE, KENNEL, DRONE, CELLS, LATTICE, LIFT, STAIRS, HAZARD), `solid_lintel` (default false = purely visual).
+
+### Breakables and secret walls (Level 2 v2)
+
+`scenes/objects/breakable.tscn` (`scripts/objects/breakable.gd`, StaticBody2D, group `breakable`, no
+class_name): a prop Dave's shots break. Tests: `tests/cases/test_l02_breakables.gd`; capture
+`scenes/debug/breakables_demo.tscn` (`tools/capture.sh ... OUT 360 30`).
+
+- **Exports.** `entity_id`, `kind` (`Breakable.Kind`: GLASS_PANEL, MONITOR, SERVER_CABINET, CRATE,
+  GAUGE, VENT_PANEL, DISPLAY_CASE), `health` (damage points; 0 = the kind's default: glass 2, monitor 2,
+  server cabinet 4, crate 3, gauge 1, vent panel 2, display case 3), `size` (zero = the kind's default),
+  `solid`, `contents: Array[NodePath]`, `piece`. Origin = bottom centre of the prop. Signals
+  `cracked(remaining)`, `broke`; `take_damage(amount, at, dir)`, `break_now()`, `is_broken()`, `stage()`
+  (`Stage.INTACT/CRACKED/BROKEN`), `remaining_health()`. Contents and sizes must be set before the node
+  enters the tree.
+- **Hits.** It owns a HitZone (layer 5), so Scrapjack bolts and Boom Broom pellets break it through
+  `take_hit()`. A bolt is 1 point; a Broom blast is ONE hit worth its summed pellets (5 at point blank, so
+  it breaks anything of health <= 5; far away 1-2). Every kind but the gauge shows a cracked stage once it
+  has taken damage and still stands. Hit flash at most once per 0.5 s.
+- **Secret wall.** `solid = true` puts an intact prop on world layer 1 (it blocks Dave, enemies and rounds
+  like a wall) and its HitZone is `SOLID_ZONE_GROW` (3 px) bigger on every side, so a bolt or pellet ray
+  crosses the zone before the body and the wall takes the shot. Once broken both switch off. Use a glass
+  panel for a glass wall, a vent panel for a crawlway.
+- **Enemies never break it.** EnemyRound's mask is world|hurtbox (no layer 5); rounds pass a non-solid
+  prop and stop on an intact solid one without damaging it.
+- **Persistence.** With an `entity_id` (`L02-A02-BR01`) a break is `Session.collect(id, 0)`: it stays
+  broken after a checkpoint; a death before the next one puts it back. A rebuilt level starts a recorded
+  one broken, quietly, with its contents shown. No id = always intact on a rebuild.
+- **Contents.** Nodes named by `contents` are hidden and `PROCESS_MODE_DISABLED` until it breaks, then
+  shown and enabled with a short fade. Give each its own `entity_id` so rebuilds never double a reward.
+- **Look and effects.** Code-drawn stand-ins per kind; `piece` (default the kind's name) plus `_cracked` /
+  `_broken` is looked up through `LabSkins`, so Batch 8's art drops in. Break = falling, fading debris, an
+  ImpactSpark for electrical kinds, existing cues only (`debris_clatter`, `bolt_blocked`, `hatch_open`). A
+  broken screen flashes once and once more 0.55 s later (under 2 Hz); Reduced motion drops the shake and
+  the echo and thins the debris.
+
+### Level 2 v2 hazards (H1/H2 vents, S5 vent wave, H3 conveyor)
+
+`scripts/objects/hazard_vent.gd` (`scenes/objects/hazard_vent.tscn`, an Area2D on layer 8, mask 2) is H1 (`kind` STEAM: a floor grate venting a white column 72 x 144 = 1.5 H) and H2 (`kind` CABLE: a loose floor cable arcing along a strip `length` wide and 30 px tall). Its origin is the floor line under its centre. The cycle is IDLE (`idle_time`) -> WARN (`warn_time` 0.8 s, never under `MIN_WARN` 0.5 s; an amber lamp and glow, red for the last `RED_TIME` 0.25 s) -> ACTIVE (`active_time`, default 1.2 s steam / 1.0 s arc; the lamp stays red) -> IDLE. Damage only in ACTIVE: each physics tick `hero.take_damage(damage, global_position)` is called for an overlapping hero and the hero's own immunity stops repeat hits; no impulse beyond take_damage's knockback. Level 2 sets steam `active_time` to 0.9 s so a hero who stays in it takes one hit, not two. A warning always comes first: a `phase` that falls in ACTIVE starts at the top of the WARN. `autostart` (default) cycles by itself; a vent under a sequencer is "driven" (`set_driven()`, `fire()` runs one burst, `stop()` idles it). `piece` is a painted `LabSkins` piece (Batch 8); the stand-in is code-drawn. Reduced motion: steady glow, one arc shape, slower steam; the glow never blinks faster than `GLOW_HZ` 1.5 Hz. Sounds are stand-ins (`WARN_CUE`/`ACTIVE_CUE`). Test: `tests/cases/test_l02_hazards.gd`; capture `scenes/debug/hazards_demo.tscn` (640 frames for all four stations).
+
+`scripts/objects/vent_sequencer.gd` (`scenes/objects/vent_sequencer.tscn`) is S5, the projector purge: it drives `vents` (NodePaths; empty = its child vents) as a wave, vent i fired at `i * spacing`, each vent showing its own warning first. The wave loops after `rest` (`period()` = (n-1) x spacing + warn + active + rest); `reverse`, `loop`, `autostart`, `start()`/`stop()`, and `start_on_approach` with `approach_area` or `approach_x` + `approach_dir`. Signals `wave_started`, `vent_fired(index, vent)`, `wave_finished`.
+
+`scripts/objects/conveyor.gd` (`scenes/objects/conveyor.tscn`) is H3: a StaticBody2D on layer 1 with `position` = top-left and `size`, like a Block (the belt is at the node's y). The carry is Godot's platform velocity (`constant_linear_velocity` = `direction` x `speed`): `hero.gd` is unchanged, and since it sets `platform_on_leave = DO_NOTHING` a jump off or a step off the end gets no launch. Keep `speed` at 192 px/s or under (default 120) so Dave can walk against it. `set_direction()`/`set_running()` at runtime; `cargo` draws decorative crates (no collision); reduced motion holds the belt art still; `piece` tiles a painted piece (Batch 8).
+
+### Level 2 v2 set pieces S1 and S2 (the drill, the range goes live)
+
+Tests: `tests/cases/test_l02_setpieces_a.gd`; capture `scenes/debug/setpieces_a_demo.tscn` (throwaway save; `-- --part=range`). No `class_name` (preload by path); groups `drill_pad`, `popup_target`, `cover_plate`, `range_live`. Stand-in art until art Batch 8 (`piece` exports).
+
+- **Drill pad** (`scripts/objects/drill_pad.gd`, `scenes/objects/drill_pad.tscn`, Area2D mask 2, origin on the floor line): standing on it starts a `duration` (15 s) run over its `targets` (PopupTargets, each with its own `appear_at`; the pad copies its `tell_time` onto them). All down in time: `Session.collect(entity_id, 0)`, the `reward` (a ChipCache, Chip or a node holding several) is shown once, toast "Drill complete". Until then the reward is invisible with its shapes disabled. Time out: the targets still up retract, the pad rearms after `rearm_time` and runs again (no penalty). A rebuilt level with the id collected shows it done; a rollback from before the success brings it back. Readout: `Hud.toast_message` "Drill n/N" plus a console of pips and a time bar (teal, amber for the last `warn_time`, red for the last 0.25 s).
+- **Pop-up target** (`scripts/objects/popup_target.gd`, `scenes/objects/popup_target.tscn`): the lab `test_dummy`, `mount` FLOOR (rises from a hatch) or CEILING (drops on a cable from a rail housing; `stem_height` brackets to the ceiling). Tell: hatch lamp amber `tell_time`, red for the last 0.25 s, then it rises over `rise_time`. Its HitZone is live only while up. It goes down at `toughness` damage (3: three bolts or one close Broom blast) and folds away from the shot (a fade under reduced motion), then a green status lamp.
+- **Cover plate** (`scripts/objects/cover_plate.gd`, `scenes/objects/cover_plate.tscn`): a carrier on a ceiling rail holding a `plate_size` (0.6 H) armoured plate that reaches the floor line, sliding `point_a` <-> `point_b` at `speed` (capped at `MAX_SPEED` 192) with `pause_time` at each end, idle until `start()` (or `autostart`). The plate is ONE Area2D (`hit_zone.gd`, `blocks = true`) on layers 5 and 1: hero bolts and pellets meet a blocking HitZone; enemy rounds and the Gunner's muzzle clamp meet a world-layer area whose owner has no `take_damage()`, so they resolve "blocked". It is never a body: Dave and enemies pass through it, so it can never push or trap anyone. Drawn at z -1.
+- **Range live** (`scripts/objects/range_live.gd`, a Node2D controller): cold until Dave enters its approach area (`trigger_size` at `trigger_offset`), `trigger_node` emits `activated`, or `go_live()`; then the lane lamps (`lamp_points`) go amber for `warn_time`, red for the last 0.25 s, and every `plates` carrier starts. Once per area build; it never spawns enemies. `beat_id` is emitted through BeatHub at the trigger so `LevelDef.beat_lines` carries Adam's line ("Range is hot. Please keep your hands visible.").
+
+### Release props and the launch rack (Level 2 v2: S3, S4, S6, S7)
+
+Tests: `tests/cases/test_l02_setpieces_b.gd`; capture `scenes/debug/setpieces_b_demo.tscn` (`--part=rack`, `--part=props`).
+
+- **Release props** (`scenes/objects/release_pod.tscn`, `scripts/objects/release_pod.gd`, no class_name): S3's kennel pods, S6's showroom plinths, S7's service doors (`variant` POD / PLINTH / DOOR). It holds one EncounterGroup (`group`, `wait_for_trigger`, holding only the enemies inside the prop). CLOSED: the group's `process_mode` is DISABLED, so its enemies never think, move, attack or take a token, and their bodies and hit zones are out of the physics world (a shot passes the prop). A pod shows its enemy between the prop's back (z -3) and glass (z -1); a plinth's cover and a door hide theirs. WARNING (`warn_time` 1.0 s): the ring light / spotlight / door lamp goes amber, then red for the last `red_time` 0.25 s; steady colours. OPEN: glass slides up / cover drops / panel slides up (`open_time`, a snap under reduced motion); the group's process mode, z and visibility are restored and it is `activate()`d. Arming: `trigger_x` (area-local; `trigger_dir` +1 = at or past it) or `trigger_area`; then `after` (a release prop or EncounterGroup) must be cleared, plus `delay`. No trigger and no `after` = opens only on `release()`. On rebuild, a prop whose enemies are all `Session.is_defeated` starts OPEN silently and counts as cleared. In a chain, give follow-on pods the same trigger as the first. Screen budget: follow-on groups `share_tokens_with` the first group. `piece` names a LabSkins `<piece>_closed` / `_open` pair for Batch 8.
+- **Launch rack** (`scenes/objects/launch_rack.tscn`, `scripts/objects/launch_rack.gd`, no class_name): S4. `drones` are pre-placed Security Drones at their patrol homes, children of the rack's `wait_for_trigger` group (stable ids; a drone recorded defeated counts as launched). Each living one is docked frozen in its bay. Dave's approach (`trigger_x` / `trigger_area`) activates the rack; before each launch the bay lamp is amber then red for the last 0.25 s (`warn_time` 1 s); the drone flies a short curve (`launch_time` 0.8 s) to its home and wakes. Launches `interval` (6 s) apart, at most `max_live` (2) alive, `count` (3) in all. Four clamp HitZones (`clamp_health` 2): all four broken stops launches and reveals `reward` once; `switch_id` (`L02-SW##`) latches the broken rack across checkpoints. It hangs from the roof on two cables (`hanger_length`).
+- **ExitWicket waves** (S7): `wave_groups` lists EncounterGroups or release props in order. The first opens when the override starts; each next one opens `wave_delay` (1 s) after the previous wave is fully defeated. A prop wave is `release()`d (it warns first); a group wave is `activate()`d. No new wave opens once the override finishes. `override_groups`, `reinforcement_groups` and the C41 timing are unchanged. Signal `wave_opened(i)`; `current_wave()`, `wave_cleared(i)`.
+
+### Level 2 v2 layout (R2/R3, 2026-10-14)
+
+The six area scenes follow `../prototype-plans/level-02-alignment/area-blueprints-v2.md`; each agent recorded its changes from the blueprint in the area's test file header and the v2 plan's progress log. Tests per area pair: `tests/cases/test_l02v2_a01_a02.gd`, `test_l02v2_a03_a04.gd`, `test_l02v2_a05_a06.gd` (in the real level: seams, widths, floors, supports, stairs, the P23 window budget, checkpoints, ids, set-piece wiring, the route bot per area, and a fair fight per mandatory encounter). Tours: `scenes/debug/l02v2_a01_a02_tour.tscn`, `l02v2_a03_a04_tour.tscn`, `l02v2_a05_a06_tour.tscn`, and the whole level `l02_tour_demo.tscn`.
+
+- **Encounter groups.** `L02-E01`…`L02-E25` in route order, plus the set pieces' own groups: `L02-E08-D` (A02's side-door guard, sharing E08's tokens), `L02-E10-P1`/`-P2` (the kennel pods), `L02-A03-RACK01` (the launch rack's drones), `L02-E17P` (A04's dormant side pod), `L02-E24-P1`/`-P2` (the showroom plinths' rovers), `L02-E25-C1`/`-C2` (the demo stage's cases), `L02-E26-W1`…`W3` (the lift hold-out's waves behind `Entities/ServiceDoor_W1..W3`), `L02-E27` (the optional dock rover). Enemy ids `<group>-<SE01|LK01|SE02|K01|M02|M01>-nn`.
+- **The screen budget counts phases.** Enemies that can never be alive together count once: a release prop's enemies replace the ones its `after` waits for, the hold-out's waves come one after another, and a launch rack counts as its `max_live`. Every test that checks P23 uses this rule.
+- **Trays and caches.** `L02-A01-CACHE01` (the drill, 10), `L02-A02-CACHE01` (the armory, 5), `L02-A03-CACHE01` (the rack, 5), `L02-OPT01-CACHE01` (the dock, 20); `chip_total` 100 with the 60 main-route chips.
+- **Known limits.** Night Guards and Staffers never step off a ledge, so an enemy "dropping from above" is a door release prop instead (A01's E04). AreaRoot has one camera top per area (no per-room camera limits yet). Enemies are not tuned for stairs: lanes and patrols stay off flights.
+
 ### Boom Broom and the held-weapon swap (M3)
 
 W02, Dave's pump shotgun (`art-design/weapons/w02-boom-broom.md`), on Level 2's A01 pad.

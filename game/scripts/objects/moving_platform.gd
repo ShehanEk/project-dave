@@ -94,6 +94,10 @@ func _physics_process(delta: float) -> void:
 	queue_redraw()
 
 
+## How far past its leading face the look-ahead ray starts (see `_is_blocked_ahead()`).
+const RIDER_GAP := 2.0
+
+
 func _is_blocked_ahead() -> bool:
 	var dir_vec := (point_b - point_a).normalized() * float(_dir)
 	if dir_vec.length() < 0.001:
@@ -109,7 +113,11 @@ func _is_blocked_ahead() -> bool:
 	var lookahead: float = minf(speed * 0.15 + 10.0, remaining)
 	# position/point_a/point_b are PARENT-local; the ray is cast in WORLD space, so
 	# a platform in an area placed anywhere in the level looks at its own track.
-	var from_local := position + dir_vec * reach
+	# The ray starts RIDER_GAP past the leading face: a rider standing on a lift that moves up has
+	# his feet on that face, and a ray starting there counted him as blocking, so a loaded lift never
+	# left (A03, 2026-10-14). Starting inside his body ignores him (rays don't report a body they
+	# start in); anything else ahead is still seen.
+	var from_local := position + dir_vec * (reach + RIDER_GAP)
 	var to_local := from_local + dir_vec * lookahead
 	var parent_2d := get_parent() as Node2D
 	var from := parent_2d.to_global(from_local) if parent_2d else from_local

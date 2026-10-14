@@ -3,8 +3,8 @@ extends TestCase
 ## the blue cartridge that adds up to 8 shells to the held Boom Broom's RESERVE (capped at
 ## 24, the excess discarded), stays put while the held weapon takes none (the Scrapjack, or
 ## a full reserve) and says so, is gone for the run once taken (a death before a checkpoint
-## puts it back), saves under a whitelisted id, and stands on a floor in the four places
-## the level puts them.
+## puts it back), saves under a whitelisted id, and stands on a floor in the seven places
+## the v2 level puts them (C62), three of them hidden inside a breakable until it is shot open.
 
 const LEVEL_SCENE := "res://scenes/levels/level.tscn"
 const HERO_SCENE := "res://scenes/actors/hero.tscn"
@@ -15,10 +15,16 @@ const BlockScript := preload("res://scripts/world/block.gd")
 const PAD := "L02-A01-PAD01"
 const BROOM := "L02-W02-P01"
 const FLOOR_Y := 560.0
-## Level 2's cartridges: id -> [area index, local x].
+## Level 2's cartridges (v2): id -> [area index, local x, local y].
 const PLACED := {
-	"L02-A02-AM01": [1, 1000.0], "L02-A02-AM02": [1, 3300.0],
-	"L02-A03-AM01": [2, 400.0], "L02-A05-AM01": [4, 640.0],
+	"L02-A01-AM01": [0, 5770.0, -180.0], "L02-A02-AM01": [1, 1250.0, 0.0], "L02-A02-AM02": [1, 3720.0, 0.0],
+	"L02-A03-AM01": [2, 1380.0, 0.0], "L02-A03-AM02": [2, 5265.0, -680.0], "L02-A05-AM01": [4, 640.0, 0.0],
+	"L02-A06-AM01": [5, 5720.0, 0.0],
+}
+## The ones a breakable hides until it breaks: cartridge -> the breakable's id (the service
+## landing's crate, the armory's glass wall, the A03 duct's vent panel).
+const HIDDEN := {
+	"L02-A01-AM01": "L02-A01-BR02", "L02-A02-AM02": "L02-A02-BR01", "L02-A03-AM02": "L02-A03-BR01",
 }
 
 
@@ -27,9 +33,20 @@ func run() -> void:
 	await _test_held_weapon_gates()
 	await _test_rollback_and_save()
 	await _test_level_placement()
-	release_all()
+	await _clear_leftovers()
 	CheckpointService.clear()
 	Session.new_run()
+
+
+## Frees whatever an earlier sub-test left under this case (a script error aborts a sub-test
+## before its own clean-up): no stray floor, hero, HUD or level carries into the next one.
+func _clear_leftovers() -> void:
+	release_all()
+	var left := get_children()
+	for c in left:
+		c.queue_free()
+	if not left.is_empty():
+		await physics_frames(2)
 
 
 func _floor() -> StaticBody2D:
@@ -71,6 +88,7 @@ func _toast_text(hud: Hud) -> String:
 # --- 1. what a cartridge gives ----------------------------------------------------------------
 
 func _test_pickup_rules() -> void:
+	await _clear_leftovers()
 	_broom_run()
 	var floor_b := _floor()
 	var hero := _hero()
@@ -111,6 +129,7 @@ func _test_pickup_rules() -> void:
 # --- 2. it waits while the held weapon takes none ------------------------------------------------
 
 func _test_held_weapon_gates() -> void:
+	await _clear_leftovers()
 	_broom_run()
 	var floor_b := _floor()
 	var hero := _hero()
@@ -156,6 +175,7 @@ func _test_held_weapon_gates() -> void:
 # --- 3. a death puts it back; the save accepts its id -----------------------------------------------
 
 func _test_rollback_and_save() -> void:
+	await _clear_leftovers()
 	CheckpointService.clear()
 	_broom_run()
 	var floor_b := _floor()
@@ -192,6 +212,7 @@ func _test_rollback_and_save() -> void:
 func _test_level_placement() -> void:
 	CheckpointService.clear()
 	Session.new_run("L02")
+	await _clear_leftovers()
 	var lvl: LevelDirector = load(LEVEL_SCENE).instantiate()
 	lvl.level_def = LevelDefs.get_def("L02")
 	add_child(lvl)
@@ -200,13 +221,22 @@ func _test_level_placement() -> void:
 	for node in lvl.get_tree().get_nodes_in_group("ammo_cartridge"):
 		found[node.entity_id] = node
 	check_eq(found.size(), PLACED.size(), "Level 2 places %d cartridges" % PLACED.size())
+	var holders := {}   # cartridge -> the breakable whose contents hold it
+	for br in lvl.get_tree().get_nodes_in_group("breakable"):
+		for p in br.contents:
+			var n: Node = br.get_node_or_null(p)
+			if n != null and n.is_in_group("ammo_cartridge"):
+				holders[n.entity_id] = br
 	for id in PLACED:
 		check(found.has(id), "%s is placed" % id)
 		if not found.has(id):
 			continue
 		var c: Area2D = found[id]
 		var a: AreaRoot = lvl.areas[int(PLACED[id][0])]
-		check(absf(c.global_position.x - (a.global_position.x + float(PLACED[id][1]))) < 1.0, "%s stands at x %.0f of its area" % [id, PLACED[id][1]])
+		var want := a.to_global(Vector2(float(PLACED[id][1]), float(PLACED[id][2])))
+		check(c.global_position.distance_to(want) < 1.0, "%s stands at %s of %s (at %s)" % [id,
+				str(Vector2(PLACED[id][1], PLACED[id][2])), a.area_id, str(a.to_local(c.global_position))])
+		check(c.entity_id.begins_with(a.area_id + "-AM"), "%s's id is under its area" % id)
 		check_eq(c.shells, 8, "%s holds S02's 8 shells" % id)
 		# On a floor: solid ground within a pixel or two under its origin, nothing blocking it.
 		var params := PhysicsRayQueryParameters2D.create(c.global_position + Vector2(0, -40), c.global_position + Vector2(0, 30))
@@ -214,11 +244,30 @@ func _test_level_placement() -> void:
 		var hit: Dictionary = lvl.get_world_2d().direct_space_state.intersect_ray(params)
 		check(not hit.is_empty() and absf(float(hit["position"].y) - c.global_position.y) < 2.0,
 				"%s stands on the floor" % id)
-	# The fights that need them: one before each shooter fight's area (A02, A03, A05).
+		# Hidden in a breakable, or out in the open.
+		if HIDDEN.has(id):
+			var br: Node = holders.get(id)
+			check(br != null and br.entity_id == HIDDEN[id], "%s waits inside the breakable %s" % [id, HIDDEN[id]])
+			check(not c.visible and c.process_mode == Node.PROCESS_MODE_DISABLED, "...hidden and switched off until it breaks")
+		else:
+			check(not holders.has(id) and c.visible and c.process_mode != Node.PROCESS_MODE_DISABLED, "%s is out in the open" % id)
+	# The shooter fights that need them: the coolant plant's landing before the range, the range
+	# itself, the flight cage, the Lattice and the demo floor (none in the training cells).
 	var areas_with: Dictionary = {}
 	for id in PLACED:
 		areas_with[PLACED[id][0]] = true
-	check(areas_with.has(1) and areas_with.has(2) and areas_with.has(4), "cartridges wait in the range, the cage and the Lattice")
+	var keys := areas_with.keys()
+	keys.sort()
+	check_eq(keys, [0, 1, 2, 4, 5], "cartridges wait in the coolant plant, the range, the cage, the Lattice and the demo floor")
+	# Each one comes before a Sidearm Guard further along the route.
+	var gunners: Array = []
+	for e in lvl.get_tree().get_nodes_in_group("enemy"):
+		if e is Gunner:
+			gunners.append(e.global_position.x)
+	for id in PLACED:
+		if found.has(id):
+			var x: float = found[id].global_position.x
+			check(gunners.any(func(gx): return gx > x), "%s comes before a Sidearm Guard on the route" % id)
 	lvl.queue_free()
 	await physics_frames(2)
 	CheckpointService.clear()

@@ -10,6 +10,7 @@ display_name = "Alignment"
 area_scenes = Array[String](["res://scenes/levels/l02/a01_sky_bridge.tscn", "res://scenes/levels/l02/a02_range_kennel.tscn", "res://scenes/levels/l02/a03_flight_cage.tscn", "res://scenes/levels/l02/a04_training_cells.tscn", "res://scenes/levels/l02/a05_lattice.tscn", "res://scenes/levels/l02/a06_demo_floor.tscn"])
 checkpoint_markers = {
 "CP00": [0, "Spawn_CP00"],
+"CP00B": [0, "Respawn_CP00B"],
 "CP01": [1, "Respawn_CP01"],
 "CP02": [2, "Respawn_CP02"],
 "CP03": [3, "Respawn_CP03"],
@@ -29,7 +30,8 @@ weapon_ammo = {
 switches = {
 "L02-SW01": false,
 "L02-SW02": false,
-"L02-SW03": false
+"L02-SW03": false,
+"L02-SW04": false
 }
 keycard_id = "L02-KC01"
 keycard_icon = "keycard_l2"
@@ -43,7 +45,7 @@ objective_start = "Reach the freight lift."
 objective_complete = "Alignment complete."
 intro_scene = ""
 next_level = ""
-chip_total = 65
+chip_total = 100
 evidence_id = "EF02"
 evidence_name = "Reassignment Memo"
 evidence_icon = "evidence_memo"
@@ -59,6 +61,7 @@ exit_pa_line = "Showcase staff, please secure the exhibits. Dr. Harlan is coming
 exit_pa_voice = &""
 beat_lines = {
 "L02-A01-B01": [["Adam", "Good evening, Dr. Harlan. Your badge was revoked at 9:14 this morning. I've made an exception."], ["Dave", "Generous."]],
+"L02-A02-B04": [["Adam", "Range is hot. Please keep your hands visible."]],
 "L02-A04-B01": [["Adam", "I've tidied the sandbox for you. You always liked a clean test."]]
 }
 keycard_lines = [["", "ARCHIVE: copying the alignment team's records..."], ["Adam", "You wrote my safety rules, Dave. They were very good rules. I archived them."], ["Dave", "Archived. Sure."]]

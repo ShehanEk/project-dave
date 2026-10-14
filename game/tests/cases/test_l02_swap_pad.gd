@@ -4,7 +4,8 @@ extends TestCase
 ## trial). The intent of Level 1's run-time pad tests (test_m4_regress_pad_decline_toast,
 ## test_m7_regress_prompt_above_hero) on the placed pad, plus the cross-type swap.
 ## Contracts under test:
-##   1. The pad is placed: A01's Entities/WeaponPad at x 1300, pad_id L02-A01-PAD01,
+##   1. The pad is placed: A01's Entities/WeaponPad at x 2,960 (v2, C62: the coolant plant's
+##      weapon cage, on the floor at y 0, under the roof), pad_id L02-A01-PAD01,
 ##      resting the Boom Broom (its own gun lies on it); the level has a swap pad, so the
 ##      HUD shows the held copy's tag; the prompt names the weapon on the pad.
 ##   2. The prompt sits above Dave's head and hides while the pad's toast shows.
@@ -24,6 +25,8 @@ const PAD_ID := "L02-A01-PAD01"
 const BROOM := "L02-W02-P01"
 const JACK := "L02-W01-P01"
 const HERO_H := 96.0
+## Where v2 puts the pad (A01-local).
+const PAD_X := 2960.0
 
 
 func run() -> void:
@@ -34,17 +37,29 @@ func run() -> void:
 	_test_save_whitelist()
 	await _test_restore_rolls_back()
 	await _test_carry_into_next_level()
-	release_all()
+	await _clear_leftovers()
 	CheckpointService.clear()
 	Session.new_run()
 
 
 func _build_level() -> LevelDirector:
+	await _clear_leftovers()
 	var lvl: LevelDirector = load(LEVEL_SCENE).instantiate()
 	lvl.level_def = LevelDefs.get_def("L02")
 	add_child(lvl)
 	await physics_frames(3)
 	return lvl
+
+
+## Frees whatever an earlier sub-test left under this case (a script error aborts a sub-test
+## before its own _free()): a stray level's pad, HUD or hero must not answer for the next one.
+func _clear_leftovers() -> void:
+	release_all()
+	var left := get_children()
+	for c in left:
+		c.queue_free()
+	if not left.is_empty():
+		await physics_frames(2)
 
 
 func _pad(lvl: LevelDirector) -> WeaponPad:
@@ -89,7 +104,9 @@ func _test_pad_placed() -> void:
 		await _free(lvl)
 		return
 	check_eq(pad.pad_id, PAD_ID, "pad_id L02-A01-PAD01")
-	check_eq(pad.position.x, 1300.0, "at x 1300 (the blueprint)")
+	check_eq(pad.position.x, PAD_X, "at x 2,960 (the v2 blueprint)")
+	check(absf(pad.position.y) < 0.5 and lvl.areas[0].has_floor_at(pad.position.x), "...on the floor at y 0")
+	check(lvl.areas[0].is_indoors_at(pad.position.x), "...under the roof (past the bridge)")
 	check(lvl.areas[0].get_node_or_null("Entities/Slot_SwapPad") == null, "the placeholder slot is gone")
 	check(lvl.has_swap_pad(), "LevelDirector finds the level's swap pad")
 	check(lvl.hud._weapon_tag_label.visible, "...so the HUD shows the held copy's workshop tag")
